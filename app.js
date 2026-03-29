@@ -60,6 +60,8 @@ const uiKeys = {
 const appVersion = "v0.6.2 Alpha";
 const operatorRole = "operator";
 
+const missingTablePattern = /schema cache|Could not find the table|relationship between/i;
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -113,6 +115,14 @@ function emptyCard(title, description) {
   `;
 }
 
+function isMissingRelationError(error) {
+  return missingTablePattern.test(String(error?.message || ""));
+}
+
+function optionalTableNotice(name) {
+  return `Optional table unavailable: ${name}`;
+}
+
 function getGuildBySlug(slug) {
   return guildCatalog.find((guild) => guild.slug === slug) || guildCatalog[0];
 }
@@ -125,6 +135,8 @@ function getNextReflectionEntry() {
 }
 
 function renderReflectionOverlay() {
+  if (getCurrentPage() !== "home") return;
+  if (sessionStorage.getItem("neofolk.overlaySeen") === "1") return;
   const entry = getNextReflectionEntry();
   const overlay = document.createElement("div");
   overlay.className = "intro-overlay";
@@ -172,6 +184,7 @@ function renderReflectionOverlay() {
 
   const dismiss = () => {
     overlay.classList.add("is-hidden");
+    sessionStorage.setItem("neofolk.overlaySeen", "1");
     window.setTimeout(() => overlay.remove(), 540);
   };
 
@@ -201,10 +214,6 @@ function ensureRealUserMap(users) {
   return [...users];
 }
 
-function setDemoOnlyMessage(elementId = "demo-message") {
-  setMessage(elementId, "Demo profiles are preview-only. Use a real account to create or change data.", "success");
-}
-
 function isOperator(user) {
   return user?.role === operatorRole;
 }
@@ -227,7 +236,9 @@ function mapPortfolio(entry) {
   return {
     ...entry,
     createdBy: entry.user_id,
-    highlighted: Boolean(entry.highlights?.length)
+    highlighted: Boolean(entry.highlighted),
+    visibility: entry.visibility || "private",
+    tags: Array.isArray(entry.tags) ? entry.tags : []
   };
 }
 
@@ -236,6 +247,13 @@ function mapNiche(entry) {
     ...entry,
     createdBy: entry.user_id,
     topic: entry.interest
+  };
+}
+
+function mapResearchPost(post) {
+  return {
+    ...post,
+    tags: Array.isArray(post.tags) ? post.tags : []
   };
 }
 
@@ -281,24 +299,125 @@ function renderNav(currentUser) {
   }
 
   const dashboardHref = getDashboardPath(currentUser.role);
-  const portfolioHref = currentUser.role === "arbiter" ? `${dashboardHref}#portfolio-review` : `${dashboardHref}#portfolio-section`;
-  const nodesHref = currentUser.role === "curator" ? `${dashboardHref}#curator-modules` : "guild.html#nodes-directory";
 
   nav.innerHTML = `
-    <a class="nav-link" href="${dashboardHref}">${isOperator(currentUser) ? "Operator" : "Dashboard"}</a>
+    <a class="nav-link" href="${dashboardHref}">Dashboard</a>
     <a class="nav-link" href="subjects.html">Subjects</a>
     <a class="nav-link" href="guild.html">Guilds</a>
-    <a class="nav-link" href="vision.html">Vision</a>
-    <a class="nav-link" href="${portfolioHref}">Portfolio</a>
+    <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="studios.html">Studios</a>
     <a class="nav-link" href="discovery.html">Discovery</a>
-    <a class="nav-link" href="${nodesHref}">Nodes</a>
-    <a class="nav-link" href="index.html#about">About</a>
+    <a class="nav-link" href="vision.html">Vision</a>
+    <a class="nav-link" href="profile.html">Profile</a>
+    <form id="global-search-form" class="nav-search">
+      <input id="global-search-input" type="search" placeholder="Search subjects, guilds, research, studios" />
+      <button class="nav-button" type="submit">Search</button>
+    </form>
     <button id="logout-button" class="nav-button" type="button">Logout</button>
   `;
 
   document.getElementById("logout-button").addEventListener("click", async () => {
     await supabase.auth.signOut();
     window.location.href = "index.html";
+  });
+
+  document.getElementById("global-search-form")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const query = document.getElementById("global-search-input")?.value.trim().toLowerCase();
+    if (!query) return;
+
+    const [subjects, guilds, researchPosts, portfolios, studios] = await Promise.all([
+      fetchSubjects().catch(() => []),
+      fetchGuildRecords().catch(() => []),
+      fetchResearchPosts().catch(() => []),
+      fetchPortfolioEntries().catch(() => []),
+      fetchStudios().catch(() => [])
+    ]);
+
+    const groups = [
+      {
+        title: "Subjects",
+        items: subjects.filter((item) => `${item.name || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
+          title: item.name,
+          href: `subjects.html?id=${item.id}`,
+          meta: item.category || "Subject"
+        }))
+      },
+      {
+        title: "Guilds",
+        items: guilds.filter((item) => `${item.title || item.name || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
+          title: item.title || item.name,
+          href: item.id ? `guild.html?id=${item.id}` : "guild.html",
+          meta: item.research_focus || "Guild"
+        }))
+      },
+      {
+        title: "Research",
+        items: researchPosts.filter((item) => `${item.title || ""} ${item.body || ""}`.toLowerCase().includes(query)).map((item) => ({
+          title: item.title,
+          href: "research.html",
+          meta: item.tags?.join(", ") || "Research Post"
+        }))
+      },
+      {
+        title: "Portfolio",
+        items: portfolios.filter((item) => `${item.title || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
+          title: item.title,
+          href: "profile.html#portfolio",
+          meta: item.visibility || "Portfolio Entry"
+        }))
+      },
+      {
+        title: "Studios",
+        items: studios.filter((item) => `${item.name || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
+          title: item.name,
+          href: "studios.html",
+          meta: item.category || "Studio"
+        }))
+      }
+    ];
+
+    let panel = document.getElementById("search-results-panel");
+    if (!panel) {
+      panel = document.createElement("section");
+      panel.id = "search-results-panel";
+      panel.className = "card search-results-panel";
+      document.querySelector(".page-stack")?.prepend(panel);
+    }
+
+    panel.innerHTML = `
+      <p class="section-label">Search Results</p>
+      <h2>Results for "${escapeHtml(query)}"</h2>
+      <div class="card-grid">
+        ${groups
+          .map(
+            (group) => `
+              <article class="card">
+                <p class="section-label">${escapeHtml(group.title)}</p>
+                <div class="record-list">
+                  ${
+                    group.items.length
+                      ? group.items
+                          .slice(0, 6)
+                          .map(
+                            (item) => `
+                              <article class="record-card">
+                                <h3>${escapeHtml(item.title)}</h3>
+                                <p class="field-note">${escapeHtml(item.meta)}</p>
+                                <footer><a class="text-link" href="${item.href}">Open</a></footer>
+                              </article>
+                            `
+                          )
+                          .join("")
+                      : emptyCard(`No ${group.title.toLowerCase()} results`, "No matching records for this query.")
+                  }
+                </div>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    `;
   });
 }
 
@@ -336,45 +455,318 @@ async function fetchAllModules() {
 }
 
 async function fetchPortfolioEntries() {
-  const { data, error } = await supabase
-    .from("portfolio_entries")
-    .select("*, highlights(id, approved_by, created_at)")
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data || []).map(mapPortfolio);
+  try {
+    const [{ data: entries, error: entriesError }, { data: highlights, error: highlightsError }] = await Promise.all([
+      supabase.from("portfolio_entries").select("*").order("created_at", { ascending: false }),
+      supabase.from("highlights").select("*")
+    ]);
+
+    if (entriesError) throw entriesError;
+    if (highlightsError && !isMissingRelationError(highlightsError)) throw highlightsError;
+
+    const highlightedIds = new Set((highlights || []).filter((item) => item.entry_type ? item.entry_type === "portfolio" : true).map((item) => item.entry_id));
+    return (entries || []).map((entry) => mapPortfolio({ ...entry, highlighted: highlightedIds.has(entry.id) }));
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("portfolio_entries/highlights"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchHighlightedEntries() {
-  const { data, error } = await supabase
-    .from("portfolio_entries")
-    .select("*, highlights!inner(id, approved_by, created_at)")
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data || []).map(mapPortfolio);
+  try {
+    const [{ data: highlights, error: highlightsError }, { data: entries, error: entriesError }] = await Promise.all([
+      supabase.from("highlights").select("*").order("created_at", { ascending: false }),
+      supabase.from("portfolio_entries").select("*").order("created_at", { ascending: false })
+    ]);
+    if (highlightsError) throw highlightsError;
+    if (entriesError) throw entriesError;
+
+    const entryMap = new Map((entries || []).map((entry) => [entry.id, entry]));
+    return (highlights || [])
+      .filter((item) => !item.entry_type || item.entry_type === "portfolio")
+      .map((item) => {
+        const entry = entryMap.get(item.entry_id);
+        return entry ? mapPortfolio({ ...entry, highlighted: true, highlighted_at: item.created_at }) : null;
+      })
+      .filter(Boolean);
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("highlights"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchNicheEntries() {
-  const { data, error } = await supabase.from("niche_entries").select("*").order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data || []).map(mapNiche);
+  try {
+    const { data, error } = await supabase.from("niche_entries").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data || []).map(mapNiche);
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("niche_entries"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchEnrollmentsForUser(userId) {
-  const { data, error } = await supabase.from("enrollments").select("*").eq("student_id", userId);
-  if (error) throw error;
-  return data || [];
+  try {
+    const { data, error } = await supabase.from("enrollments").select("*").eq("student_id", userId);
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("enrollments"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchCuratorCodes() {
-  const { data, error } = await supabase.from("curator_codes").select("*");
-  if (error) throw error;
-  return data || [];
+  try {
+    const { data, error } = await supabase.from("curator_codes").select("*");
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("curator_codes"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchSubjects() {
-  const { data, error } = await supabase.from("subjects").select("*").order("created_at", { ascending: true });
-  if (error) throw error;
-  return data || [];
+  try {
+    const { data, error } = await supabase.from("subjects").select("*").order("created_at", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("subjects"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchGuildRecords() {
+  try {
+    const { data, error } = await supabase.from("guilds").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("guilds"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchGuildMembers() {
+  try {
+    const { data, error } = await supabase.from("guild_members").select("*").order("created_at", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("guild_members"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchGuildOutputs() {
+  try {
+    const { data, error } = await supabase.from("guild_outputs").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("guild_outputs"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchResearchPosts() {
+  try {
+    const { data, error } = await supabase.from("research_posts").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data || []).map(mapResearchPost);
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("research_posts"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchStudios() {
+  try {
+    const { data, error } = await supabase.from("studios").select("*").order("created_at", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("studios"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchStudioRequests() {
+  try {
+    const { data, error } = await supabase.from("studio_requests").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("studio_requests"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchNeoscores() {
+  try {
+    const { data, error } = await supabase.from("neoscore").select("*");
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("neoscore"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchTokens() {
+  try {
+    const { data, error } = await supabase.from("tokens").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("tokens"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchTags() {
+  try {
+    const { data, error } = await supabase.from("tags").select("*").order("name", { ascending: true });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("tags"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchTagLinks() {
+  try {
+    const { data, error } = await supabase.from("tag_links").select("*");
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("tag_links"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+async function fetchQuotes() {
+  try {
+    const { data, error } = await supabase.from("quotes").select("*");
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("quotes"), error.message);
+      return [];
+    }
+    throw error;
+  }
+}
+
+function getEntityTags(entityType, entityId, tags, tagLinks) {
+  const ids = tagLinks.filter((link) => link.entity_type === entityType && link.entity_id === entityId).map((link) => link.tag_id);
+  const tagMap = new Map(tags.map((tag) => [tag.id, tag.name]));
+  return ids.map((id) => tagMap.get(id)).filter(Boolean);
+}
+
+function renderTagPills(tagNames = []) {
+  if (!tagNames.length) return "";
+  return `<div class="inline-actions">${tagNames.map((tag) => `<span class="pill">${escapeHtml(tag)}</span>`).join("")}</div>`;
+}
+
+function getRandomItem(items) {
+  if (!items.length) return null;
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function getNeoscoreForUser(neoscores, userId) {
+  return neoscores.find((entry) => entry.user_id === userId) || null;
+}
+
+function totalNeoscore(score) {
+  if (!score) return 0;
+  return Number(score.total_score || 0) ||
+    Number(score.knowledge_score || 0) +
+    Number(score.portfolio_score || 0) +
+    Number(score.guild_score || 0) +
+    Number(score.creative_score || 0) +
+    Number(score.praxis_score || 0);
+}
+
+function getUserTokenBalance(tokens, userId) {
+  return tokens.filter((entry) => entry.user_id === userId).reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+}
+
+function neoscoreSummary(score) {
+  const total = totalNeoscore(score);
+  return `
+    <div class="record-list">
+      <article class="record-card"><h3>Knowledge</h3><p>${Number(score?.knowledge_score || 0)} / 20</p></article>
+      <article class="record-card"><h3>Portfolio</h3><p>${Number(score?.portfolio_score || 0)} / 20</p></article>
+      <article class="record-card"><h3>Guild</h3><p>${Number(score?.guild_score || 0)} / 20</p></article>
+      <article class="record-card"><h3>Creative</h3><p>${Number(score?.creative_score || 0)} / 20</p></article>
+      <article class="record-card"><h3>Praxis</h3><p>${Number(score?.praxis_score || 0)} / 20</p></article>
+      <article class="record-card"><h3>Total</h3><p>${total} / 100</p></article>
+    </div>
+  `;
+}
+
+function computeTagFilterOptions(tags, tagLinks, entityType) {
+  const relevantIds = new Set(tagLinks.filter((link) => link.entity_type === entityType).map((link) => link.tag_id));
+  return tags.filter((tag) => relevantIds.has(tag.id));
+}
+
+function filterByTag(entityType, entityId, activeTag, tags, tagLinks) {
+  if (!activeTag) return true;
+  return getEntityTags(entityType, entityId, tags, tagLinks).includes(activeTag);
 }
 
 function portfolioCard(entry, viewer, usersById, options = {}) {
@@ -405,7 +797,9 @@ function portfolioCard(entry, viewer, usersById, options = {}) {
       </div>
       <h3>${escapeHtml(entry.description || "Portfolio Entry")}</h3>
       ${entry.link ? `<p><a class="text-link" href="${escapeHtml(entry.link)}" target="_blank" rel="noreferrer">Open work link</a></p>` : ""}
-      <p class="field-note">By ${escapeHtml(author?.email || "Unknown Seeker")}</p>
+      ${entry.visibility ? `<p class="field-note">Visibility: ${escapeHtml(entry.visibility)}</p>` : ""}
+      ${renderTagPills(options.tags || entry.tags || [])}
+      <p class="field-note">By ${escapeHtml(displayUserName(author))}</p>
       <footer>${actions.join("")}</footer>
     </article>
   `;
@@ -467,6 +861,17 @@ async function renderHomePage() {
   const roleSelect = document.getElementById("signup-role");
   const curatorCodeField = document.getElementById("curator-code-field");
   const forgotButton = document.getElementById("forgot-password-button");
+  const heroQuote = document.getElementById("hero-quote");
+
+  const quotes = await fetchQuotes().catch(() => []);
+  const randomQuote = getRandomItem(quotes);
+  if (heroQuote && randomQuote) {
+    heroQuote.innerHTML = `
+      <p class="section-label">${escapeHtml(randomQuote.theme || randomQuote.tradition || "Reflection")}</p>
+      <blockquote class="intro-quote">${escapeHtml(randomQuote.text)}</blockquote>
+      <p class="field-note">${escapeHtml(randomQuote.author || "Unknown")} · ${escapeHtml(randomQuote.tradition || "Tradition")}</p>
+    `;
+  }
 
   const toggleCuratorCode = () => curatorCodeField.classList.toggle("hidden", roleSelect.value !== "curator");
   roleSelect.addEventListener("change", toggleCuratorCode);
@@ -689,12 +1094,20 @@ async function initSeekerDashboard() {
   if (!currentUser) return;
 
   const root = document.getElementById("dashboard-root");
-  const [modules, entries, nicheEntries, enrollments, users] = await Promise.all([
+  const [modules, entries, nicheEntries, enrollments, users, subjects, guilds, guildMembers, neoscores, tokens, researchPosts, tags, tagLinks] = await Promise.all([
     fetchApprovedModules(),
     fetchPortfolioEntries(),
     fetchNicheEntries(),
     fetchEnrollmentsForUser(currentUser.id),
-    fetchUsers()
+    fetchUsers(),
+    fetchSubjects(),
+    fetchGuildRecords(),
+    fetchGuildMembers(),
+    fetchNeoscores(),
+    fetchTokens(),
+    fetchResearchPosts(),
+    fetchTags(),
+    fetchTagLinks()
   ]);
   const allUsers = ensureRealUserMap(users);
 
@@ -703,6 +1116,19 @@ async function initSeekerDashboard() {
   const enrolledIds = new Set(enrollments.map((entry) => entry.module_id));
   const enrolledModules = modules.filter((module) => enrolledIds.has(module.id));
   const usersById = new Map(allUsers.map((user) => [user.id, user]));
+  const joinedGuildIds = new Set(guildMembers.filter((member) => member.user_id === currentUser.id).map((member) => member.guild_id));
+  const joinedGuilds = guilds.filter((guild) => joinedGuildIds.has(guild.id));
+  const score = getNeoscoreForUser(neoscores, currentUser.id);
+  const tokenBalance = getUserTokenBalance(tokens, currentUser.id);
+  const recentActivity = [
+    ...ownEntries.map((entry) => ({ title: entry.title, type: "Portfolio", created_at: entry.created_at })),
+    ...ownNicheEntries.map((entry) => ({ title: entry.topic, type: "Note", created_at: entry.created_at })),
+    ...researchPosts.filter((post) => post.user_id === currentUser.id).map((post) => ({ title: post.title, type: "Research", created_at: post.created_at }))
+  ]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 6);
+  const recommendedSubjects = subjects.filter((subject) => !enrolledModules.some((module) => module.guild === subject.name)).slice(0, 4);
+  const recommendedGuilds = guilds.filter((guild) => !joinedGuildIds.has(guild.id)).slice(0, 4);
 
   root.innerHTML = `
     <section class="dashboard-shell">
@@ -724,8 +1150,20 @@ async function initSeekerDashboard() {
           <strong>${ownEntries.length}</strong>
         </article>
         <article class="stat-card">
-          <span class="section-label">Enrollments</span>
+          <span class="section-label">Subjects</span>
           <strong>${enrolledModules.length}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="section-label">Guilds</span>
+          <strong>${joinedGuilds.length}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="section-label">Tokens</span>
+          <strong>${tokenBalance}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="section-label">Neoscore</span>
+          <strong>${totalNeoscore(score)}</strong>
         </article>
       </section>
 
@@ -743,8 +1181,32 @@ async function initSeekerDashboard() {
               <textarea name="description" required></textarea>
             </label>
             <label>
+              Entry type
+              <select name="entryType">
+                <option value="project">Project</option>
+                <option value="essay">Essay</option>
+                <option value="article">Article</option>
+                <option value="design">Design</option>
+                <option value="research">Research</option>
+                <option value="documentation">Documentation</option>
+                <option value="reflection">Reflection</option>
+              </select>
+            </label>
+            <label>
               Link
               <input name="link" type="url" placeholder="https://example.com/work" />
+            </label>
+            <label>
+              Visibility
+              <select name="visibility">
+                <option value="private">Private</option>
+                <option value="arbiter-only">Arbiter Only</option>
+                <option value="public">Public</option>
+              </select>
+            </label>
+            <label>
+              Tags
+              <input name="tags" type="text" placeholder="design, philosophy, heritage" />
             </label>
             <button class="btn btn-primary" type="submit">Add portfolio entry</button>
           </form>
@@ -769,8 +1231,8 @@ async function initSeekerDashboard() {
         </article>
 
         <article class="card">
-          <p class="section-label">Guild Exploration</p>
-          <h2>Approved modules</h2>
+          <p class="section-label">Current Study</p>
+          <h2>Approved subjects and modules</h2>
           <div class="record-list">
             ${
               modules.length
@@ -783,12 +1245,50 @@ async function initSeekerDashboard() {
 
       <section class="card-grid">
         <article class="card">
+          <p class="section-label">Recent Activity</p>
+          <h2>What you have been building</h2>
+          <div class="record-list">
+            ${
+              recentActivity.length
+                ? recentActivity
+                    .map(
+                      (item) => `
+                        <article class="record-card">
+                          <p class="section-label">${escapeHtml(item.type)}</p>
+                          <h3>${escapeHtml(item.title)}</h3>
+                          <p class="field-note">${formatDate(item.created_at)}</p>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No recent activity", "Your learning record will grow here as you create portfolio work, notes, and research.")
+            }
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Neoscore</p>
+          <h2>Holistic profile</h2>
+          ${neoscoreSummary(score)}
+        </article>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
           <p class="section-label">Your portfolio</p>
           <h2>Chronological record</h2>
           <div class="record-list">
             ${
               ownEntries.length
-                ? ownEntries.map((entry) => portfolioCard(entry, currentUser, usersById, { allowEdit: true, allowDelete: true })).join("")
+                ? ownEntries
+                    .map((entry) =>
+                      portfolioCard(entry, currentUser, usersById, {
+                        allowEdit: true,
+                        allowDelete: true,
+                        tags: getEntityTags("portfolio", entry.id, tags, tagLinks)
+                      })
+                    )
+                    .join("")
                 : emptyCard("No portfolio entries", "Your portfolio begins once you submit your first article, project, or reflection.")
             }
           </div>
@@ -807,16 +1307,50 @@ async function initSeekerDashboard() {
         </article>
       </section>
 
-      <section class="card">
-        <p class="section-label">Enrolled modules</p>
-        <h2>Approved learning path</h2>
-        <div class="record-list">
-          ${
-            enrolledModules.length
-              ? enrolledModules.map((module) => moduleCard(module, usersById, { alreadyEnrolledIds: enrolledIds })).join("")
-              : emptyCard("No enrollments", "Once you enroll in an approved module, it appears here.")
-          }
-        </div>
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Recommended Subjects</p>
+          <h2>Where to deepen next</h2>
+          <div class="record-list">
+            ${
+              recommendedSubjects.length
+                ? recommendedSubjects
+                    .map(
+                      (subject) => `
+                        <article class="record-card">
+                          <h3>${escapeHtml(subject.name)}</h3>
+                          <p>${escapeHtml(subject.description || "No description yet.")}</p>
+                          <footer><a class="text-link" href="subjects.html?id=${subject.id}">Open subject</a></footer>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No subject recommendations", "As your study deepens, recommended subjects will appear here.")
+            }
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Recommended Guilds</p>
+          <h2>Research directions</h2>
+          <div class="record-list">
+            ${
+              recommendedGuilds.length
+                ? recommendedGuilds
+                    .map(
+                      (guild) => `
+                        <article class="record-card">
+                          <h3>${escapeHtml(guild.title || guild.name)}</h3>
+                          <p>${escapeHtml(guild.description || guild.research_focus || "No research focus yet.")}</p>
+                          <footer><a class="text-link" href="${guild.id ? `guild.html?id=${guild.id}` : "guild.html"}">Open guild</a></footer>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No guild recommendations", "Guild suggestions appear once guild records exist in the database.")
+            }
+          </div>
+        </article>
       </section>
     </section>
   `;
@@ -827,13 +1361,27 @@ async function initSeekerDashboard() {
     const title = form.get("title")?.toString().trim();
     const description = form.get("description")?.toString().trim();
     const link = form.get("link")?.toString().trim();
+    const entryType = form.get("entryType")?.toString().trim();
+    const visibility = form.get("visibility")?.toString().trim() || "private";
+    const rawTags = form
+      .get("tags")
+      ?.toString()
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter(Boolean) || [];
 
     if (!title || !description) {
       setMessage("portfolio-message", "Missing fields.", "error");
       return;
     }
 
-    const { error } = await supabase.from("portfolio_entries").insert({ user_id: currentUser.id, title, description, link: link || null });
+    const { error } = await supabase.from("portfolio_entries").insert({
+      user_id: currentUser.id,
+      title,
+      description: entryType ? `[${entryType}] ${description}` : description,
+      link: link || null,
+      visibility
+    });
     setMessage("portfolio-message", error ? error.message : "Portfolio entry saved.", error ? "error" : "success");
     if (!error) await initSeekerDashboard();
   });
@@ -1268,92 +1816,275 @@ async function initArbiterDashboard() {
 }
 
 async function initGuildPage() {
-  const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
+  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
   if (!currentUser) return;
 
   const root = document.getElementById("guild-root");
   const params = new URLSearchParams(window.location.search);
-  const selectedGuild = getGuildBySlug(params.get("guild") || guildCatalog[0].slug);
-  const [modules, users, enrollments] = await Promise.all([
+  const selectedGuildId = params.get("id");
+  const [modules, users, enrollments, guildRecords, guildMembers, guildOutputs, subjects, tags, tagLinks] = await Promise.all([
     fetchApprovedModules(),
     fetchUsers(),
-    currentUser.role === "seeker" ? fetchEnrollmentsForUser(currentUser.id) : Promise.resolve([])
+    currentUser.role === "seeker" ? fetchEnrollmentsForUser(currentUser.id) : Promise.resolve([]),
+    fetchGuildRecords(),
+    fetchGuildMembers(),
+    fetchGuildOutputs(),
+    fetchSubjects(),
+    fetchTags(),
+    fetchTagLinks()
   ]);
   const allUsers = ensureRealUserMap(users);
-
   const usersById = new Map(allUsers.map((user) => [user.id, user]));
-  const guildModules = modules.filter((module) => module.guild === selectedGuild.name);
   const enrolledIds = new Set(enrollments.map((entry) => entry.module_id));
-  const curatorIds = new Set(guildModules.map((module) => module.createdBy));
-  const curators = users.filter((user) => user.role === "curator" && user.verified && curatorIds.has(user.id));
+
+  const guildList = guildRecords.length
+    ? guildRecords
+    : guildCatalog.map((guild) => ({
+        id: guild.slug,
+        title: guild.name,
+        description: guild.description,
+        research_focus: guild.description,
+        status: "open"
+      }));
+  const selectedGuild = guildList.find((guild) => String(guild.id) === String(selectedGuildId)) || null;
+
+  if (!selectedGuild) {
+    root.innerHTML = `
+      <section class="guild-shell">
+        <header class="dashboard-header">
+          <div>
+            <p class="section-label">Guilds</p>
+            <h1>Research collectives</h1>
+          </div>
+          <p class="dashboard-meta">Guilds are collaborative inquiry environments for documentation, comparative study, experimentation, and serious questions pursued in company.</p>
+        </header>
+
+        <section class="card">
+          <p class="section-label">Create Guild</p>
+          <h2>Open a research pathway</h2>
+          ${
+            currentUser.role === "arbiter"
+              ? `<div class="page-note">Arbiters review guild quality and visibility rather than create new guilds directly.</div>`
+              : `
+                <form id="guild-create-form" class="form-stack">
+                  <label>Title<input name="title" type="text" required /></label>
+                  <label>Research focus<textarea name="research_focus" required></textarea></label>
+                  <label>Description<textarea name="description" required></textarea></label>
+                  <label>Tags<input name="tags" type="text" placeholder="ecology, heritage, design" /></label>
+                  <button class="btn btn-primary" type="submit">Create guild</button>
+                </form>
+              `
+          }
+          <p id="guild-message" class="status-text" aria-live="polite"></p>
+        </section>
+
+        <section class="guild-list">
+          ${guildList
+            .map((guild) => {
+              const tagNames = getEntityTags("guild", guild.id, tags, tagLinks);
+              const memberCount = guildMembers.filter((member) => member.guild_id === guild.id).length;
+              return `
+                <article class="card guild-card">
+                  <p class="section-label">${escapeHtml(guild.status || "open")}</p>
+                  <h2>${escapeHtml(guild.title || guild.name)}</h2>
+                  <p>${escapeHtml(guild.description || guild.research_focus || "No description yet.")}</p>
+                  ${renderTagPills(tagNames)}
+                  <p class="field-note">${memberCount} member${memberCount === 1 ? "" : "s"}</p>
+                  <footer><a class="text-link" href="guild.html?id=${guild.id}">Open guild</a></footer>
+                </article>
+              `;
+            })
+            .join("")}
+        </section>
+      </section>
+    `;
+
+    document.getElementById("guild-create-form")?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const title = form.get("title")?.toString().trim();
+      const researchFocus = form.get("research_focus")?.toString().trim();
+      const description = form.get("description")?.toString().trim();
+      if (!title || !researchFocus || !description) {
+        setMessage("guild-message", "Missing fields.", "error");
+        return;
+      }
+      const { error } = await supabase.from("guilds").insert({
+        title,
+        description,
+        research_focus: researchFocus,
+        created_by: currentUser.id,
+        status: "pending"
+      });
+      setMessage("guild-message", error ? error.message : "Guild submitted for review.", error ? "error" : "success");
+      if (!error) await initGuildPage();
+    });
+    return;
+  }
+
+  const guildModules = modules.filter((module) => module.guild === (selectedGuild.title || selectedGuild.name));
+  const selectedMembers = guildMembers.filter((member) => member.guild_id === selectedGuild.id);
+  const selectedOutputs = guildOutputs.filter((output) => output.guild_id === selectedGuild.id);
+  const isMember = selectedMembers.some((member) => member.user_id === currentUser.id);
+  const relatedSubjects = subjects.filter((subject) =>
+    `${selectedGuild.title || ""} ${selectedGuild.description || ""} ${selectedGuild.research_focus || ""}`
+      .toLowerCase()
+      .includes(String(subject.name || "").toLowerCase())
+  );
+  const guildTagNames = getEntityTags("guild", selectedGuild.id, tags, tagLinks);
 
   root.innerHTML = `
     <section class="guild-shell">
       <header class="dashboard-header">
         <div>
-          <p class="section-label">Guild Directory</p>
-          <h1>${escapeHtml(selectedGuild.name)}</h1>
+          <p class="section-label">Guild</p>
+          <h1>${escapeHtml(selectedGuild.title || selectedGuild.name)}</h1>
         </div>
-        <p class="dashboard-meta">${escapeHtml(selectedGuild.description)}</p>
+        <p class="dashboard-meta">${escapeHtml(selectedGuild.research_focus || selectedGuild.description || "No research focus yet.")}</p>
       </header>
 
-      <section class="guild-list">
-        ${guildCatalog
-          .map(
-            (guild) => `
-              <article class="record-card guild-card">
-                <p class="section-label">${escapeHtml(guild.name)}</p>
-                <p>${escapeHtml(guild.description)}</p>
-                <footer>
-                  <a class="text-link" href="guild.html?guild=${guild.slug}">Open guild</a>
-                </footer>
-              </article>
-            `
-          )
-          .join("")}
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Research Focus</p>
+          <h2>Purpose and approach</h2>
+          <p>${escapeHtml(selectedGuild.description || "No description yet.")}</p>
+          ${renderTagPills(guildTagNames)}
+          <div class="inline-actions">
+            ${currentUser.role !== "arbiter" && !isMember && selectedGuild.id ? `<button class="btn btn-primary" id="join-guild-button" type="button">Join Guild</button>` : ""}
+            ${currentUser.role !== "arbiter" && isMember && selectedGuild.id ? `<button class="btn subtle-button" id="leave-guild-button" type="button">Leave Guild</button>` : ""}
+            <a class="btn subtle-button" href="guild.html">All guilds</a>
+          </div>
+          <p id="guild-membership-message" class="status-text" aria-live="polite"></p>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Related Subjects</p>
+          <h2>Connected study domains</h2>
+          <div class="record-list">
+            ${
+              relatedSubjects.length
+                ? relatedSubjects
+                    .map(
+                      (subject) => `
+                        <article class="record-card">
+                          <h3>${escapeHtml(subject.name)}</h3>
+                          <p>${escapeHtml(subject.description || "No description yet.")}</p>
+                          <footer><a class="text-link" href="subjects.html?id=${subject.id}">Open subject</a></footer>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No linked subjects yet", "Subject connections will appear here as the academic map deepens.")
+            }
+          </div>
+        </article>
       </section>
 
-      <section class="card">
-        <p class="section-label">Approved Modules</p>
-        <h2>Visible to Seekers</h2>
-        <div class="record-list">
-          ${
-            guildModules.length
-              ? guildModules.map((module) => moduleCard(module, usersById, { allowEnroll: currentUser.role === "seeker", alreadyEnrolledIds: enrolledIds })).join("")
-              : emptyCard("No approved modules", "Guild pages display modules only after Arbiter approval.")
-          }
-        </div>
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Members</p>
+          <h2>Research community</h2>
+          <div class="record-list">
+            ${
+              selectedMembers.length
+                ? selectedMembers
+                    .map(
+                      (member) => `
+                        <article class="record-card">
+                          <h3>${escapeHtml(displayUserName(usersById.get(member.user_id)))}</h3>
+                          <p class="field-note">${escapeHtml(member.role || "member")}</p>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No members yet", "The first collaborators will appear here.")
+            }
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Guild Outputs</p>
+          <h2>Research record</h2>
+          <div class="record-list">
+            ${
+              selectedOutputs.length
+                ? selectedOutputs
+                    .map(
+                      (output) => `
+                        <article class="record-card">
+                          <div class="card-header-row">
+                            <h3>${escapeHtml(output.title)}</h3>
+                            ${statusPill(output.status || output.review_status || "pending")}
+                          </div>
+                          <p>${escapeHtml(output.description || "No description yet.")}</p>
+                          ${(output.submission_link || output.link) ? `<p><a class="text-link" href="${escapeHtml(output.submission_link || output.link)}" target="_blank" rel="noreferrer">Open submission</a></p>` : ""}
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No outputs yet", "Research outputs and documentation will appear here once submitted.")
+            }
+          </div>
+        </article>
       </section>
 
-      <section id="nodes-directory" class="card">
-        <p class="section-label">Approved Nodes</p>
-        <h2>Curator directory</h2>
-        <div class="record-list">
-          ${
-            curators.length
-              ? curators
-                  .map(
-                    (user) => `
-                      <article class="record-card">
-                        <div class="card-header-row">
-                          <h3>${escapeHtml(user.email || user.id)}</h3>
-                          ${statusPill("approved")}
-                        </div>
-                        <p class="field-note">Approved curator aligned with ${escapeHtml(selectedGuild.name)}</p>
-                      </article>
-                    `
-                  )
-                  .join("")
-              : emptyCard("No approved Curators", "Approved Curators aligned to this guild will appear here.")
-          }
-        </div>
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Module Links</p>
+          <h2>Structured learning inside this guild</h2>
+          <div class="record-list">
+            ${
+              guildModules.length
+                ? guildModules.map((module) => moduleCard(module, usersById, { allowEnroll: currentUser.role === "seeker", alreadyEnrolledIds: enrolledIds })).join("")
+                : emptyCard("No approved modules", "Guild pages display modules only after Arbiter approval.")
+            }
+          </div>
+        </article>
+
+        <article id="nodes-directory" class="card">
+          <p class="section-label">Curator Insight</p>
+          <h2>Approved guides</h2>
+          <div class="record-list">
+            ${
+              users.filter((user) => user.role === "curator" && user.verified).length
+                ? users
+                    .filter((user) => user.role === "curator" && user.verified)
+                    .map(
+                      (user) => `
+                        <article class="record-card">
+                          <h3>${escapeHtml(displayUserName(user))}</h3>
+                          <p class="field-note">Approved curator within the learning network.</p>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No approved Curators", "Approved Curators aligned to this guild will appear here.")
+            }
+          </div>
+        </article>
       </section>
     </section>
   `;
 
+  document.getElementById("join-guild-button")?.addEventListener("click", async () => {
+    const { error } = await supabase.from("guild_members").insert({
+      guild_id: selectedGuild.id,
+      user_id: currentUser.id,
+      role: currentUser.role === "curator" ? "mentor" : "member"
+    });
+    setMessage("guild-membership-message", error ? error.message : "Guild joined.", error ? "error" : "success");
+    if (!error) await initGuildPage();
+  });
+
+  document.getElementById("leave-guild-button")?.addEventListener("click", async () => {
+    const { error } = await supabase.from("guild_members").delete().eq("guild_id", selectedGuild.id).eq("user_id", currentUser.id);
+    setMessage("guild-membership-message", error ? error.message : "Guild left.", error ? "error" : "success");
+    if (!error) await initGuildPage();
+  });
+
   root.querySelectorAll(".enroll-button").forEach((button) => {
     button.addEventListener("click", async () => {
-      if (!["seeker", "operator"].includes(currentUser.role)) return;
+      if (currentUser.role !== "seeker") return;
       const moduleId = button.dataset.moduleId;
       const { data: existing } = await supabase
         .from("enrollments")
@@ -1474,10 +2205,16 @@ async function initSubjectsPage() {
 
   const root = document.getElementById("subjects-root");
   if (!root) return;
+  const params = new URLSearchParams(window.location.search);
+  const subjectId = params.get("id");
 
-  const [subjects, modules] = await Promise.all([
+  const [subjects, modules, users, guilds, tags, tagLinks] = await Promise.all([
     fetchSubjects().catch(() => []),
-    fetchApprovedModules()
+    fetchApprovedModules(),
+    fetchUsers(),
+    fetchGuildRecords(),
+    fetchTags(),
+    fetchTagLinks()
   ]);
 
   const subjectList = subjects.length
@@ -1488,6 +2225,126 @@ async function initSubjectsPage() {
         description: guild.description,
         category: "Subject"
       }));
+  const subject = subjectList.find((item) => String(item.id) === String(subjectId)) || null;
+  const usersById = new Map(users.map((user) => [user.id, user]));
+
+  if (subject) {
+    const relatedModules = modules.filter((module) => module.guild === subject.name);
+    const relatedGuilds = guilds.filter((guild) => `${guild.title || ""} ${guild.description || ""}`.toLowerCase().includes(String(subject.name || "").toLowerCase()));
+    const subjectTags = getEntityTags("subject", subject.id, tags, tagLinks);
+    const curatorIds = [...new Set(relatedModules.map((module) => module.createdBy))];
+    const curators = curatorIds.map((id) => usersById.get(id)).filter(Boolean);
+
+    root.innerHTML = `
+      <section class="dashboard-shell">
+        <header class="dashboard-header">
+          <div>
+            <p class="section-label">${escapeHtml(subject.category || "Subject")}</p>
+            <h1>${escapeHtml(subject.name)}</h1>
+          </div>
+          <p class="dashboard-meta">${escapeHtml(subject.description || "No description yet.")}</p>
+        </header>
+
+        <section class="card-grid">
+          <article class="card">
+            <p class="section-label">Learning Approach</p>
+            <h2>How this subject is approached</h2>
+            <p>${escapeHtml(subject.learning_approach || "Through guided reading, portfolio evidence, and disciplined subject familiarity.")}</p>
+            ${renderTagPills(subjectTags)}
+            <div class="inline-actions">
+              ${currentUser.role === "seeker" ? `<button class="btn btn-primary" id="subject-interest-button" type="button">Tag Interest</button>` : ""}
+              <a class="btn subtle-button" href="subjects.html">Back to subjects</a>
+            </div>
+            <p id="subject-message" class="status-text" aria-live="polite"></p>
+          </article>
+
+          <article class="card">
+            <p class="section-label">Expected Outcomes</p>
+            <h2>What learners produce</h2>
+            <p>${escapeHtml(subject.expected_outcomes || "Essays, documentation, reflective work, and clear evidence of understanding rather than only exam performance.")}</p>
+          </article>
+        </section>
+
+        <section class="card-grid">
+          <article class="card">
+            <p class="section-label">Related Guilds</p>
+            <h2>Research directions</h2>
+            <div class="record-list">
+              ${
+                relatedGuilds.length
+                  ? relatedGuilds
+                      .map(
+                        (guild) => `
+                          <article class="record-card">
+                            <h3>${escapeHtml(guild.title || guild.name)}</h3>
+                            <p>${escapeHtml(guild.description || guild.research_focus || "No research focus yet.")}</p>
+                            <footer><a class="text-link" href="${guild.id ? `guild.html?id=${guild.id}` : "guild.html"}">Open guild</a></footer>
+                          </article>
+                        `
+                      )
+                      .join("")
+                  : emptyCard("No related guilds yet", "Guild suggestions become clearer as research records are added.")
+              }
+            </div>
+          </article>
+
+          <article class="card">
+            <p class="section-label">Curator Profiles</p>
+            <h2>Who is guiding this area</h2>
+            <div class="record-list">
+              ${
+                curators.length
+                  ? curators
+                      .map(
+                        (user) => `
+                          <article class="record-card">
+                            <h3>${escapeHtml(displayUserName(user))}</h3>
+                            <p class="field-note">Curator aligned with ${escapeHtml(subject.name)}</p>
+                          </article>
+                        `
+                      )
+                      .join("")
+                  : emptyCard("No curators yet", "Curator profiles appear once approved modules exist in this subject.")
+              }
+            </div>
+          </article>
+        </section>
+
+        <section class="card">
+          <p class="section-label">Available Modules</p>
+          <h2>Structured study path</h2>
+          <div class="record-list">
+            ${
+              relatedModules.length
+                ? relatedModules.map((module) => moduleCard(module, usersById, { allowEnroll: currentUser.role === "seeker" })).join("")
+                : emptyCard("No approved modules", "This subject has not yet received approved modules.")
+            }
+          </div>
+        </section>
+      </section>
+    `;
+
+    document.getElementById("subject-interest-button")?.addEventListener("click", async () => {
+      const { error } = await supabase.from("niche_entries").insert({
+        user_id: currentUser.id,
+        interest: subject.name,
+        notes: `Interested in ${subject.name}`
+      });
+      setMessage("subject-message", error ? error.message : "Subject interest saved to your notes.", error ? "error" : "success");
+    });
+
+    root.querySelectorAll(".enroll-button").forEach((button) => {
+      button.addEventListener("click", async () => {
+        const moduleId = button.dataset.moduleId;
+        const { data: existing } = await supabase.from("enrollments").select("id").eq("student_id", currentUser.id).eq("module_id", moduleId).maybeSingle();
+        if (!existing) {
+          await supabase.from("enrollments").insert({ student_id: currentUser.id, module_id: moduleId });
+        }
+        await initSubjectsPage();
+      });
+    });
+    return;
+  }
 
   root.innerHTML = `
     <section class="dashboard-shell">
@@ -1509,6 +2366,8 @@ async function initSubjectsPage() {
                 <h2>${escapeHtml(subject.name)}</h2>
                 <p>${escapeHtml(subject.description || "No description yet.")}</p>
                 <p class="field-note">${subjectModules.length} approved module${subjectModules.length === 1 ? "" : "s"} available</p>
+                ${renderTagPills(getEntityTags("subject", subject.id, tags, tagLinks))}
+                <footer><a class="text-link" href="subjects.html?id=${subject.id}">Open subject</a></footer>
               </article>
             `;
           })
