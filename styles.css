@@ -178,6 +178,20 @@ textarea:focus {
   justify-content: flex-end;
 }
 
+.version-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.52rem 0.9rem;
+  border: 1px solid rgba(232, 220, 203, 0.18);
+  border-radius: 999px;
+  background: rgba(245, 239, 230, 0.05);
+  color: var(--accent);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .card-header-row {
   display: flex;
   align-items: start;
@@ -516,6 +530,11 @@ textarea:focus {
   gap: 18px;
 }
 
+.prose-panel h1 {
+  font-size: clamp(2.6rem, 5vw, 4.6rem);
+  line-height: 0.95;
+}
+
 .page-note {
   padding: 16px 18px;
   border-left: 2px solid rgba(232, 220, 203, 0.24);
@@ -714,6 +733,10 @@ textarea:focus {
     flex-direction: column;
     align-items: stretch;
     border-radius: 28px;
+  }
+
+  .version-badge {
+    justify-content: center;
   }
 
   .brand-mark {

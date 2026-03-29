@@ -1,92 +1,73 @@
 # Neofolk Atlas
 
-Neofolk Atlas is a local-first portfolio-based education platform where Seekers build intellectual records, Curators propose learning modules, and Arbiters approve academic quality.
+Version: `v0.6.2 Alpha`
 
-## Roles
+Neofolk Atlas is a Supabase-backed academic web application centered on structured study, portfolio evidence, and reviewed intellectual work.
 
-- `Seeker`: approved by default, may edit their profile, create portfolio entries, log niche entries, and enroll in approved modules.
-- `Curator`: signs up with a single-use Curator Code, begins with `pending` status, may edit node identity, and may submit modules for review once approved.
-- `Arbiter`: seeded manually in code, read-only over user-created learning content except for approval controls and portfolio highlighting.
+## Core Structure
 
-Permissions are enforced in [app.js](/Users/yashveervatsgaurav/Desktop/Neofolk/app.js). Seekers cannot create modules, Curators cannot approve themselves, and Arbiters cannot create modules or portfolios.
+- `Seeker`: learner identity for study, portfolio building, niche tracking, and enrollment
+- `Curator`: guide identity for approved module creation
+- `Arbiter`: reviewer identity for curator approval, module review, and discovery curation
+- `Operator`: top-level universal access role for full-system oversight
 
-## Status Model
+## Academic Model
 
-Users and modules use:
+- `Subjects`: structured learning domains
+- `Guilds`: academic pathways and directories for module-aligned learning
+- `Portfolio`: documented learner work
+- `Discovery`: highlighted scholarly work selected through review
 
-- `pending`
-- `approved`
-- `denied`
+## Current Pages
 
-Rules:
+- [index.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/index.html)
+- [seeker-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/seeker-dashboard.html)
+- [curator-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/curator-dashboard.html)
+- [arbiter-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/arbiter-dashboard.html)
+- [operator-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/operator-dashboard.html)
+- [subjects.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/subjects.html)
+- [guild.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/guild.html)
+- [module.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/module.html)
+- [discovery.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/discovery.html)
+- [vision.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/vision.html)
+- [reset-password.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/reset-password.html)
 
-- Seekers are created as `approved`
-- Curators are created as `pending`
-- Modules are created as `pending`
-- Arbiters may approve or deny Curators and modules
-- Denials store a reason visible to the affected Curator or on the denied module record
+## Backend Expectations
 
-## Curator Code System
+Authentication uses Supabase Auth.
 
-Curator codes are stored as objects in local storage under `neofolk.curatorCodes` and are single-use.
+The app currently expects these application tables to exist in Supabase:
 
-Seeded testing codes:
+- `users`
+- `curator_codes`
+- `modules`
+- `enrollments`
+- `portfolio_entries`
+- `niche_entries`
+- `highlights`
+- `verification_reviews`
+- `subjects`
 
-- `NF-DEL-1001`
-- `NF-MUM-1002`
-- `NF-BLR-1003`
+The current code still works best when:
 
-When a Curator account is created with a valid unused code, the code is marked `used: true` and assigned to that account.
+- `users.id` matches the Supabase Auth user id
+- `users` includes at least `email`, `role`, `verified`, and `created_at`
+- `modules.created_by` points to `users.id`
 
-## Portfolio Philosophy
+## Operator Access
 
-Portfolio entries are the platform's core evidence layer. Each entry includes:
+To grant operator access:
 
-- `id`
-- `title`
-- `description`
-- `guild`
-- `reflection`
-- `createdBy`
-- `highlighted`
-- `createdAt`
+1. Create a real Supabase Auth user.
+2. In `public.users`, set that row’s `role` to `operator`.
+3. Set `verified` to `true`.
+4. Log in normally through the app.
 
-Seekers see only their own entries. Arbiters can mark selected entries as highlighted, and the discovery page shows only highlighted work.
+## Major Update Notes In This Version
 
-## Data Collections
-
-The app stores these collections in local storage:
-
-- `neofolk.users`
-- `neofolk.curatorCodes`
-- `neofolk.modules`
-- `neofolk.portfolioEntries`
-- `neofolk.nicheEntries`
-- `neofolk.enrollments`
-- `neofolk.verificationReviews`
-
-## Pages
-
-- [index.html](/Users/yashveervatsgaurav/Desktop/Neofolk/index.html): signup, login, and system overview
-- [seeker-dashboard.html](/Users/yashveervatsgaurav/Desktop/Neofolk/seeker-dashboard.html): Seeker workspace
-- [curator-dashboard.html](/Users/yashveervatsgaurav/Desktop/Neofolk/curator-dashboard.html): Curator workspace
-- [arbiter-dashboard.html](/Users/yashveervatsgaurav/Desktop/Neofolk/arbiter-dashboard.html): Arbiter review controls
-- [guild.html](/Users/yashveervatsgaurav/Desktop/Neofolk/guild.html): approved guild modules and approved nodes
-- [module.html](/Users/yashveervatsgaurav/Desktop/Neofolk/module.html): module detail with visibility guards
-- [discovery.html](/Users/yashveervatsgaurav/Desktop/Neofolk/discovery.html): highlighted academic feed
-
-## Arbiter Login
-
-- email: `arbiter@neofolk.atlas`
-- password: `Atlas1842`
-
-## Run
-
-Open [index.html](/Users/yashveervatsgaurav/Desktop/Neofolk/index.html) in a browser and test the full approval flow:
-
-1. Create a Curator with a valid single-use Curator Code.
-2. Log in as the Arbiter and approve the Curator.
-3. Log in as the Curator and create a module.
-4. Log in as the Arbiter and approve the module.
-5. Create a Seeker, enroll in the approved module, and publish portfolio work.
-6. Return as the Arbiter and highlight selected portfolio entries for discovery.
+- all page shells now load `app.js` correctly as an ES module
+- missing pages referenced by navigation were added
+- the public demo access block was removed from the homepage
+- headers now consistently show `v0.6.2 Alpha`
+- homepage copy and README were aligned with the current Supabase-based app
+- operator routing and navigation were cleaned up so the role behaves like a real access tier
