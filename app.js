@@ -1279,7 +1279,7 @@ async function initArbiterDashboard() {
 }
 
 async function initGuildPage() {
-  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
   if (!currentUser) return;
 
   const root = document.getElementById("guild-root");
@@ -1364,8 +1364,7 @@ async function initGuildPage() {
 
   root.querySelectorAll(".enroll-button").forEach((button) => {
     button.addEventListener("click", async () => {
-      if (currentUser.role !== "seeker") return;
-      if (currentUser.isDemo) return;
+      if (!["seeker", "operator"].includes(currentUser.role)) return;
       const moduleId = button.dataset.moduleId;
       const { data: existing } = await supabase
         .from("enrollments")
@@ -1383,7 +1382,7 @@ async function initGuildPage() {
 }
 
 async function initModulePage() {
-  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
   if (!currentUser) return;
 
   const root = document.getElementById("module-root");
@@ -1402,6 +1401,7 @@ async function initModulePage() {
   const owner = allUsers.find((user) => user.id === module.createdBy);
   const canView =
     currentUser.role === "arbiter" ||
+    isOperator(currentUser) ||
     (currentUser.role === "curator" && currentUser.id === module.createdBy) ||
     (currentUser.role === "seeker" && module.status === "approved" && owner?.verified);
 
@@ -1420,7 +1420,7 @@ async function initModulePage() {
           <h1>${escapeHtml(module.title)}</h1>
         </div>
         <div class="dashboard-meta">
-          <p>Created by ${escapeHtml(owner?.email || "Unknown Curator")}</p>
+          <p>Created by ${escapeHtml(displayUserName(owner))}</p>
           ${statusPill(module.status)}
         </div>
       </header>
