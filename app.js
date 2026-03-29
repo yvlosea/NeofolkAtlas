@@ -467,7 +467,6 @@ async function renderHomePage() {
   const roleSelect = document.getElementById("signup-role");
   const curatorCodeField = document.getElementById("curator-code-field");
   const forgotButton = document.getElementById("forgot-password-button");
-  const demoButtons = document.querySelectorAll(".demo-login-button");
 
   const toggleCuratorCode = () => curatorCodeField.classList.toggle("hidden", roleSelect.value !== "curator");
   roleSelect.addEventListener("change", toggleCuratorCode);
@@ -615,16 +614,6 @@ async function renderHomePage() {
     });
   }
 
-  demoButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const profile = setDemoUser(button.dataset.demoRole);
-      if (!profile) {
-        setMessage("demo-message", "Could not start demo profile.", "error");
-        return;
-      }
-      window.location.href = getDashboardPath(profile.role);
-    });
-  });
 }
 
 async function initResetPasswordPage() {
@@ -1447,7 +1436,7 @@ async function initModulePage() {
 }
 
 async function initDiscoveryPage() {
-  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
   if (!currentUser) return;
 
   const root = document.getElementById("discovery-root");
@@ -1479,17 +1468,159 @@ async function initDiscoveryPage() {
   `;
 }
 
+async function initSubjectsPage() {
+  const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
+  if (!currentUser) return;
+
+  const root = document.getElementById("subjects-root");
+  if (!root) return;
+
+  const [subjects, modules] = await Promise.all([
+    fetchSubjects().catch(() => []),
+    fetchApprovedModules()
+  ]);
+
+  const subjectList = subjects.length
+    ? subjects
+    : guildCatalog.map((guild) => ({
+        id: guild.slug,
+        name: guild.name,
+        description: guild.description,
+        category: "Subject"
+      }));
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Subjects</p>
+          <h1>Experiential domains</h1>
+        </div>
+        <p class="dashboard-meta">Subjects organize structured study. Guilds remain the collaborative inquiry layer of the Atlas.</p>
+      </header>
+
+      <section class="guild-list">
+        ${subjectList
+          .map((subject) => {
+            const subjectModules = modules.filter((module) => module.guild === subject.name);
+            return `
+              <article class="card guild-card">
+                <p class="section-label">${escapeHtml(subject.category || "Subject")}</p>
+                <h2>${escapeHtml(subject.name)}</h2>
+                <p>${escapeHtml(subject.description || "No description yet.")}</p>
+                <p class="field-note">${subjectModules.length} approved module${subjectModules.length === 1 ? "" : "s"} available</p>
+              </article>
+            `;
+          })
+          .join("")}
+      </section>
+    </section>
+  `;
+}
+
+async function initOperatorDashboard() {
+  const currentUser = await requireRole([operatorRole]);
+  if (!currentUser || !isOperator(currentUser)) return;
+
+  const root = document.getElementById("operator-root");
+  if (!root) return;
+
+  const [users, modules, portfolioEntries] = await Promise.all([
+    fetchUsers(),
+    fetchAllModules(),
+    fetchPortfolioEntries()
+  ]);
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Operator Console</p>
+          <h1>Universal access</h1>
+        </div>
+        <p class="dashboard-meta">The operator surface sits above standard review roles and provides a clean system overview across people, modules, portfolios, and navigation paths.</p>
+      </header>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <span class="section-label">Users</span>
+          <strong>${users.length}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="section-label">Modules</span>
+          <strong>${modules.length}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="section-label">Portfolio Entries</span>
+          <strong>${portfolioEntries.length}</strong>
+        </article>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Role Surfaces</p>
+          <h2>Enter any operational view</h2>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="seeker-dashboard.html">Seeker</a>
+            <a class="btn" href="curator-dashboard.html">Curator</a>
+            <a class="btn" href="arbiter-dashboard.html">Arbiter</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Structure</p>
+          <h2>Navigate the system</h2>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="subjects.html">Subjects</a>
+            <a class="btn" href="guild.html">Guilds</a>
+            <a class="btn" href="vision.html">Vision</a>
+            <a class="btn" href="discovery.html">Discovery</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <p class="section-label">Recent Accounts</p>
+        <h2>Current users in the system</h2>
+        <div class="record-list">
+          ${
+            users.length
+              ? users
+                  .slice(0, 10)
+                  .map(
+                    (user) => `
+                      <article class="record-card">
+                        <div class="card-header-row">
+                          <h3>${escapeHtml(displayUserName(user))}</h3>
+                          ${statusPill(user.role)}
+                        </div>
+                        <p class="field-note">${user.verified ? "Verified" : "Pending review"}</p>
+                      </article>
+                    `
+                  )
+                  .join("")
+              : emptyCard("No users yet", "Accounts created through Supabase Auth will appear here once the profile row is inserted.")
+          }
+        </div>
+      </section>
+    </section>
+  `;
+}
+
 async function init() {
   try {
     const currentUser = await getCurrentUserProfile();
+    renderVersionBadges();
     renderNav(currentUser);
     renderReflectionOverlay();
 
     const page = getCurrentPage();
     if (page === "home") await renderHomePage();
+    if (page === "subjects") await initSubjectsPage();
     if (page === "seeker-dashboard") await initSeekerDashboard();
     if (page === "curator-dashboard") await initCuratorDashboard();
     if (page === "arbiter-dashboard") await initArbiterDashboard();
+    if (page === "operator-dashboard") await initOperatorDashboard();
     if (page === "guild") await initGuildPage();
     if (page === "module") await initModulePage();
     if (page === "discovery") await initDiscoveryPage();
@@ -1498,9 +1629,12 @@ async function init() {
     console.error(error);
     const root =
       document.getElementById("dashboard-root") ||
+      document.getElementById("subjects-root") ||
+      document.getElementById("operator-root") ||
       document.getElementById("guild-root") ||
       document.getElementById("module-root") ||
-      document.getElementById("discovery-root");
+      document.getElementById("discovery-root") ||
+      document.getElementById("reset-root");
 
     if (root) {
       root.innerHTML = emptyCard("Connection error", error.message || "Supabase could not load the application data.");

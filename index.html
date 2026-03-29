@@ -22,6 +22,7 @@
             <strong>Learning as Identity</strong>
           </span>
         </a>
+        <span class="version-badge">v0.6.2 Alpha</span>
         <nav id="app-nav" class="site-nav" aria-label="Primary"></nav>
       </header>
 
@@ -31,8 +32,8 @@
             <p class="section-label">Dark Academia Network</p>
             <h1>Build an intellectual record through guilds, portfolios, and guided study.</h1>
             <p class="lede">
-              Neofolk Atlas is a local-first MVP for a decentralized education network. Every account begins empty and
-              becomes meaningful only through the work its user creates.
+              Neofolk Atlas is a Supabase-backed academic alpha built around subjects, guilds, portfolios, and careful review.
+              Every account begins quietly and becomes meaningful through recorded work, disciplined study, and intellectual output.
             </p>
             <div class="hero-grid">
               <div class="archive-card">
@@ -56,10 +57,6 @@
                 <p class="section-label">Sign Up</p>
                 <h2>Create an account</h2>
                 <form id="signup-form" class="form-stack">
-                  <label>
-                    Name
-                    <input id="signup-name" name="name" type="text" autocomplete="name" required />
-                  </label>
                   <label>
                     Email
                     <input id="signup-email" name="email" type="email" autocomplete="email" required />
@@ -102,16 +99,6 @@
                 <p id="login-message" class="status-text" aria-live="polite"></p>
               </section>
             </div>
-            <div class="form-stack" style="margin-top: 20px;">
-              <p class="section-label">Demo Access</p>
-              <h2>Preview each role instantly</h2>
-              <div class="inline-actions">
-                <button class="btn subtle-button demo-login-button" type="button" data-demo-role="seeker">Demo Seeker</button>
-                <button class="btn subtle-button demo-login-button" type="button" data-demo-role="curator">Demo Curator</button>
-                <button class="btn subtle-button demo-login-button" type="button" data-demo-role="arbiter">Demo Arbiter</button>
-              </div>
-              <p id="demo-message" class="status-text" aria-live="polite"></p>
-            </div>
           </article>
         </section>
 
@@ -119,21 +106,21 @@
           <p class="section-label">System Philosophy</p>
           <h2>Portfolio-centric, role-guarded, and intentionally quiet until real work appears.</h2>
           <p>
-            Guilds define learning domains. Curators create modules. Seekers build portfolios and niche folders. Arbiters
-            review platform activity without editing it. No dashboard contains seeded profiles, modules, or portfolio work.
+            Subjects define structured study. Guilds define research communities. Curators create modules, Seekers build portfolios and niche folders,
+            Arbiters review scholarly progress, and Operators retain universal system access.
           </p>
           <div class="three-column">
             <article class="soft-card">
-              <h3>Guilds</h3>
-              <p>Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, and Bioepisteme.</p>
+              <h3>Subjects</h3>
+              <p>Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, and related study domains.</p>
             </article>
             <article class="soft-card">
               <h3>Verification</h3>
-              <p>Curator permissions require a valid Curator Code. Arbiter authority is manually approved in code only.</p>
+              <p>Curator permissions require a valid Curator Code, and Arbiter review determines which modules and scholarly work become visible.</p>
             </article>
             <article class="soft-card">
               <h3>Storage</h3>
-              <p>Users, modules, portfolio entries, niche entries, and enrollments are saved in local storage for this MVP.</p>
+              <p>Authentication and learning records are loaded from Supabase so the platform reflects real accounts, real modules, and real portfolio work.</p>
             </article>
           </div>
         </section>
