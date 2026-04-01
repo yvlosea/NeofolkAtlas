@@ -54,11 +54,101 @@ const reflectionDeck = [
 ];
 
 const uiKeys = {
-  reflectionIndex: "neofolk.reflectionIndex"
+  reflectionIndex: "neofolk.reflectionIndex",
+  preferredLanguage: "neofolk.preferredLanguage",
+  userLocation: "neofolk.userLocation"
 };
 
 const appVersion = "v0.6.2 Alpha";
 const operatorRole = "operator";
+const defaultUiLanguage = "en";
+
+const indianLanguageOptions = [
+  {
+    code: "en",
+    label: "English",
+    shortLabel: "English",
+    serif: '"Cormorant Garamond", Georgia, serif',
+    sans: '"Manrope", Arial, sans-serif'
+  },
+  {
+    code: "hi",
+    label: "हिन्दी",
+    shortLabel: "Hindi",
+    serif: '"Noto Serif Devanagari", Georgia, serif',
+    sans: '"Noto Sans Devanagari", system-ui, sans-serif'
+  },
+  {
+    code: "bn",
+    label: "বাংলা",
+    shortLabel: "Bengali",
+    serif: '"Noto Serif Bengali", Georgia, serif',
+    sans: '"Noto Sans Bengali", system-ui, sans-serif'
+  },
+  {
+    code: "mr",
+    label: "मराठी",
+    shortLabel: "Marathi",
+    serif: '"Noto Serif Devanagari", Georgia, serif',
+    sans: '"Noto Sans Devanagari", system-ui, sans-serif'
+  },
+  {
+    code: "ta",
+    label: "தமிழ்",
+    shortLabel: "Tamil",
+    serif: '"Noto Serif Tamil", Georgia, serif',
+    sans: '"Noto Sans Tamil", system-ui, sans-serif'
+  },
+  {
+    code: "te",
+    label: "తెలుగు",
+    shortLabel: "Telugu",
+    serif: '"Noto Serif Telugu", Georgia, serif',
+    sans: '"Noto Sans Telugu", system-ui, sans-serif'
+  },
+  {
+    code: "kn",
+    label: "ಕನ್ನಡ",
+    shortLabel: "Kannada",
+    serif: '"Noto Serif Kannada", Georgia, serif',
+    sans: '"Noto Sans Kannada", system-ui, sans-serif'
+  },
+  {
+    code: "ml",
+    label: "മലയാളം",
+    shortLabel: "Malayalam",
+    serif: '"Noto Serif Malayalam", Georgia, serif',
+    sans: '"Noto Sans Malayalam", system-ui, sans-serif'
+  },
+  {
+    code: "gu",
+    label: "ગુજરાતી",
+    shortLabel: "Gujarati",
+    serif: '"Noto Serif Gujarati", Georgia, serif',
+    sans: '"Noto Sans Gujarati", system-ui, sans-serif'
+  },
+  {
+    code: "pa",
+    label: "ਪੰਜਾਬੀ",
+    shortLabel: "Punjabi",
+    serif: '"Noto Serif Gurmukhi", Georgia, serif',
+    sans: '"Noto Sans Gurmukhi", system-ui, sans-serif'
+  },
+  {
+    code: "ur",
+    label: "اردو",
+    shortLabel: "Urdu",
+    serif: '"Noto Nastaliq Urdu", Georgia, serif',
+    sans: '"Noto Sans Arabic", system-ui, sans-serif'
+  },
+  {
+    code: "or",
+    label: "ଓଡ଼ିଆ",
+    shortLabel: "Odia",
+    serif: '"Noto Serif Oriya", Georgia, serif',
+    sans: '"Noto Sans Oriya", system-ui, sans-serif'
+  }
+];
 
 const missingTablePattern = /schema cache|Could not find the table|relationship between/i;
 
@@ -81,6 +171,143 @@ function formatDate(value) {
 
 function getCurrentPage() {
   return document.body.dataset.page || "";
+}
+
+function ensureSiteBranding() {
+  const iconHref = "neofolk-logo.jpg";
+  let favicon = document.querySelector('link[rel="icon"]');
+  if (!favicon) {
+    favicon = document.createElement("link");
+    favicon.rel = "icon";
+    document.head.appendChild(favicon);
+  }
+  favicon.href = iconHref;
+
+  let appleTouch = document.querySelector('link[rel="apple-touch-icon"]');
+  if (!appleTouch) {
+    appleTouch = document.createElement("link");
+    appleTouch.rel = "apple-touch-icon";
+    document.head.appendChild(appleTouch);
+  }
+  appleTouch.href = iconHref;
+}
+
+function ensureLanguageFonts() {
+  if (document.getElementById("neofolk-language-fonts")) return;
+  const link = document.createElement("link");
+  link.id = "neofolk-language-fonts";
+  link.rel = "stylesheet";
+  link.href =
+    "https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Gujarati:wght@400;500;600&family=Noto+Sans+Gurmukhi:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;500;600&family=Noto+Sans+Malayalam:wght@400;500;600&family=Noto+Sans+Oriya:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;500;600&family=Noto+Serif+Bengali:wght@500;600&family=Noto+Serif+Devanagari:wght@500;600&family=Noto+Serif+Gujarati:wght@500;600&family=Noto+Serif+Gurmukhi:wght@500;600&family=Noto+Serif+Kannada:wght@500;600&family=Noto+Serif+Malayalam:wght@500;600&family=Noto+Serif+Oriya:wght@500;600&family=Noto+Serif+Tamil:wght@500;600&family=Noto+Serif+Telugu:wght@500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600&display=swap";
+  document.head.appendChild(link);
+}
+
+function getPreferredLanguage() {
+  return localStorage.getItem(uiKeys.preferredLanguage) || defaultUiLanguage;
+}
+
+function getLanguageMeta(code) {
+  return indianLanguageOptions.find((item) => item.code === code) || indianLanguageOptions[0];
+}
+
+function applyLanguagePreference(code, options = {}) {
+  const selected = getLanguageMeta(code);
+  localStorage.setItem(uiKeys.preferredLanguage, selected.code);
+  document.documentElement.lang = selected.code;
+  document.documentElement.style.setProperty("--serif", selected.serif);
+  document.documentElement.style.setProperty("--sans", selected.sans);
+  document.body?.setAttribute("data-ui-lang", selected.code);
+  document.documentElement.setAttribute("translate", "yes");
+
+  if (!options.silent) {
+    showUtilityNotice(
+      `${selected.shortLabel} ready`,
+      `The font stack has been adjusted for ${selected.shortLabel}. To translate the full interface, use your browser's Translate option and choose ${selected.label}.`
+    );
+  }
+}
+
+function getSavedUserLocation() {
+  try {
+    return JSON.parse(localStorage.getItem(uiKeys.userLocation) || "null");
+  } catch {
+    return null;
+  }
+}
+
+function saveUserLocation(coords) {
+  localStorage.setItem(
+    uiKeys.userLocation,
+    JSON.stringify({
+      lat: coords.latitude,
+      lng: coords.longitude,
+      savedAt: new Date().toISOString()
+    })
+  );
+}
+
+function parseCoordinates(value) {
+  const match = String(value || "").match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+  if (!match) return null;
+  const lat = Number.parseFloat(match[1]);
+  const lng = Number.parseFloat(match[2]);
+  if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+  return { lat, lng };
+}
+
+function distanceBetweenKm(pointA, pointB) {
+  if (!pointA || !pointB) return null;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const earthRadiusKm = 6371;
+  const dLat = toRad(pointB.lat - pointA.lat);
+  const dLng = toRad(pointB.lng - pointA.lng);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRad(pointA.lat)) * Math.cos(toRad(pointB.lat)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return earthRadiusKm * c;
+}
+
+function formatDistance(distanceKm) {
+  if (distanceKm == null) return "Distance unavailable";
+  if (distanceKm < 1) return `${Math.round(distanceKm * 1000)} m away`;
+  return `${distanceKm.toFixed(distanceKm < 10 ? 1 : 0)} km away`;
+}
+
+function googleMapsSearchUrl(query) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+function googleMapsEmbedUrl(query) {
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+}
+
+function showUtilityNotice(title, body) {
+  const stack = document.querySelector(".page-stack");
+  if (!stack) return;
+
+  let panel = document.getElementById("utility-notice-panel");
+  if (!panel) {
+    panel = document.createElement("section");
+    panel.id = "utility-notice-panel";
+    panel.className = "card utility-notice-panel";
+    stack.prepend(panel);
+  }
+
+  panel.innerHTML = `
+    <div class="card-header-row">
+      <div>
+        <p class="section-label">Quick Help</p>
+        <h2>${escapeHtml(title)}</h2>
+      </div>
+      <button class="btn subtle-button" id="dismiss-utility-panel" type="button">Close</button>
+    </div>
+    <p>${escapeHtml(body)}</p>
+  `;
+
+  document.getElementById("dismiss-utility-panel")?.addEventListener("click", () => {
+    panel.remove();
+  });
 }
 
 function getDashboardPath(role) {
@@ -257,6 +484,26 @@ function mapResearchPost(post) {
   };
 }
 
+function enrichModulesWithLocations(modules, curatorCodes, userLocation) {
+  const locationMap = new Map(
+    curatorCodes
+      .filter((row) => row.assigned_to && row.location)
+      .map((row) => [row.assigned_to, row.location])
+  );
+
+  return modules.map((module) => {
+    const locationText = module.location || locationMap.get(module.createdBy) || "";
+    const coordinates = parseCoordinates(locationText);
+    const distanceKm = userLocation && coordinates ? distanceBetweenKm(userLocation, coordinates) : null;
+    return {
+      ...module,
+      locationText,
+      distanceKm,
+      mapsHref: locationText ? googleMapsSearchUrl(locationText) : ""
+    };
+  });
+}
+
 function authErrorMessage(error) {
   const message = error?.message || "";
   if (/already registered|already exists|duplicate/i.test(message)) return "Email already exists.";
@@ -300,31 +547,102 @@ function renderNav(currentUser) {
   const nav = document.getElementById("app-nav");
   if (!nav) return;
 
-  if (!currentUser) {
-    nav.innerHTML = "";
-    return;
-  }
-
-  const dashboardHref = getDashboardPath(currentUser.role);
+  const dashboardHref = currentUser ? getDashboardPath(currentUser.role) : "index.html";
+  const currentLanguage = getPreferredLanguage();
 
   nav.innerHTML = `
-    <a class="nav-link" href="${dashboardHref}">Dashboard</a>
-    <a class="nav-link" href="subjects.html">Subjects</a>
-    <a class="nav-link" href="guild.html">Guilds</a>
-    <a class="nav-link" href="research.html">Research</a>
-    <a class="nav-link" href="studios.html">Studios</a>
-    <a class="nav-link" href="discovery.html">Discovery</a>
-    <a class="nav-link" href="vision.html">Vision</a>
-    <a class="nav-link" href="profile.html">Profile</a>
-    <a class="nav-link" href="help.html">Help</a>
-    <form id="global-search-form" class="nav-search">
-      <input id="global-search-input" type="search" placeholder="Search the atlas" />
-      <button id="global-search-button" class="nav-button" type="submit">Search</button>
-    </form>
-    <button id="logout-button" class="nav-button" type="button">Logout</button>
+    <div class="site-nav-shell">
+      <div class="nav-cluster nav-primary-links">
+        ${
+          currentUser
+            ? `
+              <a class="nav-link" href="${dashboardHref}">Dashboard</a>
+              <a class="nav-link" href="subjects.html">Learn</a>
+              <a class="nav-link" href="guild.html">Guilds</a>
+              <a class="nav-link" href="research.html">Research</a>
+              <a class="nav-link" href="studios.html">Studios</a>
+              <details class="nav-more">
+                <summary class="nav-link nav-summary-link">More</summary>
+                <div class="nav-more-panel">
+                  <a class="nav-link" href="discovery.html">Discovery</a>
+                  <a class="nav-link" href="vision.html">Vision</a>
+                  <a class="nav-link" href="profile.html">Profile</a>
+                  <a class="nav-link" href="help.html">Help</a>
+                </div>
+              </details>
+            `
+            : `
+              <a class="nav-link" href="index.html#signup-form">Get Started</a>
+              <a class="nav-link" href="index.html#login-form">Login</a>
+              <a class="nav-link" href="vision.html">Vision</a>
+              <a class="nav-link" href="index.html#about">About</a>
+            `
+        }
+      </div>
+
+      <div class="nav-cluster nav-utility-cluster">
+        ${
+          currentUser
+            ? `
+              <form id="global-search-form" class="nav-search">
+                <input id="global-search-input" type="search" placeholder="Search subjects, guilds, modules..." />
+                <button id="global-search-button" class="nav-button" type="submit">Search</button>
+              </form>
+            `
+            : ""
+        }
+        <label class="language-picker">
+          <span class="section-label">Language</span>
+          <select id="language-select" aria-label="Choose interface language">
+            ${indianLanguageOptions
+              .map(
+                (language) =>
+                  `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`
+              )
+              .join("")}
+          </select>
+        </label>
+        <button id="translate-help-button" class="nav-button" type="button">Translate</button>
+        ${currentUser ? `<button id="use-location-button" class="nav-button" type="button">Near Me</button>` : ""}
+        ${currentUser ? `<button id="logout-button" class="nav-button" type="button">Logout</button>` : ""}
+      </div>
+    </div>
   `;
 
-  document.getElementById("logout-button").addEventListener("click", async () => {
+  document.getElementById("language-select")?.addEventListener("change", (event) => {
+    applyLanguagePreference(event.target.value);
+  });
+
+  document.getElementById("translate-help-button")?.addEventListener("click", () => {
+    const selected = getLanguageMeta(document.getElementById("language-select")?.value || getPreferredLanguage());
+    showUtilityNotice(
+      "Use browser translate",
+      `Choose ${selected.label} in the language selector, then use your browser's Translate option. In Chrome on Android or desktop, open the menu and choose Translate.`
+    );
+  });
+
+  document.getElementById("use-location-button")?.addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      showUtilityNotice("Location not available", "This browser does not support location access.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        saveUserLocation(position.coords);
+        showUtilityNotice(
+          "Location saved",
+          "Nearby module search is now enabled. When module locations are available, search results will show the closest options first."
+        );
+      },
+      (error) => {
+        showUtilityNotice("Location access denied", error.message || "Allow location access to see nearby modules.");
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 }
+    );
+  });
+
+  document.getElementById("logout-button")?.addEventListener("click", async () => {
     await supabase.auth.signOut();
     window.location.href = "index.html";
   });
@@ -334,13 +652,26 @@ function renderNav(currentUser) {
     const query = document.getElementById("global-search-input")?.value.trim().toLowerCase();
     if (!query) return;
 
-    const [subjects, guilds, researchPosts, portfolios, studios] = await Promise.all([
+    const userLocation = getSavedUserLocation();
+
+    const [subjects, guilds, researchPosts, portfolios, studios, modules, curatorCodes] = await Promise.all([
       fetchSubjects().catch(() => []),
       fetchGuildRecords().catch(() => []),
       fetchResearchPosts().catch(() => []),
       fetchPortfolioEntries().catch(() => []),
-      fetchStudios().catch(() => [])
+      fetchStudios().catch(() => []),
+      fetchApprovedModules().catch(() => []),
+      fetchCuratorCodes().catch(() => [])
     ]);
+
+    const nearbyModules = enrichModulesWithLocations(modules, curatorCodes, userLocation)
+      .filter((item) => `${item.title || ""} ${item.description || ""} ${item.guild || ""} ${item.locationText || ""}`.toLowerCase().includes(query))
+      .sort((a, b) => {
+        if (a.distanceKm != null && b.distanceKm != null) return a.distanceKm - b.distanceKm;
+        if (a.distanceKm != null) return -1;
+        if (b.distanceKm != null) return 1;
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+      });
 
     const groups = [
       {
@@ -382,8 +713,19 @@ function renderNav(currentUser) {
           href: "studios.html",
           meta: item.category || "Studio"
         }))
+      },
+      {
+        title: "Modules",
+        items: nearbyModules.map((item) => ({
+          title: item.title,
+          href: `module.html?id=${item.id}`,
+          meta: `${item.guild || "Module"}${item.locationText ? ` · ${item.locationText}` : ""}${item.distanceKm != null ? ` · ${formatDistance(item.distanceKm)}` : ""}`,
+          mapsHref: item.mapsHref
+        }))
       }
     ];
+
+    const featuredModule = nearbyModules.find((item) => item.locationText);
 
     let panel = document.getElementById("search-results-panel");
     if (!panel) {
@@ -396,6 +738,31 @@ function renderNav(currentUser) {
     panel.innerHTML = `
       <p class="section-label">Search Results</p>
       <h2>Results for "${escapeHtml(query)}"</h2>
+      ${
+        featuredModule
+          ? `
+            <section class="nearby-map-card">
+              <div>
+                <p class="section-label">Nearby Module</p>
+                <h3>${escapeHtml(featuredModule.title)}</h3>
+                <p>${escapeHtml(featuredModule.locationText)}</p>
+                <p class="field-note">${escapeHtml(featuredModule.guild || "Module")} · ${escapeHtml(featuredModule.distanceKm != null ? formatDistance(featuredModule.distanceKm) : "Open map for route details")}</p>
+                <div class="inline-actions">
+                  <a class="btn btn-primary" href="module.html?id=${featuredModule.id}">Open module</a>
+                  <a class="btn subtle-button" href="${featuredModule.mapsHref}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+                </div>
+              </div>
+              <iframe
+                class="map-frame"
+                title="Module location map"
+                src="${googleMapsEmbedUrl(featuredModule.locationText)}"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </section>
+          `
+          : ""
+      }
       <div class="card-grid">
         ${groups
           .map(
@@ -412,7 +779,10 @@ function renderNav(currentUser) {
                               <article class="record-card">
                                 <h3>${escapeHtml(item.title)}</h3>
                                 <p class="field-note">${escapeHtml(item.meta)}</p>
-                                <footer><a class="text-link" href="${item.href}">Open</a></footer>
+                                <footer>
+                                  <a class="text-link" href="${item.href}">Open</a>
+                                  ${item.mapsHref ? `<a class="text-link" target="_blank" rel="noreferrer" href="${item.mapsHref}">Maps</a>` : ""}
+                                </footer>
                               </article>
                             `
                           )
@@ -453,6 +823,51 @@ function renderOnboarding(user) {
   if (!shouldShowOnboarding(user)) return;
   if (document.getElementById("onboarding-overlay")) return;
 
+  const steps = [
+    {
+      kicker: "Step 1",
+      title: "Understand the three academic layers",
+      note: "Neofolk works best when you move slowly and understand what each area is meant to do.",
+      cards: [
+        { title: "Subjects", body: "Subjects are structured learning areas. They help you understand what to study and what kind of work is expected." },
+        { title: "Guilds", body: "Guilds are research collectives. Join them when you want to investigate with others and produce deeper outputs." },
+        { title: "Portfolio", body: "Your portfolio is your true learning record. It stores the work, reflections, and evidence you actually create." }
+      ]
+    },
+    {
+      kicker: "Step 2",
+      title: "Use the navigation in a simple order",
+      note: "You do not need to use every page at once. Start with the pages that move your learning forward.",
+      cards: [
+        { title: "Dashboard first", body: "Open Dashboard to see your current position, activity, and recommended next steps." },
+        { title: "Then Learn", body: "Use Subjects to find structured study paths, available modules, and areas worth exploring." },
+        { title: "Then Research", body: "Move into Guilds and Research after you have something to investigate, ask, or document." },
+        { title: "Use Help anytime", body: "If a page feels unclear, open Help. It explains the purpose of each part of the platform in plain language." }
+      ]
+    },
+    {
+      kicker: "Step 3",
+      title: "Follow the everyday learning path",
+      note: "This is the easiest way to use the system without getting lost.",
+      cards: [
+        { title: "1. Choose a subject", body: "Pick one subject that matches your interest or need. Do not try to begin everywhere." },
+        { title: "2. Enroll in a module", body: "When approved modules appear, enroll and use them as your structured study path." },
+        { title: "3. Write portfolio entries", body: "Every strong piece of work should enter your portfolio, whether it is an essay, note, design, or reflection." },
+        { title: "4. Join a guild", body: "When you are ready to investigate with others, join or create a guild and begin shared inquiry." }
+      ]
+    },
+    {
+      kicker: "Step 4",
+      title: "Use language, maps, and support tools",
+      note: "The platform should stay accessible even for first-time users and people working in different Indian languages.",
+      cards: [
+        { title: "Language selector", body: "Choose a language from the header to switch to a script-friendly font. Then use your browser's Translate option for full translation." },
+        { title: "Nearby modules", body: "Use the Near Me button in the header. When location data exists, search results will surface the closest modules and open them in Google Maps." },
+        { title: "Need help?", body: "The Help page explains each page in more detail and can be searched with simple words like subjects, guilds, or portfolio." }
+      ]
+    }
+  ];
+
   const overlay = document.createElement("div");
   overlay.id = "onboarding-overlay";
   overlay.className = "intro-overlay onboarding-overlay";
@@ -467,37 +882,79 @@ function renderOnboarding(user) {
         <button class="btn subtle-button onboarding-close" id="dismiss-onboarding-top" type="button">Close</button>
       </div>
       <div class="intro-copy">
-        <p class="page-note">Use this brief guide once, then revisit the full help area any time from the top navigation.</p>
-        <div class="record-list">
-          <article class="record-card"><h3>Dashboard</h3><p>Your active overview: study, progress, portfolio, and current work.</p></article>
-          <article class="record-card"><h3>Subjects</h3><p>Structured areas of study with outcomes, curators, and linked modules.</p></article>
-          <article class="record-card"><h3>Guilds</h3><p>Collaborative research groups where members investigate and produce work together.</p></article>
-          <article class="record-card"><h3>Research</h3><p>An academic discussion space for notes, questions, documentation, and resource sharing.</p></article>
-          <article class="record-card"><h3>Studios</h3><p>Capability environments that can be requested as your learning record deepens.</p></article>
-          <article class="record-card"><h3>Discovery</h3><p>A journal-like section for highlighted work chosen through review.</p></article>
-          <article class="record-card"><h3>Vision</h3><p>The long-form philosophy and infrastructure intent behind Neofolk.</p></article>
-          <article class="record-card"><h3>Profile & Help</h3><p>Your public academic identity and the in-product guidance area whenever you need direction.</p></article>
+        <div class="onboarding-progress">
+          <p class="section-label" id="onboarding-step-label"></p>
+          <div class="onboarding-dots" id="onboarding-dots"></div>
         </div>
+        <div id="onboarding-step-body"></div>
         <div class="inline-actions onboarding-actions">
+          <button class="btn subtle-button" id="onboarding-prev" type="button">Previous</button>
           <a class="btn" href="help.html">Open Help Page</a>
-          <button class="btn btn-primary" id="dismiss-onboarding" type="button">Start Exploring</button>
+          <button class="btn btn-primary" id="onboarding-next" type="button">Next</button>
         </div>
       </div>
     </div>
   `;
 
   document.body.appendChild(overlay);
+
+  let stepIndex = 0;
+  const body = overlay.querySelector("#onboarding-step-body");
+  const label = overlay.querySelector("#onboarding-step-label");
+  const dots = overlay.querySelector("#onboarding-dots");
+  const prevButton = overlay.querySelector("#onboarding-prev");
+  const nextButton = overlay.querySelector("#onboarding-next");
+
+  const renderStep = () => {
+    const step = steps[stepIndex];
+    label.textContent = `${step.kicker} of ${steps.length}`;
+    dots.innerHTML = steps
+      .map((_, index) => `<span class="onboarding-dot ${index === stepIndex ? "is-active" : ""}"></span>`)
+      .join("");
+    body.innerHTML = `
+      <p class="page-note">${escapeHtml(step.note)}</p>
+      <h2>${escapeHtml(step.title)}</h2>
+      <div class="onboarding-step-grid">
+        ${step.cards
+          .map(
+            (card) => `
+              <article class="record-card">
+                <h3>${escapeHtml(card.title)}</h3>
+                <p>${escapeHtml(card.body)}</p>
+              </article>
+            `
+          )
+          .join("")}
+      </div>
+    `;
+    prevButton.disabled = stepIndex === 0;
+    nextButton.textContent = stepIndex === steps.length - 1 ? "Finish Tutorial" : "Next";
+  };
+
   const dismiss = () => {
     markOnboardingSeen(user);
     overlay.classList.add("is-hidden");
     window.setTimeout(() => overlay.remove(), 420);
   };
 
-  document.getElementById("dismiss-onboarding")?.addEventListener("click", dismiss);
+  prevButton?.addEventListener("click", () => {
+    stepIndex = Math.max(0, stepIndex - 1);
+    renderStep();
+  });
+  nextButton?.addEventListener("click", () => {
+    if (stepIndex === steps.length - 1) {
+      dismiss();
+      return;
+    }
+    stepIndex += 1;
+    renderStep();
+  });
   document.getElementById("dismiss-onboarding-top")?.addEventListener("click", dismiss);
   overlay.addEventListener("click", (event) => {
     if (event.target === overlay) dismiss();
   });
+
+  renderStep();
 }
 
 async function fetchUsers() {
@@ -1246,7 +1703,7 @@ function renderNeoscorePieChart() {
   `).join("");
 
   return `
-    <div class="card">
+    <div class="card dashboard-chart-card">
       <p class="section-label">Learning Balance Map</p>
       <h2>Neofolk Knowledge Model</h2>
       <div class="chart-container">
@@ -1309,223 +1766,314 @@ async function initSeekerDashboard() {
       <header class="dashboard-header">
         <div>
           <p class="section-label">Seeker Dashboard</p>
-          <h1>${escapeHtml(displayUserName(currentUser))}</h1>
+          <h1>Your learning dashboard</h1>
+          <p class="field-note">Signed in as ${escapeHtml(currentUser.email || displayUserName(currentUser))}</p>
         </div>
         <p class="dashboard-meta">Seekers can build portfolios, record intellectual interests, enroll in approved modules, and study highlighted work.</p>
       </header>
-      ${renderNeoscorePieChart()}
+
+      <section class="dashboard-overview-grid">
+        <article class="card dashboard-identity-card">
+          <p class="section-label">Current Standing</p>
+          <h2>Learning record at a glance</h2>
+          <div class="record-list compact-record-list">
+            <article class="record-card">
+              <p class="section-label">Email</p>
+              <h3>${currentUser.emailConfirmed ? "Confirmed" : "Pending"}</h3>
+              <p class="field-note">${escapeHtml(currentUser.email)}</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">Portfolio</p>
+              <h3>${ownEntries.length} entries</h3>
+              <p class="field-note">Recorded work and reflections</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">Subjects</p>
+              <h3>${enrolledModules.length} active</h3>
+              <p class="field-note">Approved study pathways</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">Guilds</p>
+              <h3>${joinedGuilds.length} joined</h3>
+              <p class="field-note">Collaborative research spaces</p>
+            </article>
+          </div>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="profile.html#portfolio">Create entry</a>
+            <a class="btn subtle-button" href="subjects.html">Browse subjects</a>
+            <a class="btn subtle-button" href="guild.html">Open guilds</a>
+          </div>
+        </article>
+
+        ${renderNeoscorePieChart()}
+      </section>
+
+      <section class="dashboard-guidance-grid">
+        <article class="card dashboard-focus-card">
+          <p class="section-label">Orientation</p>
+          <h2>How to use this workspace</h2>
+          <div class="record-list compact-record-list">
+            <article class="record-card">
+              <p class="section-label">1. Build Foundation</p>
+              <h3>Study approved subjects</h3>
+              <p class="field-note">Browse subjects, enroll in modules, and begin collecting directed knowledge.</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">2. Record Work</p>
+              <h3>Keep your portfolio active</h3>
+              <p class="field-note">Projects, essays, research notes, and reflections become your academic record.</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">3. Join Inquiry</p>
+              <h3>Take part in guilds</h3>
+              <p class="field-note">Guilds turn subject exposure into collaborative investigation and output.</p>
+            </article>
+          </div>
+        </article>
+
+        <article class="card dashboard-focus-card">
+          <p class="section-label">Current Priorities</p>
+          <h2>What to do next</h2>
+          <div class="record-list compact-record-list">
+            <article class="record-card">
+              <p class="section-label">Portfolio</p>
+              <h3>${ownEntries.length ? "Continue documenting" : "Add your first entry"}</h3>
+              <p class="field-note">${ownEntries.length ? "Keep your strongest work visible and updated." : "Your portfolio is the main record of your learning."}</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">Subjects</p>
+              <h3>${enrolledModules.length ? `${enrolledModules.length} active modules` : "Choose a subject pathway"}</h3>
+              <p class="field-note">${enrolledModules.length ? "Return to your enrolled modules and continue steadily." : "Start with a subject that gives structure to your interests."}</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">Guilds</p>
+              <h3>${joinedGuilds.length ? `${joinedGuilds.length} joined guilds` : "Find a research collective"}</h3>
+              <p class="field-note">${joinedGuilds.length ? "Guild membership shows where your research life is growing." : "Join or create a guild when you want to investigate more deeply."}</p>
+            </article>
+          </div>
+        </article>
+      </section>
 
       <section class="stats-grid">
         <article class="stat-card">
-          <span class="section-label">Email</span>
-          <strong>${currentUser.emailConfirmed ? "Confirmed" : "Pending"}</strong>
+          <span class="section-label">Knowledge</span>
+          <strong>${Number(score?.knowledge_score || 0)}</strong>
         </article>
         <article class="stat-card">
-          <span class="section-label">Portfolio</span>
-          <strong>${ownEntries.length}</strong>
+          <span class="section-label">Portfolio Depth</span>
+          <strong>${Number(score?.portfolio_score || 0)}</strong>
         </article>
         <article class="stat-card">
-          <span class="section-label">Subjects</span>
-          <strong>${enrolledModules.length}</strong>
+          <span class="section-label">Guild Participation</span>
+          <strong>${Number(score?.guild_score || 0)}</strong>
         </article>
         <article class="stat-card">
-          <span class="section-label">Guilds</span>
-          <strong>${joinedGuilds.length}</strong>
+          <span class="section-label">Creative Practice</span>
+          <strong>${Number(score?.creative_score || 0)}</strong>
+        </article>
+        <article class="stat-card">
+          <span class="section-label">Physical Discipline</span>
+          <strong>${Number(score?.praxis_score || 0)}</strong>
         </article>
         <article class="stat-card">
           <span class="section-label">Tokens</span>
           <strong>${tokenBalance}</strong>
         </article>
-        <article class="stat-card">
-          <span class="section-label">Neoscore</span>
-          <strong>${totalNeoscore(score)}</strong>
-        </article>
       </section>
 
-      <section class="card-grid">
-        <article class="card" id="portfolio-section">
-          <p class="section-label">Portfolio</p>
-          <h2>Create a portfolio entry</h2>
-          <form id="portfolio-form" class="form-stack">
-            <label>
-              Title
-              <input name="title" type="text" required />
-            </label>
-            <label>
-              Description
-              <textarea name="description" required></textarea>
-            </label>
-            <label>
-              Entry type
-              <select name="entryType">
-                <option value="project">Project</option>
-                <option value="essay">Essay</option>
-                <option value="article">Article</option>
-                <option value="design">Design</option>
-                <option value="research">Research</option>
-                <option value="documentation">Documentation</option>
-                <option value="reflection">Reflection</option>
-              </select>
-            </label>
-            <label>
-              Link
-              <input name="link" type="url" placeholder="https://example.com/work" />
-            </label>
-            <label>
-              Visibility
-              <select name="visibility">
-                <option value="private">Private</option>
-                <option value="arbiter-only">Arbiter Only</option>
-                <option value="public">Public</option>
-              </select>
-            </label>
-            <label>
-              Tags
-              <input name="tags" type="text" placeholder="design, philosophy, heritage" />
-            </label>
-            <button class="btn btn-primary" type="submit">Add portfolio entry</button>
-          </form>
-          <p id="portfolio-message" class="status-text" aria-live="polite"></p>
-        </article>
+      <section class="dashboard-main-grid">
+        <div class="dashboard-primary-column">
+          <article class="card">
+            <p class="section-label">Recent Activity</p>
+            <h2>What you have been building</h2>
+            <div class="record-list">
+              ${
+                recentActivity.length
+                  ? recentActivity
+                      .map(
+                        (item) => `
+                          <article class="record-card">
+                            <p class="section-label">${escapeHtml(item.type)}</p>
+                            <h3>${escapeHtml(item.title)}</h3>
+                            <p class="field-note">${formatDate(item.created_at)}</p>
+                          </article>
+                        `
+                      )
+                      .join("")
+                  : emptyCard("No recent activity", "Your learning record will grow here as you create portfolio work, notes, and research.")
+              }
+            </div>
+          </article>
 
-        <article class="card" id="niche-section">
-          <p class="section-label">Niche Folder</p>
-          <h2>Intellectual interests</h2>
-          <form id="niche-form" class="form-stack">
-            <label>
-              Interest
-              <input name="interest" type="text" required />
-            </label>
-            <label>
-              Notes
-              <textarea name="notes" required></textarea>
-            </label>
-            <button class="btn" type="submit">Add niche entry</button>
-          </form>
-          <p id="niche-message" class="status-text" aria-live="polite"></p>
-        </article>
+          <article class="card">
+            <p class="section-label">Current Study</p>
+            <h2>Your enrolled modules</h2>
+            <div class="record-list">
+              ${
+                enrolledModules.length
+                  ? enrolledModules.map((module) => moduleCard(module, usersById, { allowEnroll: true, alreadyEnrolledIds: enrolledIds })).join("")
+                  : emptyCard("No enrolled modules", "Browse approved subjects and modules to begin a more structured course of study.")
+              }
+            </div>
+            <div class="inline-actions">
+              <a class="btn subtle-button" href="subjects.html">Browse all subjects</a>
+            </div>
+          </article>
 
-        <article class="card">
-          <p class="section-label">Current Study</p>
-          <h2>Approved subjects and modules</h2>
-          <div class="record-list">
-            ${
-              modules.length
-                ? modules.map((module) => moduleCard(module, usersById, { allowEnroll: true, alreadyEnrolledIds: enrolledIds })).join("")
-                : emptyCard("No approved modules", "Seekers only see modules after Arbiter approval.")
-            }
-          </div>
-        </article>
-      </section>
+          <article class="card">
+            <p class="section-label">Your portfolio</p>
+            <h2>Chronological record</h2>
+            <div class="record-list">
+              ${
+                ownEntries.length
+                  ? ownEntries
+                      .map((entry) =>
+                        portfolioCard(entry, currentUser, usersById, {
+                          allowEdit: true,
+                          allowDelete: true,
+                          tags: getEntityTags("portfolio", entry.id, tags, tagLinks)
+                        })
+                      )
+                      .join("")
+                  : emptyCard("No portfolio entries", "Your portfolio begins once you submit your first article, project, or reflection.")
+              }
+            </div>
+          </article>
+        </div>
 
-      <section class="card-grid">
-        <article class="card">
-          <p class="section-label">Recent Activity</p>
-          <h2>What you have been building</h2>
-          <div class="record-list">
-            ${
-              recentActivity.length
-                ? recentActivity
-                    .map(
-                      (item) => `
-                        <article class="record-card">
-                          <p class="section-label">${escapeHtml(item.type)}</p>
-                          <h3>${escapeHtml(item.title)}</h3>
-                          <p class="field-note">${formatDate(item.created_at)}</p>
-                        </article>
-                      `
-                    )
-                    .join("")
-                : emptyCard("No recent activity", "Your learning record will grow here as you create portfolio work, notes, and research.")
-            }
-          </div>
-        </article>
+        <aside class="dashboard-secondary-column">
+          <article class="card" id="portfolio-section">
+            <p class="section-label">Portfolio</p>
+            <h2>Create a portfolio entry</h2>
+            <p class="field-note">Record your strongest work only when it is ready. This keeps the dashboard calmer and your portfolio more intentional.</p>
+            <details class="simple-details">
+              <summary class="btn subtle-button">Open portfolio form</summary>
+              <form id="portfolio-form" class="form-stack">
+                <label>
+                  Title
+                  <input name="title" type="text" required />
+                </label>
+                <label>
+                  Description
+                  <textarea name="description" required></textarea>
+                </label>
+                <label>
+                  Entry type
+                  <select name="entryType">
+                    <option value="project">Project</option>
+                    <option value="essay">Essay</option>
+                    <option value="article">Article</option>
+                    <option value="design">Design</option>
+                    <option value="research">Research</option>
+                    <option value="documentation">Documentation</option>
+                    <option value="reflection">Reflection</option>
+                  </select>
+                </label>
+                <label>
+                  Link
+                  <input name="link" type="url" placeholder="https://example.com/work" />
+                </label>
+                <label>
+                  Visibility
+                  <select name="visibility">
+                    <option value="private">Private</option>
+                    <option value="arbiter-only">Arbiter Only</option>
+                    <option value="public">Public</option>
+                  </select>
+                </label>
+                <label>
+                  Tags
+                  <input name="tags" type="text" placeholder="design, philosophy, heritage" />
+                </label>
+                <button class="btn btn-primary" type="submit">Add portfolio entry</button>
+              </form>
+            </details>
+            <p id="portfolio-message" class="status-text" aria-live="polite"></p>
+          </article>
 
-        <article class="card">
-          <p class="section-label">Neoscore</p>
-          <h2>Holistic profile</h2>
-          ${neoscoreSummary(score)}
-        </article>
-      </section>
+          <article class="card" id="niche-section">
+            <p class="section-label">Niche Folder</p>
+            <h2>Intellectual interests</h2>
+            <p class="field-note">Use this for questions, themes, and curiosities you want to keep close without crowding the main page.</p>
+            <details class="simple-details">
+              <summary class="btn subtle-button">Open niche folder form</summary>
+              <form id="niche-form" class="form-stack">
+                <label>
+                  Interest
+                  <input name="interest" type="text" required />
+                </label>
+                <label>
+                  Notes
+                  <textarea name="notes" required></textarea>
+                </label>
+                <button class="btn" type="submit">Add niche entry</button>
+              </form>
+            </details>
+            <p id="niche-message" class="status-text" aria-live="polite"></p>
+          </article>
 
-      <section class="card-grid">
-        <article class="card">
-          <p class="section-label">Your portfolio</p>
-          <h2>Chronological record</h2>
-          <div class="record-list">
-            ${
-              ownEntries.length
-                ? ownEntries
-                    .map((entry) =>
-                      portfolioCard(entry, currentUser, usersById, {
-                        allowEdit: true,
-                        allowDelete: true,
-                        tags: getEntityTags("portfolio", entry.id, tags, tagLinks)
-                      })
-                    )
-                    .join("")
-                : emptyCard("No portfolio entries", "Your portfolio begins once you submit your first article, project, or reflection.")
-            }
-          </div>
-        </article>
+          <article class="card">
+            <p class="section-label">Neoscore</p>
+            <h2>Holistic profile</h2>
+            ${neoscoreSummary(score)}
+          </article>
 
-        <article class="card">
-          <p class="section-label">Your niche folder</p>
-          <h2>Academic cards</h2>
-          <div class="record-list">
-            ${
-              ownNicheEntries.length
-                ? ownNicheEntries.map((entry) => nicheCard(entry, currentUser, true)).join("")
-                : emptyCard("No niche entries", "Record questions, themes, and curiosities here.")
-            }
-          </div>
-        </article>
-      </section>
+          <article class="card">
+            <p class="section-label">Recommended Subjects</p>
+            <h2>Where to deepen next</h2>
+            <div class="record-list">
+              ${
+                recommendedSubjects.length
+                  ? recommendedSubjects
+                      .map(
+                        (subject) => `
+                          <article class="record-card">
+                            <h3>${escapeHtml(subject.name)}</h3>
+                            <p>${escapeHtml(subject.description || "No description yet.")}</p>
+                            <footer><a class="text-link" href="subjects.html?id=${subject.id}">Open subject</a></footer>
+                          </article>
+                        `
+                      )
+                      .join("")
+                  : emptyCard("No subject recommendations", "As your study deepens, recommended subjects will appear here.")
+              }
+            </div>
+          </article>
 
-      <section class="card-grid">
-        <article class="card">
-          <p class="section-label">Recommended Subjects</p>
-          <h2>Where to deepen next</h2>
-          <div class="record-list">
-            ${
-              recommendedSubjects.length
-                ? recommendedSubjects
-                    .map(
-                      (subject) => `
-                        <article class="record-card">
-                          <h3>${escapeHtml(subject.name)}</h3>
-                          <p>${escapeHtml(subject.description || "No description yet.")}</p>
-                          <footer><a class="text-link" href="subjects.html?id=${subject.id}">Open subject</a></footer>
-                        </article>
-                      `
-                    )
-                    .join("")
-                : emptyCard("No subject recommendations", "As your study deepens, recommended subjects will appear here.")
-            }
-          </div>
-        </article>
+          <article class="card">
+            <p class="section-label">Recommended Guilds</p>
+            <h2>Research directions</h2>
+            <div class="record-list">
+              ${
+                recommendedGuilds.length
+                  ? recommendedGuilds
+                      .map(
+                        (guild) => `
+                          <article class="record-card">
+                            <h3>${escapeHtml(guild.title || guild.name)}</h3>
+                            <p>${escapeHtml(guild.description || guild.research_focus || "No research focus yet.")}</p>
+                            <footer><a class="text-link" href="${guild.id ? `guild.html?id=${guild.id}` : "guild.html"}">Open guild</a></footer>
+                          </article>
+                        `
+                      )
+                      .join("")
+                  : emptyCard("No guild recommendations", "Guild suggestions appear once guild records exist in the database.")
+              }
+            </div>
+          </article>
 
-        <article class="card">
-          <p class="section-label">Recommended Guilds</p>
-          <h2>Research directions</h2>
-          <div class="record-list">
-            ${
-              recommendedGuilds.length
-                ? recommendedGuilds
-                    .map(
-                      (guild) => `
-                        <article class="record-card">
-                          <h3>${escapeHtml(guild.title || guild.name)}</h3>
-                          <p>${escapeHtml(guild.description || guild.research_focus || "No research focus yet.")}</p>
-                          <footer><a class="text-link" href="${guild.id ? `guild.html?id=${guild.id}` : "guild.html"}">Open guild</a></footer>
-                        </article>
-                      `
-                    )
-                    .join("")
-                : emptyCard("No guild recommendations", "Guild suggestions appear once guild records exist in the database.")
-            }
-          </div>
-        </article>
+          <article class="card">
+            <p class="section-label">Your niche folder</p>
+            <h2>Academic cards</h2>
+            <div class="record-list">
+              ${
+                ownNicheEntries.length
+                  ? ownNicheEntries.map((entry) => nicheCard(entry, currentUser, true)).join("")
+                  : emptyCard("No niche entries", "Record questions, themes, and curiosities here.")
+              }
+            </div>
+          </article>
+        </aside>
       </section>
     </section>
   `;
@@ -2709,14 +3257,18 @@ async function initHelpPage() {
   if (!root) return;
 
   const helpCards = [
-    { title: "Dashboard", body: "Your dashboard is your live overview. Seekers see study, portfolio, and activity. Curators see modules and guidance work. Arbiters see review queues." },
-    { title: "Subjects", body: "Subjects are structured learning domains. Use them to understand what is studied, how it is approached, and what outputs are expected." },
-    { title: "Guilds", body: "Guilds are collaborative research collectives. Join them to work with others, follow an inquiry, and build shared outputs." },
-    { title: "Research", body: "Research is the academic posting area. Use it for notes, documentation, questions, references, and scholarly updates rather than casual chatter." },
-    { title: "Studios", body: "Studios are capability environments. Seekers can request access, while Arbiters review requests where the system is configured." },
-    { title: "Discovery", body: "Discovery is a journal-like showcase of highlighted work, not a social-media feed." },
+    { title: "First Day", body: "If you are new, open Dashboard first, then Subjects. Choose one subject, enroll in one module, and add one portfolio entry before trying to use every page." },
+    { title: "Dashboard", body: "Your dashboard is your live overview. It shows progress, recent activity, current study, and what to do next so you do not have to guess." },
+    { title: "Subjects", body: "Subjects are structured learning domains. Use them to understand what is studied, how it is approached, and what kind of work is expected." },
+    { title: "Guilds", body: "Guilds are collaborative research collectives. Join them when you want to investigate with others and produce deeper research outputs." },
+    { title: "Portfolio", body: "The portfolio is your main academic record. Put your essays, designs, projects, reflections, and documented work here." },
+    { title: "Research", body: "Research is the academic posting area. Use it for notes, questions, documentation, references, and careful intellectual discussion rather than casual chatting." },
+    { title: "Studios", body: "Studios are capability environments. Some may require tokens or review. Request access only when you are ready for deeper practice." },
+    { title: "Discovery", body: "Discovery is a journal-like showcase of highlighted work. It is meant for serious reading, not social-media scrolling." },
+    { title: "Language", body: "Use the language selector in the header to switch to a script-friendly font. Then use your browser's Translate option to translate the full page." },
+    { title: "Nearby Modules", body: "Use the Near Me button in the header to save your location. Then search for modules and the closest available locations will appear first when location data exists." },
     { title: "Vision", body: "Vision explains the wider philosophy, infrastructure, and long-term educational direction behind the platform." },
-    { title: "Profile", body: "Your profile gathers your identity, interests, guild participation, portfolio record, and broader learning direction." }
+    { title: "Profile", body: "Your profile gathers your identity, interests, guild participation, portfolio record, and broader learning direction in one calm place." }
   ];
 
   root.innerHTML = `
@@ -2736,6 +3288,25 @@ async function initHelpPage() {
           Search guidance
           <input id="help-search-input" type="search" placeholder="subjects, guilds, portfolio, research..." />
         </label>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Simple Path</p>
+          <h2>Use Neofolk in this order</h2>
+          <div class="record-list">
+            <article class="record-card"><h3>1. Dashboard</h3><p>See your current status and what should be done next.</p></article>
+            <article class="record-card"><h3>2. Subjects</h3><p>Find one area of study and enroll in a module.</p></article>
+            <article class="record-card"><h3>3. Portfolio</h3><p>Record the work you produce so your learning is visible.</p></article>
+            <article class="record-card"><h3>4. Guilds and Research</h3><p>Move into deeper inquiry once you have direction.</p></article>
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Language & Access</p>
+          <h2>India-first support</h2>
+          <p>The header includes a language selector for script-friendly fonts. After choosing a language, use your browser's Translate option for full translation. This keeps the app simpler and easier to maintain while still remaining accessible across Indian languages.</p>
+        </article>
       </section>
 
       <section id="help-card-list" class="card-grid">
@@ -3032,6 +3603,10 @@ async function initOperatorDashboard() {
 
 async function init() {
   try {
+    ensureSiteBranding();
+    ensureLanguageFonts();
+    applyLanguagePreference(getPreferredLanguage(), { silent: true });
+
     const currentUser = await getCurrentUserProfile();
     renderVersionBadges();
     renderNav(currentUser);
