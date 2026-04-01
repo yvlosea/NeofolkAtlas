@@ -845,10 +845,13 @@ function moduleCard(module, usersById, options = {}) {
 }
 
 async function renderHomePage() {
-  const currentUser = await getCurrentUserProfile();
-  if (currentUser) {
-    window.location.href = getDashboardPath(currentUser.role);
-    return;
+  const { data: sessionData } = await supabase.auth.getSession();
+  if (sessionData?.session) {
+    const currentUser = await getCurrentUserProfile();
+    if (currentUser) {
+      window.location.href = getDashboardPath(currentUser.role);
+      return;
+    }
   }
 
   const roleSelect = document.getElementById("signup-role");
@@ -958,7 +961,7 @@ async function renderHomePage() {
     }
   });
 
-  document.getElementById("login-form").addEventListener("submit", async (event) => {
+  document.getElementById("loginForm").addEventListener("submit", async (event) => {
     event.preventDefault();
     setMessage("login-message", "", "");
 
@@ -983,13 +986,18 @@ async function renderHomePage() {
       return;
     }
 
-    const profile = await getCurrentUserProfile();
-    if (!profile) {
-      setMessage("login-message", "No profile found for this account.", "error");
-      return;
+    const role = data.user?.user_metadata?.role;
+    
+    if (role) {
+      window.location.href = getDashboardPath(role);
+    } else {
+      const profile = await getCurrentUserProfile();
+      if (!profile) {
+        setMessage("login-message", "No profile found for this account.", "error");
+        return;
+      }
+      window.location.href = getDashboardPath(profile.role);
     }
-
-    window.location.href = getDashboardPath(profile.role);
   });
 
   if (forgotButton) {
