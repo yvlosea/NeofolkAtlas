@@ -1,34 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seeker Dashboard | Neofolk Atlas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body data-page="seeker-dashboard">
-    <div class="page-shell page-container">
-      <header class="site-header">
-        <a class="brand-mark" href="index.html" aria-label="Neofolk Atlas home">
-          <img class="brand-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
-          <span class="brand-copy">
-            <span class="brand-kicker">Neofolk Atlas</span>
-            <strong>Learning as Identity</strong>
-          </span>
-        </a>
-        <span class="version-badge">Alpha 11.4</span>
-        <nav id="app-nav" class="site-nav" aria-label="Primary"></nav>
-      </header>
 
-      <main id="dashboard-root" class="page-stack"></main>
-    </div>
+<head>
 
-    <script type="module" src="app.js"></script>
-  </body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Seeker Dashboard | Neofolk Atlas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+
+</head>
+
+
+
+<body>
+
+
+<div class="page-shell page-container">
+
+
+<header class="site-header">
+
+
+<div class="brand-mark">
+
+<img class="brand-logo" src="neofolk-logo.jpg">
+
+<div class="brand-copy">
+
+<span class="brand-kicker">
+Neofolk Atlas
+</span>
+
+<strong>
+Learning as Identity
+</strong>
+
+</div>
+
+</div>
+
+
+
+<span class="version-badge">
+
+Alpha 11.4
+
+</span>
+
+
+
+<div class="top-utilities">
+
+<select class="language-picker">
+
+<option>English</option>
+<option>Hindi</option>
+
+</select>
+
+
+
+<a class="nav-link" href="dictionary.html">
+Dictionary
+</a>
+
+
+
+<a class="nav-link" href="vision.html">
+Vision
+</a>
+
+
+
+<a class="nav-link" href="#">
+Logout
+</a>
+
+
+
+</div>
+
+
+</header>
+
+
+
+
+<div class="app-layout">
+
+
+
+<nav class="sidebar">
+
+<a class="nav-link" href="seeker-dashboard.html">
+
+Dashboard
+
+</a>
+
+
+
+<a class="nav-link" href="subjects.html">
+
+Learn
+
+</a>
+
+
+
+<a class="nav-link" href="notes.html">
+
+Notes
+
+</a>
+
+
+
+<a class="nav-link" href="projects.html">
+
+Projects
+
+</a>
+
+
+
+<a class="nav-link" href="groups.html">
+
+Groups
+
+</a>
+
+
+
+<a class="nav-link" href="progress.html">
+
+Progress
+
+</a>
+
+
+
+</nav>
+
+
+
+
+<main class="page-stack">
+
+
+
+<section>
+
+<p class="section-label">
+
+PROGRESS
+
+</p>
+
+
+
+<h1>
+
+Your learning dashboard
+
+</h1>
+
+
+
+<p class="muted">
+
+Start from your current course, write notes, build projects, and let the deeper system appear only when useful.
+
+</p>
+
+
+</section>
+
+
+
+
+<section class="dashboard-card-grid">
+
+
+
+<div class="card dashboard-chart-card">
+
+
+
+<h2>
+
+Learning Activity
+
+</h2>
+
+
+
+<div class="chart-card">
+
+<svg width="120" height="120">
+
+<circle cx="60" cy="60" r="54" stroke="#3a2c22" stroke-width="10" fill="none"/>
+
+<circle cx="60" cy="60" r="54" stroke="#b79d84" stroke-width="10" fill="none"
+stroke-dasharray="339"
+stroke-dashoffset="0"
+transform="rotate(-90 60 60)"
+/>
+
+</svg>
+
+
+
+<div>
+
+<p class="muted">
+
+Notes activity this month
+
+</p>
+
+
+
+<strong>
+
+100%
+
+</strong>
+
+
+
+<p class="muted">
+
+17% active this month
+
+</p>
+
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+<div class="card dashboard-chart-card">
+
+
+
+<h2>
+
+Subject Distribution
+
+</h2>
+
+
+
+<div class="chart-card">
+
+<svg width="120" height="120">
+
+<circle cx="60" cy="60" r="54" stroke="#3a2c22" stroke-width="10" fill="none"/>
+
+<circle cx="60" cy="60" r="54" stroke="#b79d84" stroke-width="10" fill="none"
+stroke-dasharray="170 169"
+transform="rotate(-90 60 60)"
+/>
+
+</svg>
+
+
+
+<div>
+
+<p>
+
+Cosmology — 50%
+
+</p>
+
+
+
+<p>
+
+Lingosophy — 50%
+
+</p>
+
+
+
+</div>
+
+</div>
+
+
+
+</div>
+
+
+
+</section>
+
+
+
+</main>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+</body>
+
+
+
 </html>
