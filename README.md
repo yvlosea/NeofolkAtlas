@@ -1,6 +1,6 @@
 # Neofolk Atlas
 
-Version: `Alpha 10.4`
+Version: `Alpha 11.4`
 
 Neofolk Atlas is a Supabase-backed academic web application centered on structured study, portfolio evidence, and reviewed intellectual work.
 
@@ -19,12 +19,14 @@ The current product goal is:
 ## Updated Sitemap
 
 - `Home`
+- `Dashboard`
 - `Learn`
-- `Explore`
-- `Groups`
+- `Notes`
 - `Projects`
+- `Groups`
 - `Progress`
 - `Dictionary`
+- `Settings`
 - `Vision`
 - `Help`
 
@@ -32,17 +34,18 @@ The current product goal is:
 
 Primary navigation:
 
+- `Dashboard`
 - `Learn`
-- `Explore`
-- `Groups`
+- `Notes`
 - `Projects`
+- `Groups`
 - `Progress`
 
 Secondary navigation:
 
 - `Dictionary`
+- `Settings`
 - `Vision`
-- `Help`
 
 ## Core Structure
 
@@ -177,7 +180,7 @@ To grant operator access:
 - all page shells now load `app.js` correctly as an ES module
 - missing pages referenced by navigation were added
 - the public demo access block was removed from the homepage
-- headers now consistently show `Alpha 10.4`
+- headers now consistently show `Alpha 11.4`
 - homepage copy and README were aligned with the current Supabase-based app
 - operator routing and navigation were cleaned up so the role behaves like a real access tier
 - homepage now prioritizes immediate action over philosophy

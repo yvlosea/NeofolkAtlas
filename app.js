@@ -59,7 +59,7 @@ const uiKeys = {
   userLocation: "neofolk.userLocation"
 };
 
-const appVersion = "Alpha 10.4";
+const appVersion = "Alpha 11.4";
 const operatorRole = "operator";
 const defaultUiLanguage = "en";
 
@@ -447,6 +447,14 @@ function displayUserName(user) {
   return user.email || user.id;
 }
 
+function getUserInitials(user) {
+  const base = displayUserName(user).replace(/@.*$/, "").trim();
+  const parts = base.split(/[\s._-]+/).filter(Boolean);
+  if (!parts.length) return "NA";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] || ""}${parts[1][0] || ""}`.toUpperCase();
+}
+
 function mapModule(module) {
   return {
     ...module,
@@ -547,48 +555,52 @@ function renderNav(currentUser) {
 
   nav.innerHTML = `
     <div class="site-nav-shell">
-      <div class="nav-cluster nav-primary-links">
-        ${
-          currentUser
-            ? `
-              <section class="sidebar-group">
-                <p class="section-label">${escapeHtml(t("nav.groupPrimary"))}</p>
+      <button id="nav-menu-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav-panel">
+        ${escapeHtml(t("nav.menu"))}
+      </button>
+      <div id="site-nav-panel" class="nav-panel">
+        <div class="nav-cluster nav-primary-links">
+          ${
+            currentUser
+              ? `
                 <a class="nav-link" href="${dashboardHref}">${escapeHtml(t("nav.dashboard"))}</a>
                 <a class="nav-link" href="subjects.html">${escapeHtml(t("nav.learn"))}</a>
                 <a class="nav-link" href="${dashboardHref}#notes-area">${escapeHtml(t("nav.notes"))}</a>
                 <a class="nav-link" href="${dashboardHref}#projects-area">${escapeHtml(t("nav.projects"))}</a>
                 <a class="nav-link" href="guild.html">${escapeHtml(t("nav.groups"))}</a>
                 <a class="nav-link" href="${dashboardHref}#progress-area">${escapeHtml(t("nav.progress"))}</a>
-              </section>
-              <section class="sidebar-group">
-                <p class="section-label">${escapeHtml(t("nav.groupSecondary"))}</p>
-                <a class="nav-link" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
-                <a class="nav-link" href="profile.html">${escapeHtml(t("nav.settings"))}</a>
-                <a class="nav-link" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
-              </section>
-            `
-            : `
-              <a class="nav-link" href="index.html#start-learning">${escapeHtml(t("home.primaryStart"))}</a>
-              <a class="nav-link" href="subjects.html">${escapeHtml(t("home.primaryBrowse"))}</a>
-              <a class="nav-link" href="index.html#auth-area">${escapeHtml(t("home.primaryCreate"))}</a>
-              <a class="nav-link" href="help.html">${escapeHtml(t("nav.help"))}</a>
-            `
-        }
-      </div>
+              `
+              : `
+                <a class="nav-link" href="index.html#start-learning">${escapeHtml(t("home.primaryStart"))}</a>
+                <a class="nav-link" href="subjects.html">${escapeHtml(t("home.primaryBrowse"))}</a>
+                <a class="nav-link" href="index.html#auth-area">${escapeHtml(t("home.primaryCreate"))}</a>
+              `
+          }
+        </div>
 
-      <div class="nav-cluster nav-utility-cluster">
-        ${
-          currentUser
-            ? `<button id="logout-button" class="nav-button" type="button">${escapeHtml(t("nav.logout"))}</button>`
-            : `
-              <label class="language-picker compact-language-picker">
-                <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
-                <select id="public-language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
-                  ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
-                </select>
-              </label>
-            `
-        }
+        <div class="nav-cluster nav-utility-cluster">
+          <label class="language-picker compact-language-picker">
+            <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
+            <select id="public-language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
+              ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
+            </select>
+          </label>
+          ${
+            currentUser
+              ? `
+                <a class="nav-link nav-link-secondary" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
+                <a class="nav-link nav-link-secondary" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
+                <a class="profile-chip" href="profile.html" aria-label="${escapeHtml(t("nav.settings"))}">
+                  <span class="profile-chip-avatar">${escapeHtml(getUserInitials(currentUser))}</span>
+                </a>
+                <button id="logout-button" class="nav-button" type="button">${escapeHtml(t("nav.logout"))}</button>
+              `
+              : `
+                <a class="nav-link nav-link-secondary" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
+                <a class="nav-link nav-link-secondary" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
+              `
+          }
+        </div>
       </div>
     </div>
   `;
@@ -601,6 +613,13 @@ function renderNav(currentUser) {
   document.getElementById("public-language-select")?.addEventListener("change", async (event) => {
     await applyLanguagePreference(event.target.value, { silent: true });
     await init();
+  });
+
+  document.getElementById("nav-menu-toggle")?.addEventListener("click", (event) => {
+    const shell = nav.querySelector(".site-nav-shell");
+    const nextOpen = !shell?.classList.contains("is-open");
+    shell?.classList.toggle("is-open", nextOpen);
+    event.currentTarget.setAttribute("aria-expanded", String(nextOpen));
   });
 }
 
@@ -2754,12 +2773,14 @@ async function initGuildPage() {
             <article class="card record-card">
               <h3>${escapeHtml(guild.title || guild.name)}</h3>
               <p>${escapeHtml(guild.description || guild.research_focus || "No description")}</p>
-              ${tagsList.length ? `<div style="margin-top:12px; margin-bottom:12px">${tagsList.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
-              <p class="field-note" style="margin-top:auto; padding-top:16px">${membersList.length} Member${membersList.length === 1 ? "" : "s"}</p>
-              <footer style="margin-top:16px"><a class="btn subtle-button" style="width:100%" href="guild.html?id=${guild.id}">Open Guild</a></footer>
+              ${tagsList.length ? `<div class="tag-stack">${tagsList.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+              <div class="record-footer-spread">
+                <p class="field-note">${membersList.length} Member${membersList.length === 1 ? "" : "s"}</p>
+              </div>
+              <footer><a class="btn subtle-button full-width-button" href="guild.html?id=${guild.id}">Open Guild</a></footer>
             </article>
           `;
-        }).join("") : `<div class="empty-state" style="grid-column:1/-1"><p>No guilds yet.</p></div>`}
+        }).join("") : `<div class="empty-state"><p>No guilds yet.</p></div>`}
       </section>
     </section>
   `;
@@ -3050,23 +3071,23 @@ async function initDiscoveryPage() {
         <a class="btn btn-primary" href="profile.html#portfolio">Create entry</a>
       </header>
 
-      <section class="record-list" style="display:flex; flex-direction:column; max-width:700px; margin:0 auto; width:100%">
+      <section class="feed-list">
         ${
           entries.length
             ? entries.map(entry => {
                 const author = usersById.get(entry.createdBy);
                 const role = author ? author.role : "Unknown";
                 return `
-                  <article class="card record-card" style="margin-bottom:24px">
+                  <article class="card record-card feed-card">
                     <div class="card-header-row">
                       <h3>${escapeHtml(entry.title)}</h3>
                       <span class="pill">${escapeHtml(role)}</span>
                     </div>
-                    ${entry.tags && entry.tags.length ? `<div class="inline-actions" style="margin-bottom:12px">${entry.tags.map(t => `<span class="pill" style="border-color:var(--gold);color:var(--gold)">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
-                    <p style="margin-bottom:16px">${escapeHtml(entry.description || "No preview available.")}</p>
-                    <div style="font-size:0.85rem;color:var(--muted-text)">
+                    ${entry.tags && entry.tags.length ? `<div class="tag-stack">${entry.tags.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+                    <p>${escapeHtml(entry.description || "No preview available.")}</p>
+                    <div class="feed-meta">
                       <span>By ${escapeHtml(displayUserName(author))}</span>
-                      <span style="margin:0 8px">•</span>
+                      <span>•</span>
                       <span>${formatDate(entry.created_at)}</span>
                     </div>
                   </article>
