@@ -301,18 +301,11 @@ function renderNav(currentUser) {
   const dashboardHref = getDashboardPath(currentUser.role);
 
   nav.innerHTML = `
-    <a class="nav-link" href="${dashboardHref}">Dashboard</a>
     <a class="nav-link" href="subjects.html">Subjects</a>
     <a class="nav-link" href="guild.html">Guilds</a>
-    <a class="nav-link" href="research.html">Research</a>
-    <a class="nav-link" href="studios.html">Studios</a>
     <a class="nav-link" href="discovery.html">Discovery</a>
     <a class="nav-link" href="vision.html">Vision</a>
-    <a class="nav-link" href="profile.html">Profile</a>
-    <form id="global-search-form" class="nav-search">
-      <input id="global-search-input" type="search" placeholder="Search subjects, guilds, research, studios" />
-      <button class="nav-button" type="submit">Search</button>
-    </form>
+    <a class="nav-link" href="${dashboardHref}">Dashboard</a>
     <button id="logout-button" class="nav-button" type="button">Logout</button>
   `;
 
@@ -1089,6 +1082,72 @@ async function initResetPasswordPage() {
   });
 }
 
+
+function renderNeoscorePieChart() {
+  const domains = [
+    { name: "Lingosophy", color: "#8c4b2f" },
+    { name: "Arthmetics", color: "#c6a96b" },
+    { name: "Cosmology", color: "#6f7b5c" },
+    { name: "Biosphere", color: "#4a3c31" },
+    { name: "Chronicles", color: "#5b4e41" },
+    { name: "Civitas", color: "#7a5c4d" },
+    { name: "Tokenomics", color: "#8b7e66" },
+    { name: "Artifex", color: "#9c8166" },
+    { name: "Praxis", color: "#a88e72" },
+    { name: "Bioepisteme", color: "#5c6b5d" }
+  ];
+
+  const radius = 100;
+  const cx = 150;
+  const cy = 150;
+  const strokeWidth = 40;
+  const circumference = 2 * Math.PI * radius;
+  const segmentLength = circumference / domains.length;
+  const gap = 2;
+  const dashArray = `${segmentLength - gap} ${circumference - (segmentLength - gap)}`;
+  
+  const segmentsSvg = domains.map((domain, index) => {
+    const angle = (index * 360) / domains.length;
+    return `
+      <circle 
+        cx="${cx}" cy="${cy}" r="${radius}" 
+        fill="none" 
+        stroke="${domain.color}" 
+        stroke-width="${strokeWidth}" 
+        stroke-dasharray="${dashArray}" 
+        stroke-dashoffset="${circumference / 4}" 
+        transform="rotate(${angle} ${cx} ${cy})"
+      >
+        <title>${domain.name}</title>
+      </circle>
+    `;
+  }).join("");
+
+  const legendHtml = domains.map(domain => `
+    <div class="legend-item">
+      <div class="legend-color" style="background: ${domain.color}"></div>
+      <span>${domain.name}</span>
+    </div>
+  `).join("");
+
+  return `
+    <div class="card">
+      <p class="section-label">Learning Balance Map</p>
+      <h2>Neofolk Knowledge Model</h2>
+      <div class="chart-container">
+        <div class="chart-svg-wrapper">
+          <svg viewBox="0 0 300 300" width="100%" height="100%">
+            ${segmentsSvg}
+          </svg>
+        </div>
+        <div class="chart-legend">
+          ${legendHtml}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 async function initSeekerDashboard() {
   const currentUser = await requireRole(["seeker"]);
   if (!currentUser) return;
@@ -1139,6 +1198,7 @@ async function initSeekerDashboard() {
         </div>
         <p class="dashboard-meta">Seekers can build portfolios, record intellectual interests, enroll in approved modules, and study highlighted work.</p>
       </header>
+      ${renderNeoscorePieChart()}
 
       <section class="stats-grid">
         <article class="stat-card">
@@ -1480,6 +1540,7 @@ async function initCuratorDashboard() {
         </div>
         <p class="dashboard-meta">Curators define node identity and create modules. Modules remain pending until Arbiter approval.</p>
       </header>
+      ${renderNeoscorePieChart()}
 
       <section class="stats-grid">
         <article class="stat-card">
@@ -1607,6 +1668,7 @@ async function initArbiterDashboard() {
         </div>
         <p class="dashboard-meta">Arbiters review Curator status, approve or deny modules, and highlight exemplary portfolio work for discovery.</p>
       </header>
+      ${renderNeoscorePieChart()}
 
       <section class="stats-grid">
         <article class="stat-card">
@@ -1849,50 +1911,33 @@ async function initGuildPage() {
   const selectedGuild = guildList.find((guild) => String(guild.id) === String(selectedGuildId)) || null;
 
   if (!selectedGuild) {
-    root.innerHTML = `
-      <section class="guild-shell">
-        <header class="dashboard-header">
-          <div>
-            <p class="section-label">Guilds</p>
-            <h1>Research collectives</h1>
-          </div>
-          <p class="dashboard-meta">Guilds are collaborative inquiry environments for documentation, comparative study, experimentation, and serious questions pursued in company.</p>
-        </header>
+      root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Guilds</p>
+          <h1>Research Groups</h1>
+        </div>
+        ${currentUser.role !== "arbiter" ? `<button id="create-guild-button" class="btn btn-primary" type="button">Create Guild</button>` : ""}
+      </header>
 
-        <section class="card">
-          <p class="section-label">Create Guild</p>
-          <h2>Open a research pathway</h2>
-          ${
-            currentUser.role === "arbiter"
-              ? `<div class="page-note">Arbiters review guild quality and visibility rather than create new guilds directly.</div>`
-              : `
-                <form id="guild-create-form" class="form-stack">
-                  <label>Title<input name="title" type="text" required /></label>
-                  <label>Research focus<textarea name="research_focus" required></textarea></label>
-                  <label>Description<textarea name="description" required></textarea></label>
-                  <label>Tags<input name="tags" type="text" placeholder="ecology, heritage, design" /></label>
-                  <button class="btn btn-primary" type="submit">Create guild</button>
-                </form>
-              `
-          }
-          <p id="guild-message" class="status-text" aria-live="polite"></p>
-        </section>
-
-        <section class="guild-list">
-          ${guildList
-            .map((guild) => {
-              const tagNames = getEntityTags("guild", guild.id, tags, tagLinks);
-              const memberCount = guildMembers.filter((member) => member.guild_id === guild.id).length;
-              return `
-                <article class="card guild-card">
-                  <p class="section-label">${escapeHtml(guild.status || "open")}</p>
-                  <h2>${escapeHtml(guild.title || guild.name)}</h2>
-                  <p>${escapeHtml(guild.description || guild.research_focus || "No description yet.")}</p>
-                  ${renderTagPills(tagNames)}
-                  <p class="field-note">${memberCount} member${memberCount === 1 ? "" : "s"}</p>
-                  <footer><a class="text-link" href="guild.html?id=${guild.id}">Open guild</a></footer>
-                </article>
-              `;
+      <section class="record-list">
+        ${guilds.length ? guilds.map(guild => {
+          const membersList = guildMembers.filter(m => m.guild_id === guild.id);
+          const tagsList = getEntityTags("guild", guild.id, tags, tagLinks);
+          return \`
+            <article class="card record-card">
+              <h3>${escapeHtml(guild.title || guild.name)}</h3>
+              <p>${escapeHtml(guild.description || guild.research_focus || "No description")}</p>
+              ${tagsList.length ? \`<div style="margin-top:12px; margin-bottom:12px">${tagsList.map(t => \`<span class="pill">${escapeHtml(t)}</span>\`).join("")}</div>\` : ""}
+              <p class="field-note" style="margin-top:auto; padding-top:16px">${membersList.length} Member${membersList.length === 1 ? "" : "s"}</p>
+              <footer style="margin-top:16px"><a class="btn subtle-button" style="width:100%" href="guild.html?id=${guild.id}">Open Guild</a></footer>
+            </article>
+          \`;
+        }).join("") : \`<div class="empty-state" style="grid-column:1/-1"><p>No guilds yet.</p></div>\`}
+      </section>
+    </section>
+  `;
             })
             .join("")}
         </section>
@@ -2174,26 +2219,40 @@ async function initDiscoveryPage() {
   const [entries, users] = await Promise.all([fetchHighlightedEntries(), fetchUsers()]);
   const usersById = new Map(ensureRealUserMap(users).map((user) => [user.id, user]));
 
-  root.innerHTML = `
+    root.innerHTML = `
     <section class="dashboard-shell">
       <header class="dashboard-header">
         <div>
           <p class="section-label">Discovery</p>
-          <h1>Highlighted scholarly work</h1>
+          <h1>Academic Feed</h1>
         </div>
-        <p class="dashboard-meta">A calm showcase of portfolio entries selected by Arbiters for academic quality and clarity.</p>
+        <a class="btn btn-primary" href="profile.html#portfolio">Create entry</a>
       </header>
 
-      <section class="card">
-        <p class="section-label">Highlighted Portfolio</p>
-        <h2>Curated feed</h2>
-        <div class="record-list">
-          ${
-            entries.length
-              ? entries.map((entry) => portfolioCard(entry, currentUser, usersById)).join("")
-              : emptyCard("No highlighted work", "The discovery feed populates only after Arbiters mark portfolio entries as highlighted.")
-          }
-        </div>
+      <section class="record-list" style="display:flex; flex-direction:column; max-width:700px; margin:0 auto; width:100%">
+        ${
+          entries.length
+            ? entries.map(entry => {
+                const author = usersById.get(entry.createdBy);
+                const role = author ? author.role : "Unknown";
+                return \`
+                  <article class="card record-card" style="margin-bottom:24px">
+                    <div class="card-header-row">
+                      <h3>${escapeHtml(entry.title)}</h3>
+                      <span class="pill">${escapeHtml(role)}</span>
+                    </div>
+                    ${entry.tags && entry.tags.length ? \`<div class="inline-actions" style="margin-bottom:12px">${entry.tags.map(t => \`<span class="pill" style="border-color:var(--gold);color:var(--gold)">${escapeHtml(t)}</span>\`).join("")}</div>\` : ""}
+                    <p style="margin-bottom:16px">${escapeHtml(entry.description || "No preview available.")}</p>
+                    <div style="font-size:0.85rem;color:var(--muted-text)">
+                      <span>By ${escapeHtml(displayUserName(author))}</span>
+                      <span style="margin:0 8px">•</span>
+                      <span>${formatDate(entry.created_at)}</span>
+                    </div>
+                  </article>
+                \`;
+              }).join("")
+            : \`<div class="empty-state"><p>No highlighted scholarly work yet.</p></div>\`
+        }
       </section>
     </section>
   `;
@@ -2399,6 +2458,7 @@ async function initOperatorDashboard() {
         </div>
         <p class="dashboard-meta">The operator surface sits above standard review roles and provides a clean system overview across people, modules, portfolios, and navigation paths.</p>
       </header>
+      ${renderNeoscorePieChart()}
 
       <section class="stats-grid">
         <article class="stat-card">

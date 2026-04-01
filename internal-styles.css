@@ -1,0 +1,314 @@
+/* internal-styles.css - Dark Academia x Solarpunk (Internal Pages Only) */
+
+:root {
+  --ink: #1b1410;
+  --deep-brown: #2c1f1a;
+  --parchment: #e8dcc8;
+  --gold: #c6a96b;
+  --olive: #6f7b5c;
+  --terracotta: #8c4b2f;
+  --muted-text: #a69b8d;
+  --border-color: rgba(232, 220, 200, 0.15);
+  
+  --radius: 4px;
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  
+  --serif: "Cormorant", Georgia, serif;
+  --sans: "Inter", "Helvetica Neue", sans-serif;
+}
+
+body.internal-page {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--ink);
+  color: var(--parchment);
+  font-family: var(--sans);
+  font-weight: 400;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.internal-page h1,
+.internal-page h2,
+.internal-page h3,
+.internal-page h4,
+.internal-page h5 {
+  font-family: var(--serif);
+  font-weight: 500;
+  margin: 0;
+  color: var(--parchment);
+}
+
+.internal-page h1 { font-size: 2.8rem; font-weight: 600; line-height: 1.1; margin-bottom: 24px; }
+.internal-page h2 { font-size: 2.2rem; margin-bottom: 20px; }
+.internal-page h3 { font-size: 1.6rem; margin-bottom: 12px; }
+
+.internal-page p {
+  margin: 0 0 16px 0;
+  color: var(--muted-text);
+}
+
+.internal-page a {
+  color: var(--gold);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.internal-page a:hover {
+  color: var(--parchment);
+}
+
+/* Global Shell */
+.internal-page .page-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* Persistent Navigation */
+.internal-page .site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  margin-bottom: 80px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.internal-page .brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.internal-page .brand-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  object-fit: cover;
+}
+
+.internal-page .brand-copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.internal-page .brand-kicker {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+}
+
+.internal-page .brand-mark strong {
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.internal-page .site-nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.internal-page .nav-link {
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  color: var(--muted-text);
+  font-weight: 500;
+}
+
+.internal-page .nav-link:hover {
+  color: var(--parchment);
+}
+
+.internal-page .nav-button {
+  background: transparent;
+  border: none;
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.internal-page .nav-button:hover {
+  color: var(--parchment);
+}
+
+.internal-page .nav-search {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.internal-page #global-search-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--parchment);
+  padding: 4px 8px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  width: 200px;
+}
+
+.internal-page #global-search-input:focus {
+  outline: none;
+  border-bottom-color: var(--gold);
+}
+
+.internal-page .version-badge {
+  display: none;
+}
+
+/* Stack Layout */
+.internal-page .page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+/* Cards & Structural Elements */
+.internal-page .card {
+  background: var(--deep-brown);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 40px;
+  box-shadow: var(--shadow);
+}
+
+.internal-page .record-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.internal-page .record-card {
+  background: rgba(44, 31, 26, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.internal-page .record-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+
+.internal-page .domain-card-tag {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.internal-page .pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+
+.internal-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: var(--radius);
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.internal-page .btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.internal-page .btn-primary {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.internal-page .btn-primary:hover {
+  background: transparent;
+  color: var(--gold);
+}
+
+.internal-page .empty-state {
+  text-align: center;
+  padding: 60px 24px;
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius);
+  color: var(--muted-text);
+}
+
+.internal-page .empty-state p {
+  margin: 0;
+}
+
+/* Pie Chart Container */
+.internal-page .chart-container {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  margin-bottom: 40px;
+}
+
+.internal-page .chart-svg-wrapper {
+  width: 320px;
+  height: 320px;
+  flex-shrink: 0;
+}
+
+.internal-page .chart-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.internal-page .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  color: var(--parchment);
+}
+
+.internal-page .legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .internal-page .site-nav {
+    display: none; /* In a real app we'd have a mobile menu, but for now we simplify */
+  }
+  
+  .internal-page .chart-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
