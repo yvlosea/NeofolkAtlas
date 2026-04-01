@@ -451,8 +451,10 @@ function markOnboardingSeen(user) {
 
 function renderOnboarding(user) {
   if (!shouldShowOnboarding(user)) return;
+  if (document.getElementById("onboarding-overlay")) return;
 
   const overlay = document.createElement("div");
+  overlay.id = "onboarding-overlay";
   overlay.className = "intro-overlay onboarding-overlay";
   overlay.innerHTML = `
     <div class="intro-panel onboarding-panel" role="dialog" aria-modal="true" aria-label="How to use Neofolk Atlas">
@@ -462,29 +464,39 @@ function renderOnboarding(user) {
           <p class="section-label">Welcome to the Atlas</p>
           <strong>How to Use the Platform</strong>
         </div>
+        <button class="btn subtle-button onboarding-close" id="dismiss-onboarding-top" type="button">Close</button>
       </div>
-      <div class="record-list">
-        <article class="record-card"><h3>Dashboard</h3><p>Your active overview: study, progress, portfolio, and current work.</p></article>
-        <article class="record-card"><h3>Subjects</h3><p>Structured areas of study with outcomes, curators, and linked modules.</p></article>
-        <article class="record-card"><h3>Guilds</h3><p>Collaborative research groups where members investigate and produce work together.</p></article>
-        <article class="record-card"><h3>Research</h3><p>An academic discussion space for notes, questions, documentation, and resource sharing.</p></article>
-        <article class="record-card"><h3>Studios</h3><p>Capability environments that can be requested as your learning record deepens.</p></article>
-        <article class="record-card"><h3>Discovery</h3><p>A journal-like section for highlighted work chosen through review.</p></article>
-        <article class="record-card"><h3>Vision</h3><p>The long-form philosophy and infrastructure intent behind Neofolk.</p></article>
-        <article class="record-card"><h3>Profile & Help</h3><p>Your public academic identity and the in-product guidance area whenever you need direction.</p></article>
-      </div>
-      <div class="inline-actions">
-        <a class="btn" href="help.html">Open Help Page</a>
-        <button class="btn btn-primary" id="dismiss-onboarding" type="button">Start Exploring</button>
+      <div class="intro-copy">
+        <p class="page-note">Use this brief guide once, then revisit the full help area any time from the top navigation.</p>
+        <div class="record-list">
+          <article class="record-card"><h3>Dashboard</h3><p>Your active overview: study, progress, portfolio, and current work.</p></article>
+          <article class="record-card"><h3>Subjects</h3><p>Structured areas of study with outcomes, curators, and linked modules.</p></article>
+          <article class="record-card"><h3>Guilds</h3><p>Collaborative research groups where members investigate and produce work together.</p></article>
+          <article class="record-card"><h3>Research</h3><p>An academic discussion space for notes, questions, documentation, and resource sharing.</p></article>
+          <article class="record-card"><h3>Studios</h3><p>Capability environments that can be requested as your learning record deepens.</p></article>
+          <article class="record-card"><h3>Discovery</h3><p>A journal-like section for highlighted work chosen through review.</p></article>
+          <article class="record-card"><h3>Vision</h3><p>The long-form philosophy and infrastructure intent behind Neofolk.</p></article>
+          <article class="record-card"><h3>Profile & Help</h3><p>Your public academic identity and the in-product guidance area whenever you need direction.</p></article>
+        </div>
+        <div class="inline-actions onboarding-actions">
+          <a class="btn" href="help.html">Open Help Page</a>
+          <button class="btn btn-primary" id="dismiss-onboarding" type="button">Start Exploring</button>
+        </div>
       </div>
     </div>
   `;
 
   document.body.appendChild(overlay);
-  document.getElementById("dismiss-onboarding")?.addEventListener("click", () => {
+  const dismiss = () => {
     markOnboardingSeen(user);
     overlay.classList.add("is-hidden");
     window.setTimeout(() => overlay.remove(), 420);
+  };
+
+  document.getElementById("dismiss-onboarding")?.addEventListener("click", dismiss);
+  document.getElementById("dismiss-onboarding-top")?.addEventListener("click", dismiss);
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) dismiss();
   });
 }
 
@@ -3024,9 +3036,6 @@ async function init() {
     renderVersionBadges();
     renderNav(currentUser);
     renderReflectionOverlay();
-    if (currentUser && getCurrentPage() !== "home" && getCurrentPage() !== "reset-password") {
-      renderOnboarding(currentUser);
-    }
 
     const page = getCurrentPage();
     if (page === "home") await renderHomePage();
@@ -3043,6 +3052,10 @@ async function init() {
     if (page === "module") await initModulePage();
     if (page === "discovery") await initDiscoveryPage();
     if (page === "reset-password") await initResetPasswordPage();
+
+    if (currentUser && page !== "home" && page !== "reset-password") {
+      window.setTimeout(() => renderOnboarding(currentUser), 120);
+    }
   } catch (error) {
     console.error(error);
     const root =

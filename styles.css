@@ -562,6 +562,27 @@ textarea:focus {
 
 .onboarding-panel {
   width: min(980px, 100%);
+  display: grid;
+  gap: 16px;
+  max-height: min(88vh, 920px);
+  overflow: auto;
+}
+
+.onboarding-overlay {
+  z-index: 120;
+}
+
+.onboarding-close {
+  margin-left: auto;
+  width: auto;
+  align-self: start;
+}
+
+.onboarding-actions {
+  position: sticky;
+  bottom: 0;
+  padding-top: 8px;
+  background: linear-gradient(180deg, transparent, rgba(35, 27, 23, 0.96) 24%);
 }
 
 .denial-note {
@@ -796,6 +817,11 @@ textarea:focus {
 
   .intro-panel {
     padding: 24px;
+  }
+
+  .onboarding-close {
+    width: 100%;
+    margin-left: 0;
   }
 
   .dashboard-header {
