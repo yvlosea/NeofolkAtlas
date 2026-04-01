@@ -303,12 +303,59 @@ body.internal-page {
 
 /* Responsive */
 @media (max-width: 900px) {
+  .internal-page .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
   .internal-page .site-nav {
-    display: none; /* In a real app we'd have a mobile menu, but for now we simplify */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
   }
   
   .internal-page .chart-container {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .internal-page .page-shell {
+    padding: 24px 16px;
+  }
+
+  .internal-page h1 { font-size: 2.2rem; margin-bottom: 16px; }
+  .internal-page h2 { font-size: 1.8rem; margin-bottom: 16px; }
+  .internal-page h3 { font-size: 1.3rem; }
+
+  .internal-page .card {
+    padding: 24px;
+  }
+
+  .internal-page .page-stack {
+    gap: 40px;
+  }
+
+  .internal-page .record-list {
+    grid-template-columns: 1fr;
+  }
+
+  .internal-page .chart-legend {
+    grid-template-columns: 1fr;
+  }
+
+  .internal-page .chart-svg-wrapper {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    aspect-ratio: 1;
+    margin: 0 auto;
+  }
+  
+  .internal-page .chart-container {
+    align-items: center;
   }
 }
