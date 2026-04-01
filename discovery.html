@@ -4,31 +4,43 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Discovery | Neofolk Atlas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-page="discovery">
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="brand-mark" href="index.html" aria-label="Neofolk Atlas home">
-          <img class="brand-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
-          <span class="brand-copy">
-            <span class="brand-kicker">Neofolk Atlas</span>
-            <strong>Learning as Identity</strong>
-          </span>
+    <div class="main-container">
+      <header class="top-bar">
+        <a href="index.html" class="logo-container" aria-label="Neofolk Atlas home">
+          <img src="neofolk-logo.jpg" alt="Neofolk logo" />
+          <span class="logo-text">Neofolk Atlas</span>
         </a>
-        <span class="version-badge">v0.6.2 Alpha</span>
-        <nav id="app-nav" class="site-nav" aria-label="Primary"></nav>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="subjects.html">Subjects</a>
+          <a href="guild.html">Guilds</a>
+          <a href="discovery.html">Discovery</a>
+          <a href="vision.html">Vision</a>
+        </nav>
       </header>
 
-      <main id="discovery-root" class="page-stack"></main>
-    </div>
+      <main class="section">
+        <h1 class="section-title">Discovery</h1>
+        <p class="section-subtitle">Scholarly feed of ideas and learning artifacts</p>
 
+        <div style="text-align: right; max-width: 700px; margin: 0 auto 24px;">
+          <button class="btn" type="button">Create Entry</button>
+        </div>
+
+        <div class="feed-container" id="discovery-feed">
+           <!-- Dynamic feed entries injected by app.js -->
+           <div class="empty-state">
+            <p>No scholarly work has been published yet.</p>
+           </div>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <p>&copy; 2026 Neofolk Humanitarian Board of Education. Archival access only.</p>
+      </footer>
+    </div>
     <script type="module" src="app.js"></script>
   </body>
 </html>
