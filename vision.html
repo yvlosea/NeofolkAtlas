@@ -4,80 +4,64 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vision | Neofolk Atlas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-page="vision">
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="brand-mark" href="index.html" aria-label="Neofolk Atlas home">
-          <img class="brand-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
-          <span class="brand-copy">
-            <span class="brand-kicker">Neofolk Atlas</span>
-            <strong>Learning as Identity</strong>
-          </span>
+    <div class="main-container">
+      <header class="top-bar">
+        <a href="index.html" class="logo-container" aria-label="Neofolk Atlas home">
+          <img src="neofolk-logo.jpg" alt="Neofolk logo" />
+          <span class="logo-text">Neofolk Atlas</span>
         </a>
-        <span class="version-badge">v0.6.2 Alpha</span>
-        <nav id="app-nav" class="site-nav" aria-label="Primary"></nav>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="subjects.html">Subjects</a>
+          <a href="guild.html">Guilds</a>
+          <a href="discovery.html">Discovery</a>
+          <a href="vision.html">Vision</a>
+        </nav>
       </header>
 
-      <main class="page-stack">
-        <section class="card prose-panel">
-          <p class="section-label">Vision</p>
-          <h1>Neofolk Humanitarian Board of Education</h1>
-          <p>
-            Neofolk Atlas is designed as an academic network where identity is shaped by disciplined study, documented work,
-            and long-form inquiry rather than by passive credential collection.
-          </p>
-          <div class="three-column">
-            <article class="soft-card">
-              <h3>Portfolio-Based Education</h3>
-              <p>Learning is evidenced through records of work, reflection, documentation, and practical contribution rather than one-time examinations alone.</p>
-            </article>
-            <article class="soft-card">
-              <h3>Guild Research Structure</h3>
-              <p>Guilds are research collectives where seekers and curators can investigate questions, produce outputs, and submit them for arbiter review.</p>
-            </article>
-            <article class="soft-card">
-              <h3>Studio Environments</h3>
-              <p>Studios represent capability environments unlocked through demonstrated contribution, readiness, and intellectual seriousness.</p>
-            </article>
-          </div>
-        </section>
+      <main class="section">
+        <h1 class="section-title">Vision Architecture</h1>
+        <p class="section-subtitle">System Philosophy</p>
 
-        <section class="card prose-panel">
-          <p class="section-label">Infrastructure</p>
-          <h2>Nodes, review, and future expansion</h2>
-          <p>
-            The longer-term vision is a decentralised network of educational nodes with clear review structures, interoperable portfolios,
-            and scholarly pathways that can grow without collapsing into a single rigid institution.
-          </p>
-          <div class="record-list">
-            <article class="record-card">
-              <h3>Subjects</h3>
-              <p>Structured domains for foundational study and literacy.</p>
-            </article>
-            <article class="record-card">
-              <h3>Guilds</h3>
-              <p>Collaborative environments for research, experimentation, and documented inquiry.</p>
-            </article>
-            <article class="record-card">
-              <h3>Arbiters</h3>
-              <p>Academic reviewers who approve modules, assess outputs, and protect standards.</p>
-            </article>
-          </div>
-          <div class="inline-actions">
-            <button class="btn btn-primary" type="button" onclick="window.print()">Download PDF</button>
-          </div>
-        </section>
+        <div style="display: flex; flex-direction: column; gap: 40px; max-width: 800px; margin: 0 auto; margin-top: 60px;">
+          <article class="card">
+            <h2>Core Idea</h2>
+            <p>Neofolk Atlas serves as an academic network where identity is shaped by disciplined study, documented work, and long-form inquiry. It moves away from passive credential collection and focuses on learning as proof of life. Verification comes from public review and sustained effort over time rather than simple pass/fail examinations.</p>
+          </article>
+          
+          <article class="card">
+            <h2>Structures</h2>
+            <p>The system breaks the traditional monolithic institution into decoupled components. Portfolios anchor the identity, Guilds manage peer exploration, and Curators handle the guidance layers. Every interaction is meant to be highly intentional—there is no infinite scroll mechanism designed to harvest attention.</p>
+          </article>
+
+          <article class="card">
+            <h2>Domains</h2>
+            <p>Ten primary subjects form the bedrock of the epistemological model. From Lingosophy to Praxis, learning domains are mapped comprehensively but non-hierarchically. The domain structure acknowledges the equal necessity of physical manifestation (art, mechanics) and abstract contemplation (philosophy, mathematics).</p>
+          </article>
+
+          <article class="card">
+            <h2>Future Infrastructure</h2>
+            <p>The architecture is designed to eventually decentralize. Local nodes (Studios) will integrate with global review structures without collapsing into a rigid bureaucratic institution. Data will move toward self-sovereign portfolios, allowing lifelong learners true ownership over their academic records.</p>
+          </article>
+
+          <article class="card">
+            <h2>Learning Network</h2>
+            <p>Collaboration happens within focused reading groups, study circles, and specialized guilds. Rather than a platform driven by an algorithmic popularity layer, it behaves like an asynchronous library—intellectual materials are shared slowly, read deeply, and discussed deliberately.</p>
+          </article>
+
+          <article class="card">
+            <h2>Panarchium Concept</h2>
+            <p>Our long-term organizational aim is the Panarchium: a dynamic hierarchy where authority is based purely on intellectual consensus and demonstrated competence, adapting organically as new forms of knowledge arise through the network's collective study.</p>
+          </article>
+        </div>
       </main>
-    </div>
 
+      <footer class="site-footer">
+        <p>&copy; 2026 Neofolk Humanitarian Board of Education. Archival access only.</p>
+      </footer>
+    </div>
     <script type="module" src="app.js"></script>
   </body>
 </html>

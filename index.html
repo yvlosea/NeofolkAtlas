@@ -4,129 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Neofolk Atlas</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body data-page="home">
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="brand-mark" href="index.html" aria-label="Neofolk Atlas home">
-          <img class="brand-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
-          <span class="brand-copy">
-            <span class="brand-kicker">Neofolk Atlas</span>
-            <strong>Learning as Identity</strong>
-          </span>
+    <div class="main-container">
+      <header class="top-bar">
+        <a href="index.html" class="logo-container" aria-label="Neofolk Atlas home">
+          <img src="neofolk-logo.jpg" alt="Neofolk logo" />
+          <span class="logo-text">Neofolk Atlas</span>
         </a>
-        <span class="version-badge">v0.6.2 Alpha</span>
-        <nav id="app-nav" class="site-nav" aria-label="Primary"></nav>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="subjects.html">Subjects</a>
+          <a href="guild.html">Guilds</a>
+          <a href="discovery.html">Discovery</a>
+          <a href="vision.html">Vision</a>
+        </nav>
       </header>
 
-      <main class="page-stack">
-        <section class="hero-panel">
-          <article class="hero-copy card">
-            <p class="section-label">Dark Academia Network</p>
-            <h1>Build an intellectual record through guilds, portfolios, and guided study.</h1>
-            <p class="lede">
-              Neofolk Atlas is a Supabase-backed academic alpha built around subjects, guilds, portfolios, and careful review.
-              Every account begins quietly and becomes meaningful through recorded work, disciplined study, and intellectual output.
-            </p>
-            <div class="hero-grid">
-              <div class="archive-card">
-                <span>Seeker</span>
-                <p>Learner identity with portfolios, niche entries, guild interests, and module enrollments.</p>
-              </div>
-              <div class="archive-card">
-                <span>Curator</span>
-                <p>Knowledge guide with verified node identity, module authorship, and portfolio expectations.</p>
-              </div>
-              <div class="archive-card">
-                <span>Arbiter</span>
-                <p>Reviewer authority able to inspect platform progress without editing learning records.</p>
-              </div>
-            </div>
-          </article>
-
-          <article class="auth-panel card">
-            <div class="auth-layout">
-              <section>
-                <p class="section-label">Sign Up</p>
-                <h2>Create an account</h2>
-                <form id="signup-form" class="form-stack">
-                  <label>
-                    Email
-                    <input id="signup-email" name="email" type="email" autocomplete="email" required />
-                  </label>
-                  <label>
-                    Password
-                    <input id="signup-password" name="password" type="password" autocomplete="new-password" required />
-                  </label>
-                  <label>
-                    Role
-                    <select id="signup-role" name="role" required>
-                      <option value="seeker">Seeker</option>
-                      <option value="curator">Curator</option>
-                    </select>
-                  </label>
-                  <label id="curator-code-field" class="hidden">
-                    Curator Code
-                    <input id="signup-curator-code" name="curatorCode" type="text" autocomplete="off" />
-                  </label>
-                  <button class="btn btn-primary" type="submit">Create Account</button>
-                </form>
-                <p id="signup-message" class="status-text" aria-live="polite"></p>
-              </section>
-
-              <section>
-                <p class="section-label">Login</p>
-                <h2>Enter the archive</h2>
-                <form id="login-form" class="form-stack">
-                  <label>
-                    Email
-                    <input id="login-email" name="email" type="email" autocomplete="email" required />
-                  </label>
-                  <label>
-                    Password
-                    <input id="login-password" name="password" type="password" autocomplete="current-password" required />
-                  </label>
-                  <button class="btn" type="submit">Login</button>
-                  <button id="forgot-password-button" class="btn subtle-button" type="button">Forgot Password</button>
-                </form>
-                <p id="login-message" class="status-text" aria-live="polite"></p>
-              </section>
-            </div>
-          </article>
+      <main>
+        <section class="hero">
+          <p class="description">
+            “Neofolk Atlas<br>
+            A living architecture for interdisciplinary learning”
+          </p>
+          <div id="hero-quote"></div>
         </section>
 
-        <section id="about" class="card prose-panel">
-          <p class="section-label">System Philosophy</p>
-          <h2>Portfolio-centric, role-guarded, and intentionally quiet until real work appears.</h2>
-          <p>
-            Subjects define structured study. Guilds define research communities. Curators create modules, Seekers build portfolios and niche folders,
-            Arbiters review scholarly progress, and Operators retain universal system access.
-          </p>
-          <div class="three-column">
-            <article class="soft-card">
-              <h3>Subjects</h3>
-              <p>Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, and related study domains.</p>
-            </article>
-            <article class="soft-card">
-              <h3>Verification</h3>
-              <p>Curator permissions require a valid Curator Code, and Arbiter review determines which modules and scholarly work become visible.</p>
-            </article>
-            <article class="soft-card">
-              <h3>Storage</h3>
-              <p>Authentication and learning records are loaded from Supabase so the platform reflects real accounts, real modules, and real portfolio work.</p>
-            </article>
-          </div>
+        <section class="nav-cards">
+          <a href="subjects.html" class="card nav-card">
+            <h2>Subjects</h2>
+            <p>Explore structured domains and learning pathways.</p>
+          </a>
+          <a href="guild.html" class="card nav-card">
+            <h2>Guilds</h2>
+            <p>Join student-led collaborative research spaces.</p>
+          </a>
+          <a href="discovery.html" class="card nav-card">
+            <h2>Discovery</h2>
+            <p>A scholarly sharing environment for documented work.</p>
+          </a>
+          <a href="vision.html" class="card nav-card">
+            <h2>Vision</h2>
+            <p>Examine the long-term system architecture and design.</p>
+          </a>
+        </section>
+
+        <!-- Neoscore Wheel -->
+        <section class="wheel-container">
+          <!-- Dynamically drawn via app.js -->
+          <div id="domain-wheel"></div>
         </section>
       </main>
-    </div>
 
+      <footer class="site-footer">
+        <p>&copy; 2026 Neofolk Humanitarian Board of Education. Archival access only.</p>
+      </footer>
+    </div>
     <script type="module" src="app.js"></script>
   </body>
 </html>
