@@ -308,11 +308,19 @@ function renderNav(currentUser) {
   const dashboardHref = getDashboardPath(currentUser.role);
 
   nav.innerHTML = `
+    <a class="nav-link" href="${dashboardHref}">Dashboard</a>
     <a class="nav-link" href="subjects.html">Subjects</a>
     <a class="nav-link" href="guild.html">Guilds</a>
+    <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="studios.html">Studios</a>
     <a class="nav-link" href="discovery.html">Discovery</a>
     <a class="nav-link" href="vision.html">Vision</a>
-    <a class="nav-link" href="${dashboardHref}">Dashboard</a>
+    <a class="nav-link" href="profile.html">Profile</a>
+    <a class="nav-link" href="help.html">Help</a>
+    <form id="global-search-form" class="nav-search">
+      <input id="global-search-input" type="search" placeholder="Search the atlas" />
+      <button id="global-search-button" class="nav-button" type="submit">Search</button>
+    </form>
     <button id="logout-button" class="nav-button" type="button">Logout</button>
   `;
 
@@ -424,6 +432,59 @@ function renderNav(currentUser) {
 function renderVersionBadges() {
   document.querySelectorAll(".version-badge").forEach((node) => {
     node.textContent = appVersion;
+  });
+}
+
+function getOnboardingKey(user) {
+  return `neofolk.onboarding.${user?.id || "guest"}`;
+}
+
+function shouldShowOnboarding(user) {
+  if (!user) return false;
+  return !localStorage.getItem(getOnboardingKey(user));
+}
+
+function markOnboardingSeen(user) {
+  if (!user) return;
+  localStorage.setItem(getOnboardingKey(user), "seen");
+}
+
+function renderOnboarding(user) {
+  if (!shouldShowOnboarding(user)) return;
+
+  const overlay = document.createElement("div");
+  overlay.className = "intro-overlay onboarding-overlay";
+  overlay.innerHTML = `
+    <div class="intro-panel onboarding-panel" role="dialog" aria-modal="true" aria-label="How to use Neofolk Atlas">
+      <div class="intro-topline">
+        <img class="intro-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
+        <div class="intro-wordmark">
+          <p class="section-label">Welcome to the Atlas</p>
+          <strong>How to Use the Platform</strong>
+        </div>
+      </div>
+      <div class="record-list">
+        <article class="record-card"><h3>Dashboard</h3><p>Your active overview: study, progress, portfolio, and current work.</p></article>
+        <article class="record-card"><h3>Subjects</h3><p>Structured areas of study with outcomes, curators, and linked modules.</p></article>
+        <article class="record-card"><h3>Guilds</h3><p>Collaborative research groups where members investigate and produce work together.</p></article>
+        <article class="record-card"><h3>Research</h3><p>An academic discussion space for notes, questions, documentation, and resource sharing.</p></article>
+        <article class="record-card"><h3>Studios</h3><p>Capability environments that can be requested as your learning record deepens.</p></article>
+        <article class="record-card"><h3>Discovery</h3><p>A journal-like section for highlighted work chosen through review.</p></article>
+        <article class="record-card"><h3>Vision</h3><p>The long-form philosophy and infrastructure intent behind Neofolk.</p></article>
+        <article class="record-card"><h3>Profile & Help</h3><p>Your public academic identity and the in-product guidance area whenever you need direction.</p></article>
+      </div>
+      <div class="inline-actions">
+        <a class="btn" href="help.html">Open Help Page</a>
+        <button class="btn btn-primary" id="dismiss-onboarding" type="button">Start Exploring</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  document.getElementById("dismiss-onboarding")?.addEventListener("click", () => {
+    markOnboardingSeen(user);
+    overlay.classList.add("is-hidden");
+    window.setTimeout(() => overlay.remove(), 420);
   });
 }
 
@@ -995,7 +1056,7 @@ async function renderHomePage() {
     }
   });
 
-  document.getElementById("loginForm").addEventListener("submit", async (event) => {
+  document.getElementById("login-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     setMessage("login-message", "", "");
 
@@ -2322,6 +2383,373 @@ async function initDiscoveryPage() {
   `;
 }
 
+async function initResearchPage() {
+  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  if (!currentUser) return;
+
+  const root = document.getElementById("research-root");
+  if (!root) return;
+
+  const [posts, subjects, guilds, tags, tagLinks] = await Promise.all([
+    fetchResearchPosts(),
+    fetchSubjects(),
+    fetchGuildRecords(),
+    fetchTags(),
+    fetchTagLinks()
+  ]);
+
+  const tagOptions = computeTagFilterOptions(tags, tagLinks, "research_post");
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Research Feed</p>
+          <h1>Academic discussion and documentation</h1>
+        </div>
+        <p class="dashboard-meta">This is the shared intellectual exchange space for questions, documentation, research notes, and curated links. The tone remains scholarly rather than casual.</p>
+      </header>
+
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Create Post</p>
+          <h2>Publish research notes</h2>
+          <form id="research-form" class="form-stack">
+            <label>Title<input name="title" type="text" required /></label>
+            <label>Body<textarea name="body" required></textarea></label>
+            <label>Tags<input name="tags" type="text" placeholder="philosophy, design, ecology" /></label>
+            <label>Related subject
+              <select name="subject_id">
+                <option value="">None</option>
+                ${subjects.map((subject) => `<option value="${subject.id}">${escapeHtml(subject.name)}</option>`).join("")}
+              </select>
+            </label>
+            <label>Related guild
+              <select name="guild_id">
+                <option value="">None</option>
+                ${guilds.map((guild) => `<option value="${guild.id}">${escapeHtml(guild.title || guild.name)}</option>`).join("")}
+              </select>
+            </label>
+            <button class="btn btn-primary" type="submit">Publish post</button>
+          </form>
+          <p id="research-message" class="status-text" aria-live="polite"></p>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Filter</p>
+          <h2>Find by tag</h2>
+          <div class="inline-actions">
+            <button class="btn subtle-button research-filter-button" type="button" data-tag="">All</button>
+            ${tagOptions.map((tag) => `<button class="btn subtle-button research-filter-button" type="button" data-tag="${escapeHtml(tag.name)}">${escapeHtml(tag.name)}</button>`).join("")}
+          </div>
+        </article>
+      </section>
+
+      <section class="card">
+        <p class="section-label">Current Feed</p>
+        <h2>Posts and learning notes</h2>
+        <div id="research-feed-list" class="record-list">
+          ${
+            posts.length
+              ? posts
+                  .map(
+                    (post) => `
+                      <article class="record-card research-post-card" data-tags="${escapeHtml((getEntityTags("research_post", post.id, tags, tagLinks) || post.tags || []).join(","))}">
+                        <p class="section-label">${formatDate(post.created_at)}</p>
+                        <h3>${escapeHtml(post.title)}</h3>
+                        <p>${escapeHtml(post.body || "")}</p>
+                        ${renderTagPills(getEntityTags("research_post", post.id, tags, tagLinks) || post.tags || [])}
+                        <footer class="inline-actions">
+                          <span class="pill">Upvotes: ${Number(post.upvotes || 0)}</span>
+                          <span class="pill">Saved: ${Number(post.saves || 0)}</span>
+                        </footer>
+                      </article>
+                    `
+                  )
+                  .join("")
+              : emptyCard("No research posts yet", "Create the first research post once the research_posts table is available in Supabase.")
+          }
+        </div>
+      </section>
+    </section>
+  `;
+
+  document.getElementById("research-form")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const title = form.get("title")?.toString().trim();
+    const body = form.get("body")?.toString().trim();
+    const subjectId = form.get("subject_id")?.toString().trim();
+    const guildId = form.get("guild_id")?.toString().trim();
+    const rawTags = form.get("tags")?.toString().trim();
+
+    if (!title || !body) {
+      setMessage("research-message", "Missing fields.", "error");
+      return;
+    }
+
+    const { error } = await supabase.from("research_posts").insert({
+      user_id: currentUser.id,
+      title,
+      body,
+      subject_id: subjectId || null,
+      guild_id: guildId || null
+    });
+    setMessage("research-message", error ? error.message : "Research post published.", error ? "error" : "success");
+    if (!error && rawTags) {
+      await initResearchPage();
+    }
+  });
+
+  root.querySelectorAll(".research-filter-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const tag = button.dataset.tag;
+      root.querySelectorAll(".research-post-card").forEach((card) => {
+        const tagsValue = card.dataset.tags || "";
+        card.classList.toggle("hidden", tag && !tagsValue.split(",").includes(tag));
+      });
+    });
+  });
+}
+
+async function initStudiosPage() {
+  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  if (!currentUser) return;
+
+  const root = document.getElementById("studios-root");
+  if (!root) return;
+
+  const [studios, requests] = await Promise.all([fetchStudios(), fetchStudioRequests()]);
+  const ownRequests = requests.filter((request) => request.user_id === currentUser.id);
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Studios</p>
+          <h1>Capability environments</h1>
+        </div>
+        <p class="dashboard-meta">Studios are capability spaces for advanced practice. They can represent engineering, craft, language, performance, science, architecture, and more.</p>
+      </header>
+
+      <section class="card">
+        <p class="section-label">Studios Near You</p>
+        <h2>Interactive learning map coming soon</h2>
+        <p>This future map will connect studios, lodges, atheneums, and coliseums across a larger learning geography.</p>
+      </section>
+
+      <section class="guild-list">
+        ${
+          studios.length
+            ? studios
+                .map((studio) => {
+                  const request = ownRequests.find((item) => item.studio_id === studio.id);
+                  return `
+                    <article class="card guild-card">
+                      <p class="section-label">${escapeHtml(studio.category || "Studio")}</p>
+                      <h2>${escapeHtml(studio.name)}</h2>
+                      <p>${escapeHtml(studio.description || "No description yet.")}</p>
+                      <p class="field-note">Token requirement: ${escapeHtml(studio.token_requirement || 0)}</p>
+                      <p class="field-note">Required level: ${escapeHtml(studio.required_level || "Developing")}</p>
+                      ${
+                        currentUser.role === "seeker"
+                          ? request
+                            ? `<p class="field-note">Request status: ${escapeHtml(request.status)}${request.arbiter_notes ? ` · ${escapeHtml(request.arbiter_notes)}` : ""}</p>`
+                            : `<button class="btn btn-primary studio-request-button" type="button" data-studio-id="${studio.id}">Request Access</button>`
+                          : ""
+                      }
+                    </article>
+                  `;
+                })
+                .join("")
+            : emptyCard("No studios yet", "Studios appear here once the studios table is available and populated.")
+        }
+      </section>
+      <p id="studio-message" class="status-text" aria-live="polite"></p>
+    </section>
+  `;
+
+  root.querySelectorAll(".studio-request-button").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const { error } = await supabase.from("studio_requests").insert({
+        user_id: currentUser.id,
+        studio_id: button.dataset.studioId,
+        status: "pending"
+      });
+      setMessage("studio-message", error ? error.message : "Studio access request submitted.", error ? "error" : "success");
+      if (!error) await initStudiosPage();
+    });
+  });
+}
+
+async function initProfilePage() {
+  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  if (!currentUser) return;
+
+  const root = document.getElementById("profile-root");
+  if (!root) return;
+
+  const [entries, nicheEntries, guilds, guildMembers, neoscores, tags, tagLinks, modules, enrollments] = await Promise.all([
+    fetchPortfolioEntries(),
+    fetchNicheEntries(),
+    fetchGuildRecords(),
+    fetchGuildMembers(),
+    fetchNeoscores(),
+    fetchTags(),
+    fetchTagLinks(),
+    fetchApprovedModules(),
+    fetchEnrollmentsForUser(currentUser.id).catch(() => [])
+  ]);
+  const ownEntries = entries.filter((entry) => entry.createdBy === currentUser.id);
+  const ownNotes = nicheEntries.filter((entry) => entry.createdBy === currentUser.id);
+  const ownGuilds = guilds.filter((guild) => guildMembers.some((member) => member.guild_id === guild.id && member.user_id === currentUser.id));
+  const enrolledModules = modules.filter((module) => enrollments.some((entry) => entry.module_id === module.id));
+  const score = getNeoscoreForUser(neoscores, currentUser.id);
+  const interestTags = [...new Set(ownNotes.map((entry) => entry.topic.toLowerCase()))];
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Profile</p>
+          <h1>${escapeHtml(displayUserName(currentUser))}</h1>
+        </div>
+        <p class="dashboard-meta">Your profile gathers your learning record, interests, guild participation, and broader academic direction into one place.</p>
+      </header>
+
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Identity</p>
+          <h2>Bio and goals</h2>
+          <p>${escapeHtml(currentUser.bio || "No biography yet. This profile will grow as identity and work become clearer.")}</p>
+          <p class="field-note">Research goals: ${escapeHtml(currentUser.research_goals || "Not yet set")}</p>
+          <p class="field-note">Learning philosophy: ${escapeHtml(currentUser.learning_philosophy || "Still forming")}</p>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Interests</p>
+          <h2>Tags of interest</h2>
+          ${renderTagPills(interestTags)}
+          <div class="record-list">
+            ${
+              ownNotes.length
+                ? ownNotes.slice(0, 4).map((entry) => `<article class="record-card"><h3>${escapeHtml(entry.topic)}</h3><p>${escapeHtml(entry.notes)}</p></article>`).join("")
+                : emptyCard("No interests yet", "Subject notes and interests will appear here.")
+            }
+          </div>
+        </article>
+      </section>
+
+      <section class="card-grid">
+        <article class="card" id="portfolio">
+          <p class="section-label">Portfolio</p>
+          <h2>Published and private work</h2>
+          <div class="record-list">
+            ${
+              ownEntries.length
+                ? ownEntries.map((entry) => `<article class="record-card"><h3>${escapeHtml(entry.title)}</h3><p>${escapeHtml(entry.description || "")}</p><p class="field-note">${escapeHtml(entry.visibility || "private")}</p></article>`).join("")
+                : emptyCard("No portfolio entries", "Portfolio work appears here once created.")
+            }
+          </div>
+        </article>
+
+        <article class="card">
+          <p class="section-label">Guild Participation</p>
+          <h2>Current collaborations</h2>
+          <div class="record-list">
+            ${
+              ownGuilds.length
+                ? ownGuilds.map((guild) => `<article class="record-card"><h3>${escapeHtml(guild.title || guild.name)}</h3><p>${escapeHtml(guild.description || guild.research_focus || "")}</p></article>`).join("")
+                : emptyCard("No guilds joined yet", "Guild participation will appear here once you enter research communities.")
+            }
+          </div>
+        </article>
+      </section>
+
+      <section class="card-grid">
+        <article class="card">
+          <p class="section-label">Neoscore</p>
+          <h2>Holistic evaluation</h2>
+          ${neoscoreSummary(score)}
+        </article>
+
+        <article class="card">
+          <p class="section-label">Subject Enrollment</p>
+          <h2>Current study</h2>
+          <div class="record-list">
+            ${
+              enrolledModules.length
+                ? enrolledModules.map((module) => `<article class="record-card"><h3>${escapeHtml(module.title)}</h3><p>${escapeHtml(module.guild)}</p></article>`).join("")
+                : emptyCard("No active enrollments", "Approved modules you join will appear here.")
+            }
+          </div>
+        </article>
+      </section>
+    </section>
+  `;
+}
+
+async function initHelpPage() {
+  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
+  if (!currentUser) return;
+
+  const root = document.getElementById("help-root");
+  if (!root) return;
+
+  const helpCards = [
+    { title: "Dashboard", body: "Your dashboard is your live overview. Seekers see study, portfolio, and activity. Curators see modules and guidance work. Arbiters see review queues." },
+    { title: "Subjects", body: "Subjects are structured learning domains. Use them to understand what is studied, how it is approached, and what outputs are expected." },
+    { title: "Guilds", body: "Guilds are collaborative research collectives. Join them to work with others, follow an inquiry, and build shared outputs." },
+    { title: "Research", body: "Research is the academic posting area. Use it for notes, documentation, questions, references, and scholarly updates rather than casual chatter." },
+    { title: "Studios", body: "Studios are capability environments. Seekers can request access, while Arbiters review requests where the system is configured." },
+    { title: "Discovery", body: "Discovery is a journal-like showcase of highlighted work, not a social-media feed." },
+    { title: "Vision", body: "Vision explains the wider philosophy, infrastructure, and long-term educational direction behind the platform." },
+    { title: "Profile", body: "Your profile gathers your identity, interests, guild participation, portfolio record, and broader learning direction." }
+  ];
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">Help</p>
+          <h1>Guidance inside the platform</h1>
+        </div>
+        <p class="dashboard-meta">Use this page whenever you need to understand where to go next or what each area of the platform is meant to do.</p>
+      </header>
+
+      <section class="card">
+        <p class="section-label">Query</p>
+        <h2>What do you need help with?</h2>
+        <label class="filters">
+          Search guidance
+          <input id="help-search-input" type="search" placeholder="subjects, guilds, portfolio, research..." />
+        </label>
+      </section>
+
+      <section id="help-card-list" class="card-grid">
+        ${helpCards
+          .map(
+            (card) => `
+              <article class="card help-card" data-help-text="${escapeHtml(`${card.title} ${card.body}`.toLowerCase())}">
+                <p class="section-label">${escapeHtml(card.title)}</p>
+                <h2>${escapeHtml(card.title)}</h2>
+                <p>${escapeHtml(card.body)}</p>
+              </article>
+            `
+          )
+          .join("")}
+      </section>
+    </section>
+  `;
+
+  document.getElementById("help-search-input")?.addEventListener("input", (event) => {
+    const query = event.target.value.trim().toLowerCase();
+    root.querySelectorAll(".help-card").forEach((card) => {
+      card.classList.toggle("hidden", query && !card.dataset.helpText.includes(query));
+    });
+  });
+}
+
 async function initSubjectsPage() {
   const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
   if (!currentUser) return;
@@ -2596,9 +3024,16 @@ async function init() {
     renderVersionBadges();
     renderNav(currentUser);
     renderReflectionOverlay();
+    if (currentUser && getCurrentPage() !== "home" && getCurrentPage() !== "reset-password") {
+      renderOnboarding(currentUser);
+    }
 
     const page = getCurrentPage();
     if (page === "home") await renderHomePage();
+    if (page === "research") await initResearchPage();
+    if (page === "studios") await initStudiosPage();
+    if (page === "profile") await initProfilePage();
+    if (page === "help") await initHelpPage();
     if (page === "subjects") await initSubjectsPage();
     if (page === "seeker-dashboard") await initSeekerDashboard();
     if (page === "curator-dashboard") await initCuratorDashboard();
@@ -2612,6 +3047,10 @@ async function init() {
     console.error(error);
     const root =
       document.getElementById("dashboard-root") ||
+      document.getElementById("research-root") ||
+      document.getElementById("studios-root") ||
+      document.getElementById("profile-root") ||
+      document.getElementById("help-root") ||
       document.getElementById("subjects-root") ||
       document.getElementById("operator-root") ||
       document.getElementById("guild-root") ||

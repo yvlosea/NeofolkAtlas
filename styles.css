@@ -103,7 +103,7 @@ textarea:focus {
 }
 
 .page-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1240px, calc(100% - 24px));
   margin: 0 auto;
   padding: 24px 0 56px;
   opacity: 0;
@@ -122,13 +122,14 @@ textarea:focus {
   top: 14px;
   z-index: 20;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 20px;
   padding: 16px 20px;
   margin-bottom: 24px;
   border: 1px solid var(--panel-border);
-  border-radius: 999px;
+  border-radius: 32px;
   background: rgba(26, 26, 26, 0.82);
   backdrop-filter: blur(14px);
   box-shadow: var(--shadow);
@@ -175,7 +176,8 @@ textarea:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  flex: 1 1 600px;
 }
 
 .version-badge {
@@ -190,6 +192,18 @@ textarea:focus {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.nav-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 280px;
+  min-width: 240px;
+}
+
+.nav-search input {
+  min-width: 0;
 }
 
 .card-header-row {
@@ -431,7 +445,7 @@ textarea:focus {
 }
 
 .stats-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
 }
 
 .stat-card strong {
@@ -443,7 +457,7 @@ textarea:focus {
 }
 
 .card-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .record-card h3,
@@ -540,6 +554,14 @@ textarea:focus {
   border-left: 2px solid rgba(232, 220, 203, 0.24);
   background: rgba(245, 239, 230, 0.04);
   color: var(--muted);
+}
+
+.search-results-panel {
+  animation-delay: 120ms;
+}
+
+.onboarding-panel {
+  width: min(980px, 100%);
 }
 
 .denial-note {
@@ -725,7 +747,7 @@ textarea:focus {
 
 @media (max-width: 720px) {
   .page-shell {
-    width: min(100% - 20px, 1180px);
+    width: calc(100% - 16px);
   }
 
   .site-header {
@@ -733,6 +755,7 @@ textarea:focus {
     flex-direction: column;
     align-items: stretch;
     border-radius: 28px;
+    padding: 14px;
   }
 
   .version-badge {
@@ -750,12 +773,18 @@ textarea:focus {
 
   .site-nav {
     justify-content: stretch;
+    flex: 1 1 auto;
   }
 
   .nav-link,
   .nav-button,
   .btn {
     width: 100%;
+  }
+
+  .nav-search {
+    flex-direction: column;
+    min-width: 0;
   }
 
   .hero-copy h1,
@@ -767,6 +796,11 @@ textarea:focus {
 
   .intro-panel {
     padding: 24px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .intro-topline {
