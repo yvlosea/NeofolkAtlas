@@ -59,7 +59,7 @@ const uiKeys = {
   userLocation: "neofolk.userLocation"
 };
 
-const appVersion = "Alpha 9.4";
+const appVersion = "Alpha 10.4";
 const operatorRole = "operator";
 const defaultUiLanguage = "en";
 
@@ -553,17 +553,18 @@ function renderNav(currentUser) {
             ? `
               <section class="sidebar-group">
                 <p class="section-label">${escapeHtml(t("nav.groupPrimary"))}</p>
+                <a class="nav-link" href="${dashboardHref}">${escapeHtml(t("nav.dashboard"))}</a>
                 <a class="nav-link" href="subjects.html">${escapeHtml(t("nav.learn"))}</a>
-                <a class="nav-link" href="discovery.html">${escapeHtml(t("nav.explore"))}</a>
+                <a class="nav-link" href="${dashboardHref}#notes-area">${escapeHtml(t("nav.notes"))}</a>
+                <a class="nav-link" href="${dashboardHref}#projects-area">${escapeHtml(t("nav.projects"))}</a>
                 <a class="nav-link" href="guild.html">${escapeHtml(t("nav.groups"))}</a>
-                <a class="nav-link" href="profile.html#portfolio">${escapeHtml(t("nav.projects"))}</a>
-                <a class="nav-link" href="${dashboardHref}">${escapeHtml(t("nav.progress"))}</a>
+                <a class="nav-link" href="${dashboardHref}#progress-area">${escapeHtml(t("nav.progress"))}</a>
               </section>
               <section class="sidebar-group">
                 <p class="section-label">${escapeHtml(t("nav.groupSecondary"))}</p>
                 <a class="nav-link" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
+                <a class="nav-link" href="profile.html">${escapeHtml(t("nav.settings"))}</a>
                 <a class="nav-link" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
-                <a class="nav-link" href="help.html">${escapeHtml(t("nav.help"))}</a>
               </section>
             `
             : `
@@ -1426,6 +1427,113 @@ function moduleCard(module, usersById, options = {}) {
   `;
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function countRecentItems(items, dateField = "created_at", days = 30) {
+  const threshold = Date.now() - days * 24 * 60 * 60 * 1000;
+  return items.filter((item) => {
+    const value = item?.[dateField];
+    return value && new Date(value).getTime() >= threshold;
+  }).length;
+}
+
+function getTopDistribution(entries, limit = 5) {
+  const filtered = entries
+    .filter((entry) => entry.label && entry.value > 0)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, limit);
+
+  if (!filtered.length) {
+    return [{ label: "Learning", value: 1, color: "#8a6a4f" }];
+  }
+
+  return filtered;
+}
+
+function renderDonutCard({ kicker, title, subtitle, segments }) {
+  const palette = ["#c8a86b", "#a85d34", "#5f7d7a", "#7b8d63", "#a48a63"];
+  const normalized = getTopDistribution(
+    segments.map((segment, index) => ({
+      ...segment,
+      color: segment.color || palette[index % palette.length]
+    }))
+  );
+  const total = normalized.reduce((sum, item) => sum + item.value, 0) || 1;
+  let cursor = 0;
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const rings = normalized
+    .map((segment) => {
+      const dash = (segment.value / total) * circumference;
+      const node = `
+        <circle
+          cx="60"
+          cy="60"
+          r="${radius}"
+          fill="none"
+          stroke="${segment.color}"
+          stroke-width="16"
+          stroke-linecap="butt"
+          stroke-dasharray="${dash} ${circumference - dash}"
+          stroke-dashoffset="${-cursor}"
+          transform="rotate(-90 60 60)"
+        ></circle>
+      `;
+      cursor += dash;
+      return node;
+    })
+    .join("");
+
+  const primaryPercent = Math.round((normalized[0].value / total) * 100);
+
+  return `
+    <article class="card dashboard-metric-card">
+      <p class="section-label">${escapeHtml(kicker)}</p>
+      <h2>${escapeHtml(title)}</h2>
+      <div class="dashboard-donut-layout">
+        <div class="dashboard-donut-wrap">
+          <svg viewBox="0 0 120 120" class="dashboard-donut" aria-hidden="true">
+            <circle cx="60" cy="60" r="${radius}" fill="none" stroke="rgba(245, 239, 230, 0.08)" stroke-width="16"></circle>
+            ${rings}
+          </svg>
+          <div class="dashboard-donut-center">
+            <strong>${primaryPercent}%</strong>
+          </div>
+        </div>
+        <div class="dashboard-donut-legend">
+          ${normalized
+            .map((segment) => {
+              const percent = Math.round((segment.value / total) * 100);
+              return `
+                <div class="dashboard-legend-item">
+                  <span class="dashboard-legend-swatch" style="background:${segment.color}"></span>
+                  <span>${escapeHtml(segment.label)}</span>
+                  <strong>${percent}%</strong>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      </div>
+      <p class="field-note">${escapeHtml(subtitle)}</p>
+    </article>
+  `;
+}
+
+function renderProgressBar(percent) {
+  const safePercent = clamp(Math.round(percent || 0), 0, 100);
+  return `
+    <div class="dashboard-progress-block">
+      <div class="dashboard-progress-track">
+        <span class="dashboard-progress-fill" style="width:${safePercent}%"></span>
+      </div>
+      <strong class="dashboard-progress-value">${safePercent}%</strong>
+    </div>
+  `;
+}
+
 async function renderHomePage() {
   const { data: sessionData } = await supabase.auth.getSession();
   if (sessionData?.session) {
@@ -1850,6 +1958,71 @@ async function initSeekerDashboard() {
   const suggestedTags = [...new Set([...ownNicheEntries.map((entry) => entry.topic), ...getEntityTags("portfolio", ownEntries[0]?.id, tags, tagLinks)])]
     .filter(Boolean)
     .slice(0, 6);
+  const latestWork = ownEntries[0] || null;
+  const recentEnrollments = countRecentItems(enrollments);
+  const recentNotesCount = countRecentItems(ownNicheEntries);
+  const recentProjectsCount = countRecentItems(ownEntries);
+  const recentGroupCount = countRecentItems(guildMembers.filter((member) => member.user_id === currentUser.id));
+  const activitySegments = [
+    { label: "Modules", value: recentEnrollments, color: "#c8a86b" },
+    { label: "Notes", value: recentNotesCount, color: "#a85d34" },
+    { label: "Projects", value: recentProjectsCount, color: "#5f7d7a" },
+    { label: "Groups", value: recentGroupCount, color: "#7b8d63" }
+  ];
+  const activityCount = activitySegments.reduce((sum, item) => sum + item.value, 0);
+  const activityPercent = clamp(Math.round((activityCount / 12) * 100), 0, 100);
+  const tagFrequency = new Map();
+  enrolledModules.forEach((module) => {
+    const key = module.guild || "General";
+    tagFrequency.set(key, (tagFrequency.get(key) || 0) + 1);
+  });
+  ownNicheEntries.forEach((entry) => {
+    const key = entry.topic || "General";
+    tagFrequency.set(key, (tagFrequency.get(key) || 0) + 1);
+  });
+  ownEntries.forEach((entry) => {
+    getEntityTags("portfolio", entry.id, tags, tagLinks).forEach((tag) => {
+      tagFrequency.set(tag, (tagFrequency.get(tag) || 0) + 1);
+    });
+  });
+  const subjectDistribution = [...tagFrequency.entries()].map(([label, value]) => ({ label, value }));
+  const currentCourseProgress = currentCourse
+    ? clamp(
+        18 +
+          recentNotesCount * 10 +
+          recentProjectsCount * 14 +
+          (currentCourse.id && enrolledIds.has(currentCourse.id) ? 18 : 0),
+        8,
+        92
+      )
+    : 0;
+  const latestWorkStatus = latestWork?.visibility === "public" ? "Published" : "Draft";
+  let nextStepLabel = "Add your first note";
+  let nextStepBody = "Write one short note so the platform starts working for you immediately.";
+  let nextStepHref = "#notes-area";
+  let nextStepAction = "Create note";
+
+  if (!currentCourse) {
+    nextStepLabel = "Choose your first course";
+    nextStepBody = "Open Learn and begin with one topic instead of exploring everything at once.";
+    nextStepHref = "subjects.html";
+    nextStepAction = "Browse topics";
+  } else if (!ownEntries.length) {
+    nextStepLabel = "Add your first project";
+    nextStepBody = "Turn one reflection, essay, or exercise into a visible project.";
+    nextStepHref = "#projects-area";
+    nextStepAction = "Create project";
+  } else if (!joinedGuilds.length) {
+    nextStepLabel = "Explore groups";
+    nextStepBody = "Join a learning group when you are ready for shared inquiry.";
+    nextStepHref = "guild.html";
+    nextStepAction = "Explore groups";
+  } else if (currentCourse?.id) {
+    nextStepLabel = "Continue your current course";
+    nextStepBody = "Return to your active course and keep your rhythm steady.";
+    nextStepHref = `module.html?id=${currentCourse.id}`;
+    nextStepAction = "Continue learning";
+  }
 
   root.innerHTML = `
     <section class="dashboard-shell">
@@ -1862,224 +2035,181 @@ async function initSeekerDashboard() {
         <p class="dashboard-meta">${escapeHtml(t("dashboard.subtitle"))}</p>
       </header>
 
-      <section class="dashboard-overview-grid dashboard-overview-grid-simple">
-        <article class="card dashboard-identity-card">
-          <p class="section-label">${escapeHtml(t("dashboard.currentCourse"))}</p>
-          <h2>${escapeHtml(currentCourse?.title || currentCourse?.name || t("dashboard.noCourse"))}</h2>
-          <p>${escapeHtml(currentCourse?.description || t("dashboard.noCourseBody"))}</p>
+      <section class="dashboard-card-grid dashboard-six-cards">
+        ${renderDonutCard({
+          kicker: "Learning Activity",
+          title: "Learning Activity",
+          subtitle: `You are ${activityPercent}% active this month`,
+          segments: activitySegments
+        })}
+
+        ${renderDonutCard({
+          kicker: "Subject Distribution",
+          title: "Subject Distribution",
+          subtitle: subjectDistribution.length ? "Built from courses, notes, projects, and tags" : "Subject patterns appear as you keep learning",
+          segments: subjectDistribution
+        })}
+
+        <article class="card dashboard-summary-card">
+          <p class="section-label">Current Course</p>
+          <h2>${escapeHtml(currentCourse?.title || currentCourse?.name || "No current course")}</h2>
+          <p>${escapeHtml(currentCourse?.description || "Choose one topic and begin there.")}</p>
+          ${renderProgressBar(currentCourseProgress)}
           <div class="inline-actions">
             <a class="btn btn-primary" href="${currentCourse?.id ? `module.html?id=${currentCourse.id}` : "subjects.html"}">${escapeHtml(t("dashboard.continueLearning"))}</a>
-            <a class="btn subtle-button" href="subjects.html">${escapeHtml(t("dashboard.browseTopics"))}</a>
           </div>
         </article>
 
-        <article class="card dashboard-focus-card">
-          <p class="section-label">${escapeHtml(t("dashboard.progressKicker"))}</p>
-          <h2>${escapeHtml(t("dashboard.progressTitle"))}</h2>
-          <div class="record-list compact-record-list">
-            <article class="record-card">
-              <p class="section-label">${escapeHtml(t("dashboard.courses"))}</p>
-              <h3>${enrolledModules.length}</h3>
-              <p class="field-note">${escapeHtml(t("dashboard.coursesBody"))}</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">${escapeHtml(t("dashboard.notes"))}</p>
-              <h3>${ownNicheEntries.length}</h3>
-              <p class="field-note">${escapeHtml(t("dashboard.notesBody"))}</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">${escapeHtml(t("dashboard.projects"))}</p>
-              <h3>${ownEntries.length}</h3>
-              <p class="field-note">${escapeHtml(t("dashboard.projectsBody"))}</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">${escapeHtml(t("dashboard.groups"))}</p>
-              <h3>${joinedGuilds.length}</h3>
-              <p class="field-note">${escapeHtml(t("dashboard.groupsBody"))}</p>
-            </article>
+        <article class="card dashboard-summary-card">
+          <p class="section-label">Recent Work</p>
+          <h2>${escapeHtml(latestWork?.title || "No recent project yet")}</h2>
+          <p class="field-note">${escapeHtml(latestWorkStatus)}</p>
+          <p>${escapeHtml(latestWork?.description || "Your latest essay, design, reflection, or documentation will appear here.")}</p>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="${latestWork ? "profile.html#portfolio" : "#projects-area"}">${latestWork ? "Continue editing" : "Create project"}</a>
+          </div>
+        </article>
+
+        <article class="card dashboard-summary-card">
+          <p class="section-label">Groups (Guilds)</p>
+          <h2>${joinedGuilds.length} active group${joinedGuilds.length === 1 ? "" : "s"}</h2>
+          <p>${escapeHtml(joinedGuilds[0]?.title || "Learning groups help you move from study into collaborative inquiry.")}</p>
+          <div class="inline-actions">
+            <a class="btn subtle-button" href="guild.html">Explore groups</a>
+          </div>
+        </article>
+
+        <article class="card dashboard-summary-card dashboard-next-step-card">
+          <p class="section-label">Next Step</p>
+          <h2>${escapeHtml(nextStepLabel)}</h2>
+          <p>${escapeHtml(nextStepBody)}</p>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="${nextStepHref}">${escapeHtml(nextStepAction)}</a>
           </div>
         </article>
       </section>
 
-      <section class="dashboard-main-grid">
-        <div class="dashboard-primary-column">
-          <article class="card">
-            <p class="section-label">${escapeHtml(t("dashboard.nextStepKicker"))}</p>
-            <h2>${escapeHtml(t("dashboard.nextStepTitle"))}</h2>
-            <div class="record-list">
-              <article class="record-card">
-                <h3>${escapeHtml(ownEntries.length ? t("dashboard.nextProjectTitle") : t("dashboard.firstProjectTitle"))}</h3>
-                <p>${escapeHtml(ownEntries.length ? t("dashboard.nextProjectBody") : t("dashboard.firstProjectBody"))}</p>
-              </article>
-              <article class="record-card">
-                <h3>${escapeHtml(enrolledModules.length ? t("dashboard.resumeCourseTitle") : t("dashboard.pickCourseTitle"))}</h3>
-                <p>${escapeHtml(enrolledModules.length ? t("dashboard.resumeCourseBody") : t("dashboard.pickCourseBody"))}</p>
-              </article>
+      <section class="dashboard-support-grid">
+        <article class="card" id="notes-area">
+          <div class="dashboard-card-topline">
+            <div>
+              <p class="section-label">Notes</p>
+              <h2>Recent notes</h2>
             </div>
-          </article>
-
-          <article class="card">
-            <p class="section-label">${escapeHtml(t("dashboard.recentNotes"))}</p>
-            <h2>${escapeHtml(t("dashboard.notesTitle"))}</h2>
-            <div class="record-list">
-              ${
-                ownNicheEntries.length
-                  ? ownNicheEntries
-                      .slice(0, 4)
-                      .map(
-                        (item) => `
-                          <article class="record-card">
-                            <p class="section-label">${formatDate(item.created_at)}</p>
-                            <h3>${escapeHtml(item.topic)}</h3>
-                            <p>${escapeHtml(item.notes)}</p>
-                          </article>
-                        `
-                      )
-                      .join("")
-                  : emptyCard(t("dashboard.noNotes"), t("dashboard.noNotesBody"))
-              }
-            </div>
-          </article>
-
-          <article class="card">
-            <p class="section-label">${escapeHtml(t("dashboard.currentCourse"))}</p>
-            <h2>${escapeHtml(t("dashboard.courseListTitle"))}</h2>
-            <div class="record-list">
-              ${
-                enrolledModules.length
-                  ? enrolledModules.map((module) => moduleCard(module, usersById, { allowEnroll: true, alreadyEnrolledIds: enrolledIds })).join("")
-                  : emptyCard(t("dashboard.noCourse"), t("dashboard.noCourseBody"))
-              }
-            </div>
-            <div class="inline-actions">
-              <a class="btn subtle-button" href="subjects.html">${escapeHtml(t("dashboard.browseTopics"))}</a>
-            </div>
-          </article>
-        </div>
-
-        <aside class="dashboard-secondary-column">
-          <article class="card" id="portfolio-section">
-            <p class="section-label">${escapeHtml(t("dashboard.projects"))}</p>
-            <h2>${escapeHtml(t("dashboard.projectCardTitle"))}</h2>
-            <p class="field-note">${escapeHtml(t("dashboard.projectCardBody"))}</p>
-            <details class="simple-details">
-              <summary class="btn subtle-button">${escapeHtml(t("dashboard.openProjectForm"))}</summary>
-              <form id="portfolio-form" class="form-stack">
-                <label>
-                  ${escapeHtml(t("forms.title"))}
-                  <input name="title" type="text" required />
-                </label>
-                <label>
-                  ${escapeHtml(t("forms.description"))}
-                  <textarea name="description" required></textarea>
-                </label>
-                <label>
-                  ${escapeHtml(t("forms.projectType"))}
-                  <select name="entryType">
-                    <option value="project">${escapeHtml(t("forms.project"))}</option>
-                    <option value="essay">${escapeHtml(t("forms.essay"))}</option>
-                    <option value="article">${escapeHtml(t("forms.article"))}</option>
-                    <option value="design">${escapeHtml(t("forms.design"))}</option>
-                    <option value="research">${escapeHtml(t("forms.research"))}</option>
-                    <option value="documentation">${escapeHtml(t("forms.documentation"))}</option>
-                    <option value="reflection">${escapeHtml(t("forms.reflection"))}</option>
-                  </select>
-                </label>
-                <label>
-                  ${escapeHtml(t("forms.link"))}
-                  <input name="link" type="url" placeholder="${escapeHtml(t("forms.linkPlaceholder"))}" />
-                </label>
-                <label>
-                  ${escapeHtml(t("forms.visibility"))}
-                  <select name="visibility">
-                    <option value="private">${escapeHtml(t("forms.private"))}</option>
-                    <option value="arbiter-only">${escapeHtml(t("forms.arbiterOnly"))}</option>
-                    <option value="public">${escapeHtml(t("forms.public"))}</option>
-                  </select>
-                </label>
-                <label>
-                  ${escapeHtml(t("forms.tags"))}
-                  <input name="tags" type="text" placeholder="${escapeHtml(t("forms.tagsPlaceholder"))}" />
-                </label>
-                <button class="btn btn-primary" type="submit">${escapeHtml(t("dashboard.saveProject"))}</button>
-              </form>
-            </details>
-            <p id="portfolio-message" class="status-text" aria-live="polite"></p>
-          </article>
-
-          <article class="card" id="niche-section">
-            <p class="section-label">${escapeHtml(t("dashboard.notes"))}</p>
-            <h2>${escapeHtml(t("dashboard.noteCardTitle"))}</h2>
-            <p class="field-note">${escapeHtml(t("dashboard.noteCardBody"))}</p>
-            <details class="simple-details">
-              <summary class="btn subtle-button">${escapeHtml(t("dashboard.openNoteForm"))}</summary>
-              <form id="niche-form" class="form-stack">
-                <label>
-                  ${escapeHtml(t("forms.interest"))}
-                  <input name="interest" type="text" required />
-                </label>
-                <label>
-                  ${escapeHtml(t("forms.notes"))}
-                  <textarea name="notes" required></textarea>
-                </label>
-                <button class="btn" type="submit">${escapeHtml(t("dashboard.saveNote"))}</button>
-              </form>
-            </details>
-            <p id="niche-message" class="status-text" aria-live="polite"></p>
-          </article>
-
-          <article class="card">
-            <p class="section-label">${escapeHtml(t("dashboard.progressKicker"))}</p>
-            <h2>${escapeHtml(t("dashboard.progressTitle"))}</h2>
-            ${neoscoreSummary(score)}
-          </article>
-
-          <article class="card">
-            <p class="section-label">${escapeHtml(t("dashboard.suggestedTags"))}</p>
-            <h2>${escapeHtml(t("dashboard.suggestedTagsTitle"))}</h2>
-            ${suggestedTags.length ? renderTagPills(suggestedTags) : `<p>${escapeHtml(t("dashboard.noSuggestedTags"))}</p>`}
-          </article>
-
-          <article class="card">
-            <p class="section-label">${escapeHtml(t("dashboard.recommendedCourse"))}</p>
-            <h2>${escapeHtml(t("dashboard.recommendedCourseTitle"))}</h2>
-            <div class="record-list">
-              ${
-                recommendedSubjects.length
-                  ? recommendedSubjects
-                      .map(
-                        (subject) => `
-                          <article class="record-card">
-                            <h3>${escapeHtml(subject.name)}</h3>
-                            <p>${escapeHtml(subject.description || "No description yet.")}</p>
-                            <footer><a class="text-link" href="subjects.html?id=${subject.id}">${escapeHtml(t("dashboard.openCourse"))}</a></footer>
-                          </article>
-                        `
-                      )
-                      .join("")
-                  : emptyCard(t("dashboard.noRecommendedCourse"), t("dashboard.noRecommendedCourseBody"))
-              }
-            </div>
-          </article>
-
-          <details class="card simple-details">
-            <summary class="btn subtle-button">${escapeHtml(t("dashboard.openAdvanced"))}</summary>
-            <div class="record-list" style="margin-top:16px;">
-              <article class="record-card">
-                <h3>${escapeHtml(t("dashboard.groupsAdvanced"))}</h3>
-                <p>${escapeHtml(joinedGuilds.length ? `${joinedGuilds.length} ${t("dashboard.groupsAdvancedBody")}` : t("dashboard.groupsAdvancedEmpty"))}</p>
-              </article>
-              <article class="record-card">
-                <h3>${escapeHtml(t("dashboard.discoveryAdvanced"))}</h3>
-                <p>${escapeHtml(t("dashboard.discoveryAdvancedBody"))}</p>
-              </article>
-              <article class="record-card">
-                <h3>${escapeHtml(t("dashboard.curatorAdvanced"))}</h3>
-                <p>${escapeHtml(t("dashboard.curatorAdvancedBody"))}</p>
-              </article>
-            </div>
+            <span class="pill">${ownNicheEntries.length}</span>
+          </div>
+          <div class="record-list">
+            ${
+              ownNicheEntries.length
+                ? ownNicheEntries
+                    .slice(0, 3)
+                    .map(
+                      (item) => `
+                        <article class="record-card compact-record-card">
+                          <p class="section-label">${formatDate(item.created_at)}</p>
+                          <h3>${escapeHtml(item.topic)}</h3>
+                          <p>${escapeHtml(item.notes)}</p>
+                        </article>
+                      `
+                    )
+                    .join("")
+                : emptyCard("No notes yet", "Write one short note so the Atlas starts becoming useful immediately.")
+            }
+          </div>
+          <details class="simple-details">
+            <summary class="btn subtle-button">Create note</summary>
+            <form id="niche-form" class="form-stack">
+              <label>
+                ${escapeHtml(t("forms.interest"))}
+                <input name="interest" type="text" required />
+              </label>
+              <label>
+                ${escapeHtml(t("forms.notes"))}
+                <textarea name="notes" required></textarea>
+              </label>
+              <button class="btn" type="submit">${escapeHtml(t("dashboard.saveNote"))}</button>
+            </form>
           </details>
-        </aside>
+          <p id="niche-message" class="status-text" aria-live="polite"></p>
+        </article>
+
+        <article class="card" id="projects-area">
+          <div class="dashboard-card-topline">
+            <div>
+              <p class="section-label">Projects (Portfolio)</p>
+              <h2>Recent project</h2>
+            </div>
+            <span class="pill">${ownEntries.length}</span>
+          </div>
+          <div class="record-list">
+            ${
+              latestWork
+                ? `
+                  <article class="record-card compact-record-card">
+                    <p class="section-label">${formatDate(latestWork.created_at)}</p>
+                    <h3>${escapeHtml(latestWork.title)}</h3>
+                    <p>${escapeHtml(latestWork.description)}</p>
+                  </article>
+                `
+                : emptyCard("No projects yet", "Save one strong piece of work here when you are ready.")
+            }
+          </div>
+          <details class="simple-details">
+            <summary class="btn subtle-button">Create project</summary>
+            <form id="portfolio-form" class="form-stack">
+              <label>
+                ${escapeHtml(t("forms.title"))}
+                <input name="title" type="text" required />
+              </label>
+              <label>
+                ${escapeHtml(t("forms.description"))}
+                <textarea name="description" required></textarea>
+              </label>
+              <label>
+                ${escapeHtml(t("forms.projectType"))}
+                <select name="entryType">
+                  <option value="project">${escapeHtml(t("forms.project"))}</option>
+                  <option value="essay">${escapeHtml(t("forms.essay"))}</option>
+                  <option value="article">${escapeHtml(t("forms.article"))}</option>
+                  <option value="design">${escapeHtml(t("forms.design"))}</option>
+                  <option value="research">${escapeHtml(t("forms.research"))}</option>
+                  <option value="documentation">${escapeHtml(t("forms.documentation"))}</option>
+                  <option value="reflection">${escapeHtml(t("forms.reflection"))}</option>
+                </select>
+              </label>
+              <label>
+                ${escapeHtml(t("forms.link"))}
+                <input name="link" type="url" placeholder="${escapeHtml(t("forms.linkPlaceholder"))}" />
+              </label>
+              <label>
+                ${escapeHtml(t("forms.visibility"))}
+                <select name="visibility">
+                  <option value="private">${escapeHtml(t("forms.private"))}</option>
+                  <option value="arbiter-only">${escapeHtml(t("forms.arbiterOnly"))}</option>
+                  <option value="public">${escapeHtml(t("forms.public"))}</option>
+                </select>
+              </label>
+              <label>
+                ${escapeHtml(t("forms.tags"))}
+                <input name="tags" type="text" placeholder="${escapeHtml(t("forms.tagsPlaceholder"))}" />
+              </label>
+              <button class="btn btn-primary" type="submit">${escapeHtml(t("dashboard.saveProject"))}</button>
+            </form>
+          </details>
+          <p id="portfolio-message" class="status-text" aria-live="polite"></p>
+        </article>
+
+        <article class="card" id="progress-area">
+          <div class="dashboard-card-topline">
+            <div>
+              <p class="section-label">${escapeHtml(t("dashboard.progressKicker"))}</p>
+              <h2>${escapeHtml(t("dashboard.progressTitle"))}</h2>
+            </div>
+            <span class="pill">${tokenBalance}</span>
+          </div>
+          ${neoscoreSummary(score)}
+          ${suggestedTags.length ? `<div class="divider"></div>${renderTagPills(suggestedTags)}` : ""}
+        </article>
       </section>
     </section>
   `;

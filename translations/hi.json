@@ -2,12 +2,15 @@
   "nav": {
     "groupPrimary": "मुख्य",
     "groupSecondary": "सहायता",
+    "dashboard": "डैशबोर्ड",
     "learn": "सीखें",
     "explore": "खोजें",
+    "notes": "नोट्स",
     "groups": "समूह",
     "projects": "परियोजनाएँ",
     "progress": "प्रगति",
     "dictionary": "शब्दकोश",
+    "settings": "सेटिंग्स",
     "vision": "दृष्टि",
     "help": "सहायता",
     "logout": "लॉगआउट"

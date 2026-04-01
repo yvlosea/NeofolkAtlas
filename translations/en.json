@@ -2,12 +2,15 @@
   "nav": {
     "groupPrimary": "Primary",
     "groupSecondary": "Support",
+    "dashboard": "Dashboard",
     "learn": "Learn",
     "explore": "Explore",
+    "notes": "Notes",
     "groups": "Groups",
     "projects": "Projects",
     "progress": "Progress",
     "dictionary": "Dictionary",
+    "settings": "Settings",
     "vision": "Vision",
     "help": "Help",
     "logout": "Logout"
