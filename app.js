@@ -59,7 +59,7 @@ const uiKeys = {
   userLocation: "neofolk.userLocation"
 };
 
-const appVersion = "v0.6.2 Alpha";
+const appVersion = "Alpha 7.3";
 const operatorRole = "operator";
 const defaultUiLanguage = "en";
 
@@ -77,6 +77,13 @@ const indianLanguageOptions = [
     shortLabel: "Hindi",
     serif: '"Noto Serif Devanagari", Georgia, serif',
     sans: '"Noto Sans Devanagari", system-ui, sans-serif'
+  },
+  {
+    code: "as",
+    label: "অসমীয়া",
+    shortLabel: "Assamese",
+    serif: '"Noto Serif Bengali", Georgia, serif',
+    sans: '"Noto Sans Bengali", system-ui, sans-serif'
   },
   {
     code: "bn",
@@ -149,6 +156,8 @@ const indianLanguageOptions = [
     sans: '"Noto Sans Oriya", system-ui, sans-serif'
   }
 ];
+
+const translationLanguageOptions = indianLanguageOptions.filter((language) => language.code !== "en");
 
 const missingTablePattern = /schema cache|Could not find the table|relationship between/i;
 
@@ -280,6 +289,93 @@ function googleMapsSearchUrl(query) {
 
 function googleMapsEmbedUrl(query) {
   return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+}
+
+function findLanguageFromInput(value) {
+  const normalized = String(value || "").trim().toLowerCase();
+  if (!normalized) return getLanguageMeta(getPreferredLanguage());
+  return (
+    indianLanguageOptions.find(
+      (language) =>
+        language.code.toLowerCase() === normalized ||
+        language.label.toLowerCase() === normalized ||
+        language.shortLabel.toLowerCase() === normalized
+    ) || null
+  );
+}
+
+let googleTranslateLoader = null;
+
+function ensureGoogleTranslateMount() {
+  let mount = document.getElementById("google_translate_mount");
+  if (!mount) {
+    mount = document.createElement("div");
+    mount.id = "google_translate_mount";
+    mount.className = "hidden";
+    document.body.appendChild(mount);
+  }
+  return mount;
+}
+
+function ensureGoogleTranslate() {
+  if (document.querySelector(".goog-te-combo")) {
+    return Promise.resolve();
+  }
+
+  if (googleTranslateLoader) {
+    return googleTranslateLoader;
+  }
+
+  googleTranslateLoader = new Promise((resolve, reject) => {
+    ensureGoogleTranslateMount();
+
+    window.googleTranslateElementInit = () => {
+      try {
+        // eslint-disable-next-line no-undef
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            includedLanguages: translationLanguageOptions.map((language) => language.code).join(","),
+            autoDisplay: false,
+            multilanguagePage: true
+          },
+          "google_translate_mount"
+        );
+
+        const waitForCombo = () => {
+          const combo = document.querySelector(".goog-te-combo");
+          if (combo) {
+            resolve();
+            return;
+          }
+          window.setTimeout(waitForCombo, 120);
+        };
+
+        waitForCombo();
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    if (!document.getElementById("google-translate-script")) {
+      const script = document.createElement("script");
+      script.id = "google-translate-script";
+      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      script.onerror = () => reject(new Error("Google Translate could not be loaded."));
+      document.body.appendChild(script);
+    }
+  });
+
+  return googleTranslateLoader;
+}
+
+async function triggerGoogleTranslate(targetLanguageCode) {
+  await ensureGoogleTranslate();
+  const combo = document.querySelector(".goog-te-combo");
+  if (!combo) throw new Error("Translate control is not available.");
+  combo.value = targetLanguageCode;
+  combo.dispatchEvent(new Event("change"));
 }
 
 function showUtilityNotice(title, body) {
@@ -548,7 +644,6 @@ function renderNav(currentUser) {
   if (!nav) return;
 
   const dashboardHref = currentUser ? getDashboardPath(currentUser.role) : "index.html";
-  const currentLanguage = getPreferredLanguage();
 
   nav.innerHTML = `
     <div class="site-nav-shell">
@@ -561,12 +656,12 @@ function renderNav(currentUser) {
               <a class="nav-link" href="guild.html">Guilds</a>
               <a class="nav-link" href="research.html">Research</a>
               <a class="nav-link" href="studios.html">Studios</a>
+              <a class="nav-link" href="profile.html">Profile</a>
               <details class="nav-more">
                 <summary class="nav-link nav-summary-link">More</summary>
                 <div class="nav-more-panel">
                   <a class="nav-link" href="discovery.html">Discovery</a>
                   <a class="nav-link" href="vision.html">Vision</a>
-                  <a class="nav-link" href="profile.html">Profile</a>
                   <a class="nav-link" href="help.html">Help</a>
                 </div>
               </details>
@@ -581,44 +676,53 @@ function renderNav(currentUser) {
       </div>
 
       <div class="nav-cluster nav-utility-cluster">
-        ${
-          currentUser
-            ? `
-              <form id="global-search-form" class="nav-search">
-                <input id="global-search-input" type="search" placeholder="Search subjects, guilds, modules..." />
-                <button id="global-search-button" class="nav-button" type="submit">Search</button>
-              </form>
-            `
-            : ""
-        }
-        <label class="language-picker">
-          <span class="section-label">Language</span>
-          <select id="language-select" aria-label="Choose interface language">
-            ${indianLanguageOptions
-              .map(
-                (language) =>
-                  `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`
-              )
-              .join("")}
-          </select>
-        </label>
-        <button id="translate-help-button" class="nav-button" type="button">Translate</button>
-        ${currentUser ? `<button id="use-location-button" class="nav-button" type="button">Near Me</button>` : ""}
         ${currentUser ? `<button id="logout-button" class="nav-button" type="button">Logout</button>` : ""}
       </div>
     </div>
   `;
 
+  document.getElementById("logout-button")?.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    window.location.href = "index.html";
+  });
+}
+
+function wireWorkspaceToolbar(currentUser) {
   document.getElementById("language-select")?.addEventListener("change", (event) => {
-    applyLanguagePreference(event.target.value);
+    applyLanguagePreference(event.target.value, { silent: true });
+    const input = document.getElementById("translate-language-input");
+    if (input) {
+      input.value = getLanguageMeta(event.target.value).label;
+    }
   });
 
-  document.getElementById("translate-help-button")?.addEventListener("click", () => {
-    const selected = getLanguageMeta(document.getElementById("language-select")?.value || getPreferredLanguage());
-    showUtilityNotice(
-      "Use browser translate",
-      `Choose ${selected.label} in the language selector, then use your browser's Translate option. In Chrome on Android or desktop, open the menu and choose Translate.`
-    );
+  document.getElementById("translate-language-input")?.addEventListener("change", (event) => {
+    const selected = findLanguageFromInput(event.target.value);
+    if (!selected) return;
+    const hiddenSelect = document.getElementById("language-select");
+    if (hiddenSelect) hiddenSelect.value = selected.code;
+    applyLanguagePreference(selected.code, { silent: true });
+    event.target.value = selected.label;
+  });
+
+  document.getElementById("translate-help-button")?.addEventListener("click", async () => {
+    const typedLanguage = document.getElementById("translate-language-input")?.value;
+    const selected = findLanguageFromInput(typedLanguage || getPreferredLanguage());
+    if (!selected) {
+      showUtilityNotice("Choose a supported language", "Use one of the listed Indian languages in the translate field.");
+      return;
+    }
+
+    applyLanguagePreference(selected.code, { silent: true });
+    try {
+      await triggerGoogleTranslate(selected.code);
+      showUtilityNotice("Translation enabled", `${selected.label} has been selected for in-page translation.`);
+    } catch (error) {
+      showUtilityNotice(
+        "Translate unavailable",
+        `Google Translate could not be loaded right now. In Chrome, open the browser menu and choose Translate, then select ${selected.label}.`
+      );
+    }
   });
 
   document.getElementById("use-location-button")?.addEventListener("click", () => {
@@ -640,11 +744,6 @@ function renderNav(currentUser) {
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 }
     );
-  });
-
-  document.getElementById("logout-button")?.addEventListener("click", async () => {
-    await supabase.auth.signOut();
-    window.location.href = "index.html";
   });
 
   document.getElementById("global-search-form")?.addEventListener("submit", async (event) => {
@@ -955,6 +1054,56 @@ function renderOnboarding(user) {
   });
 
   renderStep();
+}
+
+function renderWorkspaceToolbar(currentUser) {
+  if (!currentUser) return;
+  const stack = document.querySelector(".page-stack");
+  if (!stack) return;
+
+  const currentLanguage = translationLanguageOptions.find((language) => language.code === getPreferredLanguage()) || translationLanguageOptions[0];
+  let toolbar = document.getElementById("workspace-toolbar");
+  if (!toolbar) {
+    toolbar = document.createElement("section");
+    toolbar.id = "workspace-toolbar";
+    toolbar.className = "card workspace-toolbar";
+    stack.prepend(toolbar);
+  }
+
+  toolbar.innerHTML = `
+    <div class="workspace-toolbar-grid">
+      <form id="global-search-form" class="toolbar-search" role="search">
+        <label class="toolbar-field">
+          <span class="section-label">Search</span>
+          <input id="global-search-input" type="search" placeholder="Search subjects, guilds, modules, studios..." />
+        </label>
+        <button id="global-search-button" class="btn btn-primary" type="submit">Search</button>
+      </form>
+
+      <div class="toolbar-translate">
+        <label class="toolbar-field">
+          <span class="section-label">Translate</span>
+          <input
+            id="translate-language-input"
+            list="indian-language-list"
+            value="${escapeHtml(currentLanguage.label)}"
+            placeholder="Hindi, Tamil, Bengali..."
+            aria-label="Choose Indian language for translation"
+          />
+        </label>
+        <datalist id="indian-language-list">
+          ${translationLanguageOptions.map((language) => `<option value="${escapeHtml(language.label)}">${escapeHtml(language.shortLabel)}</option>`).join("")}
+        </datalist>
+        <select id="language-select" class="hidden" aria-hidden="true" tabindex="-1">
+          ${translationLanguageOptions.map((language) => `<option value="${language.code}" ${language.code === currentLanguage.code ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
+        </select>
+        <button id="translate-help-button" class="btn" type="button">Translate Page</button>
+        <button id="use-location-button" class="btn subtle-button" type="button">Near Me</button>
+      </div>
+    </div>
+  `;
+
+  wireWorkspaceToolbar(currentUser);
 }
 
 async function fetchUsers() {
@@ -3608,11 +3757,15 @@ async function init() {
     applyLanguagePreference(getPreferredLanguage(), { silent: true });
 
     const currentUser = await getCurrentUserProfile();
+    const page = getCurrentPage();
+    const isDashboardPage = ["seeker-dashboard", "curator-dashboard", "arbiter-dashboard", "operator-dashboard"].includes(page);
+    document.body.classList.toggle("dashboard-page", isDashboardPage);
     renderVersionBadges();
     renderNav(currentUser);
+    if (currentUser && page !== "home" && page !== "reset-password") {
+      renderWorkspaceToolbar(currentUser);
+    }
     renderReflectionOverlay();
-
-    const page = getCurrentPage();
     if (page === "home") await renderHomePage();
     if (page === "research") await initResearchPage();
     if (page === "studios") await initStudiosPage();

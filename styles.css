@@ -227,7 +227,7 @@ textarea:focus {
 }
 
 .nav-utility-cluster {
-  flex: 1 1 360px;
+  flex: 0 0 auto;
   justify-content: flex-end;
 }
 
@@ -752,6 +752,38 @@ textarea:focus {
   animation-delay: 100ms;
 }
 
+.workspace-toolbar {
+  animation-delay: 100ms;
+}
+
+.workspace-toolbar-grid,
+.toolbar-search,
+.toolbar-translate {
+  display: grid;
+  gap: 12px;
+}
+
+.workspace-toolbar-grid {
+  grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
+  align-items: end;
+}
+
+.toolbar-search {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.toolbar-translate {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+}
+
+.toolbar-field {
+  display: grid;
+  gap: 8px;
+  color: var(--warm-beige);
+}
+
 .nearby-map-card {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(260px, 1.05fr);
@@ -769,6 +801,51 @@ textarea:focus {
   border: 0;
   border-radius: 18px;
   background: rgba(245, 239, 230, 0.05);
+}
+
+body.dashboard-page .page-shell {
+  width: min(1400px, calc(100% - 32px));
+}
+
+@media (min-width: 1025px) {
+  body.dashboard-page .page-shell {
+    display: grid;
+    grid-template-columns: minmax(210px, 20%) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  body.dashboard-page .site-header {
+    position: sticky;
+    top: 16px;
+    min-height: calc(100vh - 32px);
+    align-content: start;
+    margin-bottom: 0;
+    padding: 18px 16px;
+  }
+
+  body.dashboard-page .brand-mark {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  body.dashboard-page .site-nav-shell,
+  body.dashboard-page .nav-cluster,
+  body.dashboard-page .nav-primary-links,
+  body.dashboard-page .nav-utility-cluster {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  body.dashboard-page .nav-more-panel {
+    position: static;
+    min-width: 0;
+  }
+
+  body.dashboard-page .page-stack {
+    min-width: 0;
+  }
 }
 
 .onboarding-panel {
@@ -1014,7 +1091,10 @@ textarea:focus {
   .compact-record-list,
   .chart-legend,
   .nearby-map-card,
-  .onboarding-step-grid {
+  .onboarding-step-grid,
+  .workspace-toolbar-grid,
+  .toolbar-search,
+  .toolbar-translate {
     grid-template-columns: 1fr;
   }
 
@@ -1071,14 +1151,15 @@ textarea:focus {
     min-width: 0;
   }
 
+  .toolbar-search,
+  .toolbar-translate {
+    width: 100%;
+  }
+
   .site-nav-shell,
   .nav-cluster,
   .nav-primary-links,
   .nav-utility-cluster {
-    width: 100%;
-  }
-
-  .language-picker {
     width: 100%;
   }
 
