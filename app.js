@@ -269,10 +269,17 @@ async function getCurrentUserProfile() {
   const { data: authData, error: authError } = await supabase.auth.getUser();
   if (authError || !authData.user) return null;
 
-  const { data: profile, error: profileError } = await supabase.from("users").select("*").eq("id", authData.user.id).maybeSingle();
-  if (profileError || !profile) return null;
-
-  return normalizeProfile(profile, authData.user);
+  try {
+    const { data: profile, error: profileError } = await supabase.from("users").select("*").eq("id", authData.user.id).maybeSingle();
+    if (profileError) {
+      if (isMissingRelationError(profileError)) return normalizeProfile({ id: authData.user.id, role: authData.user.user_metadata?.role || "seeker" }, authData.user);
+      return null;
+    }
+    return normalizeProfile(profile, authData.user);
+  } catch (error) {
+    if (isMissingRelationError(error)) return normalizeProfile({ id: authData.user.id, role: authData.user.user_metadata?.role || "seeker" }, authData.user);
+    return null;
+  }
 }
 
 async function requireRole(allowedRoles) {
@@ -421,30 +428,53 @@ function renderVersionBadges() {
 }
 
 async function fetchUsers() {
-  const { data, error } = await supabase.from("users").select("*").order("created_at", { ascending: false });
-  if (error) throw error;
-  return data || [];
+  try {
+    const { data, error } = await supabase.from("users").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("users"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchApprovedModules() {
-  const { data, error } = await supabase
-    .from("modules")
-    .select("*, users!modules_created_by_fkey(id, role, verified, email)")
-    .eq("status", "approved")
-    .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("modules")
+      .select("*, users!modules_created_by_fkey(id, role, verified, email)")
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
-
-  return (data || []).filter((row) => row.users?.verified).map(mapModule);
+    if (error) throw error;
+    return (data || []).filter((row) => row.users?.verified).map(mapModule);
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("modules"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchAllModules() {
-  const { data, error } = await supabase
-    .from("modules")
-    .select("*, users!modules_created_by_fkey(id, role, verified, email)")
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data || []).map(mapModule);
+  try {
+    const { data, error } = await supabase
+      .from("modules")
+      .select("*, users!modules_created_by_fkey(id, role, verified, email)")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data || []).map(mapModule);
+  } catch (error) {
+    if (isMissingRelationError(error)) {
+      console.warn(optionalTableNotice("modules"), error.message);
+      return [];
+    }
+    throw error;
+  }
 }
 
 async function fetchPortfolioEntries() {
@@ -913,7 +943,11 @@ async function renderHomePage() {
         codeRow = data;
       }
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
+      const { data, error } = await supabase.auth.signUp({ 
+        email, 
+        password,
+        options: { data: { role: selectedRole } }
+      });
       if (error) {
         setMessage("signup-message", authErrorMessage(error), "error");
         return;
@@ -1443,15 +1477,41 @@ async function initSeekerDashboard() {
       return;
     }
 
-    const { error } = await supabase.from("portfolio_entries").insert({
+    const { data: newEntry, error } = await supabase.from("portfolio_entries").insert({
       user_id: currentUser.id,
       title,
       description: entryType ? `[${entryType}] ${description}` : description,
       link: link || null,
       visibility
-    });
-    setMessage("portfolio-message", error ? error.message : "Portfolio entry saved.", error ? "error" : "success");
-    if (!error) await initSeekerDashboard();
+    }).select().single();
+    
+    if (error) {
+      setMessage("portfolio-message", error.message, "error");
+      return;
+    }
+
+    if (rawTags.length > 0 && newEntry) {
+      for (const tagName of rawTags) {
+        let tagId;
+        const { data: tag } = await supabase.from("tags").select("id").eq("name", tagName).maybeSingle();
+        if (tag) {
+          tagId = tag.id;
+        } else {
+          const { data: newTag } = await supabase.from("tags").insert({ name: tagName }).select().single();
+          if (newTag) tagId = newTag.id;
+        }
+        if (tagId) {
+          await supabase.from("tag_links").insert({
+            tag_id: tagId,
+            entity_type: "portfolio",
+            entity_id: newEntry.id
+          });
+        }
+      }
+    }
+    
+    setMessage("portfolio-message", "Portfolio entry saved.", "success");
+    await initSeekerDashboard();
   });
 
   document.getElementById("niche-form").addEventListener("submit", async (event) => {
@@ -1930,27 +1990,23 @@ async function initGuildPage() {
       </header>
 
       <section class="record-list">
-        ${guilds.length ? guilds.map(guild => {
+        ${guildList.length ? guildList.map(guild => {
           const membersList = guildMembers.filter(m => m.guild_id === guild.id);
           const tagsList = getEntityTags("guild", guild.id, tags, tagLinks);
-          return \`
+          return `
             <article class="card record-card">
               <h3>${escapeHtml(guild.title || guild.name)}</h3>
               <p>${escapeHtml(guild.description || guild.research_focus || "No description")}</p>
-              ${tagsList.length ? \`<div style="margin-top:12px; margin-bottom:12px">${tagsList.map(t => \`<span class="pill">${escapeHtml(t)}</span>\`).join("")}</div>\` : ""}
+              ${tagsList.length ? `<div style="margin-top:12px; margin-bottom:12px">${tagsList.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
               <p class="field-note" style="margin-top:auto; padding-top:16px">${membersList.length} Member${membersList.length === 1 ? "" : "s"}</p>
               <footer style="margin-top:16px"><a class="btn subtle-button" style="width:100%" href="guild.html?id=${guild.id}">Open Guild</a></footer>
             </article>
-          \`;
-        }).join("") : \`<div class="empty-state" style="grid-column:1/-1"><p>No guilds yet.</p></div>\`}
+          `;
+        }).join("") : `<div class="empty-state" style="grid-column:1/-1"><p>No guilds yet.</p></div>`}
       </section>
     </section>
   `;
-            })
-            .join("")}
-        </section>
-      </section>
-    `;
+
 
     document.getElementById("guild-create-form")?.addEventListener("submit", async (event) => {
       event.preventDefault();
@@ -2243,13 +2299,13 @@ async function initDiscoveryPage() {
             ? entries.map(entry => {
                 const author = usersById.get(entry.createdBy);
                 const role = author ? author.role : "Unknown";
-                return \`
+                return `
                   <article class="card record-card" style="margin-bottom:24px">
                     <div class="card-header-row">
                       <h3>${escapeHtml(entry.title)}</h3>
                       <span class="pill">${escapeHtml(role)}</span>
                     </div>
-                    ${entry.tags && entry.tags.length ? \`<div class="inline-actions" style="margin-bottom:12px">${entry.tags.map(t => \`<span class="pill" style="border-color:var(--gold);color:var(--gold)">${escapeHtml(t)}</span>\`).join("")}</div>\` : ""}
+                    ${entry.tags && entry.tags.length ? `<div class="inline-actions" style="margin-bottom:12px">${entry.tags.map(t => `<span class="pill" style="border-color:var(--gold);color:var(--gold)">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
                     <p style="margin-bottom:16px">${escapeHtml(entry.description || "No preview available.")}</p>
                     <div style="font-size:0.85rem;color:var(--muted-text)">
                       <span>By ${escapeHtml(displayUserName(author))}</span>
@@ -2257,9 +2313,9 @@ async function initDiscoveryPage() {
                       <span>${formatDate(entry.created_at)}</span>
                     </div>
                   </article>
-                \`;
+                `;
               }).join("")
-            : \`<div class="empty-state"><p>No highlighted scholarly work yet.</p></div>\`
+            : `<div class="empty-state"><p>No highlighted scholarly work yet.</p></div>`
         }
       </section>
     </section>
