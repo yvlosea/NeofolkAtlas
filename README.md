@@ -1,6 +1,6 @@
 # Neofolk Atlas
 
-Version: `Alpha 7.3`
+Version: `Alpha 7.4`
 
 Neofolk Atlas is a Supabase-backed academic web application centered on structured study, portfolio evidence, and reviewed intellectual work.
 
@@ -68,6 +68,6 @@ To grant operator access:
 - all page shells now load `app.js` correctly as an ES module
 - missing pages referenced by navigation were added
 - the public demo access block was removed from the homepage
-- headers now consistently show `Alpha 7.3`
+- headers now consistently show `Alpha 7.4`
 - homepage copy and README were aligned with the current Supabase-based app
 - operator routing and navigation were cleaned up so the role behaves like a real access tier

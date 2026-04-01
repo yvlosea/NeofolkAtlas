@@ -231,6 +231,11 @@ textarea:focus {
   justify-content: flex-end;
 }
 
+.sidebar-group {
+  display: grid;
+  gap: 8px;
+}
+
 .card-header-row {
   display: flex;
   align-items: start;
@@ -816,17 +821,20 @@ body.dashboard-page .page-shell {
   }
 
   body.dashboard-page .site-header {
-    position: sticky;
-    top: 16px;
-    min-height: calc(100vh - 32px);
+    position: relative;
+    top: auto;
     align-content: start;
     margin-bottom: 0;
-    padding: 18px 16px;
+    padding: 20px 16px;
   }
 
   body.dashboard-page .brand-mark {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  body.dashboard-page .brand-copy strong {
+    font-size: 1.45rem;
   }
 
   body.dashboard-page .site-nav-shell,
@@ -838,13 +846,57 @@ body.dashboard-page .page-shell {
     width: 100%;
   }
 
+  body.dashboard-page .site-nav-shell {
+    gap: 18px;
+  }
+
+  body.dashboard-page .sidebar-group {
+    padding: 14px;
+    border: 1px solid rgba(232, 220, 203, 0.12);
+    border-radius: 18px;
+    background: rgba(245, 239, 230, 0.03);
+  }
+
+  body.dashboard-page .sidebar-group .section-label {
+    margin-bottom: 4px;
+  }
+
+  body.dashboard-page .nav-link,
+  body.dashboard-page .nav-button {
+    justify-content: flex-start;
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    background: rgba(245, 239, 230, 0.03);
+  }
+
   body.dashboard-page .nav-more-panel {
     position: static;
     min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
 
   body.dashboard-page .page-stack {
     min-width: 0;
+  }
+
+  body.dashboard-page .dashboard-shell {
+    gap: 20px;
+  }
+
+  body.dashboard-page .dashboard-header {
+    padding: 0 4px;
+  }
+
+  body.dashboard-page .card,
+  body.dashboard-page .record-card,
+  body.dashboard-page .empty-card,
+  body.dashboard-page .stat-card,
+  body.dashboard-page .archive-card,
+  body.dashboard-page .soft-card {
+    border-radius: 18px;
   }
 }
 

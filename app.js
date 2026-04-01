@@ -59,7 +59,7 @@ const uiKeys = {
   userLocation: "neofolk.userLocation"
 };
 
-const appVersion = "Alpha 7.3";
+const appVersion = "Alpha 7.4";
 const operatorRole = "operator";
 const defaultUiLanguage = "en";
 
@@ -651,16 +651,22 @@ function renderNav(currentUser) {
         ${
           currentUser
             ? `
-              <a class="nav-link" href="${dashboardHref}">Dashboard</a>
-              <a class="nav-link" href="subjects.html">Learn</a>
-              <a class="nav-link" href="guild.html">Guilds</a>
-              <a class="nav-link" href="research.html">Research</a>
-              <a class="nav-link" href="studios.html">Studios</a>
-              <a class="nav-link" href="profile.html">Profile</a>
-              <details class="nav-more">
-                <summary class="nav-link nav-summary-link">More</summary>
+              <section class="sidebar-group">
+                <p class="section-label">Main</p>
+                <a class="nav-link" href="${dashboardHref}">Dashboard</a>
+                <a class="nav-link" href="subjects.html">Learn</a>
+                <a class="nav-link" href="guild.html">Guilds</a>
+                <a class="nav-link" href="research.html">Research</a>
+              </section>
+              <section class="sidebar-group">
+                <p class="section-label">Progress</p>
+                <a class="nav-link" href="studios.html">Studios</a>
+                <a class="nav-link" href="profile.html">Profile</a>
+                <a class="nav-link" href="discovery.html">Discovery</a>
+              </section>
+              <details class="nav-more sidebar-group">
+                <summary class="nav-link nav-summary-link">Guidance</summary>
                 <div class="nav-more-panel">
-                  <a class="nav-link" href="discovery.html">Discovery</a>
                   <a class="nav-link" href="vision.html">Vision</a>
                   <a class="nav-link" href="help.html">Help</a>
                 </div>
