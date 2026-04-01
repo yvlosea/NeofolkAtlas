@@ -59,11 +59,11 @@ const uiKeys = {
   userLocation: "neofolk.userLocation"
 };
 
-const appVersion = "Alpha 7.4";
+const appVersion = "Alpha 9.4";
 const operatorRole = "operator";
 const defaultUiLanguage = "en";
 
-const indianLanguageOptions = [
+const supportedLanguages = [
   {
     code: "en",
     label: "English",
@@ -77,87 +77,18 @@ const indianLanguageOptions = [
     shortLabel: "Hindi",
     serif: '"Noto Serif Devanagari", Georgia, serif',
     sans: '"Noto Sans Devanagari", system-ui, sans-serif'
-  },
-  {
-    code: "as",
-    label: "অসমীয়া",
-    shortLabel: "Assamese",
-    serif: '"Noto Serif Bengali", Georgia, serif',
-    sans: '"Noto Sans Bengali", system-ui, sans-serif'
-  },
-  {
-    code: "bn",
-    label: "বাংলা",
-    shortLabel: "Bengali",
-    serif: '"Noto Serif Bengali", Georgia, serif',
-    sans: '"Noto Sans Bengali", system-ui, sans-serif'
-  },
-  {
-    code: "mr",
-    label: "मराठी",
-    shortLabel: "Marathi",
-    serif: '"Noto Serif Devanagari", Georgia, serif',
-    sans: '"Noto Sans Devanagari", system-ui, sans-serif'
-  },
-  {
-    code: "ta",
-    label: "தமிழ்",
-    shortLabel: "Tamil",
-    serif: '"Noto Serif Tamil", Georgia, serif',
-    sans: '"Noto Sans Tamil", system-ui, sans-serif'
-  },
-  {
-    code: "te",
-    label: "తెలుగు",
-    shortLabel: "Telugu",
-    serif: '"Noto Serif Telugu", Georgia, serif',
-    sans: '"Noto Sans Telugu", system-ui, sans-serif'
-  },
-  {
-    code: "kn",
-    label: "ಕನ್ನಡ",
-    shortLabel: "Kannada",
-    serif: '"Noto Serif Kannada", Georgia, serif',
-    sans: '"Noto Sans Kannada", system-ui, sans-serif'
-  },
-  {
-    code: "ml",
-    label: "മലയാളം",
-    shortLabel: "Malayalam",
-    serif: '"Noto Serif Malayalam", Georgia, serif',
-    sans: '"Noto Sans Malayalam", system-ui, sans-serif'
-  },
-  {
-    code: "gu",
-    label: "ગુજરાતી",
-    shortLabel: "Gujarati",
-    serif: '"Noto Serif Gujarati", Georgia, serif',
-    sans: '"Noto Sans Gujarati", system-ui, sans-serif'
-  },
-  {
-    code: "pa",
-    label: "ਪੰਜਾਬੀ",
-    shortLabel: "Punjabi",
-    serif: '"Noto Serif Gurmukhi", Georgia, serif',
-    sans: '"Noto Sans Gurmukhi", system-ui, sans-serif'
-  },
-  {
-    code: "ur",
-    label: "اردو",
-    shortLabel: "Urdu",
-    serif: '"Noto Nastaliq Urdu", Georgia, serif',
-    sans: '"Noto Sans Arabic", system-ui, sans-serif'
-  },
-  {
-    code: "or",
-    label: "ଓଡ଼ିଆ",
-    shortLabel: "Odia",
-    serif: '"Noto Serif Oriya", Georgia, serif',
-    sans: '"Noto Sans Oriya", system-ui, sans-serif'
   }
 ];
-
-const translationLanguageOptions = indianLanguageOptions.filter((language) => language.code !== "en");
+let currentLanguage = defaultUiLanguage;
+let currentTranslations = {};
+const searchResultTitleKeys = {
+  subjects: "search.subjects",
+  guilds: "search.guilds",
+  research: "search.research",
+  portfolio: "search.portfolio",
+  studios: "search.studios",
+  modules: "search.modules"
+};
 
 const missingTablePattern = /schema cache|Could not find the table|relationship between/i;
 
@@ -207,7 +138,7 @@ function ensureLanguageFonts() {
   link.id = "neofolk-language-fonts";
   link.rel = "stylesheet";
   link.href =
-    "https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600&family=Noto+Sans+Bengali:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Sans+Gujarati:wght@400;500;600&family=Noto+Sans+Gurmukhi:wght@400;500;600&family=Noto+Sans+Kannada:wght@400;500;600&family=Noto+Sans+Malayalam:wght@400;500;600&family=Noto+Sans+Oriya:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&family=Noto+Sans+Telugu:wght@400;500;600&family=Noto+Serif+Bengali:wght@500;600&family=Noto+Serif+Devanagari:wght@500;600&family=Noto+Serif+Gujarati:wght@500;600&family=Noto+Serif+Gurmukhi:wght@500;600&family=Noto+Serif+Kannada:wght@500;600&family=Noto+Serif+Malayalam:wght@500;600&family=Noto+Serif+Oriya:wght@500;600&family=Noto+Serif+Tamil:wght@500;600&family=Noto+Serif+Telugu:wght@500;600&family=Noto+Nastaliq+Urdu:wght@400;500;600&display=swap";
+    "https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500;600&display=swap";
   document.head.appendChild(link);
 }
 
@@ -216,22 +147,51 @@ function getPreferredLanguage() {
 }
 
 function getLanguageMeta(code) {
-  return indianLanguageOptions.find((item) => item.code === code) || indianLanguageOptions[0];
+  return supportedLanguages.find((item) => item.code === code) || supportedLanguages[0];
 }
 
-function applyLanguagePreference(code, options = {}) {
+async function loadTranslations(code) {
+  const chosen = getLanguageMeta(code);
+  const fallback = await fetch("translations/en.json").then((response) => response.json());
+  const selected =
+    chosen.code === "en"
+      ? fallback
+      : await fetch(`translations/${chosen.code}.json`)
+          .then((response) => (response.ok ? response.json() : fallback))
+          .catch(() => fallback);
+
+  currentLanguage = chosen.code;
+  currentTranslations = { ...fallback, ...selected };
+  return chosen;
+}
+
+function readTranslationValue(key) {
+  return key.split(".").reduce((value, part) => (value && typeof value === "object" ? value[part] : undefined), currentTranslations);
+}
+
+function t(key, replacements = {}) {
+  const value = readTranslationValue(key);
+  const template = typeof value === "string" ? value : key;
+  return Object.entries(replacements).reduce(
+    (text, [replacementKey, replacementValue]) => text.replaceAll(`{${replacementKey}}`, String(replacementValue)),
+    template
+  );
+}
+
+async function applyLanguagePreference(code, options = {}) {
   const selected = getLanguageMeta(code);
+  await loadTranslations(selected.code);
   localStorage.setItem(uiKeys.preferredLanguage, selected.code);
   document.documentElement.lang = selected.code;
   document.documentElement.style.setProperty("--serif", selected.serif);
   document.documentElement.style.setProperty("--sans", selected.sans);
   document.body?.setAttribute("data-ui-lang", selected.code);
-  document.documentElement.setAttribute("translate", "yes");
+  document.documentElement.setAttribute("translate", "no");
 
   if (!options.silent) {
     showUtilityNotice(
-      `${selected.shortLabel} ready`,
-      `The font stack has been adjusted for ${selected.shortLabel}. To translate the full interface, use your browser's Translate option and choose ${selected.label}.`
+      t("language.readyTitle", { language: selected.shortLabel }),
+      t("language.readyBody", { language: selected.label })
     );
   }
 }
@@ -295,87 +255,13 @@ function findLanguageFromInput(value) {
   const normalized = String(value || "").trim().toLowerCase();
   if (!normalized) return getLanguageMeta(getPreferredLanguage());
   return (
-    indianLanguageOptions.find(
+    supportedLanguages.find(
       (language) =>
         language.code.toLowerCase() === normalized ||
         language.label.toLowerCase() === normalized ||
         language.shortLabel.toLowerCase() === normalized
     ) || null
   );
-}
-
-let googleTranslateLoader = null;
-
-function ensureGoogleTranslateMount() {
-  let mount = document.getElementById("google_translate_mount");
-  if (!mount) {
-    mount = document.createElement("div");
-    mount.id = "google_translate_mount";
-    mount.className = "hidden";
-    document.body.appendChild(mount);
-  }
-  return mount;
-}
-
-function ensureGoogleTranslate() {
-  if (document.querySelector(".goog-te-combo")) {
-    return Promise.resolve();
-  }
-
-  if (googleTranslateLoader) {
-    return googleTranslateLoader;
-  }
-
-  googleTranslateLoader = new Promise((resolve, reject) => {
-    ensureGoogleTranslateMount();
-
-    window.googleTranslateElementInit = () => {
-      try {
-        // eslint-disable-next-line no-undef
-        new window.google.translate.TranslateElement(
-          {
-            pageLanguage: "en",
-            includedLanguages: translationLanguageOptions.map((language) => language.code).join(","),
-            autoDisplay: false,
-            multilanguagePage: true
-          },
-          "google_translate_mount"
-        );
-
-        const waitForCombo = () => {
-          const combo = document.querySelector(".goog-te-combo");
-          if (combo) {
-            resolve();
-            return;
-          }
-          window.setTimeout(waitForCombo, 120);
-        };
-
-        waitForCombo();
-      } catch (error) {
-        reject(error);
-      }
-    };
-
-    if (!document.getElementById("google-translate-script")) {
-      const script = document.createElement("script");
-      script.id = "google-translate-script";
-      script.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      script.onerror = () => reject(new Error("Google Translate could not be loaded."));
-      document.body.appendChild(script);
-    }
-  });
-
-  return googleTranslateLoader;
-}
-
-async function triggerGoogleTranslate(targetLanguageCode) {
-  await ensureGoogleTranslate();
-  const combo = document.querySelector(".goog-te-combo");
-  if (!combo) throw new Error("Translate control is not available.");
-  combo.value = targetLanguageCode;
-  combo.dispatchEvent(new Event("change"));
 }
 
 function showUtilityNotice(title, body) {
@@ -423,6 +309,20 @@ function setMessage(elementId, message, type) {
 
 function textButton(label, className, attrs) {
   return `<button class="${className}" type="button" ${attrs}>${escapeHtml(label)}</button>`;
+}
+
+const dictionaryTerms = ["seeker", "curator", "arbiter", "guild", "module", "discovery", "praxis", "lingosophy"];
+
+function termTooltip(term) {
+  return `
+    <span class="term-badge" tabindex="0" data-term="${escapeHtml(term)}">
+      ${escapeHtml(t(`terms.${term}.label`))}
+      <span class="term-tooltip" role="tooltip">
+        <strong>${escapeHtml(t(`terms.${term}.label`))}</strong>
+        <span>${escapeHtml(t(`terms.${term}.simple`))}</span>
+      </span>
+    </span>
+  `;
 }
 
 function statusPill(status) {
@@ -602,10 +502,10 @@ function enrichModulesWithLocations(modules, curatorCodes, userLocation) {
 
 function authErrorMessage(error) {
   const message = error?.message || "";
-  if (/already registered|already exists|duplicate/i.test(message)) return "Email already exists.";
-  if (/email not confirmed/i.test(message)) return "Unverified email. Please confirm your email first.";
-  if (/invalid login credentials|invalid credentials/i.test(message)) return "Incorrect password.";
-  return message || "Authentication failed.";
+  if (/already registered|already exists|duplicate/i.test(message)) return t("messages.emailExists");
+  if (/email not confirmed/i.test(message)) return t("messages.unverifiedEmail");
+  if (/invalid login credentials|invalid credentials/i.test(message)) return t("messages.incorrectPassword");
+  return message || t("messages.authFailed");
 }
 
 async function getCurrentUserProfile() {
@@ -652,37 +552,42 @@ function renderNav(currentUser) {
           currentUser
             ? `
               <section class="sidebar-group">
-                <p class="section-label">Main</p>
-                <a class="nav-link" href="${dashboardHref}">Dashboard</a>
-                <a class="nav-link" href="subjects.html">Learn</a>
-                <a class="nav-link" href="guild.html">Guilds</a>
-                <a class="nav-link" href="research.html">Research</a>
+                <p class="section-label">${escapeHtml(t("nav.groupPrimary"))}</p>
+                <a class="nav-link" href="subjects.html">${escapeHtml(t("nav.learn"))}</a>
+                <a class="nav-link" href="discovery.html">${escapeHtml(t("nav.explore"))}</a>
+                <a class="nav-link" href="guild.html">${escapeHtml(t("nav.groups"))}</a>
+                <a class="nav-link" href="profile.html#portfolio">${escapeHtml(t("nav.projects"))}</a>
+                <a class="nav-link" href="${dashboardHref}">${escapeHtml(t("nav.progress"))}</a>
               </section>
               <section class="sidebar-group">
-                <p class="section-label">Progress</p>
-                <a class="nav-link" href="studios.html">Studios</a>
-                <a class="nav-link" href="profile.html">Profile</a>
-                <a class="nav-link" href="discovery.html">Discovery</a>
+                <p class="section-label">${escapeHtml(t("nav.groupSecondary"))}</p>
+                <a class="nav-link" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
+                <a class="nav-link" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
+                <a class="nav-link" href="help.html">${escapeHtml(t("nav.help"))}</a>
               </section>
-              <details class="nav-more sidebar-group">
-                <summary class="nav-link nav-summary-link">Guidance</summary>
-                <div class="nav-more-panel">
-                  <a class="nav-link" href="vision.html">Vision</a>
-                  <a class="nav-link" href="help.html">Help</a>
-                </div>
-              </details>
             `
             : `
-              <a class="nav-link" href="index.html#signup-form">Get Started</a>
-              <a class="nav-link" href="index.html#login-form">Login</a>
-              <a class="nav-link" href="vision.html">Vision</a>
-              <a class="nav-link" href="index.html#about">About</a>
+              <a class="nav-link" href="index.html#start-learning">${escapeHtml(t("home.primaryStart"))}</a>
+              <a class="nav-link" href="subjects.html">${escapeHtml(t("home.primaryBrowse"))}</a>
+              <a class="nav-link" href="index.html#auth-area">${escapeHtml(t("home.primaryCreate"))}</a>
+              <a class="nav-link" href="help.html">${escapeHtml(t("nav.help"))}</a>
             `
         }
       </div>
 
       <div class="nav-cluster nav-utility-cluster">
-        ${currentUser ? `<button id="logout-button" class="nav-button" type="button">Logout</button>` : ""}
+        ${
+          currentUser
+            ? `<button id="logout-button" class="nav-button" type="button">${escapeHtml(t("nav.logout"))}</button>`
+            : `
+              <label class="language-picker compact-language-picker">
+                <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
+                <select id="public-language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
+                  ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
+                </select>
+              </label>
+            `
+        }
       </div>
     </div>
   `;
@@ -691,49 +596,22 @@ function renderNav(currentUser) {
     await supabase.auth.signOut();
     window.location.href = "index.html";
   });
+
+  document.getElementById("public-language-select")?.addEventListener("change", async (event) => {
+    await applyLanguagePreference(event.target.value, { silent: true });
+    await init();
+  });
 }
 
 function wireWorkspaceToolbar(currentUser) {
-  document.getElementById("language-select")?.addEventListener("change", (event) => {
-    applyLanguagePreference(event.target.value, { silent: true });
-    const input = document.getElementById("translate-language-input");
-    if (input) {
-      input.value = getLanguageMeta(event.target.value).label;
-    }
-  });
-
-  document.getElementById("translate-language-input")?.addEventListener("change", (event) => {
-    const selected = findLanguageFromInput(event.target.value);
-    if (!selected) return;
-    const hiddenSelect = document.getElementById("language-select");
-    if (hiddenSelect) hiddenSelect.value = selected.code;
-    applyLanguagePreference(selected.code, { silent: true });
-    event.target.value = selected.label;
-  });
-
-  document.getElementById("translate-help-button")?.addEventListener("click", async () => {
-    const typedLanguage = document.getElementById("translate-language-input")?.value;
-    const selected = findLanguageFromInput(typedLanguage || getPreferredLanguage());
-    if (!selected) {
-      showUtilityNotice("Choose a supported language", "Use one of the listed Indian languages in the translate field.");
-      return;
-    }
-
-    applyLanguagePreference(selected.code, { silent: true });
-    try {
-      await triggerGoogleTranslate(selected.code);
-      showUtilityNotice("Translation enabled", `${selected.label} has been selected for in-page translation.`);
-    } catch (error) {
-      showUtilityNotice(
-        "Translate unavailable",
-        `Google Translate could not be loaded right now. In Chrome, open the browser menu and choose Translate, then select ${selected.label}.`
-      );
-    }
+  document.getElementById("language-select")?.addEventListener("change", async (event) => {
+    await applyLanguagePreference(event.target.value, { silent: true });
+    await init();
   });
 
   document.getElementById("use-location-button")?.addEventListener("click", () => {
     if (!navigator.geolocation) {
-      showUtilityNotice("Location not available", "This browser does not support location access.");
+      showUtilityNotice(t("messages.locationUnavailableTitle"), t("messages.locationUnavailableBody"));
       return;
     }
 
@@ -741,12 +619,12 @@ function wireWorkspaceToolbar(currentUser) {
       (position) => {
         saveUserLocation(position.coords);
         showUtilityNotice(
-          "Location saved",
-          "Nearby module search is now enabled. When module locations are available, search results will show the closest options first."
+          t("messages.locationSavedTitle"),
+          t("messages.locationSavedBody")
         );
       },
       (error) => {
-        showUtilityNotice("Location access denied", error.message || "Allow location access to see nearby modules.");
+        showUtilityNotice(t("messages.locationDeniedTitle"), error.message || t("messages.locationDeniedBody"));
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 600000 }
     );
@@ -780,51 +658,51 @@ function wireWorkspaceToolbar(currentUser) {
 
     const groups = [
       {
-        title: "Subjects",
+        title: t(searchResultTitleKeys.subjects),
         items: subjects.filter((item) => `${item.name || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
           title: item.name,
           href: `subjects.html?id=${item.id}`,
-          meta: item.category || "Subject"
+          meta: item.category || t("search.subject")
         }))
       },
       {
-        title: "Guilds",
+        title: t(searchResultTitleKeys.guilds),
         items: guilds.filter((item) => `${item.title || item.name || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
           title: item.title || item.name,
           href: item.id ? `guild.html?id=${item.id}` : "guild.html",
-          meta: item.research_focus || "Guild"
+          meta: item.research_focus || t("search.guild")
         }))
       },
       {
-        title: "Research",
+        title: t(searchResultTitleKeys.research),
         items: researchPosts.filter((item) => `${item.title || ""} ${item.body || ""}`.toLowerCase().includes(query)).map((item) => ({
           title: item.title,
           href: "research.html",
-          meta: item.tags?.join(", ") || "Research Post"
+          meta: item.tags?.join(", ") || t("search.researchPost")
         }))
       },
       {
-        title: "Portfolio",
+        title: t(searchResultTitleKeys.portfolio),
         items: portfolios.filter((item) => `${item.title || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
           title: item.title,
           href: "profile.html#portfolio",
-          meta: item.visibility || "Portfolio Entry"
+          meta: item.visibility || t("search.portfolioEntry")
         }))
       },
       {
-        title: "Studios",
+        title: t(searchResultTitleKeys.studios),
         items: studios.filter((item) => `${item.name || ""} ${item.description || ""}`.toLowerCase().includes(query)).map((item) => ({
           title: item.name,
           href: "studios.html",
-          meta: item.category || "Studio"
+          meta: item.category || t("search.studio")
         }))
       },
       {
-        title: "Modules",
+        title: t(searchResultTitleKeys.modules),
         items: nearbyModules.map((item) => ({
           title: item.title,
           href: `module.html?id=${item.id}`,
-          meta: `${item.guild || "Module"}${item.locationText ? ` · ${item.locationText}` : ""}${item.distanceKm != null ? ` · ${formatDistance(item.distanceKm)}` : ""}`,
+          meta: `${item.guild || t("search.module")}${item.locationText ? ` · ${item.locationText}` : ""}${item.distanceKm != null ? ` · ${formatDistance(item.distanceKm)}` : ""}`,
           mapsHref: item.mapsHref
         }))
       }
@@ -841,25 +719,25 @@ function wireWorkspaceToolbar(currentUser) {
     }
 
     panel.innerHTML = `
-      <p class="section-label">Search Results</p>
-      <h2>Results for "${escapeHtml(query)}"</h2>
+      <p class="section-label">${escapeHtml(t("search.kicker"))}</p>
+      <h2>${escapeHtml(t("search.resultsFor", { query }))}</h2>
       ${
         featuredModule
           ? `
             <section class="nearby-map-card">
               <div>
-                <p class="section-label">Nearby Module</p>
+                <p class="section-label">${escapeHtml(t("search.nearbyModule"))}</p>
                 <h3>${escapeHtml(featuredModule.title)}</h3>
                 <p>${escapeHtml(featuredModule.locationText)}</p>
-                <p class="field-note">${escapeHtml(featuredModule.guild || "Module")} · ${escapeHtml(featuredModule.distanceKm != null ? formatDistance(featuredModule.distanceKm) : "Open map for route details")}</p>
+                <p class="field-note">${escapeHtml(featuredModule.guild || t("search.module"))} · ${escapeHtml(featuredModule.distanceKm != null ? formatDistance(featuredModule.distanceKm) : t("search.routeDetails"))}</p>
                 <div class="inline-actions">
-                  <a class="btn btn-primary" href="module.html?id=${featuredModule.id}">Open module</a>
-                  <a class="btn subtle-button" href="${featuredModule.mapsHref}" target="_blank" rel="noreferrer">Open in Google Maps</a>
+                  <a class="btn btn-primary" href="module.html?id=${featuredModule.id}">${escapeHtml(t("search.openModule"))}</a>
+                  <a class="btn subtle-button" href="${featuredModule.mapsHref}" target="_blank" rel="noreferrer">${escapeHtml(t("search.openMaps"))}</a>
                 </div>
               </div>
               <iframe
                 class="map-frame"
-                title="Module location map"
+                title="${escapeHtml(t("search.mapTitle"))}"
                 src="${googleMapsEmbedUrl(featuredModule.locationText)}"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
@@ -885,14 +763,14 @@ function wireWorkspaceToolbar(currentUser) {
                                 <h3>${escapeHtml(item.title)}</h3>
                                 <p class="field-note">${escapeHtml(item.meta)}</p>
                                 <footer>
-                                  <a class="text-link" href="${item.href}">Open</a>
-                                  ${item.mapsHref ? `<a class="text-link" target="_blank" rel="noreferrer" href="${item.mapsHref}">Maps</a>` : ""}
+                                  <a class="text-link" href="${item.href}">${escapeHtml(t("search.open"))}</a>
+                                  ${item.mapsHref ? `<a class="text-link" target="_blank" rel="noreferrer" href="${item.mapsHref}">${escapeHtml(t("search.maps"))}</a>` : ""}
                                 </footer>
                               </article>
                             `
                           )
                           .join("")
-                      : emptyCard(`No ${group.title.toLowerCase()} results`, "No matching records for this query.")
+                      : emptyCard(t("search.noResultsTitle", { type: group.title.toLowerCase() }), t("search.noResultsBody"))
                   }
                 </div>
               </article>
@@ -930,45 +808,45 @@ function renderOnboarding(user) {
 
   const steps = [
     {
-      kicker: "Step 1",
-      title: "Understand the three academic layers",
-      note: "Neofolk works best when you move slowly and understand what each area is meant to do.",
+      kicker: t("onboarding.stepLabel", { step: 1 }),
+      title: t("onboarding.step1Title"),
+      note: t("onboarding.step1Note"),
       cards: [
-        { title: "Subjects", body: "Subjects are structured learning areas. They help you understand what to study and what kind of work is expected." },
-        { title: "Guilds", body: "Guilds are research collectives. Join them when you want to investigate with others and produce deeper outputs." },
-        { title: "Portfolio", body: "Your portfolio is your true learning record. It stores the work, reflections, and evidence you actually create." }
+        { title: t("onboarding.language"), body: t("onboarding.step1Card1") },
+        { title: t("onboarding.interests"), body: t("onboarding.step1Card2") },
+        { title: t("onboarding.firstCourse"), body: t("onboarding.step1Card3") }
       ]
     },
     {
-      kicker: "Step 2",
-      title: "Use the navigation in a simple order",
-      note: "You do not need to use every page at once. Start with the pages that move your learning forward.",
+      kicker: t("onboarding.stepLabel", { step: 2 }),
+      title: t("onboarding.step2Title"),
+      note: t("onboarding.step2Note"),
       cards: [
-        { title: "Dashboard first", body: "Open Dashboard to see your current position, activity, and recommended next steps." },
-        { title: "Then Learn", body: "Use Subjects to find structured study paths, available modules, and areas worth exploring." },
-        { title: "Then Research", body: "Move into Guilds and Research after you have something to investigate, ask, or document." },
-        { title: "Use Help anytime", body: "If a page feels unclear, open Help. It explains the purpose of each part of the platform in plain language." }
+        { title: t("onboarding.learn"), body: t("onboarding.step2Card1") },
+        { title: t("onboarding.notes"), body: t("onboarding.step2Card2") },
+        { title: t("onboarding.projects"), body: t("onboarding.step2Card3") },
+        { title: t("onboarding.progress"), body: t("onboarding.step2Card4") }
       ]
     },
     {
-      kicker: "Step 3",
-      title: "Follow the everyday learning path",
-      note: "This is the easiest way to use the system without getting lost.",
+      kicker: t("onboarding.stepLabel", { step: 3 }),
+      title: t("onboarding.step3Title"),
+      note: t("onboarding.step3Note"),
       cards: [
-        { title: "1. Choose a subject", body: "Pick one subject that matches your interest or need. Do not try to begin everywhere." },
-        { title: "2. Enroll in a module", body: "When approved modules appear, enroll and use them as your structured study path." },
-        { title: "3. Write portfolio entries", body: "Every strong piece of work should enter your portfolio, whether it is an essay, note, design, or reflection." },
-        { title: "4. Join a guild", body: "When you are ready to investigate with others, join or create a guild and begin shared inquiry." }
+        { title: t("onboarding.subjects"), body: t("onboarding.step3Card1") },
+        { title: t("onboarding.groups"), body: t("onboarding.step3Card2") },
+        { title: t("onboarding.dictionary"), body: t("onboarding.step3Card3") },
+        { title: t("onboarding.help"), body: t("onboarding.step3Card4") }
       ]
     },
     {
-      kicker: "Step 4",
-      title: "Use language, maps, and support tools",
-      note: "The platform should stay accessible even for first-time users and people working in different Indian languages.",
+      kicker: t("onboarding.stepLabel", { step: 4 }),
+      title: t("onboarding.step4Title"),
+      note: t("onboarding.step4Note"),
       cards: [
-        { title: "Language selector", body: "Choose a language from the header to switch to a script-friendly font. Then use your browser's Translate option for full translation." },
-        { title: "Nearby modules", body: "Use the Near Me button in the header. When location data exists, search results will surface the closest modules and open them in Google Maps." },
-        { title: "Need help?", body: "The Help page explains each page in more detail and can be searched with simple words like subjects, guilds, or portfolio." }
+        { title: t("onboarding.language"), body: t("onboarding.step4Card1") },
+        { title: t("onboarding.nearMe"), body: t("onboarding.step4Card2") },
+        { title: t("onboarding.phaseTwo"), body: t("onboarding.step4Card3") }
       ]
     }
   ];
@@ -981,10 +859,10 @@ function renderOnboarding(user) {
       <div class="intro-topline">
         <img class="intro-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
         <div class="intro-wordmark">
-          <p class="section-label">Welcome to the Atlas</p>
-          <strong>How to Use the Platform</strong>
+          <p class="section-label">${escapeHtml(t("onboarding.kicker"))}</p>
+          <strong>${escapeHtml(t("onboarding.title"))}</strong>
         </div>
-        <button class="btn subtle-button onboarding-close" id="dismiss-onboarding-top" type="button">Close</button>
+        <button class="btn subtle-button onboarding-close" id="dismiss-onboarding-top" type="button">${escapeHtml(t("onboarding.close"))}</button>
       </div>
       <div class="intro-copy">
         <div class="onboarding-progress">
@@ -993,9 +871,9 @@ function renderOnboarding(user) {
         </div>
         <div id="onboarding-step-body"></div>
         <div class="inline-actions onboarding-actions">
-          <button class="btn subtle-button" id="onboarding-prev" type="button">Previous</button>
-          <a class="btn" href="help.html">Open Help Page</a>
-          <button class="btn btn-primary" id="onboarding-next" type="button">Next</button>
+          <button class="btn subtle-button" id="onboarding-prev" type="button">${escapeHtml(t("onboarding.previous"))}</button>
+          <a class="btn" href="help.html">${escapeHtml(t("onboarding.openHelp"))}</a>
+          <button class="btn btn-primary" id="onboarding-next" type="button">${escapeHtml(t("onboarding.next"))}</button>
         </div>
       </div>
     </div>
@@ -1012,7 +890,7 @@ function renderOnboarding(user) {
 
   const renderStep = () => {
     const step = steps[stepIndex];
-    label.textContent = `${step.kicker} of ${steps.length}`;
+    label.textContent = t("onboarding.stepOf", { current: stepIndex + 1, total: steps.length });
     dots.innerHTML = steps
       .map((_, index) => `<span class="onboarding-dot ${index === stepIndex ? "is-active" : ""}"></span>`)
       .join("");
@@ -1033,7 +911,7 @@ function renderOnboarding(user) {
       </div>
     `;
     prevButton.disabled = stepIndex === 0;
-    nextButton.textContent = stepIndex === steps.length - 1 ? "Finish Tutorial" : "Next";
+    nextButton.textContent = stepIndex === steps.length - 1 ? t("onboarding.finish") : t("onboarding.next");
   };
 
   const dismiss = () => {
@@ -1067,7 +945,7 @@ function renderWorkspaceToolbar(currentUser) {
   const stack = document.querySelector(".page-stack");
   if (!stack) return;
 
-  const currentLanguage = translationLanguageOptions.find((language) => language.code === getPreferredLanguage()) || translationLanguageOptions[0];
+  const currentLanguageMeta = getLanguageMeta(getPreferredLanguage());
   let toolbar = document.getElementById("workspace-toolbar");
   if (!toolbar) {
     toolbar = document.createElement("section");
@@ -1080,31 +958,20 @@ function renderWorkspaceToolbar(currentUser) {
     <div class="workspace-toolbar-grid">
       <form id="global-search-form" class="toolbar-search" role="search">
         <label class="toolbar-field">
-          <span class="section-label">Search</span>
-          <input id="global-search-input" type="search" placeholder="Search subjects, guilds, modules, studios..." />
+          <span class="section-label">${escapeHtml(t("toolbar.search"))}</span>
+          <input id="global-search-input" type="search" placeholder="${escapeHtml(t("toolbar.searchPlaceholder"))}" />
         </label>
-        <button id="global-search-button" class="btn btn-primary" type="submit">Search</button>
+        <button id="global-search-button" class="btn btn-primary" type="submit">${escapeHtml(t("toolbar.searchButton"))}</button>
       </form>
 
       <div class="toolbar-translate">
         <label class="toolbar-field">
-          <span class="section-label">Translate</span>
-          <input
-            id="translate-language-input"
-            list="indian-language-list"
-            value="${escapeHtml(currentLanguage.label)}"
-            placeholder="Hindi, Tamil, Bengali..."
-            aria-label="Choose Indian language for translation"
-          />
+          <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
+          <select id="language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
+            ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguageMeta.code ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
+          </select>
         </label>
-        <datalist id="indian-language-list">
-          ${translationLanguageOptions.map((language) => `<option value="${escapeHtml(language.label)}">${escapeHtml(language.shortLabel)}</option>`).join("")}
-        </datalist>
-        <select id="language-select" class="hidden" aria-hidden="true" tabindex="-1">
-          ${translationLanguageOptions.map((language) => `<option value="${language.code}" ${language.code === currentLanguage.code ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
-        </select>
-        <button id="translate-help-button" class="btn" type="button">Translate Page</button>
-        <button id="use-location-button" class="btn subtle-button" type="button">Near Me</button>
+        <button id="use-location-button" class="btn subtle-button" type="button">${escapeHtml(t("toolbar.nearMe"))}</button>
       </div>
     </div>
   `;
@@ -1569,8 +1436,109 @@ async function renderHomePage() {
     }
   }
 
-  const roleSelect = document.getElementById("signup-role");
-  const curatorCodeField = document.getElementById("curator-code-field");
+  const stack = document.querySelector(".page-stack");
+  if (!stack) return;
+  const currentLanguageMeta = getLanguageMeta(getPreferredLanguage());
+  stack.innerHTML = `
+    <section id="start-learning" class="hero-panel hero-panel-simple">
+      <article class="hero-copy card">
+        <p class="section-label">${escapeHtml(t("home.kicker"))}</p>
+        <h1>${escapeHtml(t("home.title"))}</h1>
+        <p class="lede">${escapeHtml(t("home.subtitle"))}</p>
+        <div class="inline-actions">
+          <a class="btn btn-primary" href="#auth-area">${escapeHtml(t("home.primaryStart"))}</a>
+          <a class="btn" href="subjects.html">${escapeHtml(t("home.primaryBrowse"))}</a>
+          <a class="btn subtle-button" href="#login-form">${escapeHtml(t("home.primaryContinue"))}</a>
+        </div>
+        <section id="hero-quote" class="page-note"></section>
+      </article>
+
+      <article id="auth-area" class="auth-panel card">
+        <p class="section-label">${escapeHtml(t("home.languageKicker"))}</p>
+        <h2>${escapeHtml(t("home.languageTitle"))}</h2>
+        <div class="auth-language-row">
+          <label class="toolbar-field">
+            <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
+            <select id="home-language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
+              ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguageMeta.code ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
+            </select>
+          </label>
+        </div>
+        <div class="auth-layout auth-layout-simple">
+          <section>
+            <p class="section-label">${escapeHtml(t("home.signupLabel"))}</p>
+            <h2>${escapeHtml(t("home.signupTitle"))}</h2>
+            <p class="field-note">${escapeHtml(t("home.signupNote"))}</p>
+            <form id="signup-form" class="form-stack">
+              <label>
+                ${escapeHtml(t("auth.email"))}
+                <input id="signup-email" name="email" type="email" autocomplete="email" required />
+              </label>
+              <label>
+                ${escapeHtml(t("auth.password"))}
+                <input id="signup-password" name="password" type="password" autocomplete="new-password" required />
+              </label>
+              <button class="btn btn-primary" type="submit">${escapeHtml(t("auth.createAccount"))}</button>
+            </form>
+            <p id="signup-message" class="status-text" aria-live="polite"></p>
+          </section>
+
+          <section>
+            <p class="section-label">${escapeHtml(t("home.loginLabel"))}</p>
+            <h2>${escapeHtml(t("home.loginTitle"))}</h2>
+            <p class="field-note">${escapeHtml(t("home.loginNote"))}</p>
+            <form id="login-form" class="form-stack">
+              <label>
+                ${escapeHtml(t("auth.email"))}
+                <input id="login-email" name="email" type="email" autocomplete="email" required />
+              </label>
+              <label>
+                ${escapeHtml(t("auth.password"))}
+                <input id="login-password" name="password" type="password" autocomplete="current-password" required />
+              </label>
+              <button class="btn" type="submit">${escapeHtml(t("auth.login"))}</button>
+              <button id="forgot-password-button" class="btn subtle-button" type="button">${escapeHtml(t("auth.forgotPassword"))}</button>
+            </form>
+            <p id="login-message" class="status-text" aria-live="polite"></p>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <section class="card">
+      <p class="section-label">${escapeHtml(t("home.stepsKicker"))}</p>
+      <h2>${escapeHtml(t("home.stepsTitle"))}</h2>
+      <div class="card-grid">
+        <article class="soft-card"><h3>${escapeHtml(t("home.step1Title"))}</h3><p>${escapeHtml(t("home.step1Body"))}</p></article>
+        <article class="soft-card"><h3>${escapeHtml(t("home.step2Title"))}</h3><p>${escapeHtml(t("home.step2Body"))}</p></article>
+        <article class="soft-card"><h3>${escapeHtml(t("home.step3Title"))}</h3><p>${escapeHtml(t("home.step3Body"))}</p></article>
+      </div>
+    </section>
+
+    <section id="about" class="card prose-panel">
+      <p class="section-label">${escapeHtml(t("home.philosophyKicker"))}</p>
+      <h2>${escapeHtml(t("home.philosophyTitle"))}</h2>
+      <p>${escapeHtml(t("home.philosophyBody"))}</p>
+      <div class="three-column">
+        <article class="soft-card">
+          <h3>${escapeHtml(t("home.termCourses"))}</h3>
+          <div class="inline-actions">${termTooltip("module")}</div>
+          <p>${escapeHtml(t("home.termCoursesBody"))}</p>
+        </article>
+        <article class="soft-card">
+          <h3>${escapeHtml(t("home.termGroups"))}</h3>
+          <div class="inline-actions">${termTooltip("guild")}</div>
+          <p>${escapeHtml(t("home.termGroupsBody"))}</p>
+        </article>
+        <article class="soft-card">
+          <h3>${escapeHtml(t("home.termProjects"))}</h3>
+          <div class="inline-actions">${termTooltip("seeker")}</div>
+          <p>${escapeHtml(t("home.termProjectsBody"))}</p>
+        </article>
+      </div>
+    </section>
+  `;
+
   const forgotButton = document.getElementById("forgot-password-button");
   const heroQuote = document.getElementById("hero-quote");
 
@@ -1584,9 +1552,10 @@ async function renderHomePage() {
     `;
   }
 
-  const toggleCuratorCode = () => curatorCodeField.classList.toggle("hidden", roleSelect.value !== "curator");
-  roleSelect.addEventListener("change", toggleCuratorCode);
-  toggleCuratorCode();
+  document.getElementById("home-language-select")?.addEventListener("change", async (event) => {
+    await applyLanguagePreference(event.target.value, { silent: true });
+    await init();
+  });
 
   document.getElementById("signup-form").addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -1596,42 +1565,17 @@ async function renderHomePage() {
     const form = new FormData(formElement);
     const email = form.get("email")?.toString().trim().toLowerCase();
     const password = form.get("password")?.toString().trim();
-    const selectedRole = form.get("role")?.toString();
-    const enteredCode = form.get("curatorCode")?.toString().trim().toUpperCase();
 
-    if (!email || !password || !selectedRole) {
-      setMessage("signup-message", "Missing fields.", "error");
+    if (!email || !password) {
+      setMessage("signup-message", t("messages.missingFields"), "error");
       return;
     }
 
-    let codeRow = null;
-
     try {
-      if (selectedRole === "curator") {
-        if (!enteredCode) {
-          setMessage("signup-message", "Invalid curator code", "error");
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from("curator_codes")
-          .select("*")
-          .eq("code", enteredCode)
-          .eq("used", false)
-          .single();
-
-        if (error || !data) {
-          setMessage("signup-message", "Invalid curator code", "error");
-          return;
-        }
-
-        codeRow = data;
-      }
-
-      const { data, error } = await supabase.auth.signUp({ 
-        email, 
+      const { data, error } = await supabase.auth.signUp({
+        email,
         password,
-        options: { data: { role: selectedRole } }
+        options: { data: { role: "seeker" } }
       });
       if (error) {
         setMessage("signup-message", authErrorMessage(error), "error");
@@ -1639,13 +1583,13 @@ async function renderHomePage() {
       }
 
       if (!data.user) {
-        setMessage("signup-message", "Signup failed.", "error");
+        setMessage("signup-message", t("messages.signupFailed"), "error");
         return;
       }
 
       const profilePayload = {
         id: data.user.id,
-        role: selectedRole,
+        role: "seeker",
         verified: false,
         email
       };
@@ -1656,27 +1600,14 @@ async function renderHomePage() {
         return;
       }
 
-      if (selectedRole === "curator" && codeRow) {
-        const { error: codeError } = await supabase
-          .from("curator_codes")
-          .update({ used: true, assigned_to: data.user.id })
-          .eq("code", enteredCode);
-
-        if (codeError) {
-          setMessage("signup-message", codeError.message, "error");
-          return;
-        }
-      }
-
       formElement.reset();
-      toggleCuratorCode();
       setMessage(
         "signup-message",
-        "Signup successful. Check your email to confirm your account before logging in.",
+        t("messages.checkEmail"),
         "success"
       );
     } catch (error) {
-      setMessage("signup-message", error.message || "Signup failed.", "error");
+      setMessage("signup-message", error.message || t("messages.signupFailed"), "error");
     }
   });
 
@@ -1689,7 +1620,7 @@ async function renderHomePage() {
     const password = form.get("password")?.toString().trim();
 
     if (!email || !password) {
-      setMessage("login-message", "Missing fields.", "error");
+      setMessage("login-message", t("messages.missingFields"), "error");
       return;
     }
 
@@ -1701,7 +1632,7 @@ async function renderHomePage() {
 
     if (!data.user?.email_confirmed_at) {
       await supabase.auth.signOut();
-      setMessage("login-message", "Unverified email. Please confirm your email first.", "error");
+      setMessage("login-message", t("messages.unverifiedEmail"), "error");
       return;
     }
 
@@ -1712,7 +1643,7 @@ async function renderHomePage() {
     } else {
       const profile = await getCurrentUserProfile();
       if (!profile) {
-        setMessage("login-message", "No profile found for this account.", "error");
+        setMessage("login-message", t("messages.noProfile"), "error");
         return;
       }
       window.location.href = getDashboardPath(profile.role);
@@ -1725,7 +1656,7 @@ async function renderHomePage() {
       const email = emailField?.value.trim().toLowerCase();
 
       if (!email) {
-        setMessage("login-message", "Enter your email first to reset your password.", "error");
+        setMessage("login-message", t("messages.enterEmailForReset"), "error");
         return;
       }
 
@@ -1733,7 +1664,7 @@ async function renderHomePage() {
       const resetResult = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
       setMessage(
         "login-message",
-        resetResult.error ? resetResult.error.message : "Password reset email sent if the account exists.",
+        resetResult.error ? resetResult.error.message : t("messages.passwordResetSent"),
         resetResult.error ? "error" : "success"
       );
     });
@@ -1914,268 +1845,204 @@ async function initSeekerDashboard() {
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     .slice(0, 6);
   const recommendedSubjects = subjects.filter((subject) => !enrolledModules.some((module) => module.guild === subject.name)).slice(0, 4);
-  const recommendedGuilds = guilds.filter((guild) => !joinedGuildIds.has(guild.id)).slice(0, 4);
+  const recommendedGuilds = guilds.filter((guild) => !joinedGuildIds.has(guild.id)).slice(0, 3);
+  const currentCourse = enrolledModules[0] || recommendedSubjects[0] || null;
+  const suggestedTags = [...new Set([...ownNicheEntries.map((entry) => entry.topic), ...getEntityTags("portfolio", ownEntries[0]?.id, tags, tagLinks)])]
+    .filter(Boolean)
+    .slice(0, 6);
 
   root.innerHTML = `
     <section class="dashboard-shell">
       <header class="dashboard-header">
         <div>
-          <p class="section-label">Seeker Dashboard</p>
-          <h1>Your learning dashboard</h1>
-          <p class="field-note">Signed in as ${escapeHtml(currentUser.email || displayUserName(currentUser))}</p>
+          <p class="section-label">${escapeHtml(t("dashboard.kicker"))}</p>
+          <h1>${escapeHtml(t("dashboard.title"))}</h1>
+          <p class="field-note">${escapeHtml(t("dashboard.signedIn", { email: currentUser.email || displayUserName(currentUser) }))}</p>
         </div>
-        <p class="dashboard-meta">Seekers can build portfolios, record intellectual interests, enroll in approved modules, and study highlighted work.</p>
+        <p class="dashboard-meta">${escapeHtml(t("dashboard.subtitle"))}</p>
       </header>
 
-      <section class="dashboard-overview-grid">
+      <section class="dashboard-overview-grid dashboard-overview-grid-simple">
         <article class="card dashboard-identity-card">
-          <p class="section-label">Current Standing</p>
-          <h2>Learning record at a glance</h2>
-          <div class="record-list compact-record-list">
-            <article class="record-card">
-              <p class="section-label">Email</p>
-              <h3>${currentUser.emailConfirmed ? "Confirmed" : "Pending"}</h3>
-              <p class="field-note">${escapeHtml(currentUser.email)}</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">Portfolio</p>
-              <h3>${ownEntries.length} entries</h3>
-              <p class="field-note">Recorded work and reflections</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">Subjects</p>
-              <h3>${enrolledModules.length} active</h3>
-              <p class="field-note">Approved study pathways</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">Guilds</p>
-              <h3>${joinedGuilds.length} joined</h3>
-              <p class="field-note">Collaborative research spaces</p>
-            </article>
-          </div>
+          <p class="section-label">${escapeHtml(t("dashboard.currentCourse"))}</p>
+          <h2>${escapeHtml(currentCourse?.title || currentCourse?.name || t("dashboard.noCourse"))}</h2>
+          <p>${escapeHtml(currentCourse?.description || t("dashboard.noCourseBody"))}</p>
           <div class="inline-actions">
-            <a class="btn btn-primary" href="profile.html#portfolio">Create entry</a>
-            <a class="btn subtle-button" href="subjects.html">Browse subjects</a>
-            <a class="btn subtle-button" href="guild.html">Open guilds</a>
-          </div>
-        </article>
-
-        ${renderNeoscorePieChart()}
-      </section>
-
-      <section class="dashboard-guidance-grid">
-        <article class="card dashboard-focus-card">
-          <p class="section-label">Orientation</p>
-          <h2>How to use this workspace</h2>
-          <div class="record-list compact-record-list">
-            <article class="record-card">
-              <p class="section-label">1. Build Foundation</p>
-              <h3>Study approved subjects</h3>
-              <p class="field-note">Browse subjects, enroll in modules, and begin collecting directed knowledge.</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">2. Record Work</p>
-              <h3>Keep your portfolio active</h3>
-              <p class="field-note">Projects, essays, research notes, and reflections become your academic record.</p>
-            </article>
-            <article class="record-card">
-              <p class="section-label">3. Join Inquiry</p>
-              <h3>Take part in guilds</h3>
-              <p class="field-note">Guilds turn subject exposure into collaborative investigation and output.</p>
-            </article>
+            <a class="btn btn-primary" href="${currentCourse?.id ? `module.html?id=${currentCourse.id}` : "subjects.html"}">${escapeHtml(t("dashboard.continueLearning"))}</a>
+            <a class="btn subtle-button" href="subjects.html">${escapeHtml(t("dashboard.browseTopics"))}</a>
           </div>
         </article>
 
         <article class="card dashboard-focus-card">
-          <p class="section-label">Current Priorities</p>
-          <h2>What to do next</h2>
+          <p class="section-label">${escapeHtml(t("dashboard.progressKicker"))}</p>
+          <h2>${escapeHtml(t("dashboard.progressTitle"))}</h2>
           <div class="record-list compact-record-list">
             <article class="record-card">
-              <p class="section-label">Portfolio</p>
-              <h3>${ownEntries.length ? "Continue documenting" : "Add your first entry"}</h3>
-              <p class="field-note">${ownEntries.length ? "Keep your strongest work visible and updated." : "Your portfolio is the main record of your learning."}</p>
+              <p class="section-label">${escapeHtml(t("dashboard.courses"))}</p>
+              <h3>${enrolledModules.length}</h3>
+              <p class="field-note">${escapeHtml(t("dashboard.coursesBody"))}</p>
             </article>
             <article class="record-card">
-              <p class="section-label">Subjects</p>
-              <h3>${enrolledModules.length ? `${enrolledModules.length} active modules` : "Choose a subject pathway"}</h3>
-              <p class="field-note">${enrolledModules.length ? "Return to your enrolled modules and continue steadily." : "Start with a subject that gives structure to your interests."}</p>
+              <p class="section-label">${escapeHtml(t("dashboard.notes"))}</p>
+              <h3>${ownNicheEntries.length}</h3>
+              <p class="field-note">${escapeHtml(t("dashboard.notesBody"))}</p>
             </article>
             <article class="record-card">
-              <p class="section-label">Guilds</p>
-              <h3>${joinedGuilds.length ? `${joinedGuilds.length} joined guilds` : "Find a research collective"}</h3>
-              <p class="field-note">${joinedGuilds.length ? "Guild membership shows where your research life is growing." : "Join or create a guild when you want to investigate more deeply."}</p>
+              <p class="section-label">${escapeHtml(t("dashboard.projects"))}</p>
+              <h3>${ownEntries.length}</h3>
+              <p class="field-note">${escapeHtml(t("dashboard.projectsBody"))}</p>
+            </article>
+            <article class="record-card">
+              <p class="section-label">${escapeHtml(t("dashboard.groups"))}</p>
+              <h3>${joinedGuilds.length}</h3>
+              <p class="field-note">${escapeHtml(t("dashboard.groupsBody"))}</p>
             </article>
           </div>
-        </article>
-      </section>
-
-      <section class="stats-grid">
-        <article class="stat-card">
-          <span class="section-label">Knowledge</span>
-          <strong>${Number(score?.knowledge_score || 0)}</strong>
-        </article>
-        <article class="stat-card">
-          <span class="section-label">Portfolio Depth</span>
-          <strong>${Number(score?.portfolio_score || 0)}</strong>
-        </article>
-        <article class="stat-card">
-          <span class="section-label">Guild Participation</span>
-          <strong>${Number(score?.guild_score || 0)}</strong>
-        </article>
-        <article class="stat-card">
-          <span class="section-label">Creative Practice</span>
-          <strong>${Number(score?.creative_score || 0)}</strong>
-        </article>
-        <article class="stat-card">
-          <span class="section-label">Physical Discipline</span>
-          <strong>${Number(score?.praxis_score || 0)}</strong>
-        </article>
-        <article class="stat-card">
-          <span class="section-label">Tokens</span>
-          <strong>${tokenBalance}</strong>
         </article>
       </section>
 
       <section class="dashboard-main-grid">
         <div class="dashboard-primary-column">
           <article class="card">
-            <p class="section-label">Recent Activity</p>
-            <h2>What you have been building</h2>
+            <p class="section-label">${escapeHtml(t("dashboard.nextStepKicker"))}</p>
+            <h2>${escapeHtml(t("dashboard.nextStepTitle"))}</h2>
+            <div class="record-list">
+              <article class="record-card">
+                <h3>${escapeHtml(ownEntries.length ? t("dashboard.nextProjectTitle") : t("dashboard.firstProjectTitle"))}</h3>
+                <p>${escapeHtml(ownEntries.length ? t("dashboard.nextProjectBody") : t("dashboard.firstProjectBody"))}</p>
+              </article>
+              <article class="record-card">
+                <h3>${escapeHtml(enrolledModules.length ? t("dashboard.resumeCourseTitle") : t("dashboard.pickCourseTitle"))}</h3>
+                <p>${escapeHtml(enrolledModules.length ? t("dashboard.resumeCourseBody") : t("dashboard.pickCourseBody"))}</p>
+              </article>
+            </div>
+          </article>
+
+          <article class="card">
+            <p class="section-label">${escapeHtml(t("dashboard.recentNotes"))}</p>
+            <h2>${escapeHtml(t("dashboard.notesTitle"))}</h2>
             <div class="record-list">
               ${
-                recentActivity.length
-                  ? recentActivity
+                ownNicheEntries.length
+                  ? ownNicheEntries
+                      .slice(0, 4)
                       .map(
                         (item) => `
                           <article class="record-card">
-                            <p class="section-label">${escapeHtml(item.type)}</p>
-                            <h3>${escapeHtml(item.title)}</h3>
-                            <p class="field-note">${formatDate(item.created_at)}</p>
+                            <p class="section-label">${formatDate(item.created_at)}</p>
+                            <h3>${escapeHtml(item.topic)}</h3>
+                            <p>${escapeHtml(item.notes)}</p>
                           </article>
                         `
                       )
                       .join("")
-                  : emptyCard("No recent activity", "Your learning record will grow here as you create portfolio work, notes, and research.")
+                  : emptyCard(t("dashboard.noNotes"), t("dashboard.noNotesBody"))
               }
             </div>
           </article>
 
           <article class="card">
-            <p class="section-label">Current Study</p>
-            <h2>Your enrolled modules</h2>
+            <p class="section-label">${escapeHtml(t("dashboard.currentCourse"))}</p>
+            <h2>${escapeHtml(t("dashboard.courseListTitle"))}</h2>
             <div class="record-list">
               ${
                 enrolledModules.length
                   ? enrolledModules.map((module) => moduleCard(module, usersById, { allowEnroll: true, alreadyEnrolledIds: enrolledIds })).join("")
-                  : emptyCard("No enrolled modules", "Browse approved subjects and modules to begin a more structured course of study.")
+                  : emptyCard(t("dashboard.noCourse"), t("dashboard.noCourseBody"))
               }
             </div>
             <div class="inline-actions">
-              <a class="btn subtle-button" href="subjects.html">Browse all subjects</a>
-            </div>
-          </article>
-
-          <article class="card">
-            <p class="section-label">Your portfolio</p>
-            <h2>Chronological record</h2>
-            <div class="record-list">
-              ${
-                ownEntries.length
-                  ? ownEntries
-                      .map((entry) =>
-                        portfolioCard(entry, currentUser, usersById, {
-                          allowEdit: true,
-                          allowDelete: true,
-                          tags: getEntityTags("portfolio", entry.id, tags, tagLinks)
-                        })
-                      )
-                      .join("")
-                  : emptyCard("No portfolio entries", "Your portfolio begins once you submit your first article, project, or reflection.")
-              }
+              <a class="btn subtle-button" href="subjects.html">${escapeHtml(t("dashboard.browseTopics"))}</a>
             </div>
           </article>
         </div>
 
         <aside class="dashboard-secondary-column">
           <article class="card" id="portfolio-section">
-            <p class="section-label">Portfolio</p>
-            <h2>Create a portfolio entry</h2>
-            <p class="field-note">Record your strongest work only when it is ready. This keeps the dashboard calmer and your portfolio more intentional.</p>
+            <p class="section-label">${escapeHtml(t("dashboard.projects"))}</p>
+            <h2>${escapeHtml(t("dashboard.projectCardTitle"))}</h2>
+            <p class="field-note">${escapeHtml(t("dashboard.projectCardBody"))}</p>
             <details class="simple-details">
-              <summary class="btn subtle-button">Open portfolio form</summary>
+              <summary class="btn subtle-button">${escapeHtml(t("dashboard.openProjectForm"))}</summary>
               <form id="portfolio-form" class="form-stack">
                 <label>
-                  Title
+                  ${escapeHtml(t("forms.title"))}
                   <input name="title" type="text" required />
                 </label>
                 <label>
-                  Description
+                  ${escapeHtml(t("forms.description"))}
                   <textarea name="description" required></textarea>
                 </label>
                 <label>
-                  Entry type
+                  ${escapeHtml(t("forms.projectType"))}
                   <select name="entryType">
-                    <option value="project">Project</option>
-                    <option value="essay">Essay</option>
-                    <option value="article">Article</option>
-                    <option value="design">Design</option>
-                    <option value="research">Research</option>
-                    <option value="documentation">Documentation</option>
-                    <option value="reflection">Reflection</option>
+                    <option value="project">${escapeHtml(t("forms.project"))}</option>
+                    <option value="essay">${escapeHtml(t("forms.essay"))}</option>
+                    <option value="article">${escapeHtml(t("forms.article"))}</option>
+                    <option value="design">${escapeHtml(t("forms.design"))}</option>
+                    <option value="research">${escapeHtml(t("forms.research"))}</option>
+                    <option value="documentation">${escapeHtml(t("forms.documentation"))}</option>
+                    <option value="reflection">${escapeHtml(t("forms.reflection"))}</option>
                   </select>
                 </label>
                 <label>
-                  Link
-                  <input name="link" type="url" placeholder="https://example.com/work" />
+                  ${escapeHtml(t("forms.link"))}
+                  <input name="link" type="url" placeholder="${escapeHtml(t("forms.linkPlaceholder"))}" />
                 </label>
                 <label>
-                  Visibility
+                  ${escapeHtml(t("forms.visibility"))}
                   <select name="visibility">
-                    <option value="private">Private</option>
-                    <option value="arbiter-only">Arbiter Only</option>
-                    <option value="public">Public</option>
+                    <option value="private">${escapeHtml(t("forms.private"))}</option>
+                    <option value="arbiter-only">${escapeHtml(t("forms.arbiterOnly"))}</option>
+                    <option value="public">${escapeHtml(t("forms.public"))}</option>
                   </select>
                 </label>
                 <label>
-                  Tags
-                  <input name="tags" type="text" placeholder="design, philosophy, heritage" />
+                  ${escapeHtml(t("forms.tags"))}
+                  <input name="tags" type="text" placeholder="${escapeHtml(t("forms.tagsPlaceholder"))}" />
                 </label>
-                <button class="btn btn-primary" type="submit">Add portfolio entry</button>
+                <button class="btn btn-primary" type="submit">${escapeHtml(t("dashboard.saveProject"))}</button>
               </form>
             </details>
             <p id="portfolio-message" class="status-text" aria-live="polite"></p>
           </article>
 
           <article class="card" id="niche-section">
-            <p class="section-label">Niche Folder</p>
-            <h2>Intellectual interests</h2>
-            <p class="field-note">Use this for questions, themes, and curiosities you want to keep close without crowding the main page.</p>
+            <p class="section-label">${escapeHtml(t("dashboard.notes"))}</p>
+            <h2>${escapeHtml(t("dashboard.noteCardTitle"))}</h2>
+            <p class="field-note">${escapeHtml(t("dashboard.noteCardBody"))}</p>
             <details class="simple-details">
-              <summary class="btn subtle-button">Open niche folder form</summary>
+              <summary class="btn subtle-button">${escapeHtml(t("dashboard.openNoteForm"))}</summary>
               <form id="niche-form" class="form-stack">
                 <label>
-                  Interest
+                  ${escapeHtml(t("forms.interest"))}
                   <input name="interest" type="text" required />
                 </label>
                 <label>
-                  Notes
+                  ${escapeHtml(t("forms.notes"))}
                   <textarea name="notes" required></textarea>
                 </label>
-                <button class="btn" type="submit">Add niche entry</button>
+                <button class="btn" type="submit">${escapeHtml(t("dashboard.saveNote"))}</button>
               </form>
             </details>
             <p id="niche-message" class="status-text" aria-live="polite"></p>
           </article>
 
           <article class="card">
-            <p class="section-label">Neoscore</p>
-            <h2>Holistic profile</h2>
+            <p class="section-label">${escapeHtml(t("dashboard.progressKicker"))}</p>
+            <h2>${escapeHtml(t("dashboard.progressTitle"))}</h2>
             ${neoscoreSummary(score)}
           </article>
 
           <article class="card">
-            <p class="section-label">Recommended Subjects</p>
-            <h2>Where to deepen next</h2>
+            <p class="section-label">${escapeHtml(t("dashboard.suggestedTags"))}</p>
+            <h2>${escapeHtml(t("dashboard.suggestedTagsTitle"))}</h2>
+            ${suggestedTags.length ? renderTagPills(suggestedTags) : `<p>${escapeHtml(t("dashboard.noSuggestedTags"))}</p>`}
+          </article>
+
+          <article class="card">
+            <p class="section-label">${escapeHtml(t("dashboard.recommendedCourse"))}</p>
+            <h2>${escapeHtml(t("dashboard.recommendedCourseTitle"))}</h2>
             <div class="record-list">
               ${
                 recommendedSubjects.length
@@ -2185,49 +2052,33 @@ async function initSeekerDashboard() {
                           <article class="record-card">
                             <h3>${escapeHtml(subject.name)}</h3>
                             <p>${escapeHtml(subject.description || "No description yet.")}</p>
-                            <footer><a class="text-link" href="subjects.html?id=${subject.id}">Open subject</a></footer>
+                            <footer><a class="text-link" href="subjects.html?id=${subject.id}">${escapeHtml(t("dashboard.openCourse"))}</a></footer>
                           </article>
                         `
                       )
                       .join("")
-                  : emptyCard("No subject recommendations", "As your study deepens, recommended subjects will appear here.")
+                  : emptyCard(t("dashboard.noRecommendedCourse"), t("dashboard.noRecommendedCourseBody"))
               }
             </div>
           </article>
 
-          <article class="card">
-            <p class="section-label">Recommended Guilds</p>
-            <h2>Research directions</h2>
-            <div class="record-list">
-              ${
-                recommendedGuilds.length
-                  ? recommendedGuilds
-                      .map(
-                        (guild) => `
-                          <article class="record-card">
-                            <h3>${escapeHtml(guild.title || guild.name)}</h3>
-                            <p>${escapeHtml(guild.description || guild.research_focus || "No research focus yet.")}</p>
-                            <footer><a class="text-link" href="${guild.id ? `guild.html?id=${guild.id}` : "guild.html"}">Open guild</a></footer>
-                          </article>
-                        `
-                      )
-                      .join("")
-                  : emptyCard("No guild recommendations", "Guild suggestions appear once guild records exist in the database.")
-              }
+          <details class="card simple-details">
+            <summary class="btn subtle-button">${escapeHtml(t("dashboard.openAdvanced"))}</summary>
+            <div class="record-list" style="margin-top:16px;">
+              <article class="record-card">
+                <h3>${escapeHtml(t("dashboard.groupsAdvanced"))}</h3>
+                <p>${escapeHtml(joinedGuilds.length ? `${joinedGuilds.length} ${t("dashboard.groupsAdvancedBody")}` : t("dashboard.groupsAdvancedEmpty"))}</p>
+              </article>
+              <article class="record-card">
+                <h3>${escapeHtml(t("dashboard.discoveryAdvanced"))}</h3>
+                <p>${escapeHtml(t("dashboard.discoveryAdvancedBody"))}</p>
+              </article>
+              <article class="record-card">
+                <h3>${escapeHtml(t("dashboard.curatorAdvanced"))}</h3>
+                <p>${escapeHtml(t("dashboard.curatorAdvancedBody"))}</p>
+              </article>
             </div>
-          </article>
-
-          <article class="card">
-            <p class="section-label">Your niche folder</p>
-            <h2>Academic cards</h2>
-            <div class="record-list">
-              ${
-                ownNicheEntries.length
-                  ? ownNicheEntries.map((entry) => nicheCard(entry, currentUser, true)).join("")
-                  : emptyCard("No niche entries", "Record questions, themes, and curiosities here.")
-              }
-            </div>
-          </article>
+          </details>
         </aside>
       </section>
     </section>
@@ -3405,8 +3256,7 @@ async function initProfilePage() {
 }
 
 async function initHelpPage() {
-  const currentUser = await requireRole(["seeker", "curator", "arbiter"]);
-  if (!currentUser) return;
+  const currentUser = await getCurrentUserProfile();
 
   const root = document.getElementById("help-root");
   if (!root) return;
@@ -3420,7 +3270,7 @@ async function initHelpPage() {
     { title: "Research", body: "Research is the academic posting area. Use it for notes, questions, documentation, references, and careful intellectual discussion rather than casual chatting." },
     { title: "Studios", body: "Studios are capability environments. Some may require tokens or review. Request access only when you are ready for deeper practice." },
     { title: "Discovery", body: "Discovery is a journal-like showcase of highlighted work. It is meant for serious reading, not social-media scrolling." },
-    { title: "Language", body: "Use the language selector in the header to switch to a script-friendly font. Then use your browser's Translate option to translate the full page." },
+    { title: "Language", body: "Use the language selector in the header or on the homepage to switch the interface directly. The platform now uses manual UI translations so key terminology stays clear." },
     { title: "Nearby Modules", body: "Use the Near Me button in the header to save your location. Then search for modules and the closest available locations will appear first when location data exists." },
     { title: "Vision", body: "Vision explains the wider philosophy, infrastructure, and long-term educational direction behind the platform." },
     { title: "Profile", body: "Your profile gathers your identity, interests, guild participation, portfolio record, and broader learning direction in one calm place." }
@@ -3460,7 +3310,7 @@ async function initHelpPage() {
         <article class="card">
           <p class="section-label">Language & Access</p>
           <h2>India-first support</h2>
-          <p>The header includes a language selector for script-friendly fonts. After choosing a language, use your browser's Translate option for full translation. This keeps the app simpler and easier to maintain while still remaining accessible across Indian languages.</p>
+          <p>The header includes a direct language selector, and the homepage shows the same control before login or signup. The interface now uses manual translation files so core academic terms remain clear and consistent.</p>
         </article>
       </section>
 
@@ -3488,9 +3338,57 @@ async function initHelpPage() {
   });
 }
 
+async function initDictionaryPage() {
+  const root = document.getElementById("dictionary-root");
+  if (!root) return;
+
+  root.innerHTML = `
+    <section class="dashboard-shell">
+      <header class="dashboard-header">
+        <div>
+          <p class="section-label">${escapeHtml(t("dictionary.kicker"))}</p>
+          <h1>${escapeHtml(t("dictionary.title"))}</h1>
+        </div>
+        <p class="dashboard-meta">${escapeHtml(t("dictionary.subtitle"))}</p>
+      </header>
+
+      <section class="card">
+        <p class="section-label">${escapeHtml(t("dictionary.searchLabel"))}</p>
+        <h2>${escapeHtml(t("dictionary.searchTitle"))}</h2>
+        <label class="filters">
+          ${escapeHtml(t("dictionary.searchPrompt"))}
+          <input id="dictionary-search-input" type="search" placeholder="${escapeHtml(t("dictionary.searchPlaceholder"))}" />
+        </label>
+      </section>
+
+      <section id="dictionary-card-list" class="card-grid">
+        ${dictionaryTerms
+          .map(
+            (term) => `
+              <article class="card dictionary-card" data-dictionary-text="${escapeHtml(`${t(`terms.${term}.label`)} ${t(`terms.${term}.simple`)} ${t(`terms.${term}.expanded`)} ${t(`terms.${term}.example`)}`.toLowerCase())}">
+                <p class="section-label">${escapeHtml(t(`terms.${term}.label`))}</p>
+                <h2>${escapeHtml(t(`terms.${term}.label`))}</h2>
+                <p><strong>${escapeHtml(t("dictionary.simpleMeaning"))}</strong> ${escapeHtml(t(`terms.${term}.simple`))}</p>
+                <p><strong>${escapeHtml(t("dictionary.expandedMeaning"))}</strong> ${escapeHtml(t(`terms.${term}.expanded`))}</p>
+                <p class="field-note">${escapeHtml(t("dictionary.exampleUse"))}: ${escapeHtml(t(`terms.${term}.example`))}</p>
+              </article>
+            `
+          )
+          .join("")}
+      </section>
+    </section>
+  `;
+
+  document.getElementById("dictionary-search-input")?.addEventListener("input", (event) => {
+    const query = event.target.value.trim().toLowerCase();
+    root.querySelectorAll(".dictionary-card").forEach((card) => {
+      card.classList.toggle("hidden", query && !card.dataset.dictionaryText.includes(query));
+    });
+  });
+}
+
 async function initSubjectsPage() {
-  const currentUser = await requireRole(["seeker", "curator", "arbiter", "operator"]);
-  if (!currentUser) return;
+  const currentUser = await getCurrentUserProfile();
 
   const root = document.getElementById("subjects-root");
   if (!root) return;
@@ -3541,7 +3439,7 @@ async function initSubjectsPage() {
             <p>${escapeHtml(subject.learning_approach || "Through guided reading, portfolio evidence, and disciplined subject familiarity.")}</p>
             ${renderTagPills(subjectTags)}
             <div class="inline-actions">
-              ${currentUser.role === "seeker" ? `<button class="btn btn-primary" id="subject-interest-button" type="button">Tag Interest</button>` : ""}
+              ${currentUser?.role === "seeker" ? `<button class="btn btn-primary" id="subject-interest-button" type="button">Tag Interest</button>` : ""}
               <a class="btn subtle-button" href="subjects.html">Back to subjects</a>
             </div>
             <p id="subject-message" class="status-text" aria-live="polite"></p>
@@ -3605,7 +3503,7 @@ async function initSubjectsPage() {
           <div class="record-list">
             ${
               relatedModules.length
-                ? relatedModules.map((module) => moduleCard(module, usersById, { allowEnroll: currentUser.role === "seeker" })).join("")
+                ? relatedModules.map((module) => moduleCard(module, usersById, { allowEnroll: currentUser?.role === "seeker" })).join("")
                 : emptyCard("No approved modules", "This subject has not yet received approved modules.")
             }
           </div>
@@ -3614,6 +3512,10 @@ async function initSubjectsPage() {
     `;
 
     document.getElementById("subject-interest-button")?.addEventListener("click", async () => {
+      if (!currentUser) {
+        window.location.href = "index.html#auth-area";
+        return;
+      }
       const { error } = await supabase.from("niche_entries").insert({
         user_id: currentUser.id,
         interest: subject.name,
@@ -3624,6 +3526,10 @@ async function initSubjectsPage() {
 
     root.querySelectorAll(".enroll-button").forEach((button) => {
       button.addEventListener("click", async () => {
+        if (!currentUser) {
+          window.location.href = "index.html#auth-area";
+          return;
+        }
         const moduleId = button.dataset.moduleId;
         const { data: existing } = await supabase.from("enrollments").select("id").eq("student_id", currentUser.id).eq("module_id", moduleId).maybeSingle();
         if (!existing) {
@@ -3760,7 +3666,7 @@ async function init() {
   try {
     ensureSiteBranding();
     ensureLanguageFonts();
-    applyLanguagePreference(getPreferredLanguage(), { silent: true });
+    await applyLanguagePreference(getPreferredLanguage(), { silent: true });
 
     const currentUser = await getCurrentUserProfile();
     const page = getCurrentPage();
@@ -3777,6 +3683,7 @@ async function init() {
     if (page === "studios") await initStudiosPage();
     if (page === "profile") await initProfilePage();
     if (page === "help") await initHelpPage();
+    if (page === "dictionary") await initDictionaryPage();
     if (page === "subjects") await initSubjectsPage();
     if (page === "seeker-dashboard") await initSeekerDashboard();
     if (page === "curator-dashboard") await initCuratorDashboard();
@@ -3798,6 +3705,7 @@ async function init() {
       document.getElementById("studios-root") ||
       document.getElementById("profile-root") ||
       document.getElementById("help-root") ||
+      document.getElementById("dictionary-root") ||
       document.getElementById("subjects-root") ||
       document.getElementById("operator-root") ||
       document.getElementById("guild-root") ||
