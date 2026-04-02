@@ -56,7 +56,8 @@ const reflectionDeck = [
 const uiKeys = {
   reflectionIndex: "neofolk.reflectionIndex",
   preferredLanguage: "neofolk.preferredLanguage",
-  userLocation: "neofolk.userLocation"
+  userLocation: "neofolk.userLocation",
+  sessionQuoteSeen: "neofolk.sessionQuoteSeen"
 };
 
 const appVersion = "Alpha 11.4";
@@ -77,6 +78,14 @@ const supportedLanguages = [
     shortLabel: "Hindi",
     serif: '"Noto Serif Devanagari", Georgia, serif',
     sans: '"Noto Sans Devanagari", system-ui, sans-serif'
+  },
+  {
+    code: "ur",
+    label: "اردو",
+    shortLabel: "Urdu",
+    serif: '"Noto Nastaliq Urdu", "Noto Serif", Georgia, serif',
+    sans: '"Noto Nastaliq Urdu", "Noto Sans Arabic", system-ui, sans-serif',
+    dir: "rtl"
   }
 ];
 let currentLanguage = defaultUiLanguage;
@@ -183,6 +192,10 @@ async function applyLanguagePreference(code, options = {}) {
   await loadTranslations(selected.code);
   localStorage.setItem(uiKeys.preferredLanguage, selected.code);
   document.documentElement.lang = selected.code;
+  const textDirection = selected.dir || "ltr";
+  document.documentElement.dir = textDirection;
+  document.body?.setAttribute("dir", textDirection);
+  document.body?.classList.toggle("rtl-ui", textDirection === "rtl");
   document.documentElement.style.setProperty("--serif", selected.serif);
   document.documentElement.style.setProperty("--sans", selected.sans);
   document.body?.setAttribute("data-ui-lang", selected.code);
@@ -420,6 +433,29 @@ function renderReflectionOverlay() {
   document.body.appendChild(overlay);
 }
 
+function renderSessionQuotePopup(currentUser) {
+  if (!currentUser) return;
+  if (sessionStorage.getItem(uiKeys.sessionQuoteSeen) === "1") return;
+  const entry = getNextReflectionEntry();
+  if (!entry) return;
+
+  const panel = document.createElement("aside");
+  panel.className = "session-quote-popup";
+  const body =
+    entry.type === "wisdom-set"
+      ? `<p>${escapeHtml(entry.entries[0]?.text || entry.note)}</p><p class="field-note">${escapeHtml(entry.entries[0]?.source || entry.label)}</p>`
+      : `<p>${escapeHtml(entry.text)}</p><p class="field-note">${escapeHtml(entry.attribution)}</p>`;
+  panel.innerHTML = `
+    <p class="section-label">${escapeHtml(entry.label || "Reflection")}</p>
+    ${body}
+    <button type="button" class="btn subtle-button session-quote-dismiss">Dismiss</button>
+  `;
+  panel.querySelector(".session-quote-dismiss")?.addEventListener("click", () => panel.remove());
+  document.body.appendChild(panel);
+  window.setTimeout(() => panel.classList.add("is-visible"), 120);
+  sessionStorage.setItem(uiKeys.sessionQuoteSeen, "1");
+}
+
 function getResetRedirectUrl() {
   return new URL("reset-password.html", window.location.href).toString();
 }
@@ -604,6 +640,34 @@ function renderNav(currentUser) {
       </div>
     </div>
   `;
+
+  const page = getCurrentPage();
+  const activeMap = {
+    home: "index.html",
+    subjects: "subjects.html",
+    guild: "guild.html",
+    dictionary: "dictionary.html",
+    seeker: "seeker-dashboard.html",
+    curator: "curator-dashboard.html",
+    arbiter: "arbiter-dashboard.html",
+    operator: "operator-dashboard.html"
+  };
+  const activeHref =
+    page === "seeker-dashboard"
+      ? activeMap.seeker
+      : page === "curator-dashboard"
+        ? activeMap.curator
+        : page === "arbiter-dashboard"
+          ? activeMap.arbiter
+          : page === "operator-dashboard"
+            ? activeMap.operator
+            : activeMap[page];
+  if (activeHref) {
+    nav.querySelectorAll(`a.nav-link[href="${activeHref}"]`).forEach((link) => {
+      link.classList.add("is-active");
+      link.setAttribute("aria-current", "page");
+    });
+  }
 
   document.getElementById("logout-button")?.addEventListener("click", async () => {
     await supabase.auth.signOut();
@@ -1322,6 +1386,75 @@ function getRandomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function computePersonalizedNeoscore({ userId, modules, enrollments, portfolioEntries, guildMembers }) {
+  const trackedSubjects = [
+    "Lingosophy",
+    "Arthmetics",
+    "Praxis",
+    "Cosmology",
+    "Bioepisteme",
+    "Civitas",
+    "Chronicles",
+    "Artifex"
+  ];
+  const enrolledIds = new Set((enrollments || []).filter((item) => item.student_id === userId).map((item) => item.module_id));
+  const userModules = (modules || []).filter((module) => enrolledIds.has(module.id));
+  const userEntries = (portfolioEntries || []).filter((entry) => entry.createdBy === userId);
+  const userGuildMemberships = (guildMembers || []).filter((entry) => entry.user_id === userId);
+
+  const baseBySubject = new Map(trackedSubjects.map((subject) => [subject, 0]));
+  userModules.forEach((module) => {
+    const key = trackedSubjects.find((subject) => subject.toLowerCase() === String(module.guild || "").toLowerCase()) || "Praxis";
+    baseBySubject.set(key, (baseBySubject.get(key) || 0) + 10);
+  });
+  userEntries.forEach((entry) => {
+    const match = trackedSubjects.find((subject) => String(entry.description || "").toLowerCase().includes(subject.toLowerCase()));
+    if (match) baseBySubject.set(match, (baseBySubject.get(match) || 0) + 6);
+  });
+  const guildDepth = Math.min(userGuildMemberships.length * 4, 20);
+  if (guildDepth > 0) {
+    baseBySubject.set("Civitas", (baseBySubject.get("Civitas") || 0) + Math.round(guildDepth / 2));
+    baseBySubject.set("Praxis", (baseBySubject.get("Praxis") || 0) + Math.round(guildDepth / 2));
+  }
+
+  const values = trackedSubjects.map((subject) => baseBySubject.get(subject) || 0);
+  const total = values.reduce((sum, value) => sum + value, 0);
+  const avg = total / trackedSubjects.length || 0;
+  const variance = values.reduce((sum, value) => sum + (value - avg) ** 2, 0) / (trackedSubjects.length || 1);
+  const balanceCoefficient = Math.max(0.45, 1 - Math.min(variance / 500, 0.55));
+  const adjusted = trackedSubjects.map((subject) => ({
+    label: subject,
+    value: Math.max(1, (baseBySubject.get(subject) || 1) * balanceCoefficient)
+  }));
+  const adjustedTotal = adjusted.reduce((sum, item) => sum + item.value, 0) || 1;
+  const distribution = adjusted.map((item) => ({
+    label: item.label,
+    percent: Math.round((item.value / adjustedTotal) * 100)
+  }));
+
+  let diff = 100 - distribution.reduce((sum, item) => sum + item.percent, 0);
+  for (let i = 0; diff !== 0 && i < distribution.length; i += 1) {
+    distribution[i].percent += diff > 0 ? 1 : -1;
+    diff += diff > 0 ? -1 : 1;
+  }
+
+  const knowledgeScore = Math.min(20, userModules.length * 4);
+  const portfolioScore = Math.min(20, userEntries.length * 3);
+  const guildScore = Math.min(20, userGuildMemberships.length * 5);
+  const praxisScore = Math.min(20, Math.round((userEntries.length + userModules.length) * 2));
+  const creativeScore = Math.min(20, Math.round((trackedSubjects.filter((subject) => (baseBySubject.get(subject) || 0) > 0).length / trackedSubjects.length) * 20));
+
+  return {
+    knowledge_score: knowledgeScore,
+    portfolio_score: portfolioScore,
+    guild_score: guildScore,
+    praxis_score: praxisScore,
+    creative_score: creativeScore,
+    total_score: knowledgeScore + portfolioScore + guildScore + praxisScore + creativeScore,
+    distribution
+  };
+}
+
 function getNeoscoreForUser(neoscores, userId) {
   return neoscores.find((entry) => entry.user_id === userId) || null;
 }
@@ -1868,66 +2001,31 @@ async function initResetPasswordPage() {
 }
 
 
-function renderNeoscorePieChart() {
-  const domains = [
-    { name: "Lingosophy", color: "#8c4b2f" },
-    { name: "Arthmetics", color: "#c6a96b" },
-    { name: "Cosmology", color: "#6f7b5c" },
-    { name: "Biosphere", color: "#4a3c31" },
-    { name: "Chronicles", color: "#5b4e41" },
-    { name: "Civitas", color: "#7a5c4d" },
-    { name: "Tokenomics", color: "#8b7e66" },
-    { name: "Artifex", color: "#9c8166" },
-    { name: "Praxis", color: "#a88e72" },
-    { name: "Bioepisteme", color: "#5c6b5d" }
-  ];
-
-  const radius = 100;
-  const cx = 150;
-  const cy = 150;
-  const strokeWidth = 40;
-  const circumference = 2 * Math.PI * radius;
-  const segmentLength = circumference / domains.length;
-  const gap = 2;
-  const dashArray = `${segmentLength - gap} ${circumference - (segmentLength - gap)}`;
-  
-  const segmentsSvg = domains.map((domain, index) => {
-    const angle = (index * 360) / domains.length;
+function renderNeoscorePieChart(distribution = []) {
+  if (!distribution.length) {
     return `
-      <circle 
-        cx="${cx}" cy="${cy}" r="${radius}" 
-        fill="none" 
-        stroke="${domain.color}" 
-        stroke-width="${strokeWidth}" 
-        stroke-dasharray="${dashArray}" 
-        stroke-dashoffset="${circumference / 4}" 
-        transform="rotate(${angle} ${cx} ${cy})"
-      >
-        <title>${domain.name}</title>
-      </circle>
+      <div class="card dashboard-chart-card">
+        <p class="section-label">Learning Balance Map</p>
+        <h2>Neoscore Distribution</h2>
+        <p class="field-note">No modules yet. Your Neoscore chart will appear after your first enrollment and portfolio entry.</p>
+      </div>
     `;
-  }).join("");
-
-  const legendHtml = domains.map(domain => `
-    <div class="legend-item">
-      <div class="legend-color" style="background: ${domain.color}"></div>
-      <span>${domain.name}</span>
-    </div>
-  `).join("");
-
+  }
   return `
     <div class="card dashboard-chart-card">
       <p class="section-label">Learning Balance Map</p>
-      <h2>Neofolk Knowledge Model</h2>
-      <div class="chart-container">
-        <div class="chart-svg-wrapper">
-          <svg viewBox="0 0 300 300" width="100%" height="100%">
-            ${segmentsSvg}
-          </svg>
-        </div>
-        <div class="chart-legend">
-          ${legendHtml}
-        </div>
+      <h2>Neoscore Distribution</h2>
+      <div class="record-list">
+        ${distribution
+          .map(
+            (item) => `
+              <article class="record-card">
+                <h3>${escapeHtml(item.label)}</h3>
+                <p>${item.percent}%</p>
+              </article>
+            `
+          )
+          .join("")}
       </div>
     </div>
   `;
@@ -1938,7 +2036,7 @@ async function initSeekerDashboard() {
   if (!currentUser) return;
 
   const root = document.getElementById("dashboard-root");
-  const [modules, entries, nicheEntries, enrollments, users, subjects, guilds, guildMembers, neoscores, tokens, researchPosts, tags, tagLinks] = await Promise.all([
+  const [modules, entries, nicheEntries, enrollments, users, subjects, guilds, guildMembers, tokens, researchPosts, tags, tagLinks] = await Promise.all([
     fetchApprovedModules(),
     fetchPortfolioEntries(),
     fetchNicheEntries(),
@@ -1947,7 +2045,6 @@ async function initSeekerDashboard() {
     fetchSubjects(),
     fetchGuildRecords(),
     fetchGuildMembers(),
-    fetchNeoscores(),
     fetchTokens(),
     fetchResearchPosts(),
     fetchTags(),
@@ -1962,7 +2059,13 @@ async function initSeekerDashboard() {
   const usersById = new Map(allUsers.map((user) => [user.id, user]));
   const joinedGuildIds = new Set(guildMembers.filter((member) => member.user_id === currentUser.id).map((member) => member.guild_id));
   const joinedGuilds = guilds.filter((guild) => joinedGuildIds.has(guild.id));
-  const score = getNeoscoreForUser(neoscores, currentUser.id);
+  const score = computePersonalizedNeoscore({
+    userId: currentUser.id,
+    modules,
+    enrollments,
+    portfolioEntries: entries,
+    guildMembers
+  });
   const tokenBalance = getUserTokenBalance(tokens, currentUser.id);
   const recentActivity = [
     ...ownEntries.map((entry) => ({ title: entry.title, type: "Portfolio", created_at: entry.created_at })),
@@ -2068,6 +2171,7 @@ async function initSeekerDashboard() {
           subtitle: subjectDistribution.length ? "Built from courses, notes, projects, and tags" : "Subject patterns appear as you keep learning",
           segments: subjectDistribution
         })}
+        ${renderNeoscorePieChart(score.distribution)}
 
         <article class="card dashboard-summary-card">
           <p class="section-label">Current Course</p>
@@ -3306,12 +3410,11 @@ async function initProfilePage() {
   const root = document.getElementById("profile-root");
   if (!root) return;
 
-  const [entries, nicheEntries, guilds, guildMembers, neoscores, tags, tagLinks, modules, enrollments] = await Promise.all([
+  const [entries, nicheEntries, guilds, guildMembers, tags, tagLinks, modules, enrollments] = await Promise.all([
     fetchPortfolioEntries(),
     fetchNicheEntries(),
     fetchGuildRecords(),
     fetchGuildMembers(),
-    fetchNeoscores(),
     fetchTags(),
     fetchTagLinks(),
     fetchApprovedModules(),
@@ -3321,7 +3424,13 @@ async function initProfilePage() {
   const ownNotes = nicheEntries.filter((entry) => entry.createdBy === currentUser.id);
   const ownGuilds = guilds.filter((guild) => guildMembers.some((member) => member.guild_id === guild.id && member.user_id === currentUser.id));
   const enrolledModules = modules.filter((module) => enrollments.some((entry) => entry.module_id === module.id));
-  const score = getNeoscoreForUser(neoscores, currentUser.id);
+  const score = computePersonalizedNeoscore({
+    userId: currentUser.id,
+    modules,
+    enrollments,
+    portfolioEntries: entries,
+    guildMembers
+  });
   const interestTags = [...new Set(ownNotes.map((entry) => entry.topic.toLowerCase()))];
 
   root.innerHTML = `
@@ -3388,6 +3497,7 @@ async function initProfilePage() {
           <p class="section-label">Neoscore</p>
           <h2>Holistic evaluation</h2>
           ${neoscoreSummary(score)}
+          ${renderNeoscorePieChart(score.distribution)}
         </article>
 
         <article class="card">
@@ -3821,6 +3931,7 @@ async function init() {
 
     const currentUser = await getCurrentUserProfile();
     const page = getCurrentPage();
+    document.body.classList.toggle("internal-page", page !== "home");
     const isDashboardPage = ["seeker-dashboard", "curator-dashboard", "arbiter-dashboard", "operator-dashboard"].includes(page);
     document.body.classList.toggle("dashboard-page", isDashboardPage);
     renderVersionBadges();
@@ -3829,6 +3940,9 @@ async function init() {
       renderWorkspaceToolbar(currentUser);
     }
     renderReflectionOverlay();
+    if (currentUser && page !== "home" && page !== "reset-password") {
+      renderSessionQuotePopup(currentUser);
+    }
     if (page === "home") await renderHomePage();
     if (page === "research") await initResearchPage();
     if (page === "studios") await initStudiosPage();
