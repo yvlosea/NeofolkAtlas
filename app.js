@@ -551,18 +551,57 @@ function renderNav(currentUser) {
   const nav = document.getElementById("app-nav");
   if (!nav) return;
 
+  const dashboardHref = currentUser ? getDashboardPath(currentUser.role) : "index.html";
+
   nav.innerHTML = `
-    <div class="topbar-controls">
-      ${currentUser ? `<button id="nav-menu-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="app-sidebar">${escapeHtml(t("nav.menu"))}</button>` : ""}
-      <label class="language-picker compact-language-picker">
-        <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
-        <select id="public-language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
-          ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
-        </select>
-      </label>
-      <a class="topbar-link" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
-      <a class="topbar-link" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
-      ${currentUser ? `<button id="logout-button" class="nav-button topbar-logout" type="button">${escapeHtml(t("nav.logout"))}</button>` : ""}
+    <div class="site-nav-shell">
+      <button id="nav-menu-toggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav-panel">
+        ${escapeHtml(t("nav.menu"))}
+      </button>
+      <div id="site-nav-panel" class="nav-panel">
+        <div class="nav-cluster nav-primary-links">
+          ${
+            currentUser
+              ? `
+                <a class="nav-link" href="${dashboardHref}">${escapeHtml(t("nav.dashboard"))}</a>
+                <a class="nav-link" href="subjects.html">${escapeHtml(t("nav.learn"))}</a>
+                <a class="nav-link" href="${dashboardHref}#notes-area">${escapeHtml(t("nav.notes"))}</a>
+                <a class="nav-link" href="${dashboardHref}#projects-area">${escapeHtml(t("nav.projects"))}</a>
+                <a class="nav-link" href="guild.html">${escapeHtml(t("nav.groups"))}</a>
+                <a class="nav-link" href="${dashboardHref}#progress-area">${escapeHtml(t("nav.progress"))}</a>
+              `
+              : `
+                <a class="nav-link" href="index.html#start-learning">${escapeHtml(t("home.primaryStart"))}</a>
+                <a class="nav-link" href="subjects.html">${escapeHtml(t("home.primaryBrowse"))}</a>
+                <a class="nav-link" href="index.html#auth-area">${escapeHtml(t("home.primaryCreate"))}</a>
+              `
+          }
+        </div>
+
+        <div class="nav-cluster nav-utility-cluster">
+          <label class="language-picker compact-language-picker">
+            <span class="section-label">${escapeHtml(t("toolbar.language"))}</span>
+            <select id="public-language-select" aria-label="${escapeHtml(t("toolbar.languageAria"))}">
+              ${supportedLanguages.map((language) => `<option value="${language.code}" ${language.code === currentLanguage ? "selected" : ""}>${escapeHtml(language.label)}</option>`).join("")}
+            </select>
+          </label>
+          ${
+            currentUser
+              ? `
+                <a class="nav-link nav-link-secondary" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
+                <a class="nav-link nav-link-secondary" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
+                <a class="profile-chip" href="profile.html" aria-label="${escapeHtml(t("nav.settings"))}">
+                  <span class="profile-chip-avatar">${escapeHtml(getUserInitials(currentUser))}</span>
+                </a>
+                <button id="logout-button" class="nav-button" type="button">${escapeHtml(t("nav.logout"))}</button>
+              `
+              : `
+                <a class="nav-link nav-link-secondary" href="dictionary.html">${escapeHtml(t("nav.dictionary"))}</a>
+                <a class="nav-link nav-link-secondary" href="vision.html">${escapeHtml(t("nav.vision"))}</a>
+              `
+          }
+        </div>
+      </div>
     </div>
   `;
 
@@ -577,62 +616,11 @@ function renderNav(currentUser) {
   });
 
   document.getElementById("nav-menu-toggle")?.addEventListener("click", (event) => {
-    const nextOpen = !document.body.classList.contains("sidebar-open");
-    document.body.classList.toggle("sidebar-open", nextOpen);
+    const shell = nav.querySelector(".site-nav-shell");
+    const nextOpen = !shell?.classList.contains("is-open");
+    shell?.classList.toggle("is-open", nextOpen);
     event.currentTarget.setAttribute("aria-expanded", String(nextOpen));
   });
-}
-
-function renderSidebar(currentUser) {
-  const pageShell = document.querySelector(".page-shell");
-  const page = getCurrentPage();
-  const requiresSidebar = Boolean(currentUser && page !== "home" && page !== "reset-password");
-  document.body.classList.toggle("has-sidebar", requiresSidebar);
-
-  let sidebar = document.getElementById("app-sidebar");
-  if (!requiresSidebar) {
-    sidebar?.remove();
-    document.body.classList.remove("sidebar-open");
-    return;
-  }
-
-  if (!sidebar) {
-    sidebar = document.createElement("aside");
-    sidebar.id = "app-sidebar";
-    sidebar.className = "app-sidebar";
-    const header = pageShell?.querySelector(".site-header");
-    header?.insertAdjacentElement("afterend", sidebar);
-  }
-
-  const dashboardHref = getDashboardPath(currentUser.role);
-  const links = [
-    { label: t("nav.dashboard"), href: dashboardHref, active: page === "seeker-dashboard" || page === "curator-dashboard" || page === "arbiter-dashboard" || page === "operator-dashboard" },
-    { label: t("nav.learn"), href: "subjects.html", active: page === "subjects" || page === "module" },
-    { label: t("nav.notes"), href: `${dashboardHref}#notes-area`, active: page === "seeker-dashboard" && window.location.hash === "#notes-area" },
-    { label: t("nav.projects"), href: `${dashboardHref}#projects-area`, active: page === "profile" || (page === "seeker-dashboard" && window.location.hash === "#projects-area") },
-    { label: t("nav.groups"), href: "guild.html", active: page === "guild" },
-    { label: t("nav.progress"), href: `${dashboardHref}#progress-area`, active: page === "seeker-dashboard" && window.location.hash === "#progress-area" }
-  ];
-
-  sidebar.innerHTML = `
-    <div class="sidebar-panel">
-      <p class="section-label">${escapeHtml(t("nav.groupPrimary"))}</p>
-      <nav class="sidebar-nav" aria-label="${escapeHtml(t("nav.groupPrimary"))}">
-        ${links
-          .map(
-            (link) => `
-              <a class="sidebar-link ${link.active ? "is-active" : ""}" href="${link.href}">
-                <span>${escapeHtml(link.label)}</span>
-              </a>
-            `
-          )
-          .join("")}
-      </nav>
-      <div class="sidebar-footnote">
-        ${termTooltip("seeker")}
-      </div>
-    </div>
-  `;
 }
 
 function wireWorkspaceToolbar(currentUser) {
