@@ -126,6 +126,11 @@ body.internal-page {
   color: var(--parchment);
 }
 
+.internal-page .nav-link.is-active {
+  color: var(--parchment);
+  border-bottom: 1px solid var(--gold);
+}
+
 .internal-page .nav-button {
   background: transparent;
   border: none;
@@ -320,6 +325,38 @@ body.internal-page {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.session-quote-popup {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  max-width: 320px;
+  z-index: 90;
+  background: rgba(44, 31, 26, 0.95);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.session-quote-popup.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+body.rtl-ui .session-quote-popup {
+  right: auto;
+  left: 16px;
+}
+
+body.rtl-ui .site-header,
+body.rtl-ui .card-header-row,
+body.rtl-ui .inline-actions {
+  direction: rtl;
 }
 
 @media (max-width: 600px) {
