@@ -13,18 +13,14 @@
 </head>
 <body class="internal-page neo-theme" data-page="home">
 
-  <header class="main-header">
-    <nav id="app-nav"></nav>
-  </header>
-
   <div class="neo-layout">
 
     <aside class="neo-sidebar sidebar" id="sidebar">
       <div class="brand-area">
         <h2>Neofolk</h2>
       </div>
-      <div class="sidebar-content">
-      </div>
+      <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
+      <div class="sidebar-content"></div>
     </aside>
 
     <main class="neo-main">
@@ -51,6 +47,7 @@
                   <select id="mobileLangSelect" class="lang-select" aria-label="Select language">
                     <option value="en">EN</option>
                     <option value="hi">हि</option>
+                    <option value="ur">UR</option>
                   </select>
                 </div>
               </header>
@@ -59,9 +56,9 @@
 
                 <section class="hero-section">
                   <div class="hero-left">
-                    <p class="eyebrow">Start in seconds</p>
-                    <h1 class="hero-title">Begin learning, writing, and building your record.</h1>
-                    <p class="hero-body">Neofolk Atlas is a calm platform for courses, notes, projects, and groups. Start with one topic, one note, one clear next step.</p>
+                    <p class="eyebrow" data-i18n="home.kicker">Start in seconds</p>
+                    <h1 class="hero-title" data-i18n="home.title">Begin learning, writing, and building your record.</h1>
+                    <p class="hero-body" data-i18n="home.subtitle">Neofolk Atlas is a calm platform for courses, notes, projects, and groups. Start with one topic, one note, one clear next step.</p>
 
                     <div class="feature-cards">
                       <div class="feat-card">
@@ -96,13 +93,13 @@
 
                   <div class="auth-card">
                     <div class="auth-tabs">
-                      <button class="auth-tab active" id="tabSignup">Create Account</button>
-                      <button class="auth-tab" id="tabLogin">Login</button>
+                      <button type="button" class="auth-tab active" id="tabSignup" data-i18n="home.signupLabel">Create Account</button>
+                      <button type="button" class="auth-tab" id="tabLogin" data-i18n="home.loginTitle">Login</button>
                     </div>
 
                     <div class="auth-panel-inner" id="panelSignup">
-                      <p class="auth-intro">Join as a learner — free and immediate.</p>
-                      <form id="signup-form" class="form-stack">
+                      <p class="auth-intro" data-i18n="home.signupNote">Join as a learner — free and immediate.</p>
+                      <form id="signup-form" class="form-stack" method="post" action="">
                         <label class="field-label">
                           <span>Email</span>
                           <input id="signup-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
@@ -111,25 +108,26 @@
                           <span>Password</span>
                           <input id="signup-password" name="password" type="password" autocomplete="new-password" required placeholder="••••••••" />
                         </label>
-                        <button class="btn btn-primary" style="width:100%" type="submit">Create Account</button>
+                        <button class="btn btn-primary" style="width:100%" type="submit" data-i18n="auth.createAccount">Create Account</button>
                       </form>
                       <p id="signup-message" class="status-text" aria-live="polite"></p>
                     </div>
 
                     <div class="auth-panel-inner hidden" id="panelLogin">
-                      <p class="auth-intro">Continue where you left off.</p>
+                      <p class="auth-intro" data-i18n="home.loginNote">Continue where you left off.</p>
 
                       <div style="margin-bottom:14px;">
                         <label class="field-label">
-                          <span>Language / भाषा</span>
-                          <select id="home-language-select" aria-label="Select language">
+                          <span data-i18n="toolbar.language">Language</span>
+                          <select id="home-language-select" class="lang-select" aria-label="Select language">
                             <option value="en">English</option>
                             <option value="hi">हिन्दी</option>
+                            <option value="ur">اردو</option>
                           </select>
                         </label>
                       </div>
 
-                      <form id="login-form" class="form-stack">
+                      <form id="login-form" class="form-stack" method="post" action="">
                         <label class="field-label">
                           <span>Email</span>
                           <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
@@ -138,18 +136,18 @@
                           <span>Password</span>
                           <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
                         </label>
-                        <button class="btn btn-primary" style="width:100%" type="submit">Login</button>
-                        <button id="forgot-password-button" class="btn-ghost" type="button">Forgot password?</button>
+                        <button class="btn btn-primary" style="width:100%" type="submit" data-i18n="auth.login">Login</button>
+                        <button id="forgot-password-button" class="btn-ghost" type="button" data-i18n="auth.forgotPassword">Forgot password?</button>
                       </form>
                       <p id="login-message" class="status-text" aria-live="polite"></p>
                     </div>
                   </div>
                 </section>
 
-                <section class="quote-section" id="quoteSection">
+                <section class="quote-section card" id="quoteSection">
                   <div class="quote-inner">
-                    <div class="quote-badge" id="quoteLabel">Neofolk Atlas</div>
-                    <blockquote class="quote-text" id="quoteText">"Education is the manifestation of perfection already within."</blockquote>
+                    <p class="section-label" id="quoteLabel">Reflection</p>
+                    <p class="quote-text" id="quoteText">"Education is the manifestation of perfection already within."</p>
                     <cite class="quote-attr" id="quoteAttr">— Swami Vivekananda</cite>
                     <section id="hero-quote" class="page-note" style="margin-top:16px;"></section>
                   </div>

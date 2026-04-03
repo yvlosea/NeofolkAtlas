@@ -8,73 +8,85 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="internal-styles.css" />
 </head>
-<body data-page="vision">
+<body class="internal-page neo-theme" data-page="vision">
 
-  <div class="page-shell page-container">
-    <header class="site-header">
-      <a class="brand-mark" href="index.html" aria-label="Neofolk Atlas home">
-        <img class="brand-logo" src="neofolk-logo.jpg" alt="Neofolk humanitarian education board logo" />
-        <span class="brand-copy">
-          <span class="brand-kicker">Neofolk Atlas</span>
-          <strong>Learning as Identity</strong>
-        </span>
-      </a>
-      <span class="version-badge">Alpha 11.4</span>
-      <nav id="app-nav" class="site-nav" aria-label="Primary"></nav>
-    </header>
+  <div class="neo-layout">
 
-    <main class="page-stack">
-      <section class="card prose-panel">
-        <p class="section-label">Vision</p>
-        <h1>Neofolk Humanitarian Board of Education</h1>
-        <p>
-          Neofolk Atlas is designed as an academic network where identity is shaped by disciplined study, documented work,
-          and long-form inquiry rather than by passive credential collection. The platform mirrors a private academic archive,
-          focusing on structured reading, rigorous peer evaluation, and a collective repository of intellectual artifacts.
-        </p>
+    <aside class="neo-sidebar sidebar">
+      <div class="brand-area">
+        <h2>Neofolk</h2>
+      </div>
+      <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
+      <div class="sidebar-content"></div>
+    </aside>
 
-        <h2>Core Idea</h2>
-        <p>Learning is evidenced through records of work, reflection, documentation, and practical contribution rather than
-        one-time examinations alone. It is about establishing long-term intellectual records.</p>
+    <main class="neo-main">
 
-        <h2>Domain Model</h2>
-        <p>The academic universe is divided into 10 structured domains representing a comprehensive survey of knowledge:
-        Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, and Bioepisteme.</p>
+      <section class="neo-board">
+        <div class="neo-board-layer"></div>
+        <div class="neo-board-grid"></div>
+      </section>
 
-        <h2>Guild Structure</h2>
-        <p>Guilds are research collectives where seekers and curators can investigate interconnected questions across domains,
-        produce joint outputs, and submit them for arbiter review.</p>
+      <section class="page-shell">
+        <div class="page-stack">
+          <div id="vision-root">
+            <section class="card prose-panel">
+              <p class="section-label">Vision</p>
+              <h1>Neofolk Humanitarian Board of Education</h1>
+              <p>
+                Neofolk Atlas is designed as an academic network where identity is shaped by disciplined study, documented work,
+                and long-form inquiry rather than by passive credential collection. The platform mirrors a private academic archive,
+                focusing on structured reading, rigorous peer evaluation, and a collective repository of intellectual artifacts.
+              </p>
 
-        <h2>Nodes</h2>
-        <p>Nodes are independent educational units interconnected throughout the network. They provide local leadership
-        within the universal framework.</p>
+              <h2>Core Idea</h2>
+              <p>Learning is evidenced through records of work, reflection, documentation, and practical contribution rather than
+              one-time examinations alone. It is about establishing long-term intellectual records.</p>
 
-        <h2>Studios</h2>
-        <p>Studios represent capability environments unlocked through demonstrated contribution, readiness, and serious
-        intellectual production.</p>
+              <h2>Domain Model</h2>
+              <p>The academic universe is divided into 10 structured domains representing a comprehensive survey of knowledge:
+              Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, and Bioepisteme.</p>
 
-        <h2>Atheneums</h2>
-        <p>Spaces dedicated strictly to deep archiving, reading, and contemplative philosophy, ensuring the preservation
-        of the network's knowledge artifacts.</p>
+              <h2>Guild Structure</h2>
+              <p>Guilds are research collectives where seekers and curators can investigate interconnected questions across domains,
+              produce joint outputs, and submit them for arbiter review.</p>
 
-        <h2>Coliseums</h2>
-        <p>Areas meant for rigorous debate, public defense of theses, and competitive intellectual discourse.</p>
+              <h2>Nodes</h2>
+              <p>Nodes are independent educational units interconnected throughout the network. They provide local leadership
+              within the universal framework.</p>
 
-        <h2>Panarchium</h2>
-        <p>The governing collective structure that unites the disparate entities under a single ethical and architectural charter.</p>
+              <h2>Studios</h2>
+              <p>Studios represent capability environments unlocked through demonstrated contribution, readiness, and serious
+              intellectual production.</p>
 
-        <h2>Travel Learning Infrastructure</h2>
-        <p>Supporting infrastructure, including Neobuses and Lodges, allows physical convergence and travel across nodes,
-        ensuring that learning transcends digital environments.</p>
+              <h2>Atheneums</h2>
+              <p>Spaces dedicated strictly to deep archiving, reading, and contemplative philosophy, ensuring the preservation
+              of the network's knowledge artifacts.</p>
 
-        <div class="inline-actions flow-top-32">
-          <a class="btn btn-primary" href="subjects.html">Browse Subjects</a>
-          <a class="btn" href="dictionary.html">Open Dictionary</a>
-          <button class="btn subtle-button" type="button" onclick="window.print()">Print Document</button>
+              <h2>Coliseums</h2>
+              <p>Areas meant for rigorous debate, public defense of theses, and competitive intellectual discourse.</p>
+
+              <h2>Panarchium</h2>
+              <p>The governing collective structure that unites the disparate entities under a single ethical and architectural charter.</p>
+
+              <h2>Travel Learning Infrastructure</h2>
+              <p>Supporting infrastructure, including Neobuses and Lodges, allows physical convergence and travel across nodes,
+              ensuring that learning transcends digital environments.</p>
+
+              <div class="inline-actions flow-top-32">
+                <a class="btn btn-primary" href="subjects.html">Browse Subjects</a>
+                <a class="btn" href="dictionary.html">Open Dictionary</a>
+                <button class="btn subtle-button" type="button" onclick="window.print()">Print Document</button>
+              </div>
+            </section>
+          </div>
         </div>
       </section>
+
     </main>
+
   </div>
 
   <script type="module" src="app.js"></script>

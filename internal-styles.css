@@ -361,17 +361,18 @@ body.internal-page {
 }
 
 /* Neo master layout (shared shell) */
-.internal-page.neo-theme .main-header {
-  position: relative;
-  z-index: 50;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border-color);
-}
-
 .internal-page.neo-theme .neo-layout {
   display: flex;
   align-items: stretch;
-  min-height: calc(100dvh - 1px);
+  min-height: 100dvh;
+}
+
+.internal-page.neo-theme .neo-sidebar #app-nav.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0 0 16px;
+  padding: 0;
 }
 
 .internal-page.neo-theme .neo-sidebar {
@@ -466,4 +467,10 @@ body.internal-page {
 .internal-page.neo-theme[data-page="home"] #home-root .main-wrap {
   flex: 1;
   min-width: 0;
+}
+
+/* Quote: contract uses .card + .section-label + .quote-text (styles.css) */
+.internal-page .quote-section.card {
+  padding: 32px 36px;
+  box-shadow: var(--shadow);
 }
