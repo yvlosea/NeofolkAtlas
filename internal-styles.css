@@ -1,5 +1,7 @@
 /* internal-styles.css - Dark Academia x Solarpunk (Internal Pages Only) */
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
+
 :root {
   --ink: #1b1410;
   --deep-brown: #2c1f1a;
@@ -473,4 +475,10 @@ body.internal-page {
 .internal-page .quote-section.card {
   padding: 32px 36px;
   box-shadow: var(--shadow);
+}
+
+/* Urdu / RTL: Nastaliq for readable body copy */
+html[dir="rtl"] body.internal-page {
+  font-family: "Noto Nastaliq Urdu", "Noto Sans Arabic", "Segoe UI", system-ui, serif;
+  line-height: 1.75;
 }
