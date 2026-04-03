@@ -8,278 +8,234 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="internal-styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-<body data-page="home">
+<body class="internal-page neo-theme" data-page="home">
 
-  <!-- Mobile overlay backdrop (Atlas) -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <header class="main-header">
+    <nav id="app-nav"></nav>
+  </header>
 
-  <div class="shell">
+  <div class="neo-layout">
 
-    <!-- ═══ ATLAS SIDEBAR ═══ -->
-    <aside class="sidebar" id="sidebar" aria-label="Primary navigation">
-      <div class="sidebar-inner">
-
-        <div class="sidebar-brand">
-          <div class="brand-logomark">N</div>
-          <div>
-            <span class="brand-name">Neofolk Atlas</span>
-            <span class="brand-tagline">Learning as Identity</span>
-          </div>
-        </div>
-
-        <nav class="sidebar-nav" id="atlas-sidebar-nav">
-          <span class="nav-group-label">Main</span>
-          <a href="index.html" class="nav-item active">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Home</span>
-          </a>
-          <a href="seeker-dashboard.html" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-            <span>Dashboard</span>
-          </a>
-          <a href="subjects.html" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-            <span>Learn</span>
-          </a>
-          <a href="guild.html" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-            <span>Groups</span>
-          </a>
-          <a href="discovery.html" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <span>Discovery</span>
-          </a>
-          <span class="nav-group-label">Reference</span>
-          <a href="dictionary.html" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-            <span>Dictionary</span>
-          </a>
-          <a href="vision.html" class="nav-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span>Vision</span>
-          </a>
-        </nav>
-
-        <div class="sidebar-footer">
-          <div class="language-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-            <select id="langSelect" class="lang-select" aria-label="Select language">
-              <option value="en">English</option>
-              <option value="hi">हिन्दी</option>
-            </select>
-          </div>
-          <span class="version-tag version-badge">Alpha 11.4</span>
-        </div>
-
+    <aside class="neo-sidebar sidebar" id="sidebar">
+      <div class="brand-area">
+        <h2>Neofolk</h2>
+      </div>
+      <div class="sidebar-content">
       </div>
     </aside>
 
-    <!-- ═══ MAIN AREA ═══ -->
-    <div class="main-wrap">
+    <main class="neo-main">
 
-      <!-- Mobile topbar -->
-      <header class="mobile-topbar">
-        <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
-          <span></span><span></span><span></span>
-        </button>
-        <span class="mobile-brand">Neofolk Atlas</span>
-        <div class="mobile-lang-wrap">
-          <select id="mobileLangSelect" class="lang-select" aria-label="Select language">
-            <option value="en">EN</option>
-            <option value="hi">हि</option>
-          </select>
-        </div>
-        <!-- Deploy topbar nav rendered here on mobile -->
-        <nav id="app-nav" class="site-nav" aria-label="Primary" style="display:none;"></nav>
-      </header>
+      <section class="neo-board">
+        <div class="neo-board-layer"></div>
+        <div class="neo-board-grid"></div>
+      </section>
 
-      <main class="content">
+      <section class="page-shell">
+        <div class="page-stack">
 
-        <!-- ── HERO: Atlas layout, Deploy form IDs preserved ── -->
-        <section class="hero-section">
-          <div class="hero-left">
-            <p class="eyebrow">Start in seconds</p>
-            <h1 class="hero-title">Begin learning, writing, and building your record.</h1>
-            <p class="hero-body">Neofolk Atlas is a calm platform for courses, notes, projects, and groups. Start with one topic, one note, one clear next step.</p>
+          <div id="home-root">
 
-            <div class="feature-cards">
-              <div class="feat-card">
-                <div class="feat-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-                </div>
-                <div>
-                  <strong>Start learning</strong>
-                  <p>Open one topic and make your first note within a minute.</p>
-                </div>
-              </div>
-              <div class="feat-card">
-                <div class="feat-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                </div>
-                <div>
-                  <strong>Build projects</strong>
-                  <p>Turn essays and reflections into a visible learning record.</p>
-                </div>
-              </div>
-              <div class="feat-card">
-                <div class="feat-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-                </div>
-                <div>
-                  <strong>Join groups</strong>
-                  <p>Move into shared inquiry once your rhythm is clear.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-          <!-- ── AUTH CARD: Atlas UI tabs + Deploy form IDs ── -->
-          <div class="auth-card">
-            <div class="auth-tabs">
-              <button class="auth-tab active" id="tabSignup">Create Account</button>
-              <button class="auth-tab" id="tabLogin">Login</button>
-            </div>
-
-            <!-- Signup panel — Deploy IDs: signup-form, signup-email, signup-password, signup-message -->
-            <div class="auth-panel-inner" id="panelSignup">
-              <p class="auth-intro">Join as a learner — free and immediate.</p>
-              <form id="signup-form" class="form-stack">
-                <label class="field-label">
-                  <span>Email</span>
-                  <input id="signup-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
-                </label>
-                <label class="field-label">
-                  <span>Password</span>
-                  <input id="signup-password" name="password" type="password" autocomplete="new-password" required placeholder="••••••••" />
-                </label>
-                <button class="btn btn-primary" style="width:100%" type="submit">Create Account</button>
-              </form>
-              <p id="signup-message" class="status-text" aria-live="polite"></p>
-            </div>
-
-            <!-- Login panel — Deploy IDs: login-form, login-email, login-password, login-message, forgot-password-button -->
-            <div class="auth-panel-inner hidden" id="panelLogin">
-              <p class="auth-intro">Continue where you left off.</p>
-
-              <!-- Language selector row (Deploy home page integration) -->
-              <div style="margin-bottom:14px;">
-                <label class="field-label">
-                  <span>Language / भाषा</span>
-                  <select id="home-language-select" aria-label="Select language">
-                    <option value="en">English</option>
-                    <option value="hi">हिन्दी</option>
+            <div class="main-wrap">
+              <header class="mobile-topbar">
+                <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                  <span></span><span></span><span></span>
+                </button>
+                <span class="mobile-brand">Neofolk Atlas</span>
+                <div class="mobile-lang-wrap">
+                  <select id="mobileLangSelect" class="lang-select" aria-label="Select language">
+                    <option value="en">EN</option>
+                    <option value="hi">हि</option>
                   </select>
-                </label>
+                </div>
+              </header>
+
+              <div class="content">
+
+                <section class="hero-section">
+                  <div class="hero-left">
+                    <p class="eyebrow">Start in seconds</p>
+                    <h1 class="hero-title">Begin learning, writing, and building your record.</h1>
+                    <p class="hero-body">Neofolk Atlas is a calm platform for courses, notes, projects, and groups. Start with one topic, one note, one clear next step.</p>
+
+                    <div class="feature-cards">
+                      <div class="feat-card">
+                        <div class="feat-icon">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+                        </div>
+                        <div>
+                          <strong>Start learning</strong>
+                          <p>Open one topic and make your first note within a minute.</p>
+                        </div>
+                      </div>
+                      <div class="feat-card">
+                        <div class="feat-icon">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <div>
+                          <strong>Build projects</strong>
+                          <p>Turn essays and reflections into a visible learning record.</p>
+                        </div>
+                      </div>
+                      <div class="feat-card">
+                        <div class="feat-icon">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                        </div>
+                        <div>
+                          <strong>Join groups</strong>
+                          <p>Move into shared inquiry once your rhythm is clear.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="auth-card">
+                    <div class="auth-tabs">
+                      <button class="auth-tab active" id="tabSignup">Create Account</button>
+                      <button class="auth-tab" id="tabLogin">Login</button>
+                    </div>
+
+                    <div class="auth-panel-inner" id="panelSignup">
+                      <p class="auth-intro">Join as a learner — free and immediate.</p>
+                      <form id="signup-form" class="form-stack">
+                        <label class="field-label">
+                          <span>Email</span>
+                          <input id="signup-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+                        </label>
+                        <label class="field-label">
+                          <span>Password</span>
+                          <input id="signup-password" name="password" type="password" autocomplete="new-password" required placeholder="••••••••" />
+                        </label>
+                        <button class="btn btn-primary" style="width:100%" type="submit">Create Account</button>
+                      </form>
+                      <p id="signup-message" class="status-text" aria-live="polite"></p>
+                    </div>
+
+                    <div class="auth-panel-inner hidden" id="panelLogin">
+                      <p class="auth-intro">Continue where you left off.</p>
+
+                      <div style="margin-bottom:14px;">
+                        <label class="field-label">
+                          <span>Language / भाषा</span>
+                          <select id="home-language-select" aria-label="Select language">
+                            <option value="en">English</option>
+                            <option value="hi">हिन्दी</option>
+                          </select>
+                        </label>
+                      </div>
+
+                      <form id="login-form" class="form-stack">
+                        <label class="field-label">
+                          <span>Email</span>
+                          <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+                        </label>
+                        <label class="field-label">
+                          <span>Password</span>
+                          <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+                        </label>
+                        <button class="btn btn-primary" style="width:100%" type="submit">Login</button>
+                        <button id="forgot-password-button" class="btn-ghost" type="button">Forgot password?</button>
+                      </form>
+                      <p id="login-message" class="status-text" aria-live="polite"></p>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="quote-section" id="quoteSection">
+                  <div class="quote-inner">
+                    <div class="quote-badge" id="quoteLabel">Neofolk Atlas</div>
+                    <blockquote class="quote-text" id="quoteText">"Education is the manifestation of perfection already within."</blockquote>
+                    <cite class="quote-attr" id="quoteAttr">— Swami Vivekananda</cite>
+                    <section id="hero-quote" class="page-note" style="margin-top:16px;"></section>
+                  </div>
+                  <div class="quote-dots" id="quoteDots"></div>
+                </section>
+
+                <section class="stats-section">
+                  <div class="stat-strip">
+                    <div class="stat-item">
+                      <strong>10</strong>
+                      <span>Academic Guilds</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                      <strong>2</strong>
+                      <span>Languages</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                      <strong>4</strong>
+                      <span>Role Tiers</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                      <strong>∞</strong>
+                      <span>Notes &amp; Projects</span>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="chart-section">
+                  <div class="chart-header">
+                    <div>
+                      <p class="eyebrow">Platform Overview</p>
+                      <h2 class="section-title">Guild learning distribution</h2>
+                    </div>
+                    <div class="chart-controls">
+                      <button class="chart-btn active" data-chart="bar">Bar</button>
+                      <button class="chart-btn" data-chart="doughnut">Donut</button>
+                      <button class="chart-btn" data-chart="radar">Radar</button>
+                    </div>
+                  </div>
+                  <div class="chart-wrap">
+                    <canvas id="guildChart" aria-label="Guild activity chart"></canvas>
+                  </div>
+                  <p class="chart-note">Illustrative data. Live stats populate after login.</p>
+                </section>
+
+                <section class="about-section" id="about">
+                  <p class="eyebrow">Optional deeper layer</p>
+                  <h2 class="section-title">Deep, not complicated on day one.</h2>
+                  <p class="about-body">Subjects define structured study. Groups connect people around inquiry. Projects become your academic record. The richer vocabulary of Seekers, Curators, Arbiters, Guilds, and Discovery appears gradually as it becomes useful.</p>
+                  <div class="about-grid">
+                    <div class="about-card">
+                      <span class="about-icon">📖</span>
+                      <h3>Courses</h3>
+                      <p>Start with one clear course instead of every layer at once.</p>
+                    </div>
+                    <div class="about-card">
+                      <span class="about-icon">🔗</span>
+                      <h3>Groups</h3>
+                      <p>Guilds are for shared inquiry, available once your rhythm is clear.</p>
+                    </div>
+                    <div class="about-card">
+                      <span class="about-icon">🗂</span>
+                      <h3>Projects</h3>
+                      <p>Your best notes and work slowly become a serious intellectual record.</p>
+                    </div>
+                  </div>
+                </section>
+
               </div>
+            </div>
 
-              <form id="login-form" class="form-stack">
-                <label class="field-label">
-                  <span>Email</span>
-                  <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
-                </label>
-                <label class="field-label">
-                  <span>Password</span>
-                  <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
-                </label>
-                <button class="btn btn-primary" style="width:100%" type="submit">Login</button>
-                <button id="forgot-password-button" class="btn-ghost" type="button">Forgot password?</button>
-              </form>
-              <p id="login-message" class="status-text" aria-live="polite"></p>
-            </div>
           </div>
-        </section>
 
-        <!-- ── HERO QUOTE (Deploy renders random quote from Supabase into #hero-quote) ── -->
-        <section class="quote-section" id="quoteSection">
-          <div class="quote-inner">
-            <div class="quote-badge" id="quoteLabel">Neofolk Atlas</div>
-            <blockquote class="quote-text" id="quoteText">"Education is the manifestation of perfection already within."</blockquote>
-            <cite class="quote-attr" id="quoteAttr">— Swami Vivekananda</cite>
-            <!-- Deploy injects random DB quote here -->
-            <section id="hero-quote" class="page-note" style="margin-top:16px;"></section>
-          </div>
-          <div class="quote-dots" id="quoteDots"></div>
-        </section>
+        </div>
+      </section>
 
-        <!-- ── STATS STRIP ── -->
-        <section class="stats-section">
-          <div class="stat-strip">
-            <div class="stat-item">
-              <strong>10</strong>
-              <span>Academic Guilds</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <strong>2</strong>
-              <span>Languages</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <strong>4</strong>
-              <span>Role Tiers</span>
-            </div>
-            <div class="stat-divider"></div>
-            <div class="stat-item">
-              <strong>∞</strong>
-              <span>Notes &amp; Projects</span>
-            </div>
-          </div>
-        </section>
+    </main>
 
-        <!-- ── INTERACTIVE CHART ── -->
-        <section class="chart-section">
-          <div class="chart-header">
-            <div>
-              <p class="eyebrow">Platform Overview</p>
-              <h2 class="section-title">Guild learning distribution</h2>
-            </div>
-            <div class="chart-controls">
-              <button class="chart-btn active" data-chart="bar">Bar</button>
-              <button class="chart-btn" data-chart="doughnut">Donut</button>
-              <button class="chart-btn" data-chart="radar">Radar</button>
-            </div>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="guildChart" aria-label="Guild activity chart"></canvas>
-          </div>
-          <p class="chart-note">Illustrative data. Live stats populate after login.</p>
-        </section>
-
-        <!-- ── ABOUT LAYER ── -->
-        <section class="about-section" id="about">
-          <p class="eyebrow">Optional deeper layer</p>
-          <h2 class="section-title">Deep, not complicated on day one.</h2>
-          <p class="about-body">Subjects define structured study. Groups connect people around inquiry. Projects become your academic record. The richer vocabulary of Seekers, Curators, Arbiters, Guilds, and Discovery appears gradually as it becomes useful.</p>
-          <div class="about-grid">
-            <div class="about-card">
-              <span class="about-icon">📖</span>
-              <h3>Courses</h3>
-              <p>Start with one clear course instead of every layer at once.</p>
-            </div>
-            <div class="about-card">
-              <span class="about-icon">🔗</span>
-              <h3>Groups</h3>
-              <p>Guilds are for shared inquiry, available once your rhythm is clear.</p>
-            </div>
-            <div class="about-card">
-              <span class="about-icon">🗂</span>
-              <h3>Projects</h3>
-              <p>Your best notes and work slowly become a serious intellectual record.</p>
-            </div>
-          </div>
-        </section>
-
-      </main>
-    </div>
   </div>
 
-  <!-- Deploy app.js: handles auth, Supabase, translation, overlay -->
   <script type="module" src="app.js"></script>
 
   <script>
-    // ── ATLAS SIDEBAR TOGGLE ──
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const hamburger = document.getElementById('hamburgerBtn');
@@ -297,7 +253,6 @@
     if (hamburger) hamburger.addEventListener('click', () => sidebar.classList.contains('open') ? closeSidebar() : openSidebar());
     if (overlay) overlay.addEventListener('click', closeSidebar);
 
-    // ── AUTH TABS ──
     const tabSignup = document.getElementById('tabSignup');
     const tabLogin = document.getElementById('tabLogin');
     const panelSignup = document.getElementById('panelSignup');
@@ -312,7 +267,6 @@
       panelLogin.classList.remove('hidden'); panelSignup.classList.add('hidden');
     });
 
-    // Auto-switch to login if user clicks login link from elsewhere
     if (window.location.hash === '#login-form') {
       tabLogin.click();
     }
@@ -320,7 +274,6 @@
       document.getElementById('panelSignup')?.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // ── QUOTE ROTATOR (uses reflectionDeck quotes, Deploy DB quotes show in #hero-quote) ──
     const quotes = [
       { label: "Lingosophy", text: "Education is the manifestation of perfection already within.", attr: "Swami Vivekananda" },
       { label: "Chronicles", text: "Where the mind is without fear and the head is held high.", attr: "Rabindranath Tagore" },
@@ -352,7 +305,6 @@
     }
     setInterval(() => setQuote((currentQuote + 1) % quotes.length), 5000);
 
-    // ── INTERACTIVE CHART ──
     const guildNames = ['Lingosophy','Arthmetics','Cosmology','Biosphere','Chronicles','Civitas','Tokenomics','Artifex','Praxis','Bioepisteme'];
     const guildData  = [42, 38, 31, 45, 27, 36, 19, 53, 24, 29];
     const palette    = ['#b99b7c','#c4aa8f','#8fa8b4','#7fa88c','#b4a07a','#a08eb4','#b47a7a','#8ab47a','#b4987a','#7a9eb4'];
@@ -417,7 +369,6 @@
       });
     }
 
-    // ── LANGUAGE SYNC (Deploy app.js handles the real translation, this syncs the UI selectors) ──
     const langSelect = document.getElementById('langSelect');
     const mobileLangSelect = document.getElementById('mobileLangSelect');
     const homeLanguageSelect = document.getElementById('home-language-select');
@@ -428,11 +379,9 @@
       if (homeLanguageSelect) homeLanguageSelect.value = code;
     }
 
-    // Restore saved preference for Atlas selectors
     const savedLang = localStorage.getItem('neofolk.preferredLanguage');
     if (savedLang) syncLangSelectors(savedLang);
 
-    // When Atlas selectors change, also trigger Deploy's home-language-select
     if (langSelect) {
       langSelect.addEventListener('change', e => {
         syncLangSelectors(e.target.value);

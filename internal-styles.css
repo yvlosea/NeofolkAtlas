@@ -359,3 +359,111 @@ body.internal-page {
     align-items: center;
   }
 }
+
+/* Neo master layout (shared shell) */
+.internal-page.neo-theme .main-header {
+  position: relative;
+  z-index: 50;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.internal-page.neo-theme .neo-layout {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100dvh - 1px);
+}
+
+.internal-page.neo-theme .neo-sidebar {
+  width: min(280px, 32vw);
+  flex-shrink: 0;
+  border-right: 1px solid var(--border-color);
+  padding: 24px 16px;
+  background: var(--deep-brown);
+  box-sizing: border-box;
+}
+
+.internal-page.neo-theme .brand-area h2 {
+  font-size: 1.5rem;
+  margin: 0 0 16px;
+  color: var(--parchment);
+}
+
+.internal-page.neo-theme .neo-main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.internal-page.neo-theme .neo-board {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.internal-page.neo-theme .neo-board-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(198, 169, 107, 0.1), transparent 55%);
+}
+
+.internal-page.neo-theme .neo-board-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(232, 220, 200, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 220, 200, 0.07) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.internal-page.neo-theme .neo-main > .page-shell {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  max-width: none;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .internal-page.neo-theme .neo-layout {
+    flex-direction: column;
+  }
+
+  .internal-page.neo-theme .neo-sidebar.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: min(280px, 88vw);
+    z-index: 45;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
+  }
+
+  .internal-page.neo-theme .neo-sidebar.sidebar.open {
+    transform: translateX(0);
+  }
+
+  .internal-page.neo-theme .neo-main {
+    width: 100%;
+  }
+}
+
+/* Home: keep column flow for legacy .main-wrap inside #home-root */
+.internal-page.neo-theme[data-page="home"] #home-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+}
+
+.internal-page.neo-theme[data-page="home"] #home-root .main-wrap {
+  flex: 1;
+  min-width: 0;
+}
