@@ -295,6 +295,7 @@ function wireAuthForms() {
       e.preventDefault();
       const email = String(signupForm.elements?.email?.value ?? signupForm.querySelector('[name="email"]')?.value ?? '').trim();
       const password = String(signupForm.elements?.password?.value ?? signupForm.querySelector('[name="password"]')?.value ?? '').trim();
+      const role = String(document.getElementById('signup-role')?.value ?? 'seeker').trim();
       const msg = document.getElementById('signup-message');
 
       if (!email || !password) {
@@ -315,6 +316,7 @@ function wireAuthForms() {
         password,
         options: {
           emailRedirectTo,
+          data: { role },
         },
       });
 

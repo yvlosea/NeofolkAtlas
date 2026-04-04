@@ -110,6 +110,13 @@
                           <span>Password</span>
                           <input id="signup-password" name="password" type="password" autocomplete="new-password" required placeholder="••••••••" />
                         </label>
+                        <label class="field-label">
+                          <span>Role</span>
+                          <select id="signup-role" name="role">
+                            <option value="seeker">Seeker — Learner</option>
+                            <option value="curator">Curator — Teacher</option>
+                          </select>
+                        </label>
                         <button class="btn btn-primary" style="width:100%" type="submit" data-i18n="auth.createAccount">Create Account</button>
                       </form>
                       <p id="signup-message" class="status-text" aria-live="polite"></p>
