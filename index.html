@@ -369,12 +369,10 @@
       });
     }
 
-    const langSelect = document.getElementById('langSelect');
     const mobileLangSelect = document.getElementById('mobileLangSelect');
     const homeLanguageSelect = document.getElementById('home-language-select');
 
     function syncLangSelectors(code) {
-      if (langSelect) langSelect.value = code;
       if (mobileLangSelect) mobileLangSelect.value = code;
       if (homeLanguageSelect) homeLanguageSelect.value = code;
     }
@@ -382,12 +380,6 @@
     const savedLang = localStorage.getItem('neofolk.preferredLanguage');
     if (savedLang) syncLangSelectors(savedLang);
 
-    if (langSelect) {
-      langSelect.addEventListener('change', e => {
-        syncLangSelectors(e.target.value);
-        if (homeLanguageSelect) homeLanguageSelect.dispatchEvent(new Event('change'));
-      });
-    }
     if (mobileLangSelect) {
       mobileLangSelect.addEventListener('change', e => {
         syncLangSelectors(e.target.value);

@@ -133,6 +133,96 @@ function renderAppNav() {
       return `<a class="${cls}" href="${href}">${escapeHtml(t(key))}</a>`;
     })
     .join('');
+
+  // Add logout button if Supabase is available
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    const logoutBtn = document.createElement('button');
+    logoutBtn.className = 'sidebar-link sidebar-logout';
+    logoutBtn.type = 'button';
+    logoutBtn.textContent = t('nav.logout');
+    logoutBtn.addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.assign('index.html');
+    });
+    nav.appendChild(logoutBtn);
+  }
+}
+
+function wireMobileNav() {
+  // Skip if hamburger already exists (e.g., index.html has its own)
+  if (document.getElementById('hamburgerBtn')) return;
+
+  const sidebar = document.querySelector('.neo-sidebar.sidebar');
+  if (!sidebar) return;
+
+  const main = document.querySelector('.neo-main');
+  if (!main) return;
+
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'sidebar-overlay';
+  overlay.id = 'sidebarOverlay';
+  main.parentNode.insertBefore(overlay, main);
+
+  // Create mobile topbar with language selector
+  const topbar = document.createElement('header');
+  topbar.className = 'mobile-topbar';
+  topbar.innerHTML =
+    '<button class="hamburger" id="hamburgerBtn" aria-label="Open menu">' +
+      '<span></span><span></span><span></span>' +
+    '</button>' +
+    '<span class="mobile-brand">Neofolk Atlas</span>' +
+    '<div class="mobile-lang-wrap">' +
+      '<select class="lang-select" aria-label="Select language">' +
+        '<option value="en">EN</option>' +
+        '<option value="hi">\u0939\u093F</option>' +
+        '<option value="ur">UR</option>' +
+      '</select>' +
+    '</div>';
+  main.insertBefore(topbar, main.firstChild);
+
+  // Sync the new selector with current language
+  const currentLang = localStorage.getItem(LANG_STORAGE) || 'en';
+  const mobileSel = topbar.querySelector('.lang-select');
+  if (mobileSel) mobileSel.value = currentLang;
+
+  const hamburger = document.getElementById('hamburgerBtn');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+    hamburger.classList.add('open');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    hamburger.classList.remove('open');
+  }
+
+  hamburger.addEventListener('click', () =>
+    sidebar.classList.contains('open') ? closeSidebar() : openSidebar()
+  );
+  overlay.addEventListener('click', closeSidebar);
+}
+
+function renderSidebarLangPicker() {
+  const container = document.querySelector('.sidebar-content');
+  if (!container || container.querySelector('.lang-select')) return;
+
+  const currentLang = localStorage.getItem(LANG_STORAGE) || 'en';
+  container.innerHTML =
+    '<div class="language-row">' +
+      '<span class="sidebar-lang-label">' + escapeHtml(t('toolbar.language')) + '</span>' +
+      '<select class="lang-select" aria-label="Select language">' +
+        '<option value="en">English</option>' +
+        '<option value="hi">\u0939\u093F\u0928\u094D\u0926\u0940</option>' +
+        '<option value="ur">\u0627\u0631\u062F\u0648</option>' +
+      '</select>' +
+    '</div>';
+
+  const sel = container.querySelector('.lang-select');
+  if (sel) sel.value = currentLang;
 }
 
 function wireAuthForms() {
@@ -208,6 +298,71 @@ function wireAuthForms() {
       }
     });
   }
+
+  // Forgot password button
+  const forgotBtn = document.getElementById('forgot-password-button');
+  if (forgotBtn) {
+    forgotBtn.addEventListener('click', async () => {
+      const loginEmail = document.getElementById('login-email');
+      const email = String(loginEmail?.value ?? '').trim();
+      const msg = document.getElementById('login-message');
+
+      if (!email) {
+        if (msg) msg.textContent = t('messages.enterEmailForReset');
+        return;
+      }
+
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        if (msg) msg.textContent = t('messages.passwordResetSent');
+        return;
+      }
+
+      const redirectTo = new URL('./reset-password.html', location.href).href;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+
+      if (msg) {
+        msg.textContent = error
+          ? (error.message || t('messages.authFailed'))
+          : t('messages.passwordResetSent');
+      }
+    });
+  }
+
+  // Reset password form
+  const resetForm = document.getElementById('reset-password-form');
+  if (resetForm) {
+    resetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const newPw = String(document.getElementById('new-password')?.value ?? '').trim();
+      const confirmPw = String(document.getElementById('confirm-password')?.value ?? '').trim();
+      const msg = document.getElementById('reset-message');
+
+      if (!newPw || !confirmPw) {
+        if (msg) msg.textContent = t('messages.missingFields');
+        return;
+      }
+      if (newPw !== confirmPw) {
+        if (msg) msg.textContent = 'Passwords do not match.';
+        return;
+      }
+
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        if (msg) msg.textContent = t('messages.authFailed');
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: newPw });
+
+      if (error) {
+        if (msg) msg.textContent = error.message || t('messages.authFailed');
+        return;
+      }
+      if (msg) msg.textContent = 'Password updated successfully.';
+      setTimeout(() => window.location.assign('index.html#login-form'), 1500);
+    });
+  }
 }
 
 function wireLanguageSelectors() {
@@ -221,8 +376,280 @@ function wireLanguageSelectors() {
       applyDocumentLanguage(code);
       applyDataI18n();
       renderAppNav();
+      renderSidebarLangPicker();
+      renderPageContent();
     });
   });
+}
+
+function renderPageContent() {
+  const page = currentPageFile();
+
+  // Dictionary page
+  const dictRoot = document.getElementById('dictionary-root');
+  if (dictRoot && page === 'dictionary.html') {
+    const termKeys = Object.keys(dictionary.terms || {});
+    const cards = termKeys.map((key) => {
+      const term = dictionary.terms[key];
+      return (
+        '<div class="card dictionary-entry" data-term="' + escapeHtml(key) + '">' +
+          '<h3>' + escapeHtml(term.label || key) + '</h3>' +
+          '<p><strong>' + escapeHtml(t('dictionary.simpleMeaning')) + '</strong> ' + escapeHtml(term.simple || '') + '</p>' +
+          '<p><strong>' + escapeHtml(t('dictionary.expandedMeaning')) + '</strong> ' + escapeHtml(term.expanded || '') + '</p>' +
+          '<p class="dictionary-example"><em>' + escapeHtml(t('dictionary.exampleUse')) + ':</em> ' + escapeHtml(term.example || '') + '</p>' +
+        '</div>'
+      );
+    }).join('');
+
+    dictRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('dictionary.kicker')) + '</p>' +
+          '<h1>' + escapeHtml(t('dictionary.title')) + '</h1>' +
+          '<p class="lede">' + escapeHtml(t('dictionary.subtitle')) + '</p>' +
+        '</div></div>' +
+        '<div class="filters">' +
+          '<input id="dict-search" type="text" placeholder="' + escapeHtml(t('dictionary.searchPlaceholder')) + '" />' +
+        '</div>' +
+        '<div class="record-list" id="dict-list">' + cards + '</div>' +
+      '</div>';
+
+    const searchInput = document.getElementById('dict-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase();
+        document.querySelectorAll('.dictionary-entry').forEach((el) => {
+          const text = el.textContent.toLowerCase();
+          el.style.display = text.includes(q) ? '' : 'none';
+        });
+      });
+    }
+  }
+
+  // Dashboard pages (seeker, curator, arbiter)
+  const dashRoot = document.getElementById('dashboard-root');
+  if (dashRoot && dashRoot.innerHTML.trim() === '') {
+    const supabase = getSupabaseClient();
+    const roleName = page.replace('-dashboard.html', '');
+    const roleLabel = roleName.charAt(0).toUpperCase() + roleName.slice(1);
+
+    dashRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
+          '<h1>' + escapeHtml(t('dashboard.title')) + '</h1>' +
+          '<p id="dash-signed-in" class="dashboard-meta"></p>' +
+          '<p class="lede">' + escapeHtml(t('dashboard.subtitle')) + '</p>' +
+        '</div></div>' +
+        '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.projects')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.projectsBody')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
+        '</div>' +
+        '<div class="card">' +
+          '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
+          '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
+          '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
+          '<div class="inline-actions flow-top-32">' +
+            '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+            '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    // Show signed-in email if we have a session
+    if (supabase) {
+      supabase.auth.getUser().then(({ data }) => {
+        const el = document.getElementById('dash-signed-in');
+        if (el && data?.user?.email) {
+          el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
+        }
+      });
+    }
+  }
+
+  // Operator dashboard
+  const opRoot = document.getElementById('operator-root');
+  if (opRoot && opRoot.innerHTML.trim() === '') {
+    opRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">Operator</p>' +
+          '<h1>Operator Console</h1>' +
+          '<p class="lede">Platform administration and oversight tools.</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+          '<p>Operator tools connect to the Supabase admin layer. This console will populate with data once the backend schema is active.</p>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Help page
+  const helpRoot = document.getElementById('help-root');
+  if (helpRoot && helpRoot.innerHTML.trim() === '') {
+    helpRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('nav.help')) + '</p>' +
+          '<h1>' + escapeHtml(t('onboarding.title')) + '</h1>' +
+        '</div></div>' +
+        '<div class="card"><h2>' + escapeHtml(t('onboarding.step1Title')) + '</h2><p>' + escapeHtml(t('onboarding.step1Note')) + '</p>' +
+          '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
+            '<li>' + escapeHtml(t('onboarding.step1Card1')) + '</li>' +
+            '<li>' + escapeHtml(t('onboarding.step1Card2')) + '</li>' +
+            '<li>' + escapeHtml(t('onboarding.step1Card3')) + '</li>' +
+          '</ul></div>' +
+        '<div class="card"><h2>' + escapeHtml(t('onboarding.step2Title')) + '</h2><p>' + escapeHtml(t('onboarding.step2Note')) + '</p>' +
+          '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
+            '<li><strong>' + escapeHtml(t('onboarding.learn')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card1')) + '</li>' +
+            '<li><strong>' + escapeHtml(t('onboarding.notes')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card2')) + '</li>' +
+            '<li><strong>' + escapeHtml(t('onboarding.projects')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card3')) + '</li>' +
+            '<li><strong>' + escapeHtml(t('onboarding.progress')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card4')) + '</li>' +
+          '</ul></div>' +
+        '<div class="card"><h2>' + escapeHtml(t('onboarding.step3Title')) + '</h2><p>' + escapeHtml(t('onboarding.step3Note')) + '</p>' +
+          '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
+            '<li><strong>' + escapeHtml(t('onboarding.subjects')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card1')) + '</li>' +
+            '<li><strong>' + escapeHtml(t('onboarding.groups')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card2')) + '</li>' +
+            '<li><strong>' + escapeHtml(t('onboarding.dictionary')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card3')) + '</li>' +
+            '<li><strong>' + escapeHtml(t('onboarding.help')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card4')) + '</li>' +
+          '</ul></div>' +
+        '<div class="inline-actions">' +
+          '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('nav.learn')) + '</a>' +
+          '<a class="btn" href="dictionary.html">' + escapeHtml(t('nav.dictionary')) + '</a>' +
+          '<a class="btn" href="vision.html">' + escapeHtml(t('nav.vision')) + '</a>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Subjects page
+  const subjectsRoot = document.getElementById('subjects-root');
+  if (subjectsRoot && subjectsRoot.innerHTML.trim() === '') {
+    const guilds = ['Lingosophy','Arthmetics','Cosmology','Biosphere','Chronicles','Civitas','Tokenomics','Artifex','Praxis','Bioepisteme'];
+    const guildCards = guilds.map((name) =>
+      '<a href="guild.html" class="record-card" style="text-decoration:none;">' +
+        '<h3>' + escapeHtml(name) + '</h3>' +
+        '<p style="color:var(--text-secondary);font-size:0.9rem;">' + escapeHtml(t('home.termCoursesBody')) + '</p>' +
+      '</a>'
+    ).join('');
+
+    subjectsRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('nav.learn')) + '</p>' +
+          '<h1>' + escapeHtml(t('home.stepsTitle')) + '</h1>' +
+          '<p class="lede">' + escapeHtml(t('home.step1Body')) + '</p>' +
+        '</div></div>' +
+        '<div class="record-list" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">' + guildCards + '</div>' +
+      '</div>';
+  }
+
+  // Guild page
+  const guildRoot = document.getElementById('guild-root');
+  if (guildRoot && guildRoot.innerHTML.trim() === '') {
+    guildRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('nav.groups')) + '</p>' +
+          '<h1>' + escapeHtml(t('home.termGroups')) + '</h1>' +
+          '<p class="lede">' + escapeHtml(t('home.termGroupsBody')) + '</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+          '<p>' + escapeHtml(t('dashboard.groupsAdvancedEmpty')) + '</p>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Discovery page
+  const discoveryRoot = document.getElementById('discovery-root');
+  if (discoveryRoot && discoveryRoot.innerHTML.trim() === '') {
+    discoveryRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('nav.explore')) + '</p>' +
+          '<h1>' + escapeHtml(t('terms.discovery.label')) + '</h1>' +
+          '<p class="lede">' + escapeHtml(t('terms.discovery.expanded')) + '</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+          '<p>' + escapeHtml(t('dashboard.discoveryAdvancedBody')) + '</p>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Research page
+  const researchRoot = document.getElementById('research-root');
+  if (researchRoot && researchRoot.innerHTML.trim() === '') {
+    researchRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('search.research')) + '</p>' +
+          '<h1>' + escapeHtml(t('search.research')) + '</h1>' +
+          '<p class="lede">Research projects and academic documentation from across the network.</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+          '<p>Research posts will appear here as curators and seekers publish their work.</p>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Profile page
+  const profileRoot = document.getElementById('profile-root');
+  if (profileRoot && profileRoot.innerHTML.trim() === '') {
+    const supabase = getSupabaseClient();
+    profileRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">Profile</p>' +
+          '<h1>Your Profile</h1>' +
+          '<p id="profile-email" class="dashboard-meta"></p>' +
+        '</div></div>' +
+        '<div class="card">' +
+          '<p>Your learning record, projects, and contributions are tracked here as your work grows.</p>' +
+        '</div>' +
+      '</div>';
+
+    if (supabase) {
+      supabase.auth.getUser().then(({ data }) => {
+        const el = document.getElementById('profile-email');
+        if (el && data?.user?.email) {
+          el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
+        }
+      });
+    }
+  }
+
+  // Module page
+  const moduleRoot = document.getElementById('module-root');
+  if (moduleRoot && moduleRoot.innerHTML.trim() === '') {
+    moduleRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('terms.module.label')) + '</p>' +
+          '<h1>' + escapeHtml(t('terms.module.label')) + '</h1>' +
+          '<p class="lede">' + escapeHtml(t('terms.module.expanded')) + '</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+          '<p>Select a module from the Subjects page to view its content here.</p>' +
+          '<a class="btn" href="subjects.html" style="margin-top:12px;">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // Studios page
+  const studiosRoot = document.getElementById('studios-root');
+  if (studiosRoot && studiosRoot.innerHTML.trim() === '') {
+    studiosRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('search.studios')) + '</p>' +
+          '<h1>' + escapeHtml(t('search.studios')) + '</h1>' +
+          '<p class="lede">Capability environments unlocked through demonstrated contribution and serious intellectual production.</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+          '<p>Studios become available as your learning record deepens.</p>' +
+        '</div>' +
+      '</div>';
+  }
 }
 
 async function initApp() {
@@ -230,11 +657,14 @@ async function initApp() {
   const lang = SUPPORTED_LANGS.includes(stored) ? stored : 'en';
   await loadDictionary(lang);
   applyDocumentLanguage(lang);
-  syncLanguageSelects(lang);
   applyDataI18n();
   renderAppNav();
+  wireMobileNav();
+  renderSidebarLangPicker();
+  syncLanguageSelects(lang);
   wireAuthForms();
   wireLanguageSelectors();
+  renderPageContent();
 }
 
 if (document.readyState === 'loading') {
