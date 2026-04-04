@@ -1,192 +1,168 @@
 # Neofolk Atlas
 
-Version: `Alpha 11.4`
+Version: `Alpha 12.0`
 
 Neofolk Atlas is a Supabase-backed academic web application centered on structured study, portfolio evidence, and reviewed intellectual work.
 
-This version introduces a simpler Phase 1 learning flow, a dictionary surface for original Neofolk terms, manual JSON-based interface translation, and a calmer mobile-first entry experience.
-
 ## Product Direction
 
-The current product goal is:
+- Simple within five seconds
+- Deep over time
+- Mobile-first for India
+- Multilingual without machine-translated terminology drift
+- Calm, serious, and distraction-free
 
-- simple within five seconds
-- deep over time
-- mobile-first for India
-- multilingual without machine-translated terminology drift
-- calm, serious, and distraction-free
+## Tech Stack
 
-## Updated Sitemap
+- **Frontend**: Static HTML/CSS/JavaScript (no build step)
+- **Backend**: Supabase (Auth, session management)
+- **Styling**: Custom CSS design system (Dark Academia x Solarpunk)
+- **Fonts**: Cormorant Garamond, Manrope, Noto Sans/Serif Devanagari, Noto Nastaliq Urdu (Google Fonts CDN)
+- **Charts**: Chart.js 4.4.0 (homepage only)
+- **i18n**: Manual JSON translation files with `t(key)` resolver
 
-- `Home`
-- `Dashboard`
-- `Learn`
-- `Notes`
-- `Projects`
-- `Groups`
-- `Progress`
-- `Dictionary`
-- `Settings`
-- `Vision`
-- `Help`
+## Supported Languages
+
+- English (`en`)
+- Hindi (`hi`) — Devanagari script
+- Urdu (`ur`) — Nastaliq script, RTL layout
+
+Language can be changed from the sidebar on any page or from the mobile topbar.
+
+## Sitemap
+
+| Page | File | Description |
+|------|------|-------------|
+| Home | `index.html` | Landing page with signup/login, quote carousel, chart, about section |
+| Seeker Dashboard | `seeker-dashboard.html` | Default learner dashboard with stats and next steps |
+| Curator Dashboard | `curator-dashboard.html` | Content curator dashboard |
+| Arbiter Dashboard | `arbiter-dashboard.html` | Reviewer/moderator dashboard |
+| Operator Console | `operator-dashboard.html` | Platform admin console |
+| Subjects | `subjects.html` | Browse 10 academic guild domains |
+| Guild Directory | `guild.html` | Learning groups and shared inquiry |
+| Discovery | `discovery.html` | Curated academic work showcase |
+| Dictionary | `dictionary.html` | Searchable glossary of 8 Neofolk terms |
+| Vision | `vision.html` | Platform philosophy and domain model |
+| Help | `help.html` | Onboarding guide and platform usage |
+| Research | `research.html` | Research projects and documentation |
+| Profile | `profile.html` | User profile and learning record |
+| Module | `module.html` | Individual course module view |
+| Studios | `studios.html` | Creative studio workspace |
+| Reset Password | `reset-password.html` | Password recovery form |
 
 ## Navigation Structure
 
-Primary navigation:
+Sidebar navigation (rendered dynamically by `app.js` on all pages):
 
-- `Dashboard`
-- `Learn`
-- `Notes`
-- `Projects`
-- `Groups`
-- `Progress`
+- Home
+- Dashboard (role-based)
+- Learn (Subjects)
+- Groups (Guilds)
+- Explore (Discovery)
+- Dictionary
+- Vision
+- Help
+- Logout
 
-Secondary navigation:
+## Core Roles
 
-- `Dictionary`
-- `Settings`
-- `Vision`
-
-## Core Structure
-
-- `Seeker`: learner identity for study, portfolio building, niche tracking, and enrollment
-- `Curator`: guide identity for approved module creation
-- `Arbiter`: reviewer identity for curator approval, module review, and discovery curation
-- `Operator`: top-level universal access role for full-system oversight
+| Role | Description | Dashboard |
+|------|-------------|-----------|
+| **Seeker** | Default learner role — study, notes, projects, portfolio | `seeker-dashboard.html` |
+| **Curator** | Creates structured learning modules | `curator-dashboard.html` |
+| **Arbiter** | Reviews modules, approvals, and quality control | `arbiter-dashboard.html` |
+| **Operator** | Full platform administration | `operator-dashboard.html` |
 
 ## Academic Model
 
-- `Subjects`: structured learning domains
-- `Guilds`: academic pathways and directories for module-aligned learning
-- `Portfolio`: documented learner work
-- `Discovery`: highlighted scholarly work selected through review
+- **Subjects**: 10 structured learning domains (Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, Bioepisteme)
+- **Guilds**: Collaborative research groups organized around shared interests
+- **Portfolio**: Documented learner work (essays, projects, reflections)
+- **Discovery**: Highlighted scholarly work selected through arbiter review
+- **Modules**: Structured courses within subjects
+- **Studios**: Capability environments unlocked through contribution
 
-## Current Pages
+## Authentication Flow
 
-- [index.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/index.html)
-- [seeker-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/seeker-dashboard.html)
-- [curator-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/curator-dashboard.html)
-- [arbiter-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/arbiter-dashboard.html)
-- [operator-dashboard.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/operator-dashboard.html)
-- [subjects.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/subjects.html)
-- [guild.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/guild.html)
-- [module.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/module.html)
-- [discovery.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/discovery.html)
-- [vision.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/vision.html)
-- [dictionary.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/dictionary.html)
-- [reset-password.html](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/reset-password.html)
-
-## Phase Model
-
-Phase 1 is the default experience:
-
-- Courses
-- Notes
-- Projects
-- Groups
-- Progress
-
-Phase 2 appears later through engagement:
-
-- deeper Guild identity
-- Discovery visibility
-- Curator pathway
-- Arbiter-reviewed surfaces
-- advanced portfolio identity
+1. **Signup**: Email + password via Supabase Auth, email confirmation required
+2. **Login**: Email + password, redirects to role-based dashboard
+3. **Forgot Password**: Sends reset email via Supabase, redirects to `reset-password.html`
+4. **Reset Password**: Token-based password update via `supabase.auth.updateUser()`
+5. **Logout**: Sidebar button on all pages, calls `supabase.auth.signOut()`
 
 ## Translation Architecture
 
-- UI strings now resolve through `t(key)` in [app.js](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/app.js)
-- translation files live in:
-  - [translations/en.json](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/translations/en.json)
-  - [translations/hi.json](/Users/yashveervatsgaurav/Desktop/Nefolk/NF atlas/translations/hi.json)
-- homepage language selection is available before login and signup
-- dictionary content is translation-ready
-- Google Translate is no longer the intended product path
+- UI strings resolve through `t(key)` in `app.js`
+- Translation files:
+  - `translations/en.json` — English (complete)
+  - `translations/hi.json` — Hindi (complete)
+  - `translations/ur.json` — Urdu (partial)
+- All dynamically rendered page content uses the translation system
+- Dictionary terms are translation-ready with label, simple meaning, expanded meaning, and example use
+- Language preference persists in `localStorage`
 
-## Terminology Support
+## Terminology
 
-- original words remain:
-  - `Seeker`
-  - `Curator`
-  - `Arbiter`
-  - `Guild`
-  - `Module`
-  - `Discovery`
-  - `Praxis`
-  - `Lingosophy`
-- each key term now has:
-  - searchable dictionary support
-  - reusable inline tooltip support
+Original Neofolk terms are preserved across all languages:
 
-## Dashboard Structure
+| Term | Meaning |
+|------|---------|
+| Seeker | Student building an intellectual record through study |
+| Curator | Teacher who creates structured learning modules |
+| Arbiter | Reviewer who ensures academic quality |
+| Guild | Learning group organized around shared interests |
+| Module | Structured course inside the platform |
+| Discovery | Public showcase of notable academic work |
+| Praxis | Learning through disciplined practice and action |
+| Lingosophy | Study of language, thought, and meaning |
 
-The first dashboard now prioritizes:
+## Phase Model
 
-- current course
-- next step
-- recent notes
-- project creation
-- note creation
-- progress summary
-- suggested tags
+**Phase 1** (default experience): Courses, Notes, Projects, Groups, Progress
 
-It intentionally hides heavier complexity until it becomes useful.
+**Phase 2** (appears through engagement): Deeper Guild identity, Discovery visibility, Curator pathway, Arbiter-reviewed surfaces, advanced portfolio identity
 
-## Tag System Direction
+## Supabase Configuration
 
-The interdisciplinary tag architecture is expected to support:
+Each HTML page includes Supabase credentials via meta tags:
 
-- `tags`
-- `module_tags`
-- `user_tag_follows`
-- `tag_links`
+```html
+<meta name="supabase-url" content="https://YOUR_PROJECT.supabase.co" />
+<meta name="supabase-anon-key" content="YOUR_ANON_KEY" />
+```
 
-This allows modules, projects, and discovery surfaces to move beyond rigid single-subject pathways.
+Alternatively, set `window.NEOFOLK_SUPABASE_URL` and `window.NEOFOLK_SUPABASE_ANON_KEY` before `app.js` loads.
 
 ## Backend Expectations
 
-Authentication uses Supabase Auth.
+The app expects these Supabase tables:
 
-The app currently expects these application tables to exist in Supabase:
+- `users` (with `email`, `role`, `verified`, `created_at`)
+- `modules`, `enrollments`, `portfolio_entries`
+- `subjects`, `highlights`, `verification_reviews`
+- `curator_codes`, `niche_entries`
 
-- `users`
-- `curator_codes`
-- `modules`
-- `enrollments`
-- `portfolio_entries`
-- `niche_entries`
-- `highlights`
-- `verification_reviews`
-- `subjects`
-
-The current code still works best when:
-
-- `users.id` matches the Supabase Auth user id
-- `users` includes at least `email`, `role`, `verified`, and `created_at`
-- `modules.created_by` points to `users.id`
+`users.id` should match the Supabase Auth user id. `modules.created_by` points to `users.id`.
 
 ## Operator Access
 
-To grant operator access:
+1. Create a Supabase Auth user
+2. In `public.users`, set `role` to `operator` and `verified` to `true`
+3. Log in normally through the app
 
-1. Create a real Supabase Auth user.
-2. In `public.users`, set that row’s `role` to `operator`.
-3. Set `verified` to `true`.
-4. Log in normally through the app.
+## File Structure
 
-## Major Update Notes In This Version
-
-- all page shells now load `app.js` correctly as an ES module
-- missing pages referenced by navigation were added
-- the public demo access block was removed from the homepage
-- headers now consistently show `Alpha 11.4`
-- homepage copy and README were aligned with the current Supabase-based app
-- operator routing and navigation were cleaned up so the role behaves like a real access tier
-- homepage now prioritizes immediate action over philosophy
-- signup now defaults new accounts to `seeker`
-- manual JSON translation files now live in `/translations`
-- dictionary page explains core Neofolk terminology in plain language
-- language selection is visible before authentication
-- dashboard entry experience is now intentionally simpler and more phase-based
-- seeker dashboard now uses a six-card Amizone-style information hierarchy with calmer mobile-first structure
+```
+NeofolkAtlas/
+  index.html              # Landing page
+  app.js                  # Core app logic (auth, nav, i18n, page rendering)
+  styles.css              # Global design system (1740+ lines)
+  internal-styles.css     # Internal page theming
+  neofolk-logo.jpg        # Brand logo
+  translations/
+    en.json               # English translations
+    hi.json               # Hindi translations
+    ur.json               # Urdu translations
+  *-dashboard.html        # Role-specific dashboards (4)
+  *.html                  # Content pages (12)
+```
