@@ -110,14 +110,20 @@ function getDashboardPath(user) {
   return map[role] || map.seeker;
 }
 
+/** Currently authenticated user, set by initApp after session check. */
+let currentUser = null;
+
 function renderAppNav() {
   const nav = document.getElementById('app-nav');
   if (!nav) return;
 
   const here = currentPageFile();
+  const dashHref = currentUser ? getDashboardPath(currentUser) : 'seeker-dashboard.html';
+  const isDashboardPage = here.endsWith('-dashboard.html');
+
   const links = [
     { href: 'index.html', key: 'nav.home' },
-    { href: 'seeker-dashboard.html', key: 'nav.dashboard' },
+    { href: dashHref, key: 'nav.dashboard' },
     { href: 'subjects.html', key: 'nav.learn' },
     { href: 'guild.html', key: 'nav.groups' },
     { href: 'discovery.html', key: 'nav.explore' },
@@ -128,24 +134,50 @@ function renderAppNav() {
 
   nav.innerHTML = links
     .map(({ href, key }) => {
-      const active = here === href || (href === 'index.html' && (here === 'index.html' || here === ''));
+      const isHome = href === 'index.html' && (here === 'index.html' || here === '');
+      const isDashLink = key === 'nav.dashboard';
+      const active = isHome || (isDashLink ? isDashboardPage : here === href);
       const cls = active ? 'sidebar-link is-active' : 'sidebar-link';
       return `<a class="${cls}" href="${href}">${escapeHtml(t(key))}</a>`;
     })
     .join('');
 
-  // Add logout button if Supabase is available
-  const supabase = getSupabaseClient();
-  if (supabase) {
+  // Add logout button only when user is actually logged in
+  if (currentUser) {
+    const supabase = getSupabaseClient();
     const logoutBtn = document.createElement('button');
     logoutBtn.className = 'sidebar-link sidebar-logout';
     logoutBtn.type = 'button';
     logoutBtn.textContent = t('nav.logout');
     logoutBtn.addEventListener('click', async () => {
-      await supabase.auth.signOut();
+      if (supabase) await supabase.auth.signOut();
+      currentUser = null;
       window.location.assign('index.html');
     });
     nav.appendChild(logoutBtn);
+  }
+}
+
+/** On the home page, swap the auth card for a welcome-back card when logged in. */
+function updateHomeForSession() {
+  const authCard = document.querySelector('.auth-card');
+  if (!authCard || currentPageFile() !== 'index.html') return;
+
+  if (currentUser) {
+    const dashHref = getDashboardPath(currentUser);
+    const email = currentUser.email || '';
+    authCard.innerHTML =
+      '<div class="auth-panel-inner">' +
+        '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
+        '<h2 style="margin:8px 0 4px;">' + escapeHtml(t('home.loginLabel')) + '</h2>' +
+        '<p class="auth-intro">' + escapeHtml(t('dashboard.signedIn').replace('{email}', email)) + '</p>' +
+        '<a class="btn btn-primary" style="width:100%;margin-top:8px;" href="' + escapeHtml(dashHref) + '">' +
+          escapeHtml(t('nav.dashboard')) +
+        '</a>' +
+        '<a class="btn" style="width:100%;margin-top:8px;" href="subjects.html">' +
+          escapeHtml(t('dashboard.browseTopics')) +
+        '</a>' +
+      '</div>';
   }
 }
 
@@ -658,6 +690,18 @@ async function initApp() {
   await loadDictionary(lang);
   applyDocumentLanguage(lang);
   applyDataI18n();
+
+  // Check session before rendering nav so logout/dashboard are correct
+  const supabase = getSupabaseClient();
+  if (supabase) {
+    try {
+      const { data } = await supabase.auth.getUser();
+      currentUser = data?.user || null;
+    } catch (_) {
+      currentUser = null;
+    }
+  }
+
   renderAppNav();
   wireMobileNav();
   renderSidebarLangPicker();
@@ -665,6 +709,7 @@ async function initApp() {
   wireAuthForms();
   wireLanguageSelectors();
   renderPageContent();
+  updateHomeForSession();
 }
 
 if (document.readyState === 'loading') {
