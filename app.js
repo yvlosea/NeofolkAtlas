@@ -685,6 +685,64 @@ function renderPageContent() {
       '</div>';
   }
 }
+// --- insert this into renderPageContent() ---
+  // Nodes page (map)
+  const nodesRoot = document.getElementById('nodes-root');
+  if (nodesRoot && nodesRoot.innerHTML.trim() === '' && page === 'nodes.html') {
+    nodesRoot.innerHTML =
+      '<div class="dashboard-shell">' +
+        '<div class="dashboard-header"><div>' +
+          '<p class="section-label">' + escapeHtml(t('nodes.kicker')) + '</p>' +
+          '<h1>' + escapeHtml(t('nodes.title')) + '</h1>' +
+          '<p class="lede">' + escapeHtml(t('nodes.subtitle')) + '</p>' +
+        '</div></div>' +
+        '<div class="card node-map-container">' +
+          '<div id="node-map" aria-hidden="false"></div>' +
+        '</div>' +
+      '</div>';
+
+    // Initialize Leaflet map (global L included in nodes.html)
+    try {
+      const map = L.map('node-map', { center: [20, 0], zoom: 2, preferCanvas: true });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors',
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Load verified nodes from Supabase if available
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        supabase.from('nodes').select('id,name,lat,lng,format,subjects').eq('verification_status','verified')
+          .then(({ data, error }) => {
+            if (error) {
+              console.warn('Failed to load nodes:', error);
+              return;
+            }
+            if (!data || data.length === 0) return;
+            const markers = [];
+            data.forEach((row) => {
+              const lat = Number(row.lat);
+              const lng = Number(row.lng);
+              if (isNaN(lat) || isNaN(lng)) return;
+              const marker = L.marker([lat, lng]).addTo(map);
+              const subjects = Array.isArray(row.subjects) ? row.subjects.join(', ') : '';
+              const popup = '<div class="node-popup"><strong class="node-popup-title">' + escapeHtml(row.name || 'Node') +
+                '</strong><div class="node-popup-meta">' + escapeHtml(subjects) + '</div>' +
+                '<div class="node-format-badge">' + escapeHtml(row.format || '') + '</div></div>';
+              marker.bindPopup(popup);
+              markers.push([lat, lng]);
+            });
+            if (markers.length) {
+              map.fitBounds(markers, { padding: [30, 30], maxZoom: 14 });
+            }
+          }).catch((err) => console.warn('Nodes fetch error', err));
+      }
+    } catch (err) {
+      // Leaflet not available or init failed
+      console.error('Map init error', err);
+    }
+  }
+// --- end insert ---
 
 async function initApp() {
   const stored = localStorage.getItem(LANG_STORAGE);
