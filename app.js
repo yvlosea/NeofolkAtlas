@@ -147,7 +147,6 @@ function renderAppNav() {
     {
       title: 'KNOWLEDGE',
       links: [
-        { href: 'dictionary.html', label: 'Dictionary' },
         { href: 'guide.html', label: 'Guide' },
         { href: 'vision.html', label: 'Vision' }
       ]
@@ -736,6 +735,34 @@ function renderPageContent() {
           '<a class="btn" href="subjects.html" style="margin-top:12px;">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
         '</div>' +
       '</div>';
+  }
+
+  // Guide page
+  const guideRoot = document.getElementById('guide-root');
+  if (guideRoot && guideRoot.innerHTML.trim() === '') {
+    guideRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Guide</p>
+          <h1>NHBE Learning Guide</h1>
+          <p class="lede">
+          The Guide explains how Domains, Pathways, Guilds, Portfolio, and Nodes work together.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Domains</h3>
+          <p>Fundamental perspectives of knowledge such as Lingosophy, Arthmetics, Cosmology, Biosphere.</p>
+          <h3>Pathways</h3>
+          <p>Short learning experiences connecting real-world skills to Domains.</p>
+          <h3>Guilds</h3>
+          <p>Collaborative research groups formed by learners.</p>
+          <h3>Portfolio</h3>
+          <p>Documented record of learning evidence.</p>
+          <h3>Nodes</h3>
+          <p>Physical locations where learning occurs.</p>
+        </div>
+      </div>
+    `;
   }
 
   // Studios page
