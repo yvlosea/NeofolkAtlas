@@ -518,9 +518,6 @@ function renderAppNav() {
       chip = document.createElement("div");
       chip.id = "neoscore-chip";
       chip.className = "neoscore-chip";
-      chip.style.cursor = 'pointer';
-      chip.style.transition = 'all 0.3s ease';
-      chip.style.border = '1px solid #2a2420';
       chip.title = "View Knowledge Topology";
       
       chip.innerHTML = `
@@ -529,51 +526,36 @@ function renderAppNav() {
       `;
       brandArea.appendChild(chip);
 
-      // Hover Effects
-      chip.onmouseover = () => chip.style.borderColor = '#d4a373';
-      chip.onmouseout = () => {
-        if (!chip.classList.contains('is-active')) {
-          chip.style.borderColor = '#2a2420';
-        }
-      };
-
       // Navigation Hook
       chip.onclick = (e) => {
         e.preventDefault();
         if (typeof window.forceNavigateToTopology === 'function') {
           window.forceNavigateToTopology();
-          // Mark as active
-          document.querySelectorAll('.neoscore-chip').forEach(c => c.classList.add('is-active'));
-          chip.style.borderColor = '#d4a373';
         }
       };
 
       // Fetch and update score
       if (currentUser) {
-        const supabase = getSupabaseClient();
-        if (supabase) {
-          Promise.all([
-            supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed'),
-            supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
-          ]).then(([{ count: mCount }, { count: nCount }]) => {
-            const score = (mCount || 0) * 50 + (nCount || 0) * 10;
-            const el = document.getElementById("neoscore-value");
-            if (el) el.textContent = score;
+        getSupabaseClient()?.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed')
+          .then(({ count: mCount }) => {
+            getSupabaseClient()?.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
+              .then(({ count: nCount }) => {
+                const score = (mCount || 0) * 50 + (nCount || 0) * 10;
+                const el = document.getElementById("neoscore-value");
+                if (el) el.textContent = score;
+              });
           });
-        }
       }
     }
   }
 
-  // Ensure active state visual if we are in topology mode
-  if (chip && document.querySelector('.topology-immersion')) {
-    chip.classList.add('is-active');
-    chip.style.borderColor = '#d4a373';
-    chip.style.boxShadow = '0 0 10px rgba(212, 163, 115, 0.2)';
-  } else if (chip) {
-    chip.classList.remove('is-active');
-    chip.style.borderColor = '#2a2420';
-    chip.style.boxShadow = 'none';
+  // Active state visual
+  if (chip) {
+    if (document.querySelector('.topology-immersion')) {
+      chip.classList.add('is-active');
+    } else {
+      chip.classList.remove('is-active');
+    }
   }
 
   // logout button
@@ -1507,6 +1489,17 @@ function renderPageContent() {
 
 
 async function initApp() {
+  // Inject Chart.js if missing
+  if (!window.Chart) {
+    const chartScript = document.createElement('script');
+    chartScript.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+    chartScript.async = true;
+    const chartLoadPromise = new Promise(resolve => {
+      chartScript.onload = resolve;
+    });
+    document.head.appendChild(chartScript);
+    await chartLoadPromise;
+  }
 
   // Check session before rendering nav so logout/dashboard are correct
   const supabase = getSupabaseClient();

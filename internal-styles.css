@@ -1754,12 +1754,55 @@ select.neo-input {
 }
 
 /* ============================================================
-   DOMAIN-BASED NEOSCORE WIDGET (Knowledge Topology)
+   NEOSCORE CHIP (Sidebar Pill)
    ============================================================ */
-.domain-bar { height: 4px; background: #222; margin-top: 2px; width: 100%; }
-.domain-bar div { height: 100%; background: #eee; }
-.hidden { display: none; }
-.domain-row { margin-bottom: 8px; }
+.neoscore-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgba(44, 31, 26, 0.4);
+  border: 1px solid rgba(198, 169, 107, 0.1);
+  border-radius: 50px;
+  margin-top: 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.neoscore-chip:hover {
+  background: rgba(198, 169, 107, 0.08);
+  border-color: #d4a373;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(212, 163, 115, 0.15);
+}
+
+.neoscore-chip.is-active {
+  background: rgba(212, 163, 115, 0.1);
+  border-color: #d4a373;
+  box-shadow: 0 0 20px rgba(212, 163, 115, 0.2);
+}
+
+.neoscore-logo {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: sepia(0.5) brightness(1.1);
+  transition: transform 0.3s ease;
+}
+
+.neoscore-chip:hover .neoscore-logo {
+  transform: scale(1.1);
+}
+
+#neoscore-value {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
 
 /* ============================================================
    ANIMATIONS
