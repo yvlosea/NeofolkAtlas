@@ -33,26 +33,30 @@ const defaultNeoSpecialization = {
   artifex: 60
 };
 
-// TOKEN_MAP for Knowledge Topology lineage names
-const TOKEN_MAP = {
-  lingosophy: "Spivaks",
-  arthmetics: "Shakuntis",
-  cosmology: "Bhattas",
-  biosphere: "Janakis",
-  chronicles: "Thapars",
-  civitas: "Ambedis",
-  tokenomics: "Bhanus",
-  artifex: "Sarabhs",
-  praxis: "Arunas",
-  bioepisteme: "Gagas"
+// LINEAGE_TOKENS mapping for Knowledge Topology
+const LINEAGE_TOKENS = {
+    lingosophy: "Spivaks", 
+    arithmetics: "Shakuntis", 
+    cosmology: "Bhattas",
+    biosphere: "Janakis", 
+    chronicles: "Thapars", 
+    civitas: "Ambedis",
+    tokenomics: "Bhanus", 
+    artifex: "Sarabhs", 
+    praxis: "Arunas", 
+    bioepisteme: "Gagas"
 };
 
-// Logic: Neoscore (Avg of 10 domains * 10), Specscore (Highest specialization value)
-function getTopologyMetrics(userData) {
-  const values = Object.values(userData.domains || {});
-  const neoscore = values.length ? (values.reduce((a, b) => a + b, 0) / values.length) * 10 : 0;
-  const specscore = userData.specializations ? Math.max(...Object.values(userData.specializations)) : 0;
-  return { neoscore, specscore };
+// Live calculation engine for topology metrics
+function getLiveTopology(userData) {
+    const domains = userData.domains || { lingosophy:0, arithmetics:0, cosmology:0, biosphere:0, chronicles:0, civitas:0, tokenomics:0, artifex:0, praxis:0, bioepisteme:0 };
+    const specs = userData.specializations || { "General": 10 };
+    
+    const domainValues = Object.values(domains);
+    const neoscore = (domainValues.reduce((a, b) => a + b, 0) / 10) * 10;
+    const specscore = Math.max(...Object.values(specs));
+    
+    return { neoscore, specscore, domains, specs };
 }
 
 function calculateNeoscore(domains) {
@@ -70,137 +74,181 @@ function toggleNeoscore() {
   if (el) el.classList.toggle("hidden");
 }
 
-window.forceNavigateToTopology = renderTopologyPage;
+window.forceNavigateToTopology = function(userData) {
+    const userId = currentUser?.id || 'guest';
+    const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
+    const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
+    
+    const liveData = userData || {
+        domains: storedDomains || defaultNeoDomains,
+        specializations: storedSpec || defaultNeoSpecialization
+    };
+    
+    renderTopologyPage(liveData);
+};
 
-// Knowledge Topology Immersive Page
-function renderTopologyPage() {
-  const userId = currentUser?.id || 'guest';
-  const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
-  const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
-  
-  const userData = {
-    domains: storedDomains || defaultNeoDomains,
-    specializations: storedSpec || defaultNeoSpecialization
-  };
-  
-  const { neoscore, specscore } = getTopologyMetrics(userData);
-  
-  // Find the main content area to replace
-  const mainArea = document.querySelector('.neo-main') || document.getElementById('content');
-  if (!mainArea) return;
-  
-  mainArea.innerHTML = `
-    <div class="topology-immersion" style="background:#0f0d0c; color:#d4a373; padding:50px; min-height:100vh; animation: fadeIn 0.4s ease-out;">
-        <div style="max-width:1100px; margin:0 auto;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+// Knowledge Topology Immersive Page with High-Fidelity Dashboard
+function renderTopologyPage(userData) {
+    const { neoscore, specscore, domains, specs } = getLiveTopology(userData);
+    const mainArea = document.querySelector('.neo-main') || document.getElementById('content');
+    if (!mainArea) return;
+
+    mainArea.innerHTML = `
+    <div class="topology-immersion" style="background:#0f0d0c; min-height:100vh; padding:40px; font-family:monospace; color:#d4a373; animation: fadeIn 0.4s ease; position: relative; z-index: 1000;">
+        <div style="max-width:1200px; margin:0 auto;">
+            <header style="margin-bottom:40px; display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
-                  <h1 style="font-family:'Cormorant Garamond', serif; color:#fff; font-size:2.5rem; margin:0;">Knowledge Topology</h1>
-                  <p style="color: #8b8276; font-size: 0.9rem; margin-top: 5px;">Lineage tokens and specialization density mapping.</p>
+                    <h1 style="font-family:'Cormorant Garamond', serif; font-size:2.5rem; color:#fff; margin:0;">Knowledge Topology</h1>
+                    <p style="color:#555; margin:5px 0 0 0; letter-spacing:1px; font-size: 0.75rem;">INTELLECTUAL SHAPE & DIRECTION VECTOR</p>
                 </div>
-                <button onclick="location.reload()" style="background:none; border:1px solid #2a2420; color:#8b8276; padding:8px 15px; cursor:pointer; font-family:monospace;">[← BACK TO MAP]</button>
-            </div>
+                <button onclick="location.reload()" style="background:none; border:1px solid #2a2420; color:#8b8276; padding:10px 20px; cursor:pointer; font-size:10px; text-transform:uppercase; letter-spacing:1px;">[ ESC / RETURN ]</button>
+            </header>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:30px;">
-                <div class="score-card" style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
-                    <small style="letter-spacing:2px; color:#8b8276;">NEOSCORE (BREADTH)</small>
-                    <div style="font-size:4rem; color:#fff; font-family:'Cormorant Garamond', serif;">${neoscore.toFixed(0)}</div>
+            <!-- HERO METRICS -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                <div style="background:#1a1614; padding:30px; border:1px solid #2a2420; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:10px; color:#555; letter-spacing:2px;">NEOSCORE (BREADTH)</span>
+                        <div style="font-size:4.5rem; color:#fff; font-weight:bold;">${neoscore.toFixed(1)}<span style="font-size:1rem; color:#333;">/100</span></div>
+                    </div>
+                    <svg width="100" height="100" style="transform:rotate(-90deg)">
+                        <circle cx="50" cy="50" r="45" stroke="#222" stroke-width="4" fill="none"/>
+                        <circle cx="50" cy="50" r="45" stroke="#d4a373" stroke-width="4" fill="none" stroke-dasharray="283" stroke-dashoffset="${283 - (283 * neoscore / 100)}" />
+                    </svg>
                 </div>
-                <div class="score-card" style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
-                    <small style="letter-spacing:2px; color:#8b8276;">SPECSCORE (DEPTH)</small>
-                    <div style="font-size:4rem; color:#fff; font-family:'Cormorant Garamond', serif;">${specscore}</div>
-                </div>
-            </div>
-
-            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:20px;">
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
-                    <h3 style="font-size:0.8rem; color:#fff; margin-bottom:20px; letter-spacing:1px; text-transform:uppercase;">DOMAIN LINEAGE (LINEAGE TOKENS)</h3>
+                    <span style="font-size:10px; color:#555; letter-spacing:2px;">SPECSCORE (DEPTH)</span>
+                    <div style="font-size:4.5rem; color:#fff; font-weight:bold;">${specscore}</div>
+                    <div style="height:4px; width:100%; background:#222; margin-top:10px;"><div style="height:100%; width:${Math.min(specscore, 100)}%; background:#d4a373;"></div></div>
+                </div>
+            </div>
+
+            <!-- CHART GRID -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                    <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">DOMAIN SHAPE (RADAR)</h3>
                     <div style="height:350px;"><canvas id="radarChart"></canvas></div>
                 </div>
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
-                    <h3 style="font-size:0.8rem; color:#fff; margin-bottom:20px; letter-spacing:1px; text-transform:uppercase;">SPECIALIZATION DENSITY</h3>
-                    <div style="height:300px;"><canvas id="donutChart"></canvas></div>
+                    <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">SPECIALIZATION FOCUS (DONUT)</h3>
+                    <div style="height:350px;"><canvas id="donutChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- Domain Token List for Detailed Reference -->
-            <div style="background:#1a1614; padding:30px; border:1px solid #2a2420; margin-top: 20px;">
-                <h3 style="font-size: 0.8rem; margin-bottom: 20px; color: #fff; letter-spacing: 1px; text-transform:uppercase;">LINEAGE TOKEN VALUES</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
-                ${Object.entries(TOKEN_MAP).map(([key, token]) => `
-                    <div style="display:flex; justify-content:space-between; padding:10px; border:1px solid #2a2420; background:rgba(0,0,0,0.2);">
-                    <span style="font-size:0.75rem; color:#8b8276;">${token}</span>
-                    <span style="color:#fff; font-weight:600;">${userData.domains[key] || 0}</span>
-                    </div>
-                `).join('')}
-                </div>
+            <!-- DOMAIN INTENSITY (Canvas Bar Chart Style) -->
+            <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">DOMAIN INTENSITY (TOKEN HARVEST)</h3>
+                <canvas id="intensityBarChart" height="150" style="width:100%;"></canvas>
             </div>
         </div>
-    </div>`;
-
-    // Re-initialize Charts
-    setTimeout(() => {
-      initTopologyCharts(userData);
-    }, 50);
+    </div>
+    `;
+    
+    setTimeout(() => initLiveCharts(domains, specs), 50);
 }
 
-function initTopologyCharts(userData) {
-  // Radar Chart: Intellectual Shape
-  const radarCtx = document.getElementById('radarChart');
-  if (radarCtx && window.Chart) {
-    new Chart(radarCtx, {
-      type: 'radar',
-      data: {
-        labels: Object.keys(userData.domains).map(key => TOKEN_MAP[key]),
-        datasets: [{
-          label: 'Domain Score',
-          data: Object.values(userData.domains),
-          backgroundColor: 'rgba(212, 163, 115, 0.1)',
-          borderColor: '#d4a373',
-          borderWidth: 2,
-          pointBackgroundColor: '#fff',
-          pointRadius: 4
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          r: {
-            grid: { color: '#2a2420' },
-            angleLines: { color: '#2a2420' },
-            pointLabels: { color: '#8b8276', font: { size: 10, family: 'monospace' } },
-            ticks: { display: false, max: 10 }
-          }
-        },
-        plugins: { legend: { display: false } }
-      }
-    });
-  }
-  
-  // Donut Chart: Specialization Depth
-  const donutCtx = document.getElementById('donutTopology');
-  if (donutCtx && window.Chart) {
-    new Chart(donutCtx, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(userData.specializations),
-        datasets: [{
-          data: Object.values(userData.specializations),
-          backgroundColor: ['#4e463f', '#7c6f64', '#a89984', '#928374', '#504945'],
-          borderWidth: 0,
-          hoverOffset: 15
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '80%',
-        plugins: {
-          legend: { position: 'bottom', labels: { color: '#8b8276', font: { size: 10 }, padding: 20 } }
-        }
-      }
-    });
-  }
+function initLiveCharts(domains, specs) {
+    // 1. Radar Chart (Intellectual Shape)
+    const radarCanvas = document.getElementById('radarChart');
+    if (radarCanvas && window.Chart) {
+        new Chart(radarCanvas, {
+            type: 'radar',
+            data: {
+                labels: Object.keys(domains).map(k => LINEAGE_TOKENS[k]),
+                datasets: [{
+                    data: Object.values(domains),
+                    backgroundColor: 'rgba(212, 163, 115, 0.1)',
+                    borderColor: '#d4a373',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#fff',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { 
+                    r: { 
+                        grid: { color: '#2a2420' }, 
+                        angleLines: { color: '#2a2420' }, 
+                        pointLabels: { color: '#8b8276', font: { size: 10, family: 'monospace' } },
+                        ticks: { display: false, max: 10 } 
+                    } 
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    // 2. Donut Chart (Specialization Focus)
+    const donutCanvas = document.getElementById('donutChart');
+    if (donutCanvas && window.Chart) {
+        new Chart(donutCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(specs),
+                datasets: [{
+                    data: Object.values(specs),
+                    backgroundColor: ['#4e463f', '#7c6f64', '#a89984', '#928374', '#504945'],
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#8b8276', font: { size: 10 }, padding: 20 } }
+                }
+            }
+        });
+    }
+
+    // 3. Custom Bar Chart (Domain Intensity - mimicking renderDashboardCharts canvas logic)
+    const barCanvas = document.getElementById('intensityBarChart');
+    if (barCanvas && barCanvas.getContext) {
+        const ctx = barCanvas.getContext('2d');
+        const values = Object.values(domains);
+        const names = Object.keys(domains).map(k => LINEAGE_TOKENS[k]);
+        
+        // Set canvas size
+        barCanvas.width = barCanvas.offsetWidth;
+        barCanvas.height = 150;
+        
+        const width = barCanvas.width;
+        const height = barCanvas.height;
+        const barWidth = (width / values.length) * 0.6;
+        const gap = (width / values.length) * 0.4;
+        const max = 10; // Domain max is 10
+        
+        ctx.clearRect(0, 0, width, height);
+        
+        values.forEach((val, i) => {
+            const x = (i * (barWidth + gap)) + (gap / 2);
+            const barHeight = (val / max) * (height - 40);
+            const y = height - barHeight - 25;
+            
+            // Background track
+            ctx.fillStyle = '#2a2420';
+            ctx.fillRect(x, 25, barWidth, height - 40);
+            
+            // Actual value bar
+            ctx.fillStyle = '#d4a373';
+            ctx.fillRect(x, y, barWidth, barHeight);
+            
+            // Label
+            ctx.fillStyle = '#8b8276';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(names[i].substring(0, 6), x + barWidth/2, height - 8);
+            
+            // Value
+            ctx.fillStyle = '#fff';
+            ctx.font = '11px monospace';
+            ctx.fillText(val, x + barWidth/2, y - 5);
+        });
+    }
 }
 
 function renderDashboardCharts(modules, notes, guilds, neoscore) {
@@ -409,7 +457,6 @@ function renderAppNav() {
       title: 'CORE',
       links: [
         { href: dashHref, label: 'Dashboard', isDash: true },
-        { href: '#', label: 'Neoscore', onClick: 'forceNavigateToTopology()' },
         { href: 'subjects.html', label: 'Domains' },
         { href: 'pathways.html', label: 'Pathways' },
         { href: 'guild.html', label: 'Guilds' },
@@ -464,19 +511,44 @@ function renderAppNav() {
     `)
     .join('');
 
-  if (!document.getElementById("neoscore-chip")) {
+  let chip = document.getElementById("neoscore-chip");
+  if (!chip) {
     const brandArea = document.querySelector(".brand-area");
     if (brandArea) {
-      const chip = document.createElement("div");
+      chip = document.createElement("div");
       chip.id = "neoscore-chip";
       chip.className = "neoscore-chip";
+      chip.style.cursor = 'pointer';
+      chip.style.transition = 'all 0.3s ease';
+      chip.style.border = '1px solid #2a2420';
+      chip.title = "View Knowledge Topology";
+      
       chip.innerHTML = `
         <img src="neoscore.png" class="neoscore-logo" />
         <span id="neoscore-value">--</span>
       `;
       brandArea.appendChild(chip);
 
-      // Fetch and update score if user is logged in
+      // Hover Effects
+      chip.onmouseover = () => chip.style.borderColor = '#d4a373';
+      chip.onmouseout = () => {
+        if (!chip.classList.contains('is-active')) {
+          chip.style.borderColor = '#2a2420';
+        }
+      };
+
+      // Navigation Hook
+      chip.onclick = (e) => {
+        e.preventDefault();
+        if (typeof forceNavigateToTopology === 'function') {
+          forceNavigateToTopology();
+          // Mark as active
+          document.querySelectorAll('.neoscore-chip').forEach(c => c.classList.add('is-active'));
+          chip.style.borderColor = '#d4a373';
+        }
+      };
+
+      // Fetch and update score
       if (currentUser) {
         const supabase = getSupabaseClient();
         if (supabase) {
@@ -491,6 +563,17 @@ function renderAppNav() {
         }
       }
     }
+  }
+
+  // Ensure active state visual if we are in topology mode
+  if (chip && document.querySelector('.topology-immersion')) {
+    chip.classList.add('is-active');
+    chip.style.borderColor = '#d4a373';
+    chip.style.boxShadow = '0 0 10px rgba(212, 163, 115, 0.2)';
+  } else if (chip) {
+    chip.classList.remove('is-active');
+    chip.style.borderColor = '#2a2420';
+    chip.style.boxShadow = 'none';
   }
 
   // logout button
