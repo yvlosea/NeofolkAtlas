@@ -1584,14 +1584,14 @@ function renderPageContent() {
     `;
 
     const lineageCards = LINEAGE_DETAILS.map((t, idx) => `
-      <div class="card" style="padding:16px; border:1px solid #333; background:#111;">
+      <div class="lineage-card" style="padding:16px; background:#f5f5dc; border-radius:2px; box-shadow:2px 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1); transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg); transition:transform 0.2s ease;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-           <span style="font-size:10px; color:${t.colorClass}; border:1px solid ${t.colorClass}; padding:2px 6px; border-radius:4px; text-transform:uppercase;">${t.tokenName}</span>
-           <span style="font-size:9px; color:#555;">${t.domain}</span>
+           <span style="font-size:10px; color:#8b4513; background:#e8e0c5; padding:2px 6px; border-radius:3px; text-transform:uppercase; font-weight:600;">${t.tokenName}</span>
+           <span style="font-size:9px; color:#8b7355;">${t.domain}</span>
         </div>
-        <h4 style="margin:0 0 8px 0; color:#fff; font-family:'Cormorant Garamond', serif;">${t.fullName}</h4>
-        <p style="font-size:11px; color:#888; line-height:1.4; margin:0 0 12px 0;">${t.description}</p>
-        <div style="font-size:9px; color:#555; border-top:1px solid #222; padding-top:8px;">${t.resonancePillar}</div>
+        <h4 style="margin:0 0 8px 0; color:#3d2914; font-family:'Cormorant Garamond', serif; font-size:1.2rem;">${t.fullName}</h4>
+        <p style="font-size:11px; color:#5c4033; line-height:1.5; margin:0 0 12px 0; font-family:serif;">${t.description}</p>
+        <div style="font-size:9px; color:#8b7355; border-top:1px dashed #d4c4a8; padding-top:8px; font-style:italic;">${t.resonancePillar}</div>
       </div>
     `).join("");
 
@@ -1605,8 +1605,8 @@ function renderPageContent() {
         ${widgetHTML}
         
         <div class="card" style="background:transparent; border:none; padding:0;">
-          <h3 style="margin-bottom:20px; font-family:'Cormorant Garamond', serif; font-size:1.5rem;">Resonance Framework</h3>
-          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+          <h3 style="margin-bottom:20px; font-family:'Cormorant Garamond', serif; font-size:1.5rem; color:#fff;">Resonance Framework</h3>
+          <div class="lineage-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
             ${lineageCards}
           </div>
         </div>

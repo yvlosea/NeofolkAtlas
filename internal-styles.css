@@ -1860,3 +1860,56 @@ select.neo-input {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ============================================================
+   NEOSCORE PAGE MOBILE STYLES
+   ============================================================ */
+@media (max-width: 900px) {
+  .lineage-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .lineage-card {
+    transform: rotate(0deg) !important;
+  }
+  
+  .neoscore-widget {
+    margin: 10px 0 !important;
+  }
+  
+  .neoscore-toggle {
+    padding: 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .lineage-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .lineage-card {
+    padding: 14px !important;
+    font-size: 13px !important;
+  }
+  
+  .lineage-card h4 {
+    font-size: 1.1rem !important;
+  }
+  
+  .neoscore-widget {
+    margin: 8px 0 !important;
+  }
+  
+  #neoscore-analysis {
+    padding: 15px !important;
+  }
+}
+
+/* Lineage card hover effect */
+.lineage-card:hover {
+  transform: rotate(0deg) scale(1.02) !important;
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.2) !important;
+  z-index: 10;
+}
