@@ -155,7 +155,7 @@ function renderAppNav() {
       title: 'ACCOUNT',
       links: [
         { href: 'profile.html', label: 'Profile' },
-        { href: 'account.html', label: 'Settings' }
+        { href: 'account-settings.html', label: 'Settings' }
       ]
     }
   ];
@@ -760,6 +760,54 @@ function renderPageContent() {
           <p>Documented record of learning evidence.</p>
           <h3>Nodes</h3>
           <p>Physical locations where learning occurs.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Portfolio page
+  const portfolioRoot = document.getElementById('portfolio-root');
+  if (portfolioRoot && portfolioRoot.innerHTML.trim() === '') {
+    portfolioRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Portfolio</p>
+          <h1>Learning Portfolio</h1>
+        </div>
+        <div class="empty-state">
+          <p>Your documented learning evidence will appear here.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Teaching Log page
+  const teachingRoot = document.getElementById('teaching-log-root');
+  if (teachingRoot && teachingRoot.innerHTML.trim() === '') {
+    teachingRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Curation</p>
+          <h1>Teaching Log</h1>
+        </div>
+        <div class="empty-state">
+          <p>Teaching records will appear here.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Attendance page
+  const attendanceRoot = document.getElementById('attendance-root');
+  if (attendanceRoot && attendanceRoot.innerHTML.trim() === '') {
+    attendanceRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Curation</p>
+          <h1>Attendance</h1>
+        </div>
+        <div class="empty-state">
+          <p>Attendance tracking will appear here.</p>
         </div>
       </div>
     `;
