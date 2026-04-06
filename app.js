@@ -629,7 +629,7 @@ function renderPageContent() {
   if (subjectsRoot && subjectsRoot.innerHTML.trim() === '') {
     const guilds = ['Lingosophy','Arthmetics','Cosmology','Biosphere','Chronicles','Civitas','Tokenomics','Artifex','Praxis','Bioepisteme'];
     const guildCards = guilds.map((name) =>
-      '<a href="guild.html" class="record-card" style="text-decoration:none;">' +
+      '<a href="domain.html" class="record-card" style="text-decoration:none;">' +
         '<h3>' + escapeHtml(name) + '</h3>' +
         '<p style="color:var(--text-secondary);font-size:0.9rem;">' + escapeHtml(t('home.termCoursesBody')) + '</p>' +
       '</a>'
@@ -644,6 +644,47 @@ function renderPageContent() {
         '</div></div>' +
         '<div class="record-list" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">' + guildCards + '</div>' +
       '</div>';
+  }
+
+  // Pathways page
+  const pathwaysRoot = document.getElementById('pathways-root');
+  if (pathwaysRoot && pathwaysRoot.innerHTML.trim() === '') {
+    pathwaysRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Pathways</p>
+          <h1>Learning Pathways</h1>
+        </div>
+        <div class="empty-state">
+          <p>No pathways yet.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Domain page
+  const domainRoot = document.getElementById('domain-root');
+  if (domainRoot && domainRoot.innerHTML.trim() === '') {
+    const showCreate = currentUser?.user_metadata?.role === "curator";
+    domainRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Domain</p>
+          <h1>Modules</h1>
+          ${showCreate ? `
+            <button id="create-module" class="btn btn-primary">
+              + Module
+            </button>
+          ` : ""}
+        </div>
+        <div class="empty-state">
+          <p>No modules yet.</p>
+        </div>
+      </div>
+    `;
+    document.getElementById('create-module')?.addEventListener('click', () => {
+      location.href = "module-editor.html";
+    });
   }
 
   // Guild page
@@ -707,6 +748,9 @@ function renderPageContent() {
         '</div></div>' +
         '<div class="card">' +
           '<p>Your learning record, projects, and contributions are tracked here as your work grows.</p>' +
+          '<input class="neo-input" placeholder="Display name">' +
+          '<textarea placeholder="Bio"></textarea>' +
+          '<button class="btn btn-primary">Save profile</button>' +
         '</div>' +
       '</div>';
 
@@ -813,6 +857,31 @@ function renderPageContent() {
     `;
   }
 
+  // Module Editor page
+  const editorRoot = document.getElementById('module-editor-root');
+  if (editorRoot && editorRoot.innerHTML.trim() === '') {
+    editorRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Curation</p>
+          <h1>Create Module</h1>
+        </div>
+        <div class="card">
+          <input
+            class="neo-input"
+            placeholder="Module title"
+          >
+          <textarea
+            placeholder="Description"
+          ></textarea>
+          <button class="btn btn-primary">
+            Save
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
   // Studios page
   const studiosRoot = document.getElementById('studios-root');
   if (studiosRoot && studiosRoot.innerHTML.trim() === '') {
@@ -830,7 +899,22 @@ function renderPageContent() {
   }
 
   // Account Settings Page
-  const accountRoot = document.getElementById('account-root');
+  const accountRoot = document.getElementById('account-settings-root');
+  if (accountRoot && accountRoot.innerHTML.trim() === '') {
+    accountRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Account</p>
+          <h1>Settings</h1>
+        </div>
+        <div class="card">
+          <p>Account settings appear here.</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Account Settings Page
   if (accountRoot && accountRoot.innerHTML.trim() === '') {
     accountRoot.innerHTML = `
       <div class="dashboard-shell">
