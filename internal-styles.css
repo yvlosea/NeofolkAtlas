@@ -1747,3 +1747,11 @@ select.neo-input {
     width: 100%;
   }
 }
+
+/* ============================================================
+   DOMAIN-BASED NEOSCORE WIDGET (Knowledge Topology)
+   ============================================================ */
+.domain-bar { height: 4px; background: #222; margin-top: 2px; width: 100%; }
+.domain-bar div { height: 100%; background: #eee; }
+.hidden { display: none; }
+.domain-row { margin-bottom: 8px; }

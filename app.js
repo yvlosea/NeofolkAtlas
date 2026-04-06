@@ -14,15 +14,38 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 const LANG_STORAGE = 'neofolk.preferredLanguage';
 const SUPPORTED_LANGS = ['en', 'hi', 'ur'];
 
-function calculateNeoscore(
-attendedClasses,
-completedModuleClasses
-){
-return (
-attendedClasses
-+
-completedModuleClasses
-);
+// Domain-based scoring system
+const defaultNeoDomains = {
+  lingosophy: 6,
+  arthmetics: 5,
+  cosmology: 2,
+  biosphere: 8,
+  chronicles: 3,
+  civitas: 4,
+  tokenomics: 2,
+  artifex: 7,
+  praxis: 6,
+  bioepisteme: 5
+};
+
+const defaultNeoSpecialization = {
+  biosphere: 80,
+  artifex: 60
+};
+
+function calculateNeoscore(domains) {
+  const values = Object.values(domains);
+  const avg = values.reduce((a, b) => a + b, 0) / values.length;
+  return Math.round(avg * 10);
+}
+
+function calculateSpecscore(spec) {
+  return Math.max(...Object.values(spec));
+}
+
+function toggleNeoscore() {
+  const el = document.getElementById("neoscore-analysis");
+  if (el) el.classList.toggle("hidden");
 }
 
 function renderDashboardCharts(modules, notes, guilds, neoscore) {
@@ -1122,76 +1145,57 @@ function renderPageContent() {
 
   const neoscoreRoot = document.getElementById("neoscore-root");
   if (neoscoreRoot && neoscoreRoot.innerHTML.trim() === "") {
-    const supabase = getSupabaseClient();
+    const userId = currentUser?.id || 'guest';
+    const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
+    const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
     
-    // Mock data as requested
-    const mockClasses = 20;
-    const mockModules = 5;
-    const calculatedScore = mockClasses + (mockModules * 20); // classes + completed module classes
+    // Create 'band' object as requested
+    const band = {
+      neoDomains: storedDomains || defaultNeoDomains,
+      neoSpecialization: storedSpec || defaultNeoSpecialization
+    };
     
-    neoscoreRoot.innerHTML = `
-      <div class="dashboard-shell">
-        <div class="dashboard-header">
-          <p class="section-label">Neoscore</p>
-          <h1>Your Learning Score</h1>
-          <p class="lede">Tracks participation and completion.</p>
-        </div>
-        <div class="card neoscore-breakdown">
-          <h2>Score Breakdown</h2>
-          <div class="score-row">
-            <label>Classes Attended</label>
-            <div class="progress-bar">
-              <div id="class-progress" style="width:${Math.min((mockClasses/30)*100, 100)}%"></div>
-            </div>
-            <span class="score-value">${mockClasses}</span>
-          </div>
-          <div class="score-row">
-            <label>Completed Modules</label>
-            <div class="progress-bar">
-              <div id="module-progress" style="width:${Math.min((mockModules/10)*100, 100)}%"></div>
-            </div>
-            <span class="score-value">${mockModules}</span>
-          </div>
-          <div class="formula-box">Score = classes + (completed modules x 20)</div>
-        </div>
-        <div class="card">
-          <h2>Current Score</h2>
-          <div style="display:flex;align-items:center;gap:16px;margin-top:16px;">
-            <img src="neoscore.png" class="neoscore-logo" style="width:48px;height:48px;" />
-            <div id="neoscore-page-value" style="font-size:48px;font-weight:600;">${calculatedScore}</div>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Alpha Notice</h3>
-          <p>Neoscore calculation will evolve after alpha into professional capability scoring.</p>
+    const score = calculateNeoscore(band.neoDomains);
+    const specscore = calculateSpecscore(band.neoSpecialization);
+    
+    const domainBars = Object.entries(band.neoDomains).map(([name, val]) => `
+      <div class="domain-row">
+        <span style="font-size:10px; text-transform:uppercase; color: #888;">${name}</span>
+        <div class="domain-bar"><div style="width:${val * 10}%"></div></div>
+      </div>
+    `).join("");
+
+    const widgetHTML = `
+      <div class="neoscore-widget" style="margin: 20px 0; border: 1px solid #333;">
+        <button class="neoscore-toggle" onclick="(${toggleNeoscore.toString()})()" 
+            style="width:100%; padding:14px; background:#000; color:#fff; border:none; cursor:pointer; font-family:monospace; text-align:left; display:flex; justify-content:space-between; align-items:center;">
+            <span>[+] NEOSCORE: ${score} | SPECSCORE: ${specscore}</span>
+            <span style="font-size:10px; opacity:0.5;">TOPOLOGY</span>
+        </button>
+        <div id="neoscore-analysis" class="hidden" style="padding:20px; background:#111; border-top:1px solid #333;">
+            <h4 style="margin:0 0 16px 0; font-size:11px; text-transform:uppercase; color:#fff; letter-spacing:0.05em;">DOMAIN DISTRIBUTION</h4>
+            ${domainBars}
+            <p style="font-size:10px; color:#555; margin-top:20px; font-style:italic;">
+                Neoscore = coordinate | Specscore = direction vector.
+            </p>
         </div>
       </div>
     `;
 
-    // Fetch live data if available
-    if (supabase && currentUser) {
-      Promise.all([
-        supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed'),
-        supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
-      ]).then(([{ count: mCount }, { count: nCount }]) => {
-        const liveClasses = nCount || 0;
-        const liveModules = mCount || 0;
-        const liveScore = liveClasses + (liveModules * 20);
-        
-        const pageValEl = document.getElementById("neoscore-page-value");
-        if (pageValEl) pageValEl.textContent = liveScore;
-        
-        // Update sidebar chip too if present
-        const chipEl = document.getElementById("neoscore-value");
-        if (chipEl) chipEl.textContent = liveScore;
-
-        // Update progress bars
-        const classProgress = document.getElementById("class-progress");
-        const moduleProgress = document.getElementById("module-progress");
-        if (classProgress) classProgress.style.width = Math.min((liveClasses/30)*100, 100) + '%';
-        if (moduleProgress) moduleProgress.style.width = Math.min((liveModules/10)*100, 100) + '%';
-      });
-    }
+    neoscoreRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Neoscore</p>
+          <h1>Knowledge Topology</h1>
+          <p class="lede">Breadth, depth, and the shape of your learning record across the ten domains.</p>
+        </div>
+        ${widgetHTML}
+        <div class="card">
+          <h3>Alpha Overview</h3>
+          <p>This topology model evaluates breadth (Neoscore) and depth (Specscore) using your current module participation and note records. These metrics will scale into professional capability labels during the next phase.</p>
+        </div>
+      </div>
+    `;
   }
 
   // Account Settings Page
