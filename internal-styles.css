@@ -1514,17 +1514,21 @@ html[dir="rtl"] body.internal-page {
 .neoscore-chip{
 display:flex;
 align-items:center;
-gap:8px;
-margin-top:12px;
-padding:8px 10px;
-border-radius:10px;
-background:rgba(212,175,55,0.08);
-border:1px solid rgba(212,175,55,0.2);
+gap:12px;
+margin-top:16px;
+padding:6px 12px;
+border-radius:24px;
+background:rgba(212,175,55,0.04);
+border:1px solid rgba(232,220,200,0.12);
 }
 
 .neoscore-logo{
-width:28px;
-height:28px;
+width:32px;
+height:32px;
+border-radius:50%;
+object-fit:cover;
+background:transparent;
+display:block;
 }
 
 #neoscore-value{
@@ -1538,4 +1542,208 @@ border-radius:8px;
 border:1px solid rgba(0,0,0,0.1);
 margin-top:10px;
 font-family:monospace;
+}
+
+/* ============================================================
+   ENHANCED INTERACTIVITY STYLES
+   ============================================================ */
+
+/* Dashboard Charts */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.chart-card {
+  background: rgba(44,31,26,0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.18s ease;
+}
+
+.chart-card:hover {
+  border-color: rgba(198,169,107,0.3);
+}
+
+.chart-card h3 {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--parchment);
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.chart-card canvas {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+}
+
+/* Profile Form Enhancements */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.profile-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-section label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted-text);
+}
+
+.profile-section input[type="file"] {
+  font-size: 0.85rem;
+  color: var(--parchment);
+}
+
+.profile-completeness {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-completeness span {
+  font-size: 0.82rem;
+  color: var(--muted-text);
+}
+
+.completeness-bar {
+  height: 4px;
+  background: rgba(232,220,200,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.completeness-bar div {
+  height: 100%;
+  background: var(--gold);
+  transition: width 0.4s ease;
+}
+
+/* Neoscore Breakdown */
+.neoscore-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(232,220,200,0.08);
+}
+
+.score-row:last-child {
+  border-bottom: none;
+}
+
+.score-row label {
+  font-size: 0.85rem;
+  color: var(--parchment);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(232,220,200,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar div {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(139,115,85,0.8), rgba(198,169,107,0.9));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.score-value {
+  font-family: var(--serif);
+  font-size: 1.1rem;
+  color: var(--gold);
+  min-width: 40px;
+  text-align: right;
+}
+
+#neoscore-total {
+  background: linear-gradient(135deg, var(--gold), rgba(198,169,107,0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Neo Input Styling */
+.neo-input {
+  background: rgba(28,20,16,0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  color: var(--parchment);
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease;
+  outline: none;
+}
+
+.neo-input:focus {
+  border-color: var(--gold);
+}
+
+.neo-input::placeholder {
+  color: rgba(232,220,200,0.35);
+}
+
+textarea.neo-input {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+select.neo-input {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23c6a96b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+/* Responsive adjustments for charts */
+@media (max-width: 700px) {
+  .dashboard-charts {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-card canvas {
+    max-height: 160px;
+  }
+  
+  .score-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .score-row label {
+    min-width: auto;
+  }
+  
+  .progress-bar {
+    width: 100%;
+  }
 }

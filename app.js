@@ -25,6 +25,89 @@ completedModuleClasses
 );
 }
 
+function renderDashboardCharts(modules, notes, guilds, neoscore) {
+  // Activity Chart - Bar chart
+  const actCanvas = document.getElementById('activityChart');
+  if (actCanvas && actCanvas.getContext) {
+    const ctx = actCanvas.getContext('2d');
+    const width = actCanvas.width;
+    const height = actCanvas.height;
+    const data = [modules, notes, guilds];
+    const labels = ['Modules', 'Notes', 'Guilds'];
+    const max = Math.max(...data, 10);
+    const barWidth = 60;
+    const gap = (width - (barWidth * 3)) / 4;
+    
+    ctx.clearRect(0, 0, width, height);
+    
+    // Draw bars
+    data.forEach((val, i) => {
+      const barHeight = (val / max) * (height - 40);
+      const x = gap + i * (barWidth + gap);
+      const y = height - barHeight - 25;
+      
+      // Bar
+      ctx.fillStyle = 'rgba(139, 115, 85, 0.7)';
+      ctx.fillRect(x, y, barWidth, barHeight);
+      
+      // Label
+      ctx.fillStyle = 'var(--text-secondary, #6b6b6b)';
+      ctx.font = '12px Manrope, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], x + barWidth/2, height - 10);
+      
+      // Value
+      ctx.fillStyle = 'var(--text-primary, #2a2a2a)';
+      ctx.font = '14px Manrope, sans-serif';
+      ctx.fillText(val.toString(), x + barWidth/2, y - 5);
+    });
+  }
+  
+  // Neoscore Chart - Line chart showing growth
+  const scoreCanvas = document.getElementById('scoreChart');
+  if (scoreCanvas && scoreCanvas.getContext) {
+    const ctx = scoreCanvas.getContext('2d');
+    const width = scoreCanvas.width;
+    const height = scoreCanvas.height;
+    
+    // Mock historical data points
+    const points = [0, Math.floor(neoscore * 0.3), Math.floor(neoscore * 0.6), neoscore];
+    const max = Math.max(...points, 100);
+    
+    ctx.clearRect(0, 0, width, height);
+    
+    // Draw line
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(139, 115, 85, 0.9)';
+    ctx.lineWidth = 2;
+    
+    points.forEach((val, i) => {
+      const x = 30 + (i * (width - 60) / (points.length - 1));
+      const y = height - 30 - ((val / max) * (height - 50));
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    
+    // Draw points
+    points.forEach((val, i) => {
+      const x = 30 + (i * (width - 60) / (points.length - 1));
+      const y = height - 30 - ((val / max) * (height - 50));
+      
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(139, 115, 85, 1)';
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Value label
+      ctx.fillStyle = 'var(--text-primary, #2a2a2a)';
+      ctx.font = '11px Manrope, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(val.toString(), x, y - 8);
+    });
+  }
+}
+
 let dictionary = {};
 
 /** @type {ReturnType<typeof createClient> | null | undefined} */
@@ -207,7 +290,7 @@ function renderAppNav() {
       chip.id = "neoscore-chip";
       chip.className = "neoscore-chip";
       chip.innerHTML = `
-        <img src="neofolk-logo.jpeg" class="neoscore-logo" />
+        <img src="neoscore.png" class="neoscore-logo" />
         <span id="neoscore-value">--</span>
       `;
       brandArea.appendChild(chip);
@@ -569,6 +652,16 @@ function renderPageContent() {
           '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
           '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
         '</div>' +
+        '<div class="dashboard-charts">' +
+          '<div class="chart-card">' +
+            '<h3>Learning Activity</h3>' +
+            '<canvas id="activityChart" width="400" height="200"></canvas>' +
+          '</div>' +
+          '<div class="chart-card">' +
+            '<h3>Neoscore Growth</h3>' +
+            '<canvas id="scoreChart" width="400" height="200"></canvas>' +
+          '</div>' +
+        '</div>' +
         '<div class="card">' +
           '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
           '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
@@ -608,6 +701,9 @@ function renderPageContent() {
           score: neoScore,
           updated_at: new Date().toISOString()
         });
+
+        // Render charts
+        renderDashboardCharts(modCount || 0, noteCount || 0, 2, neoScore);
       });
     }
   }
@@ -780,20 +876,105 @@ function renderPageContent() {
   const profileRoot = document.getElementById('profile-root');
   if (profileRoot && profileRoot.innerHTML.trim() === '') {
     const supabase = getSupabaseClient();
+    const userId = currentUser?.id || 'guest';
+    const savedProfile = JSON.parse(localStorage.getItem(`neofolk.profile.${userId}`) || '{}');
+    
+    // Calculate profile completeness
+    const fields = ['photo', 'name', 'bio', 'domain', 'skills'];
+    const filledFields = fields.filter(f => savedProfile[f] && savedProfile[f].trim && savedProfile[f].trim()).length;
+    const completeness = Math.round((filledFields / fields.length) * 100);
+    
     profileRoot.innerHTML =
       '<div class="dashboard-shell">' +
         '<div class="dashboard-header"><div>' +
           '<p class="section-label">Profile</p>' +
           '<h1>Your Profile</h1>' +
           '<p id="profile-email" class="dashboard-meta"></p>' +
+          '<div class="profile-completeness" style="margin-top:12px;">' +
+            '<span>Profile completeness ' + completeness + '%</span>' +
+            '<div class="completeness-bar"><div style="width:' + completeness + '%"></div></div>' +
+          '</div>' +
         '</div></div>' +
-        '<div class="card">' +
-          '<p>Your learning record, projects, and contributions are tracked here as your work grows.</p>' +
-          '<input class="neo-input" placeholder="Display name">' +
-          '<textarea placeholder="Bio"></textarea>' +
-          '<button class="btn btn-primary">Save profile</button>' +
+        '<div class="card profile-form">' +
+          '<div class="profile-section">' +
+            '<label>Profile Photo</label>' +
+            '<input type="file" id="profile-photo-input" accept="image/*">' +
+            '<img id="profile-photo-preview" src="' + (savedProfile.photo || '') + '" style="display:' + (savedProfile.photo ? 'block' : 'none') + ';width:80px;height:80px;object-fit:cover;border-radius:50%;margin-top:8px;">' +
+          '</div>' +
+          '<div class="profile-section">' +
+            '<label>Display Name</label>' +
+            '<input id="profile-name" class="neo-input" value="' + escapeHtml(savedProfile.name || '') + '" placeholder="Your name">' +
+          '</div>' +
+          '<div class="profile-section">' +
+            '<label>Bio</label>' +
+            '<textarea id="profile-bio" class="neo-input" placeholder="Tell us about yourself">' + escapeHtml(savedProfile.bio || '') + '</textarea>' +
+          '</div>' +
+          '<div class="profile-section">' +
+            '<label>Primary Domain</label>' +
+            '<select id="profile-domain" class="neo-input">' +
+              '<option value="">Select domain...</option>' +
+              '<option value="Lingosophy"' + (savedProfile.domain === 'Lingosophy' ? ' selected' : '') + '>Lingosophy</option>' +
+              '<option value="Arthmetics"' + (savedProfile.domain === 'Arthmetics' ? ' selected' : '') + '>Arthmetics</option>' +
+              '<option value="Cosmology"' + (savedProfile.domain === 'Cosmology' ? ' selected' : '') + '>Cosmology</option>' +
+              '<option value="Biosphere"' + (savedProfile.domain === 'Biosphere' ? ' selected' : '') + '>Biosphere</option>' +
+              '<option value="Chronicles"' + (savedProfile.domain === 'Chronicles' ? ' selected' : '') + '>Chronicles</option>' +
+              '<option value="Civitas"' + (savedProfile.domain === 'Civitas' ? ' selected' : '') + '>Civitas</option>' +
+              '<option value="Tokenomics"' + (savedProfile.domain === 'Tokenomics' ? ' selected' : '') + '>Tokenomics</option>' +
+              '<option value="Artifex"' + (savedProfile.domain === 'Artifex' ? ' selected' : '') + '>Artifex</option>' +
+              '<option value="Praxis"' + (savedProfile.domain === 'Praxis' ? ' selected' : '') + '>Praxis</option>' +
+              '<option value="Bioepisteme"' + (savedProfile.domain === 'Bioepisteme' ? ' selected' : '') + '>Bioepisteme</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="profile-section">' +
+            '<label>Skills (comma separated)</label>' +
+            '<input id="profile-skills" class="neo-input" value="' + escapeHtml(savedProfile.skills || '') + '" placeholder="e.g. Research, Writing, Analysis">' +
+          '</div>' +
+          '<button id="save-profile-btn" class="btn btn-primary">Save Profile</button>' +
         '</div>' +
       '</div>';
+
+    // Photo preview handler
+    const photoInput = document.getElementById('profile-photo-input');
+    const photoPreview = document.getElementById('profile-photo-preview');
+    if (photoInput) {
+      photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            photoPreview.src = ev.target.result;
+            photoPreview.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    // Save profile handler
+    const saveBtn = document.getElementById('save-profile-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        const profile = {
+          photo: photoPreview?.src || '',
+          name: document.getElementById('profile-name')?.value || '',
+          bio: document.getElementById('profile-bio')?.value || '',
+          domain: document.getElementById('profile-domain')?.value || '',
+          skills: document.getElementById('profile-skills')?.value || ''
+        };
+        localStorage.setItem(`neofolk.profile.${userId}`, JSON.stringify(profile));
+        
+        // Update completeness indicator
+        const filled = fields.filter(f => profile[f] && profile[f].trim()).length;
+        const newComplete = Math.round((filled / fields.length) * 100);
+        const completeEl = profileRoot.querySelector('.profile-completeness span');
+        const barEl = profileRoot.querySelector('.completeness-bar div');
+        if (completeEl) completeEl.textContent = 'Profile completeness ' + newComplete + '%';
+        if (barEl) barEl.style.width = newComplete + '%';
+        
+        saveBtn.textContent = 'Saved!';
+        setTimeout(() => saveBtn.textContent = 'Save Profile', 1500);
+      });
+    }
 
     if (supabase) {
       supabase.auth.getUser().then(({ data }) => {
@@ -943,7 +1124,11 @@ function renderPageContent() {
   if (neoscoreRoot && neoscoreRoot.innerHTML.trim() === "") {
     const supabase = getSupabaseClient();
     
-    // Initial static UI
+    // Mock data as requested
+    const mockClasses = 20;
+    const mockModules = 5;
+    const calculatedScore = mockClasses + (mockModules * 20); // classes + completed module classes
+    
     neoscoreRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
@@ -951,15 +1136,30 @@ function renderPageContent() {
           <h1>Your Learning Score</h1>
           <p class="lede">Tracks participation and completion.</p>
         </div>
-        <div class="card">
-          <h2>Current Score</h2>
-          <div id="neoscore-page-value" style="font-size:48px;font-weight:600;margin-top:12px;">--</div>
+        <div class="card neoscore-breakdown">
+          <h2>Score Breakdown</h2>
+          <div class="score-row">
+            <label>Classes Attended</label>
+            <div class="progress-bar">
+              <div id="class-progress" style="width:${Math.min((mockClasses/30)*100, 100)}%"></div>
+            </div>
+            <span class="score-value">${mockClasses}</span>
+          </div>
+          <div class="score-row">
+            <label>Completed Modules</label>
+            <div class="progress-bar">
+              <div id="module-progress" style="width:${Math.min((mockModules/10)*100, 100)}%"></div>
+            </div>
+            <span class="score-value">${mockModules}</span>
+          </div>
+          <div class="formula-box">Score = classes + (completed modules x 20)</div>
         </div>
         <div class="card">
-          <h3>Calculation</h3>
-          <p>1 class attended = 1 point</p>
-          <p>completed modules double class value</p>
-          <div class="formula-box">Score = classes + completed module classes</div>
+          <h2>Current Score</h2>
+          <div style="display:flex;align-items:center;gap:16px;margin-top:16px;">
+            <img src="neoscore.png" class="neoscore-logo" style="width:48px;height:48px;" />
+            <div id="neoscore-page-value" style="font-size:48px;font-weight:600;">${calculatedScore}</div>
+          </div>
         </div>
         <div class="card">
           <h3>Alpha Notice</h3>
@@ -968,15 +1168,28 @@ function renderPageContent() {
       </div>
     `;
 
-    // Fetch live data
+    // Fetch live data if available
     if (supabase && currentUser) {
       Promise.all([
         supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed'),
         supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
       ]).then(([{ count: mCount }, { count: nCount }]) => {
-        const score = (mCount || 0) * 50 + (nCount || 0) * 10;
-        const el = document.getElementById("neoscore-page-value");
-        if (el) el.textContent = score;
+        const liveClasses = nCount || 0;
+        const liveModules = mCount || 0;
+        const liveScore = liveClasses + (liveModules * 20);
+        
+        const pageValEl = document.getElementById("neoscore-page-value");
+        if (pageValEl) pageValEl.textContent = liveScore;
+        
+        // Update sidebar chip too if present
+        const chipEl = document.getElementById("neoscore-value");
+        if (chipEl) chipEl.textContent = liveScore;
+
+        // Update progress bars
+        const classProgress = document.getElementById("class-progress");
+        const moduleProgress = document.getElementById("module-progress");
+        if (classProgress) classProgress.style.width = Math.min((liveClasses/30)*100, 100) + '%';
+        if (moduleProgress) moduleProgress.style.width = Math.min((liveModules/10)*100, 100) + '%';
       });
     }
   }
