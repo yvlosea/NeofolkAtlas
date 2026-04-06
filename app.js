@@ -30,12 +30,106 @@ const LINEAGE_TOKENS = {
     cosmology: "Bhattas",
     biosphere: "Janakis", 
     chronicles: "Thapars", 
-    civitas: "Ambedis",
+    civitas: "Savi",
     tokenomics: "Bhanus", 
     artifex: "Sarabhs", 
     praxis: "Arunas", 
     bioepisteme: "Gagas"
 };
+
+const LINEAGE_DETAILS = [
+  {
+    "domain": "Lingosophy",
+    "subdomain": "Linguistics & Philosophy",
+    "tokenName": "Spivaks",
+    "fullName": "Gayatri Chakravorty Spivak",
+    "colorClass": "purple",
+    "resonancePillar": "Language as power",
+    "description": "She translated Derrida and then dismantled him — building postcolonial theory from the margins of the Western canon while insisting that the subaltern's silence was itself a political fact. A high Spivak resonance means you operate at the edge where language meets power: you do not merely speak, you interrogate who has been forbidden to."
+  },
+  {
+    "domain": "Arithmetics",
+    "subdomain": "Mathematics",
+    "tokenName": "Shakuntis",
+    "fullName": "Shakuntala Devi",
+    "colorClass": "amber",
+    "resonancePillar": "Pattern as embodied sense",
+    "description": "She multiplied two 13-digit numbers in her head in 28 seconds and was entered into the Guinness Book of World Records — proof that the human mind, uncolonized by institutional gatekeeping, is its own supercomputer. A high Shakunti resonance means you carry numbers in your body: pattern recognition is not a tool you use but a sense you possess."
+  },
+  {
+    "domain": "Cosmology",
+    "subdomain": "Astronomy & Physics",
+    "tokenName": "Bhattas",
+    "fullName": "Rohini Godbole",
+    "colorClass": "blue",
+    "resonancePillar": "Scale beyond self",
+    "description": "A theoretical particle physicist who worked on Higgs boson phenomenology and championed women in science across four decades — she mapped the deep structure of matter while refusing to let Indian women remain invisible in the rooms where that mapping happened. A high Bhatta resonance means you think at scales that dissolve the self: from quarks to cosmological constants, the universe is your unit of analysis."
+  },
+  {
+    "domain": "Biosphere",
+    "subdomain": "Biology & Botany",
+    "tokenName": "Janakis",
+    "fullName": "Janaki Ammal",
+    "colorClass": "green",
+    "resonancePillar": "Life as political archive",
+    "description": "She hybridized sugarcane varieties that freed India from British botanical monopoly and campaigned to save the Silent Valley from a dam — a scientist who understood that the archive of life is also a political battlefield. A high Janaki resonance means you read landscapes as libraries: every species is a sentence, every ecosystem an argument about what survives."
+  },
+  {
+    "domain": "Chronicles",
+    "subdomain": "History",
+    "tokenName": "Thapars",
+    "fullName": "Romila Thapar",
+    "colorClass": "red",
+    "resonancePillar": "Narrative as legitimacy",
+    "description": "She rewrote the history of ancient India by insisting on evidence over myth and remained unbowed when governments tried to weaponize the past against the present — at 91, she refused an honorary degree rather than accept the conditions attached to it. A high Thapar resonance means you understand that history is always a struggle over legitimacy: who gets to narrate the past controls the terms of the future."
+  },
+  {
+    "domain": "Civitas",
+    "subdomain": "Political Theory & Social Justice",
+    "tokenName": "Savi",
+    "fullName": "Savitribai Phule",
+    "colorClass": "pink",
+    "resonancePillar": "Polity beyond exclusion",
+    "description": "She walked through pelted dung to teach Dalit women to read in 1848 — a century before independence, she had already drawn the blueprint for a republic that could not exist unless its most excluded people were educated into it. A high Ambedi resonance means you build toward a polity that does not yet exist: your political imagination is larger than any constitution currently in force."
+  },
+  {
+    "domain": "Tokenomics",
+    "subdomain": "Economics & Commons",
+    "tokenName": "Bhanus",
+    "fullName": "Bina Agarwal",
+    "colorClass": "coral",
+    "resonancePillar": "Economy from the ground up",
+    "description": "Her landmark work A Field of One's Own proved that women's land rights were the single most powerful lever against rural poverty — she built an economics that begins with the body that farms, not the market that prices the harvest. A high Bhanu resonance means you design economies from the ground up: your models account for unpaid labor, collective tenure, and the commons as infrastructure."
+  },
+  {
+    "domain": "Artifex",
+    "subdomain": "Design & Craft",
+    "tokenName": "Sarabhs",
+    "fullName": "Mrinalini Sarabhai",
+    "colorClass": "teal",
+    "resonancePillar": "Form as argument",
+    "description": "She founded Darpana Academy in 1949 and spent fifty years proving that Bharatanatyam was not a relic to be preserved but a living grammar capable of addressing modernity — she made the body a site of decolonial aesthetic argument. A high Sarabh resonance means you treat form as argument: every design decision is a position, every craft choice a claim about what deserves to exist."
+  },
+  {
+    "domain": "Praxis",
+    "subdomain": "Action & Reform",
+    "tokenName": "Arunas",
+    "fullName": "Aruna Roy",
+    "colorClass": "purple",
+    "resonancePillar": "Theory as lived accountability",
+    "description": "She left the IAS to live in a Rajasthan village and invented the jan sunwai — the public hearing — as a tool to pry government records open, eventually forcing the Right to Information Act into law through sheer organized persistence. A high Aruna resonance means your knowledge does not stay inside institutions: you understand that theory becomes real only when the most excluded person in the room can use it against power."
+  },
+  {
+    "domain": "Bioepisteme",
+    "subdomain": "Life Sciences & Public Health",
+    "tokenName": "Gagas",
+    "fullName": "Gagandeep Kang",
+    "colorClass": "teal",
+    "resonancePillar": "Data as protection",
+    "description": "The first Indian woman elected Fellow of the Royal Society, she built vaccine infrastructure in Indian slums, ran rotavirus trials on tens of thousands of children, and became the country's clearest public voice on scientific integrity during the pandemic. A high Gaga resonance means you operate where data meets bodies: you do not separate the epistemology of science from the politics of who gets protected by it."
+  }
+];
+
 
 // Live calculation engine for topology metrics
 function getLiveTopology(userData) {
@@ -136,7 +230,7 @@ function renderTopologyPage(userData) {
     mainArea.innerHTML = `
     <div class="topology-immersion" style="background:#0f0d0c; min-height:100vh; padding:40px; font-family:monospace; color:#d4a373; animation: fadeIn 0.4s ease; position: relative; z-index: 1000;">
         <div style="max-width:1200px; margin:0 auto;">
-            <header style="margin-bottom:40px; display:flex; justify-content:space-between; align-items:flex-end;">
+            <header class="topology-header" style="margin-bottom:40px; display:flex; justify-content:space-between; align-items:flex-end;">
                 <div>
                     <h1 style="font-family:'Cormorant Garamond', serif; font-size:2.5rem; color:#fff; margin:0;">Knowledge Topology</h1>
                     <p style="color:#555; margin:5px 0 0 0; letter-spacing:1px; font-size: 0.75rem;">INTELLECTUAL SHAPE & DIRECTION VECTOR</p>
@@ -145,7 +239,7 @@ function renderTopologyPage(userData) {
             </header>
 
             <!-- HERO METRICS -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div class="topology-hero-metrics" style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420; display:flex; justify-content:space-between; align-items:center;">
                     <div>
                         <span style="font-size:10px; color:#555; letter-spacing:2px;">NEOSCORE (BREADTH)</span>
@@ -164,23 +258,23 @@ function renderTopologyPage(userData) {
             </div>
 
             <!-- CHART GRID -->
-            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:20px; margin-bottom:20px;">
+            <div class="topology-grid-2" style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:20px; margin-bottom:20px;">
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
                     <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">DOMAIN SHAPE (RADAR)</h3>
-                    <div style="height:400px;"><canvas id="radarChart"></canvas></div>
+                    <div class="topology-chart-container" style="height:400px;"><canvas id="radarChart"></canvas></div>
                 </div>
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                         <h3 style="font-size:10px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px; margin:0;">SPECIALIZATION FOCUS (DONUT)</h3>
                         <button onclick="window.manageSpecializations()" style="background:none; border:1px solid #2a2420; color:#c6a96b; padding:4px 8px; cursor:pointer; font-size:9px; text-transform:uppercase;">MANAGE</button>
                     </div>
-                    <div style="height:350px;"><canvas id="donutChart"></canvas></div>
+                    <div class="topology-chart-container" style="height:350px;"><canvas id="donutChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- SPECIALIZATION SELECTION MODAL (Hidden by default) -->
-            <div id="spec-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; display:flex; align-items:center; justify-content:center;">
-                <div style="background:#1a1614; border:1px solid #2a2420; padding:40px; width:450px; max-width:90%; position:relative;">
+            <!-- SPECIALIZATION SELECTION MODAL -->
+            <div id="spec-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div style="background:#1a1614; border:1px solid #2a2420; padding:30px; width:450px; max-width:100%; position:relative;">
                     <h2 style="font-family:'Cormorant Garamond', serif; color:#fff; margin-bottom:20px;">Subjects of Specialization</h2>
                     <p style="color:#8b8276; font-size:11px; margin-bottom:20px;">Select up to 5 subjects you want to specialize in (increases depth score).</p>
                     <div id="spec-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:30px;">
@@ -200,9 +294,29 @@ function renderTopologyPage(userData) {
 
 
             <!-- DOMAIN INTENSITY (Canvas Bar Chart Style) -->
-            <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+            <div style="background:#1a1614; padding:30px; border:1px solid #2a2420; margin-bottom:20px;">
                 <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">DOMAIN INTENSITY (TOKEN HARVEST)</h3>
                 <canvas id="intensityBarChart" height="150" style="width:100%;"></canvas>
+            </div>
+
+            <!-- RESONANCE FRAMEWORK (TOKENS) -->
+            <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                <h3 style="font-size:10px; margin-bottom:24px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">RESONANCE FRAMEWORK</h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+                    ${LINEAGE_DETAILS.map(t => `
+                        <div style="padding:20px; border:1px solid #2a2420; background:#0f0d0c; display:flex; flex-direction:column; gap:10px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <span style="font-size:10px; color:${t.colorClass}; border:1px solid ${t.colorClass}; padding:2px 6px; letter-spacing:1px;">${t.tokenName}</span>
+                                <span style="font-size:9px; color:#333;">${t.subdomain}</span>
+                            </div>
+                            <h4 style="margin:5px 0; color:#fff; font-family:'Cormorant Garamond', serif; font-size:1.2rem;">${t.fullName}</h4>
+                            <p style="font-size:11px; color:#666; line-height:1.5; font-family:monospace; margin:0;">${t.description}</p>
+                            <div style="margin-top:auto; padding-top:10px; border-top:1px solid #2a2420; font-size:9px; color:#444; text-transform:uppercase; letter-spacing:1px;">
+                                Pillar: ${t.resonancePillar}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
             </div>
         </div>
     </div>
@@ -956,7 +1070,7 @@ function renderPageContent() {
           '<p id="dash-signed-in" class="dashboard-meta"></p>' +
           '<p class="lede">' + escapeHtml(t('dashboard.subtitle')) + '</p>' +
         '</div></div>' +
-        '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">' +
+        '<div class="stats-grid">' +
           '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
           '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
           '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
@@ -1469,6 +1583,18 @@ function renderPageContent() {
       </div>
     `;
 
+    const lineageCards = LINEAGE_DETAILS.map((t, idx) => `
+      <div class="card" style="padding:16px; border:1px solid #333; background:#111;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+           <span style="font-size:10px; color:${t.colorClass}; border:1px solid ${t.colorClass}; padding:2px 6px; border-radius:4px; text-transform:uppercase;">${t.tokenName}</span>
+           <span style="font-size:9px; color:#555;">${t.domain}</span>
+        </div>
+        <h4 style="margin:0 0 8px 0; color:#fff; font-family:'Cormorant Garamond', serif;">${t.fullName}</h4>
+        <p style="font-size:11px; color:#888; line-height:1.4; margin:0 0 12px 0;">${t.description}</p>
+        <div style="font-size:9px; color:#555; border-top:1px solid #222; padding-top:8px;">${t.resonancePillar}</div>
+      </div>
+    `).join("");
+
     neoscoreRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
@@ -1477,7 +1603,15 @@ function renderPageContent() {
           <p class="lede">Breadth, depth, and the shape of your learning record across the ten domains.</p>
         </div>
         ${widgetHTML}
-        <div class="card">
+        
+        <div class="card" style="background:transparent; border:none; padding:0;">
+          <h3 style="margin-bottom:20px; font-family:'Cormorant Garamond', serif; font-size:1.5rem;">Resonance Framework</h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+            ${lineageCards}
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:40px;">
           <h3>Alpha Overview</h3>
           <p>This topology model evaluates breadth (Neoscore) and depth (Specscore) using your current module participation and note records. These metrics will scale into professional capability labels during the next phase.</p>
         </div>

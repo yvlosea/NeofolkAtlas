@@ -1805,9 +1805,58 @@ select.neo-input {
 }
 
 /* ============================================================
+   MOBILE RESPONSIVE OVERHAULS
+   ============================================================ */
+@media (max-width: 900px) {
+  .topology-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 20px;
+  }
+  
+  .topology-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .topology-hero-metrics {
+     grid-template-columns: 1fr !important;
+  }
+  
+  .topology-hero-metrics > div {
+    padding: 20px !important;
+  }
+
+  .topology-hero-metrics div[style*="font-size:4.5rem"] {
+    font-size: 3rem !important;
+  }
+
+  .topology-chart-container {
+    height: 300px !important;
+  }
+  
+  .spec-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .topology-immersion {
+    padding: 20px !important;
+  }
+  
+  .topology-token-list {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ============================================================
    ANIMATIONS
    ============================================================ */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
