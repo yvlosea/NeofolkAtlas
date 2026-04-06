@@ -14,6 +14,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 const LANG_STORAGE = 'neofolk.preferredLanguage';
 const SUPPORTED_LANGS = ['en', 'hi', 'ur'];
 
+function calculateNeoscore(
+attendedClasses,
+completedModuleClasses
+){
+return (
+attendedClasses
++
+completedModuleClasses
+);
+}
+
 let dictionary = {};
 
 /** @type {ReturnType<typeof createClient> | null | undefined} */
@@ -137,6 +148,7 @@ function renderAppNav() {
       title: 'CORE',
       links: [
         { href: dashHref, label: 'Dashboard', isDash: true },
+        { href: 'neoscore.html', label: 'Neoscore' },
         { href: 'subjects.html', label: 'Domains' },
         { href: 'pathways.html', label: 'Pathways' },
         { href: 'guild.html', label: 'Guilds' },
@@ -187,6 +199,35 @@ function renderAppNav() {
       </div>
     `)
     .join('');
+
+  if (!document.getElementById("neoscore-chip")) {
+    const brandArea = document.querySelector(".brand-area");
+    if (brandArea) {
+      const chip = document.createElement("div");
+      chip.id = "neoscore-chip";
+      chip.className = "neoscore-chip";
+      chip.innerHTML = `
+        <img src="neofolk-logo.jpeg" class="neoscore-logo" />
+        <span id="neoscore-value">--</span>
+      `;
+      brandArea.appendChild(chip);
+
+      // Fetch and update score if user is logged in
+      if (currentUser) {
+        const supabase = getSupabaseClient();
+        if (supabase) {
+          Promise.all([
+            supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed'),
+            supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
+          ]).then(([{ count: mCount }, { count: nCount }]) => {
+            const score = (mCount || 0) * 50 + (nCount || 0) * 10;
+            const el = document.getElementById("neoscore-value");
+            if (el) el.textContent = score;
+          });
+        }
+      }
+    }
+  }
 
   // logout button
   if (currentUser) {
@@ -896,6 +937,48 @@ function renderPageContent() {
           '<p>Studios become available as your learning record deepens.</p>' +
         '</div>' +
       '</div>';
+  }
+
+  const neoscoreRoot = document.getElementById("neoscore-root");
+  if (neoscoreRoot && neoscoreRoot.innerHTML.trim() === "") {
+    const supabase = getSupabaseClient();
+    
+    // Initial static UI
+    neoscoreRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">Neoscore</p>
+          <h1>Your Learning Score</h1>
+          <p class="lede">Tracks participation and completion.</p>
+        </div>
+        <div class="card">
+          <h2>Current Score</h2>
+          <div id="neoscore-page-value" style="font-size:48px;font-weight:600;margin-top:12px;">--</div>
+        </div>
+        <div class="card">
+          <h3>Calculation</h3>
+          <p>1 class attended = 1 point</p>
+          <p>completed modules double class value</p>
+          <div class="formula-box">Score = classes + completed module classes</div>
+        </div>
+        <div class="card">
+          <h3>Alpha Notice</h3>
+          <p>Neoscore calculation will evolve after alpha into professional capability scoring.</p>
+        </div>
+      </div>
+    `;
+
+    // Fetch live data
+    if (supabase && currentUser) {
+      Promise.all([
+        supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed'),
+        supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
+      ]).then(([{ count: mCount }, { count: nCount }]) => {
+        const score = (mCount || 0) * 50 + (nCount || 0) * 10;
+        const el = document.getElementById("neoscore-page-value");
+        if (el) el.textContent = score;
+      });
+    }
   }
 
   // Account Settings Page

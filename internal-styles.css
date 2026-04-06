@@ -1510,3 +1510,32 @@ html[dir="rtl"] body.internal-page {
     grid-template-columns: 1fr;
   }
 }
+
+.neoscore-chip{
+display:flex;
+align-items:center;
+gap:8px;
+margin-top:12px;
+padding:8px 10px;
+border-radius:10px;
+background:rgba(212,175,55,0.08);
+border:1px solid rgba(212,175,55,0.2);
+}
+
+.neoscore-logo{
+width:28px;
+height:28px;
+}
+
+#neoscore-value{
+font-size:18px;
+font-weight:600;
+}
+
+.formula-box{
+padding:10px;
+border-radius:8px;
+border:1px solid rgba(0,0,0,0.1);
+margin-top:10px;
+font-family:monospace;
+}
