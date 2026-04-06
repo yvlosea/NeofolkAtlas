@@ -1755,3 +1755,11 @@ select.neo-input {
 .domain-bar div { height: 100%; background: #eee; }
 .hidden { display: none; }
 .domain-row { margin-bottom: 8px; }
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
