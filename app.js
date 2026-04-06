@@ -944,6 +944,9 @@ function renderPageContent() {
           attribution: '&copy; OpenStreetMap contributors'
         }
       ).addTo(map);
+      // Add placeholder markers
+      L.marker([28.6139, 77.2090]).addTo(map).bindPopup('Delhi Node');
+      L.marker([19.0760, 72.8777]).addTo(map).bindPopup('Mumbai Node');
     }
   }
 }
