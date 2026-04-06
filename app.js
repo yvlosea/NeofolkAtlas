@@ -540,8 +540,8 @@ function renderAppNav() {
       // Navigation Hook
       chip.onclick = (e) => {
         e.preventDefault();
-        if (typeof forceNavigateToTopology === 'function') {
-          forceNavigateToTopology();
+        if (typeof window.forceNavigateToTopology === 'function') {
+          window.forceNavigateToTopology();
           // Mark as active
           document.querySelectorAll('.neoscore-chip').forEach(c => c.classList.add('is-active'));
           chip.style.borderColor = '#d4a373';
@@ -1535,15 +1535,8 @@ async function initApp() {
   updateHomeForSession();
 }
 
-// Force topology navigation - Global function
-window.forceNavigateToTopology = function() {
-    console.log("Navigating to Knowledge Topology...");
-    if (typeof renderTopologyPage === 'function') {
-        renderTopologyPage();
-    } else {
-        console.error("renderTopologyPage function not found!");
-    }
-};
+// Force topology navigation - Global function wrapper already defined at the top of the file
+
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => initApp().catch(console.error));
