@@ -70,6 +70,8 @@ function toggleNeoscore() {
   if (el) el.classList.toggle("hidden");
 }
 
+window.forceNavigateToTopology = renderTopologyPage;
+
 // Knowledge Topology Immersive Page
 function renderTopologyPage() {
   const userId = currentUser?.id || 'guest';
@@ -84,93 +86,66 @@ function renderTopologyPage() {
   const { neoscore, specscore } = getTopologyMetrics(userData);
   
   // Find the main content area to replace
-  const mainArea = document.querySelector('.neo-main');
+  const mainArea = document.querySelector('.neo-main') || document.getElementById('content');
   if (!mainArea) return;
   
-  // Store original content for back navigation
-  if (!mainArea.dataset.originalContent) {
-    mainArea.dataset.originalContent = mainArea.innerHTML;
-  }
-  
   mainArea.innerHTML = `
-    <div class="topology-wrapper" style="background:#0f0d0c; min-height:100vh; padding:60px 40px; color: #d4a373; animation: fadeIn 0.5s ease;">
-      <div style="max-width: 1100px; margin: 0 auto;">
-        <header style="margin-bottom: 50px; display:flex; justify-content:space-between; align-items:flex-start;">
-          <div>
-            <h1 style="color: #fff; font-size: 3rem; font-family: 'Cormorant Garamond', serif; margin: 0;">Knowledge Topology</h1>
-            <p style="color: #8b8276; letter-spacing: 1.5px; margin-top: 10px;">Breadth, depth, and the shape of your learning record across the ten domains.</p>
-          </div>
-          <button id="topology-back" style="background:transparent; border:1px solid #2a2420; color:#8b8276; padding:10px 20px; cursor:pointer; font-family:monospace; font-size:0.75rem; text-transform:uppercase; letter-spacing:1px;">← Back</button>
-        </header>
+    <div class="topology-immersion" style="background:#0f0d0c; color:#d4a373; padding:50px; min-height:100vh; animation: fadeIn 0.4s ease-out;">
+        <div style="max-width:1100px; margin:0 auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:40px;">
+                <div>
+                  <h1 style="font-family:'Cormorant Garamond', serif; color:#fff; font-size:2.5rem; margin:0;">Knowledge Topology</h1>
+                  <p style="color: #8b8276; font-size: 0.9rem; margin-top: 5px;">Lineage tokens and specialization density mapping.</p>
+                </div>
+                <button onclick="location.reload()" style="background:none; border:1px solid #2a2420; color:#8b8276; padding:8px 15px; cursor:pointer; font-family:monospace;">[← BACK TO MAP]</button>
+            </div>
 
-        <!-- Score Hero Section -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-          <div style="background:#1a1614; padding:40px; border: 1px solid #2a2420; border-radius: 4px;">
-            <span style="font-size: 0.7rem; color: #8b8276; text-transform: uppercase; letter-spacing: 3px;">[+] NEOSCORE (BREADTH)</span>
-            <div style="font-size: 5rem; color: #fff; line-height: 1; font-family: 'Cormorant Garamond', serif; margin-top: 10px;">${neoscore.toFixed(0)}</div>
-            <p style="color:#666; font-size:0.75rem; margin-top:12px;">Average of 10 domains × 10</p>
-          </div>
-          <div style="background:#1a1614; padding:40px; border: 1px solid #2a2420; border-radius: 4px;">
-            <span style="font-size: 0.7rem; color: #8b8276; text-transform: uppercase; letter-spacing: 3px;">[+] SPECSCORE (DEPTH)</span>
-            <div style="font-size: 5rem; color: #fff; line-height: 1; font-family: 'Cormorant Garamond', serif; margin-top: 10px;">${specscore}</div>
-            <p style="color:#666; font-size:0.75rem; margin-top:12px;">Highest specialization value</p>
-          </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:30px;">
+                <div class="score-card" style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                    <small style="letter-spacing:2px; color:#8b8276;">NEOSCORE (BREADTH)</small>
+                    <div style="font-size:4rem; color:#fff; font-family:'Cormorant Garamond', serif;">${neoscore.toFixed(0)}</div>
+                </div>
+                <div class="score-card" style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                    <small style="letter-spacing:2px; color:#8b8276;">SPECSCORE (DEPTH)</small>
+                    <div style="font-size:4rem; color:#fff; font-family:'Cormorant Garamond', serif;">${specscore}</div>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:20px;">
+                <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                    <h3 style="font-size:0.8rem; color:#fff; margin-bottom:20px; letter-spacing:1px; text-transform:uppercase;">DOMAIN LINEAGE (LINEAGE TOKENS)</h3>
+                    <div style="height:350px;"><canvas id="radarChart"></canvas></div>
+                </div>
+                <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
+                    <h3 style="font-size:0.8rem; color:#fff; margin-bottom:20px; letter-spacing:1px; text-transform:uppercase;">SPECIALIZATION DENSITY</h3>
+                    <div style="height:300px;"><canvas id="donutChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Domain Token List for Detailed Reference -->
+            <div style="background:#1a1614; padding:30px; border:1px solid #2a2420; margin-top: 20px;">
+                <h3 style="font-size: 0.8rem; margin-bottom: 20px; color: #fff; letter-spacing: 1px; text-transform:uppercase;">LINEAGE TOKEN VALUES</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px;">
+                ${Object.entries(TOKEN_MAP).map(([key, token]) => `
+                    <div style="display:flex; justify-content:space-between; padding:10px; border:1px solid #2a2420; background:rgba(0,0,0,0.2);">
+                    <span style="font-size:0.75rem; color:#8b8276;">${token}</span>
+                    <span style="color:#fff; font-weight:600;">${userData.domains[key] || 0}</span>
+                    </div>
+                `).join('')}
+                </div>
+            </div>
         </div>
+    </div>`;
 
-        <!-- Charts Section -->
-        <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;">
-          <div style="background:#1a1614; padding:40px; border: 1px solid #2a2420;">
-            <h3 style="font-size: 0.8rem; margin-bottom: 30px; color: #fff; letter-spacing: 2px; font-family: 'Manrope', sans-serif;">DOMAIN DISTRIBUTION (LINEAGE TOKENS)</h3>
-            <div style="height: 400px;"><canvas id="radarTopology"></canvas></div>
-          </div>
-          <div style="background:#1a1614; padding:40px; border: 1px solid #2a2420;">
-            <h3 style="font-size: 0.8rem; margin-bottom: 30px; color: #fff; letter-spacing: 2px; font-family: 'Manrope', sans-serif;">SPECIALIZATION DENSITY</h3>
-            <div style="height: 350px;"><canvas id="donutTopology"></canvas></div>
-          </div>
-        </div>
-
-        <!-- Domain Token List -->
-        <div style="background:#1a1614; padding:30px 40px; border: 1px solid #2a2420; margin-top: 20px;">
-          <h3 style="font-size: 0.8rem; margin-bottom: 20px; color: #fff; letter-spacing: 2px; font-family: 'Manrope', sans-serif;">LINEAGE TOKENS</h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;">
-            ${Object.entries(TOKEN_MAP).map(([key, token]) => `
-              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(255,255,255,0.02); border:1px solid #2a2420;">
-                <span style="font-size:0.65rem; color:#666; text-transform:uppercase; min-width:80px;">${key}</span>
-                <span style="color:#d4a373; font-family:'Cormorant Garamond', serif; font-size:1.1rem;">${token}</span>
-                <span style="margin-left:auto; color:#8b8276; font-size:0.8rem;">${userData.domains[key] || 0}</span>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <footer style="margin-top: 60px; padding-top: 20px; border-top: 1px solid #2a2420; font-size: 0.8rem; color: #555; line-height: 1.6;">
-          <strong>Alpha Overview:</strong> This topology model evaluates intellectual dispersion through the lineage of 
-          Spivak, Shakuntala, Bhattacharya, and Janaki. Neoscore represents your coordinate in the knowledge field, 
-          while Specscore defines your direction vector.
-        </footer>
-      </div>
-    </div>
-  `;
-  
-  // Initialize Charts after a short delay to ensure DOM is ready
-  setTimeout(() => {
-    initTopologyCharts(userData);
-  }, 50);
-  
-  // Back button handler
-  document.getElementById('topology-back')?.addEventListener('click', () => {
-    if (mainArea.dataset.originalContent) {
-      mainArea.innerHTML = mainArea.dataset.originalContent;
-      delete mainArea.dataset.originalContent;
-      // Re-render the page content
-      renderPageContent();
-    }
-  });
+    // Re-initialize Charts
+    setTimeout(() => {
+      initTopologyCharts(userData);
+    }, 50);
 }
 
 function initTopologyCharts(userData) {
   // Radar Chart: Intellectual Shape
-  const radarCtx = document.getElementById('radarTopology');
+  const radarCtx = document.getElementById('radarChart');
   if (radarCtx && window.Chart) {
     new Chart(radarCtx, {
       type: 'radar',
@@ -193,7 +168,7 @@ function initTopologyCharts(userData) {
           r: {
             grid: { color: '#2a2420' },
             angleLines: { color: '#2a2420' },
-            pointLabels: { color: '#8b8276', font: { size: 11, family: 'monospace' } },
+            pointLabels: { color: '#8b8276', font: { size: 10, family: 'monospace' } },
             ticks: { display: false, max: 10 }
           }
         },
@@ -434,7 +409,7 @@ function renderAppNav() {
       title: 'CORE',
       links: [
         { href: dashHref, label: 'Dashboard', isDash: true },
-        { href: '#', label: 'Neoscore', onClick: 'renderTopologyPage()' },
+        { href: '#', label: 'Neoscore', onClick: 'forceNavigateToTopology()' },
         { href: 'subjects.html', label: 'Domains' },
         { href: 'pathways.html', label: 'Pathways' },
         { href: 'guild.html', label: 'Guilds' },
@@ -1476,6 +1451,16 @@ async function initApp() {
   renderPageContent();
   updateHomeForSession();
 }
+
+// Force topology navigation - Global function
+window.forceNavigateToTopology = function() {
+    console.log("Navigating to Knowledge Topology...");
+    if (typeof renderTopologyPage === 'function') {
+        renderTopologyPage();
+    } else {
+        console.error("renderTopologyPage function not found!");
+    }
+};
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => initApp().catch(console.error));

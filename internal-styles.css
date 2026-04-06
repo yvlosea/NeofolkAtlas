@@ -51,6 +51,11 @@ body.internal-page {
   color: var(--muted-text);
 }
 
+.topology-immersion {
+  position: relative;
+  z-index: 9999;
+}
+
 .internal-page a {
   color: var(--gold);
   text-decoration: none;
