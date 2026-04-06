@@ -914,27 +914,6 @@ function renderPageContent() {
     `;
   }
 
-  // Account Settings Page
-  if (accountRoot && accountRoot.innerHTML.trim() === '') {
-    accountRoot.innerHTML = `
-      <div class="dashboard-shell">
-        <div class="dashboard-header">
-          <p class="section-label">${escapeHtml(t('account.kicker'))}</p>
-          <h1>${escapeHtml(t('account.title'))}</h1>
-        </div>
-        <div class="card">
-          <h3>${escapeHtml(t('account.photoSection'))}</h3>
-          <input type="file" id="avatar-upload" accept="image/*" class="flow-top-16">
-          <button class="btn btn-primary flow-top-16" id="save-avatar">${escapeHtml(t('account.uploadPhoto'))}</button>
-        </div>
-        <div class="card">
-          <h3>${escapeHtml(t('account.emailSection'))}</h3>
-          <input type="email" id="new-email" placeholder="${escapeHtml(t('account.newEmail'))}" class="neo-input">
-          <button class="btn flow-top-16">${escapeHtml(t('account.updateEmail'))}</button>
-        </div>
-      </div>`;
-  }
-
   
   // Role Switcher Logic (Usually in Settings or Header)
   const roleSelect = document.getElementById('role-context-switcher');
