@@ -14,24 +14,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 const LANG_STORAGE = 'neofolk.preferredLanguage';
 const SUPPORTED_LANGS = ['en', 'hi', 'ur'];
 
-// Domain-based scoring system
-const defaultNeoDomains = {
-  lingosophy: 6,
-  arthmetics: 5,
-  cosmology: 2,
-  biosphere: 8,
-  chronicles: 3,
-  civitas: 4,
-  tokenomics: 2,
-  artifex: 7,
-  praxis: 6,
-  bioepisteme: 5
-};
+// Domain-based scoring system - Base 10 structure
+const domainKeys = [
+  'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'chronicles', 
+  'civitas', 'tokenomics', 'artifex', 'praxis', 'bioepisteme'
+];
 
-const defaultNeoSpecialization = {
-  biosphere: 80,
-  artifex: 60
-};
+const defaultNeoDomains = domainKeys.reduce((acc, k) => ({ ...acc, [k]: 0 }), {});
+const defaultNeoSpecialization = { "General": 0 };
 
 // LINEAGE_TOKENS mapping for Knowledge Topology
 const LINEAGE_TOKENS = {
@@ -49,12 +39,15 @@ const LINEAGE_TOKENS = {
 
 // Live calculation engine for topology metrics
 function getLiveTopology(userData) {
-    const domains = userData.domains || { lingosophy:0, arithmetics:0, cosmology:0, biosphere:0, chronicles:0, civitas:0, tokenomics:0, artifex:0, praxis:0, bioepisteme:0 };
-    const specs = userData.specializations || { "General": 10 };
+    const domains = userData.domains || { ...defaultNeoDomains };
+    const specs = userData.specializations || { ...defaultNeoSpecialization };
     
     const domainValues = Object.values(domains);
-    const neoscore = (domainValues.reduce((a, b) => a + b, 0) / 10) * 10;
-    const specscore = Math.max(...Object.values(specs));
+    const neoscore = domainValues.length > 0 ? (domainValues.reduce((a, b) => a + b, 0) / 10) * 10 : 0;
+    
+    // Depth (Specscore) - based on highest specialization value
+    // In live mode, depth might be a more complex formula, but for now we follow the user request logic
+    const specscore = Object.values(specs).length > 0 ? Math.max(...Object.values(specs)) : 0;
     
     return { neoscore, specscore, domains, specs };
 }
@@ -74,17 +67,64 @@ function toggleNeoscore() {
   if (el) el.classList.toggle("hidden");
 }
 
-window.forceNavigateToTopology = function(userData) {
+window.forceNavigateToTopology = async function(userData) {
+    if (userData) {
+        renderTopologyPage(userData);
+        return;
+    }
+
     const userId = currentUser?.id || 'guest';
-    const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
-    const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
+    const supabase = getSupabaseClient();
     
-    const liveData = userData || {
-        domains: storedDomains || defaultNeoDomains,
-        specializations: storedSpec || defaultNeoSpecialization
-    };
-    
-    renderTopologyPage(liveData);
+    const liveDomains = { ...defaultNeoDomains };
+    const liveSpecs = {};
+
+    if (supabase && currentUser) {
+        try {
+            // 1. Fetch completed modules and map to domains
+            const { data: enrolled } = await supabase
+                .from('enrolled_modules')
+                .select('module_id')
+                .eq('user_id', currentUser.id)
+                .eq('status', 'completed');
+
+            if (enrolled?.length) {
+                const modIds = enrolled.map(e => e.module_id);
+                const { data: mods } = await supabase
+                    .from('modules')
+                    .select('domain')
+                    .in('id', modIds);
+
+                mods?.forEach(m => {
+                    const d = m.domain?.toLowerCase();
+                    if (liveDomains.hasOwnProperty(d)) liveDomains[d] += 1;
+                    else if (d === 'arthmetics') liveDomains.arithmetics += 1; // Fix legacy spelling
+                });
+            }
+
+            // 2. Fetch specializations from breakdown
+            const { data: scoreRec } = await supabase
+                .from('neo_scores')
+                .select('breakdown')
+                .eq('user_id', currentUser.id)
+                .eq('role', 'seeker')
+                .single();
+
+            if (scoreRec?.breakdown?.specializations) {
+                Object.assign(liveSpecs, scoreRec.breakdown.specializations);
+            }
+        } catch (e) {
+            console.error("Topology fetch failed:", e);
+        }
+    } else {
+        // Fallback to local storage if no user
+        const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
+        const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
+        if (storedDomains) Object.assign(liveDomains, storedDomains);
+        if (storedSpec) Object.assign(liveSpecs, storedSpec);
+    }
+
+    renderTopologyPage({ domains: liveDomains, specializations: liveSpecs });
 };
 
 // Knowledge Topology Immersive Page with High-Fidelity Dashboard
@@ -124,16 +164,40 @@ function renderTopologyPage(userData) {
             </div>
 
             <!-- CHART GRID -->
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap:20px; margin-bottom:20px;">
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
                     <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">DOMAIN SHAPE (RADAR)</h3>
-                    <div style="height:350px;"><canvas id="radarChart"></canvas></div>
+                    <div style="height:400px;"><canvas id="radarChart"></canvas></div>
                 </div>
                 <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
-                    <h3 style="font-size:10px; margin-bottom:20px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">SPECIALIZATION FOCUS (DONUT)</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h3 style="font-size:10px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px; margin:0;">SPECIALIZATION FOCUS (DONUT)</h3>
+                        <button onclick="window.manageSpecializations()" style="background:none; border:1px solid #2a2420; color:#c6a96b; padding:4px 8px; cursor:pointer; font-size:9px; text-transform:uppercase;">MANAGE</button>
+                    </div>
                     <div style="height:350px;"><canvas id="donutChart"></canvas></div>
                 </div>
             </div>
+
+            <!-- SPECIALIZATION SELECTION MODAL (Hidden by default) -->
+            <div id="spec-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; display:flex; align-items:center; justify-content:center;">
+                <div style="background:#1a1614; border:1px solid #2a2420; padding:40px; width:450px; max-width:90%; position:relative;">
+                    <h2 style="font-family:'Cormorant Garamond', serif; color:#fff; margin-bottom:20px;">Subjects of Specialization</h2>
+                    <p style="color:#8b8276; font-size:11px; margin-bottom:20px;">Select up to 5 subjects you want to specialize in (increases depth score).</p>
+                    <div id="spec-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:30px;">
+                        ${domainKeys.map(k => `
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:#d4a373;">
+                                <input type="checkbox" name="spec-item" value="${k}" ${specs[k] ? 'checked' : ''} style="accent-color:#d4a373;">
+                                ${LINEAGE_TOKENS[k]}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <button onclick="window.saveSpecializations()" style="flex:1; background:#d4a373; border:none; color:#000; padding:12px; cursor:pointer; font-weight:bold;">SAVE CHANGES</button>
+                        <button onclick="document.getElementById('spec-modal').classList.add('hidden')" style="flex:1; background:none; border:1px solid #2a2420; color:#8b8276; padding:12px; cursor:pointer;">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- DOMAIN INTENSITY (Canvas Bar Chart Style) -->
             <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
@@ -1529,6 +1593,43 @@ async function initApp() {
 }
 
 // Force topology navigation - Global function wrapper already defined at the top of the file
+
+window.manageSpecializations = function() {
+    const el = document.getElementById('spec-modal');
+    if (el) el.classList.remove('hidden');
+};
+
+window.saveSpecializations = async function() {
+    const checkboxes = document.querySelectorAll('input[name="spec-item"]:checked');
+    const newSpecs = {};
+    checkboxes.forEach(cb => {
+        newSpecs[cb.value] = 85; // Base depth value for specialization
+    });
+
+    if (currentUser) {
+        const supabase = getSupabaseClient();
+        if (supabase) {
+            // Update neo_scores breakdown
+            const { data: current } = await supabase.from('neo_scores').select('breakdown').eq('user_id', currentUser.id).eq('role', 'seeker').single();
+            const breakdown = current?.breakdown || {};
+            breakdown.specializations = newSpecs;
+
+            await supabase.from('neo_scores').upsert({
+                user_id: currentUser.id,
+                role: 'seeker',
+                breakdown,
+                score: 100, // Placeholder total score
+                updated_at: new Date()
+            });
+        }
+    } else {
+        localStorage.setItem(`neofolk.spec.guest`, JSON.stringify(newSpecs));
+    }
+
+    // Refresh view
+    document.getElementById('spec-modal').classList.add('hidden');
+    window.forceNavigateToTopology();
+};
 
 
 if (document.readyState === 'loading') {
