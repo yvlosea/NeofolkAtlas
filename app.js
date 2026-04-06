@@ -923,31 +923,44 @@ function renderPageContent() {
       location.reload();
     });
   }
-  // Nodes / Map Page
-  const nodesRoot = document.getElementById('nodes-root');
-  if (nodesRoot && page === 'nodes.html' && nodesRoot.innerHTML.trim() === '') {
+  // NODES PAGE
+  const nodesRoot = document.getElementById("nodes-root");
+  if (nodesRoot && nodesRoot.innerHTML.trim() === "") {
     nodesRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
-          <p class="section-label">${escapeHtml(t('nodes.kicker') || 'Nodes')}</p>
-          <h1>${escapeHtml(t('nodes.title') || 'Learning Nodes')}</h1>
+          <p class="section-label">Nodes</p>
+          <h1>Learning Nodes</h1>
+          <p class="lede">
+            Physical locations where learning happens.
+          </p>
         </div>
-        <div id="map" style="height:500px;border-radius:8px;"></div>
+        <div id="map"
+          style="
+            height:500px;
+            width:100%;
+            border-radius:12px;
+            margin-top:20px;
+          ">
+        </div>
       </div>
     `;
-    // initialize Leaflet ONLY after DOM exists
-    if (window.L) {
-      const map = L.map('map').setView([22.9734, 78.6569], 5);
+    setTimeout(() => {
+      if (!window.L) {
+        console.error("Leaflet not loaded");
+        return;
+      }
+      const map = L.map("map").setView(
+        [20.5937, 78.9629],
+        5
+      );
       L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-          attribution: '&copy; OpenStreetMap contributors'
+          attribution: "© OpenStreetMap contributors"
         }
       ).addTo(map);
-      // Add placeholder markers
-      L.marker([28.6139, 77.2090]).addTo(map).bindPopup('Delhi Node');
-      L.marker([19.0760, 72.8777]).addTo(map).bindPopup('Mumbai Node');
-    }
+    }, 50);
   }
 }
 
