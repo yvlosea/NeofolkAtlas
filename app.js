@@ -57,9 +57,15 @@ function t(path) {
 
 async function loadDictionary(code) {
   const lang = SUPPORTED_LANGS.includes(code) ? code : 'en';
-  const res = await fetch(`./translations/${lang}.json`);
-  if (!res.ok) throw new Error(`Missing translations/${lang}.json`);
-  dictionary = await res.json();
+  try {
+    const res = await fetch(`./translations/${lang}.json`);
+    if (!res.ok) throw new Error();
+    dictionary = await res.json();
+  } catch (err) {
+    console.warn(`Could not load ${lang} translations, falling back to en.`);
+    const fallback = await fetch(`./translations/en.json`);
+    dictionary = await fallback.json();
+  }
   return lang;
 }
 
@@ -121,39 +127,80 @@ function renderAppNav() {
   const dashHref = currentUser ? getDashboardPath(currentUser) : 'seeker-dashboard.html';
   const isDashboardPage = here.endsWith('-dashboard.html');
 
-  const links = [
-    { href: 'index.html', key: 'nav.home' },
-    { href: dashHref, key: 'nav.dashboard' },
-    { href: 'subjects.html', key: 'nav.learn' },
-    { href: 'guild.html', key: 'nav.groups' },
-    { href: 'discovery.html', key: 'nav.explore' },
-    { href: 'dictionary.html', key: 'nav.dictionary' },
-    { href: 'vision.html', key: 'nav.vision' },
-    { href: 'help.html', key: 'nav.help' },
+  const role =
+    currentUser?.user_metadata?.role ||
+    currentUser?.app_metadata?.role ||
+    'seeker';
+
+  const sections = [
+    {
+      title: 'CORE',
+      links: [
+        { href: dashHref, label: 'Dashboard', isDash: true },
+        { href: 'subjects.html', label: 'Domains' },
+        { href: 'pathways.html', label: 'Pathways' },
+        { href: 'guild.html', label: 'Guilds' },
+        { href: 'portfolio.html', label: 'Portfolio' },
+        { href: 'nodes.html', label: 'Nodes' }
+      ]
+    },
+    {
+      title: 'KNOWLEDGE',
+      links: [
+        { href: 'dictionary.html', label: 'Dictionary' },
+        { href: 'guide.html', label: 'Guide' },
+        { href: 'vision.html', label: 'Vision' }
+      ]
+    },
+    {
+      title: 'ACCOUNT',
+      links: [
+        { href: 'profile.html', label: 'Profile' },
+        { href: 'account.html', label: 'Settings' }
+      ]
+    }
   ];
 
-  nav.innerHTML = links
-    .map(({ href, key }) => {
-      const isHome = href === 'index.html' && (here === 'index.html' || here === '');
-      const isDashLink = key === 'nav.dashboard';
-      const active = isHome || (isDashLink ? isDashboardPage : here === href);
-      const cls = active ? 'sidebar-link is-active' : 'sidebar-link';
-      return `<a class="${cls}" href="${href}">${escapeHtml(t(key))}</a>`;
-    })
+  // curator tools
+  if (role === 'curator') {
+    sections.push({
+      title: 'CURATION',
+      links: [
+        { href: 'teaching-log.html', label: 'Teaching Log' },
+        { href: 'attendance.html', label: 'Attendance' }
+      ]
+    });
+  }
+
+  nav.innerHTML = sections
+    .map(section => `
+      <div class="nav-section-group">
+        <div class="nav-section-header">
+          ${section.title}
+        </div>
+        ${section.links
+          .map(link => {
+            const active = link.isDash ? isDashboardPage : here === link.href;
+            const cls = active ? 'sidebar-link is-active' : 'sidebar-link';
+            return `<a class="${cls}" href="${link.href}">${link.label}</a>`;
+          })
+          .join('')}
+      </div>
+    `)
     .join('');
 
-  // Add logout button only when user is actually logged in
+  // logout button
   if (currentUser) {
-    const supabase = getSupabaseClient();
     const logoutBtn = document.createElement('button');
     logoutBtn.className = 'sidebar-link sidebar-logout';
     logoutBtn.type = 'button';
-    logoutBtn.textContent = t('nav.logout');
-    logoutBtn.addEventListener('click', async () => {
+    logoutBtn.textContent = 'Logout';
+    logoutBtn.onclick = async () => {
+      const supabase = getSupabaseClient();
       if (supabase) await supabase.auth.signOut();
       currentUser = null;
-      window.location.assign('index.html');
-    });
+      location.href = 'index.html';
+    };
     nav.appendChild(logoutBtn);
   }
 }
@@ -412,6 +459,7 @@ function wireLanguageSelectors() {
       renderAppNav();
       renderSidebarLangPicker();
       renderPageContent();
+      updateHomeForSession();
     });
   });
 }
@@ -476,10 +524,10 @@ function renderPageContent() {
           '<p class="lede">' + escapeHtml(t('dashboard.subtitle')) + '</p>' +
         '</div></div>' +
         '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;">' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.projects')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.projectsBody')) + '</p></div>' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong>0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
+          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
         '</div>' +
         '<div class="card">' +
           '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
@@ -494,11 +542,32 @@ function renderPageContent() {
 
     // Show signed-in email if we have a session
     if (supabase) {
-      supabase.auth.getUser().then(({ data }) => {
+      supabase.auth.getUser().then(async ({ data }) => {
         const el = document.getElementById('dash-signed-in');
-        if (el && data?.user?.email) {
-          el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
-        }
+        if (!data?.user) return;
+        
+        if (el) el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
+
+        // 1. Fetch Completed Modules (50 pts each)
+        const { count: modCount } = await supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id).eq('status', 'completed');
+        
+        // 2. Fetch Notes Written (10 pts each)
+        const { count: noteCount } = await supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id);
+        
+        // 3. Calculate Score
+        const neoScore = (modCount || 0) * 50 + (noteCount || 0) * 10;
+
+        // Update UI
+        if (document.getElementById('stat-modules')) document.getElementById('stat-modules').textContent = modCount || 0;
+        if (document.getElementById('stat-notes')) document.getElementById('stat-notes').textContent = noteCount || 0;
+        if (document.getElementById('stat-score')) document.getElementById('stat-score').textContent = neoScore;
+
+        // Persist to neo_scores table for ranking/history
+        await supabase.from('neo_scores').upsert({ 
+          user_id: data.user.id, 
+          score: neoScore,
+          updated_at: new Date().toISOString()
+        });
       });
     }
   }
@@ -684,6 +753,51 @@ function renderPageContent() {
         '</div>' +
       '</div>';
   }
+
+  // Account Settings Page
+  const accountRoot = document.getElementById('account-root');
+  if (accountRoot && accountRoot.innerHTML.trim() === '') {
+    accountRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">${escapeHtml(t('account.kicker'))}</p>
+          <h1>${escapeHtml(t('account.title'))}</h1>
+        </div>
+        <div class="card">
+          <h3>${escapeHtml(t('account.photoSection'))}</h3>
+          <input type="file" id="avatar-upload" accept="image/*" class="flow-top-16">
+          <button class="btn btn-primary flow-top-16" id="save-avatar">${escapeHtml(t('account.uploadPhoto'))}</button>
+        </div>
+        <div class="card">
+          <h3>${escapeHtml(t('account.emailSection'))}</h3>
+          <input type="email" id="new-email" placeholder="${escapeHtml(t('account.newEmail'))}" class="neo-input">
+          <button class="btn flow-top-16">${escapeHtml(t('account.updateEmail'))}</button>
+        </div>
+      </div>`;
+  }
+
+  // Nodes / Map Page
+  const nodesRoot = document.getElementById('nodes-root');
+  if (nodesRoot && nodesRoot.innerHTML.trim() === '') {
+    nodesRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <p class="section-label">${escapeHtml(t('nodes.kicker'))}</p>
+          <h1>${escapeHtml(t('nodes.title'))}</h1>
+        </div>
+        <div id="map" style="height: 500px; background: #eee; border-radius: 8px;"></div>
+      </div>`;
+    // Leaflet init would go here
+  }
+  
+  // Role Switcher Logic (Usually in Settings or Header)
+  const roleSelect = document.getElementById('role-context-switcher');
+  if (roleSelect) {
+    roleSelect.addEventListener('change', (e) => {
+      localStorage.setItem('neofolk.activeRole', e.target.value);
+      location.reload();
+    });
+  }
 }
 // --- insert this into renderPageContent() ---
   // Nodes page (map)
@@ -745,11 +859,6 @@ function renderPageContent() {
 // --- end insert ---
 
 async function initApp() {
-  const stored = localStorage.getItem(LANG_STORAGE);
-  const lang = SUPPORTED_LANGS.includes(stored) ? stored : 'en';
-  await loadDictionary(lang);
-  applyDocumentLanguage(lang);
-  applyDataI18n();
 
   // Check session before rendering nav so logout/dashboard are correct
   const supabase = getSupabaseClient();
@@ -761,6 +870,12 @@ async function initApp() {
       currentUser = null;
     }
   }
+
+  const stored = localStorage.getItem(LANG_STORAGE);
+  const lang = SUPPORTED_LANGS.includes(stored) ? stored : 'en';
+  await loadDictionary(lang);
+  applyDocumentLanguage(lang);
+  applyDataI18n();
 
   renderAppNav();
   wireMobileNav();
