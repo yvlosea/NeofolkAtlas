@@ -131,17 +131,31 @@ const LINEAGE_DETAILS = [
 ];
 
 // ============================================================
-// NODENEED SYSTEM - Dynamic Node Needs Data Structure
+// NODE DEMAND SYSTEM - Structured Node Needs with Domain/Subject/Tags
 // ============================================================
 
-// NodeNeed collection - stores all node needs
+// Global NodeNeeds collection - stored in localStorage for cross-user visibility
 const nodeNeeds = [];
 
-// Valid token types for NodeNeeds (from Indian Lineage Tokens)
-const VALID_TOKEN_TYPES = [
-  'Spivaks', 'Shakuntis', 'Bhattas', 'Janakis', 'Thapars', 
-  'Savi', 'Bhanus', 'Sarabhs', 'Arunas', 'Gagas'
+// Valid Domains (the 10 lineage domains)
+const VALID_DOMAINS = [
+  'Lingosophy', 'Arithmetics', 'Cosmology', 'Biosphere', 'Chronicles',
+  'Civitas', 'Tokenomics', 'Artifex', 'Praxis', 'Bioepisteme'
 ];
+
+// Domain to Token mapping
+const DOMAIN_TO_TOKEN = {
+  'Lingosophy': 'Spivaks',
+  'Arithmetics': 'Shakuntis',
+  'Cosmology': 'Bhattas',
+  'Biosphere': 'Janakis',
+  'Chronicles': 'Thapars',
+  'Civitas': 'Savi',
+  'Tokenomics': 'Bhanus',
+  'Artifex': 'Sarabhs',
+  'Praxis': 'Arunas',
+  'Bioepisteme': 'Gagas'
+};
 
 // Valid statuses for NodeNeeds
 const VALID_STATUSES = ['pending', 'provisioning', 'fulfilled'];
@@ -149,6 +163,80 @@ const VALID_STATUSES = ['pending', 'provisioning', 'fulfilled'];
 // Current map view filter
 let nodeNeedFilter = 'all'; // 'all', 'active', 'needs'
 let demandModeActive = false;
+
+// Mode toggle: 'social' (view/interact) vs 'lockin' (focus mode)
+let userMode = 'social';
+
+/**
+ * Toggle between Social Mode and Lock-in Mode
+ */
+window.toggleUserMode = function() {
+  userMode = userMode === 'social' ? 'lockin' : 'social';
+  
+  // Update UI indicator
+  let indicator = document.querySelector('.mode-indicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.className = 'mode-indicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      letter-spacing: 1px;
+      z-index: 10000;
+      transition: all 0.3s ease;
+    `;
+    document.body.appendChild(indicator);
+  }
+  
+  if (userMode === 'social') {
+    indicator.textContent = '🌐 SOCIAL MODE';
+    indicator.style.background = 'rgba(39, 174, 96, 0.2)';
+    indicator.style.border = '1px solid #27ae60';
+    indicator.style.color = '#27ae60';
+    document.body.classList.remove('lockin-mode');
+  } else {
+    indicator.textContent = '🔒 LOCK-IN MODE';
+    indicator.style.background = 'rgba(231, 76, 60, 0.2)';
+    indicator.style.border = '1px solid #e74c3c';
+    indicator.style.color = '#e74c3c';
+    document.body.classList.add('lockin-mode');
+  }
+  
+  // Save preference
+  localStorage.setItem('neofolk.userMode', userMode);
+  console.log(`Switched to ${userMode} mode`);
+  return userMode;
+};
+
+/**
+ * Initialize user mode from saved preference
+ */
+function initUserMode() {
+  const saved = localStorage.getItem('neofolk.userMode');
+  if (saved && saved !== userMode) {
+    userMode = saved;
+    // Trigger UI update without toggling
+    const indicator = document.querySelector('.mode-indicator');
+    if (indicator) {
+      if (userMode === 'social') {
+        indicator.textContent = '🌐 SOCIAL MODE';
+        indicator.style.background = 'rgba(39, 174, 96, 0.2)';
+        indicator.style.border = '1px solid #27ae60';
+        indicator.style.color = '#27ae60';
+      } else {
+        indicator.textContent = '🔒 LOCK-IN MODE';
+        indicator.style.background = 'rgba(231, 76, 60, 0.2)';
+        indicator.style.border = '1px solid #e74c3c';
+        indicator.style.color = '#e74c3c';
+      }
+    }
+  }
+}
 
 /**
  * Toggle Demand Mode - allowing users to drop new signals
@@ -162,12 +250,11 @@ window.toggleDemandMode = function() {
   }
   
   if (demandModeActive) {
-    // Show indicator
     let indicator = document.querySelector('.demand-mode-indicator');
     if (!indicator) {
       indicator = document.createElement('div');
       indicator.className = 'demand-mode-indicator';
-      indicator.textContent = 'DEMAND MODE ACTIVE: CLICK MAP TO SIGNAL NEED';
+      indicator.textContent = 'DEMAND MODE: CLICK MAP TO SIGNAL NEED';
       document.body.appendChild(indicator);
     }
     indicator.style.display = 'block';
@@ -178,30 +265,38 @@ window.toggleDemandMode = function() {
 };
 
 /**
- * Create a new NodeNeed entry
+ * Create a new NodeNeed entry with structured data hierarchy
  * @param {number} lat - Latitude coordinate
  * @param {number} lng - Longitude coordinate  
- * @param {string} tokenType - Token type from VALID_TOKEN_TYPES
+ * @param {string} domain - Domain from VALID_DOMAINS
+ * @param {string} subject - Specific subject within domain
+ * @param {string[]} tags - Array of custom tags
  * @returns {object} The created NodeNeed object
  */
-function createNodeNeed(lat, lng, tokenType) {
-  if (!VALID_TOKEN_TYPES.includes(tokenType)) {
-    console.error(`Invalid token type: ${tokenType}. Must be one of: ${VALID_TOKEN_TYPES.join(', ')}`);
+function createNodeNeed(lat, lng, domain, subject, tags = []) {
+  if (!VALID_DOMAINS.includes(domain)) {
+    console.error(`Invalid domain: ${domain}. Must be one of: ${VALID_DOMAINS.join(', ')}`);
     return null;
   }
+  
+  const tokenType = DOMAIN_TO_TOKEN[domain];
   
   const need = {
     id: `need_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     coordinates: [lat, lng],
+    domain: domain,
+    subject: subject || 'General',
+    tags: Array.isArray(tags) ? tags : [tags].filter(Boolean),
     tokenType: tokenType,
-    urgencyCount: 1,
+    clickCount: 1, // 1-5 urgency loop
     status: 'pending',
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    boostedBy: [] // Track users who boosted
   };
   
   nodeNeeds.push(need);
-  saveNodeNeeds();
+  saveGlobalNodeNeeds();
   return need;
 }
 
@@ -209,20 +304,22 @@ function createNodeNeed(lat, lng, tokenType) {
  * Drop a new need signal on the map
  * @param {number} lat - Latitude
  * @param {number} lng - Longitude
- * @param {string} tokenType - Token type
+ * @param {string} domain - Domain
+ * @param {string} subject - Subject
+ * @param {string[]} tags - Custom tags
  */
-function dropNeedSignal(lat, lng, tokenType) {
-  const need = createNodeNeed(lat, lng, tokenType);
+function dropNeedSignal(lat, lng, domain, subject, tags) {
+  const need = createNodeNeed(lat, lng, domain, subject, tags);
   if (need) {
     renderNodeNeedMarker(need);
-    console.log(`NodeNeed dropped: ${tokenType} at [${lat}, ${lng}]`);
+    console.log(`NodeNeed dropped: ${domain} - ${subject} at [${lat}, ${lng}]`);
   }
   return need;
 }
 
 /**
- * Support an existing NodeNeed - increments urgencyCount
- * @param {string} needId - ID of the NodeNeed to support
+ * Boost an existing NodeNeed - increments clickCount (1-5, resets to 1 at 5)
+ * @param {string} needId - ID of the NodeNeed to boost
  */
 function supportNodeNeed(needId) {
   const need = nodeNeeds.find(n => n.id === needId);
@@ -231,13 +328,26 @@ function supportNodeNeed(needId) {
     return null;
   }
   
-  need.urgencyCount += 1;
+  // Urgency loop: 1-5, reset to 1 when at 5
+  if (need.clickCount >= 5) {
+    need.clickCount = 1;
+  } else {
+    need.clickCount += 1;
+  }
+  
   need.updatedAt = new Date().toISOString();
-  saveNodeNeeds();
+  
+  // Track who boosted (for analytics)
+  const userId = currentUser?.id || 'guest_' + localStorage.getItem('neofolk.guestId') || 'unknown';
+  if (!need.boostedBy.includes(userId)) {
+    need.boostedBy.push(userId);
+  }
+  
+  saveGlobalNodeNeeds();
   
   // Update marker display
   updateNodeNeedMarker(need);
-  console.log(`NodeNeed ${needId} supported. Urgency: ${need.urgencyCount}`);
+  console.log(`NodeNeed ${needId} boosted. Level: ${need.clickCount}/5`);
   return need;
 }
 
@@ -279,21 +389,26 @@ function setNodeNeedFilter(filter) {
 }
 
 /**
- * Save NodeNeeds to localStorage
+ * Save NodeNeeds to global localStorage (cross-user visibility)
  */
-function saveNodeNeeds() {
-  localStorage.setItem('neofolk.nodeNeeds', JSON.stringify(nodeNeeds));
+function saveGlobalNodeNeeds() {
+  localStorage.setItem('neofolk.globalNodeNeeds', JSON.stringify(nodeNeeds));
 }
 
 /**
- * Load NodeNeeds from localStorage
+ * Load NodeNeeds from global localStorage
  */
-function loadNodeNeeds() {
-  const stored = localStorage.getItem('neofolk.nodeNeeds');
+function loadGlobalNodeNeeds() {
+  const stored = localStorage.getItem('neofolk.globalNodeNeeds');
   if (stored) {
     const loaded = JSON.parse(stored);
     nodeNeeds.length = 0;
     nodeNeeds.push(...loaded);
+  }
+  
+  // Ensure guest ID exists for tracking
+  if (!localStorage.getItem('neofolk.guestId')) {
+    localStorage.setItem('neofolk.guestId', 'guest_' + Math.random().toString(36).substr(2, 9));
   }
 }
 
@@ -335,15 +450,12 @@ function renderNodeNeedMarker(need) {
   
   const color = getTokenColor(need.tokenType);
   
-  // Custom Icon with Pulsing Effect
-  // Speed and Size scale with urgencyCount
-  const pulseSpeed = Math.max(0.4, 1.2 - (need.urgencyCount * 0.1)) + "s";
-  const scaleSize = Math.min(2.5, 1 + (need.urgencyCount * 0.15));
-  
+  // Custom Icon with Pulsing Effect (5-Stage CSS Classes)
   const markerIcon = L.divIcon({
     className: 'node-need-marker',
     html: `
-      <div class="node-pulse" style="--node-color: ${color}; --pulse-speed: ${pulseSpeed}; transform: scale(${scaleSize});">
+      <div class="node-pulse level-${need.clickCount}" style="--node-color: ${color};">
+        <span class="click-count">${need.clickCount}</span>
       </div>
     `,
     iconSize: [40, 40],
@@ -355,26 +467,35 @@ function renderNodeNeedMarker(need) {
     riseOnHover: true
   }).addTo(window.mapInstance);
   
-  // Click handler to boost demand
+  // Click handler to boost (only in social mode)
   marker.on('click', (e) => {
     L.DomEvent.stopPropagation(e);
-    supportNodeNeed(need.id);
+    if (userMode === 'social') {
+      supportNodeNeed(need.id);
+    } else {
+      // In lock-in mode, just show info
+      console.log('Lock-in mode: viewing only');
+    }
   });
   
-  // Tooltip with details
-  marker.bindTooltip(`
-    <div style="font-family:monospace; padding:4px;">
-      <strong style="color:${color}">${need.tokenType}</strong><br>
-      Urgency: ${need.urgencyCount}<br>
-      <span style="font-size:9px; opacity:0.8;">Click to boost demand</span>
+  // Tooltip with specific formatting: [Domain] > [Subject] | Tags: #tag1, #tag2 | Urgency: X/5
+  const tagsStr = need.tags.length > 0 ? ` | Tags: ${need.tags.map(t => '#' + t).join(', ')}` : '';
+  const tooltipContent = `
+    <div style="font-family:monospace; padding:6px; background:#000; border:1px solid ${color}; color:#fff; font-size:11px; white-space:nowrap;">
+      <strong>${need.domain} &gt; ${need.subject}</strong>${tagsStr} | Urgency: ${need.clickCount}/5
+      <br><span style="font-size:9px; opacity:0.5; margin-top:4px; display:block;">
+        ${userMode === 'social' ? 'CLICK TO BOOST (SOCIAL MODE)' : 'VIEW ONLY (LOCK-IN MODE)'}
+      </span>
     </div>
-  `);
+  `;
+  
+  marker.bindTooltip(tooltipContent, { sticky: true, opacity: 0.95 });
   
   window.nodeNeedMarkers[need.id] = marker;
 }
 
 /**
- * Show a radial menu to select a token type at coordinates
+ * Show a radial menu to select domain and enter subject/tags at coordinates
  * @param {number} lat 
  * @param {number} lng 
  */
@@ -391,17 +512,17 @@ function showRadialMenu(lat, lng) {
         <span>SIGNAL</span>
         <strong>NEED</strong>
       </div>
-      ${VALID_TOKEN_TYPES.map((type, i) => {
-        const angle = (i / VALID_TOKEN_TYPES.length) * (2 * Math.PI) - (Math.PI / 2);
+      ${VALID_DOMAINS.map((domain, i) => {
+        const angle = (i / VALID_DOMAINS.length) * (2 * Math.PI) - (Math.PI / 2);
         const radius = 110;
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
-        const color = getTokenColor(type);
+        const color = getTokenColor(DOMAIN_TO_TOKEN[domain]);
         return `
           <div class="radial-item" 
                style="transform: translate(${x}px, ${y}px); --token-color: ${color};"
-               onclick="window.dropNeedSignal(${lat}, ${lng}, '${type}'); document.getElementById('radial-menu-overlay').remove();">
-            <span>${type}</span>
+               onclick="window.showNeedForm(${lat}, ${lng}, '${domain}', '${color}');">
+            <span>${domain}</span>
           </div>
         `;
       }).join('')}
@@ -414,6 +535,101 @@ function showRadialMenu(lat, lng) {
   
   document.body.appendChild(overlay);
 }
+
+/**
+ * Show form to enter subject and tags for a new need
+ * @param {number} lat 
+ * @param {number} lng 
+ * @param {string} domain 
+ * @param {string} color 
+ */
+window.showNeedForm = function(lat, lng, domain, color) {
+  // Remove radial menu
+  const radial = document.getElementById('radial-menu-overlay');
+  if (radial) radial.remove();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'need-form-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 10003;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  `;
+  
+  overlay.innerHTML = `
+    <div style="background: var(--ink, #1a1614); border: 1px solid ${color}; padding: 30px; width: 350px; max-width: 90%; border-radius: 4px;">
+      <h3 style="color: ${color}; margin: 0 0 20px 0; font-family: var(--serif, 'Cormorant Garamond'); font-size: 1.5rem;">
+        ${domain}
+      </h3>
+      
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">
+          Subject *
+        </label>
+        <input type="text" id="need-subject" placeholder="e.g., Sanskrit, Permaculture..." 
+               style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--parchment); font-family: monospace; box-sizing: border-box;">
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">
+          Tags (comma separated)
+        </label>
+        <input type="text" id="need-tags" placeholder="e.g., library, community-garden..." 
+               style="width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--parchment); font-family: monospace; box-sizing: border-box;">
+      </div>
+      
+      <div style="display: flex; gap: 10px;">
+        <button onclick="window.submitNeed(${lat}, ${lng}, '${domain}')" 
+                style="flex: 1; background: ${color}; border: none; color: #000; padding: 12px; cursor: pointer; font-weight: bold; font-family: monospace;">
+          DROP SIGNAL
+        </button>
+        <button onclick="document.getElementById('need-form-overlay').remove()" 
+                style="flex: 1; background: none; border: 1px solid var(--border-color); color: var(--muted-text); padding: 12px; cursor: pointer; font-family: monospace;">
+          CANCEL
+        </button>
+      </div>
+    </div>
+  `;
+  
+  overlay.onclick = (e) => {
+    if (e.target === overlay) overlay.remove();
+  };
+  
+  document.body.appendChild(overlay);
+  
+  // Focus subject input
+  setTimeout(() => document.getElementById('need-subject')?.focus(), 100);
+};
+
+/**
+ * Submit a new need from the form
+ */
+window.submitNeed = function(lat, lng, domain) {
+  const subjectInput = document.getElementById('need-subject');
+  const tagsInput = document.getElementById('need-tags');
+  
+  const subject = subjectInput?.value.trim();
+  if (!subject) {
+    subjectInput.style.borderColor = '#e74c3c';
+    return;
+  }
+  
+  const tagsStr = tagsInput?.value.trim() || '';
+  const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+  
+  dropNeedSignal(lat, lng, domain, subject, tags);
+  
+  // Close form
+  document.getElementById('need-form-overlay')?.remove();
+};
 
 /**
  * Update existing marker display
@@ -449,9 +665,14 @@ window.dropNeedSignal = dropNeedSignal;
 window.supportNodeNeed = supportNodeNeed;
 window.updateNodeNeedStatus = updateNodeNeedStatus;
 window.setNodeNeedFilter = setNodeNeedFilter;
+window.showNeedForm = window.showNeedForm;
+window.submitNeed = window.submitNeed;
 
-// Load NodeNeeds on startup
-loadNodeNeeds();
+// Load NodeNeeds on startup (global for all users)
+loadGlobalNodeNeeds();
+
+// Initialize user mode
+initUserMode();
 
 
 // Live calculation engine for topology metrics
@@ -2016,7 +2237,7 @@ function renderPageContent() {
   const accountRoot = document.getElementById('account-settings-root');
   if (accountRoot && accountRoot.innerHTML.trim() === '') {
     const storedLang = localStorage.getItem(LANG_STORAGE) || 'en';
-    const storedRole = localStorage.getItem('neofolk.activeRole') || 'seeker';
+    const savedMode = localStorage.getItem('neofolk.userMode') || 'social';
     
     accountRoot.innerHTML = `
       <div class="dashboard-shell">
@@ -2036,12 +2257,19 @@ function renderPageContent() {
         </div>
         
         <div class="card" style="margin-bottom:20px;">
-          <h3 style="margin-top:0; margin-bottom:16px;">Role Context</h3>
-          <p style="color:var(--text-secondary); margin-bottom:12px; font-size:0.9rem;">Switch between learner and curator modes.</p>
-          <select id="settings-role" class="neo-input" style="max-width:300px;">
-            <option value="seeker"${storedRole === 'seeker' ? ' selected' : ''}>Seeker (Learner)</option>
-            <option value="curator"${storedRole === 'curator' ? ' selected' : ''}>Curator (Teacher)</option>
-          </select>
+          <h3 style="margin-top:0; margin-bottom:16px;">Interaction Mode</h3>
+          <p style="color:var(--text-secondary); margin-bottom:12px; font-size:0.9rem;">
+            <strong>Social Mode:</strong> View and interact with all Nodes and Needs.<br>
+            <strong>Lock-in Mode:</strong> System-wide focus mode for deep work.
+          </p>
+          <div style="display:flex; gap:12px;">
+            <button id="mode-toggle-btn" class="btn btn-primary" style="font-size:0.85rem;">
+              Switch to ${savedMode === 'social' ? 'Lock-in' : 'Social'} Mode
+            </button>
+          </div>
+          <p id="mode-status" style="color:var(--success); font-size:0.8rem; margin-top:12px; display:none;">
+            Mode updated! Current: ${savedMode === 'social' ? '🌐 Social' : '🔒 Lock-in'}
+          </p>
         </div>
         
         <div class="card" style="margin-bottom:20px;">
@@ -2088,12 +2316,18 @@ function renderPageContent() {
       });
     }
     
-    // Role switcher handler
-    const roleSelect = document.getElementById('settings-role');
-    if (roleSelect) {
-      roleSelect.addEventListener('change', (e) => {
-        localStorage.setItem('neofolk.activeRole', e.target.value);
-        location.reload();
+    // Mode toggle handler
+    const modeBtn = document.getElementById('mode-toggle-btn');
+    if (modeBtn) {
+      modeBtn.addEventListener('click', () => {
+        const newMode = window.toggleUserMode();
+        modeBtn.textContent = `Switch to ${newMode === 'social' ? 'Lock-in' : 'Social'} Mode`;
+        const status = document.getElementById('mode-status');
+        if (status) {
+          status.textContent = `Mode updated! Current: ${newMode === 'social' ? '🌐 Social' : '🔒 Lock-in'}`;
+          status.style.display = 'block';
+          setTimeout(() => status.style.display = 'none', 2000);
+        }
       });
     }
     
@@ -2135,13 +2369,10 @@ function renderPageContent() {
   }
 
   
-  // Role Switcher Logic (Usually in Settings or Header)
+  // Remove old Role Switcher Logic - replaced by Mode Toggle above
   const roleSelect = document.getElementById('role-context-switcher');
   if (roleSelect) {
-    roleSelect.addEventListener('change', (e) => {
-      localStorage.setItem('neofolk.activeRole', e.target.value);
-      location.reload();
-    });
+    roleSelect.style.display = 'none'; // Hide old role switcher
   }
   // NODES PAGE
   const nodesRoot = document.getElementById("nodes-root");
@@ -2154,9 +2385,14 @@ function renderPageContent() {
               <h1>Learning Nodes</h1>
               <p class="lede">Physical locations where learning happens.</p>
             </div>
-            <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
-              [ SIGNAL LOCAL NEED ]
-            </button>
+            <div style="display:flex; gap:10px;">
+              <button onclick="window.toggleUserMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
+                [ ${userMode === 'social' ? 'ENTER LOCK-IN MODE' : 'BACK TO SOCIAL MODE'} ]
+              </button>
+              <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
+                [ SIGNAL LOCAL NEED ]
+              </button>
+            </div>
           </div>
         </div>
         <div id="map" style="height:500px; width:100%; border-radius:4px; border:1px solid var(--border-color); background:var(--ink);"></div>

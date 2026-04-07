@@ -1873,7 +1873,7 @@ select.neo-input {
 }
 
 /* ============================================================
-   NODENEED MARKERS
+   NODENEED MARKERS - 5 STAGE PULSE
    ============================================================ */
 .node-need-marker {
   display: flex;
@@ -1889,9 +1889,48 @@ select.neo-input {
   border-radius: 50%;
   background-color: var(--node-color, #d4a373);
   box-shadow: 0 0 12px var(--node-color, #d4a373);
-  animation: node-pulse-dot var(--pulse-speed, 1.2s) ease-in-out infinite;
+  animation: node-pulse-dot 1.2s ease-in-out infinite;
   pointer-events: auto !important;
   cursor: pointer;
+}
+
+/* LEVEL 1: Slow, faint pulse */
+.node-pulse.level-1 { animation-duration: 2s; opacity: 0.6; transform: scale(0.9); }
+.node-pulse.level-1::before { animation-duration: 2s; opacity: 0.3 !important; }
+
+/* LEVEL 2: Baseline */
+.node-pulse.level-2 { animation-duration: 1.5s; opacity: 0.8; transform: scale(1.1); }
+.node-pulse.level-2::before { animation-duration: 1.5s; }
+
+/* LEVEL 3: Medium speed, thicker border */
+.node-pulse.level-3 { animation-duration: 1s; opacity: 1; transform: scale(1.4); }
+.node-pulse.level-3::before { animation-duration: 1s; border-width: 4px; }
+
+/* LEVEL 4: Fast */
+.node-pulse.level-4 { animation-duration: 0.7s; opacity: 1; transform: scale(1.8); }
+.node-pulse.level-4::before { animation-duration: 0.7s; border-width: 5px; box-shadow: 0 0 15px var(--node-color); }
+
+/* LEVEL 5: Rapid, high-intensity glow */
+.node-pulse.level-5 { animation-duration: 0.4s; opacity: 1; transform: scale(2.2); box-shadow: 0 0 30px var(--node-color); }
+.node-pulse.level-5::before { animation-duration: 0.4s; border-width: 6px; box-shadow: 0 0 40px var(--node-color); }
+
+.node-pulse .click-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #000;
+  color: var(--node-color);
+  border: 1px solid var(--node-color);
+  font-size: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  z-index: 10;
 }
 
 .node-pulse::before {
@@ -1903,7 +1942,7 @@ select.neo-input {
   bottom: -20px;
   border: 2px solid var(--node-color, #d4a373);
   border-radius: 50%;
-  animation: node-pulse-ring var(--pulse-speed, 1.2s) cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  animation: node-pulse-ring 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
   opacity: 0;
   pointer-events: none;
 }
