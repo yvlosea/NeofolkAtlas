@@ -36,26 +36,39 @@ create policy "Verified curators are publicly readable" on public.curator_profil
   for select using (verification_status = 'verified');
 
 -- 3. MODULES
+create extension if not exists postgis;
+
 create table if not exists public.modules (
-  id           uuid default gen_random_uuid() primary key,
-  curator_id   uuid references auth.users(id) on delete cascade not null,
-  title        text not null,
-  description  text,
-  outcomes     text,
-  skills       text,
-  domain       text,
-  duration     text,
-  difficulty   text check (difficulty in ('introductory','intermediate','advanced')),
-  prerequisites text,
-  is_published  boolean default false,
-  created_at   timestamptz default now(),
-  updated_at   timestamptz default now()
+  id                uuid default gen_random_uuid() primary key,
+  curator_id        uuid references auth.users(id) on delete cascade not null,
+  title             text not null,
+  description       text,
+  outcomes          text,
+  skills            text,
+  domain            text,
+  duration          text,
+  duration_weeks    integer default 1,
+  difficulty        text check (difficulty in ('introductory','intermediate','advanced')),
+  prerequisites     text,
+  syllabus          jsonb default '[]',
+  max_capacity      integer default 20,
+  current_enrollment integer default 0,
+  location_name     text,
+  location_coords   geography(point, 4326),
+  age_range         int4range default '[13, 99]',
+  visibility        boolean default true,
+  is_published      boolean default false,
+  created_at        timestamptz default now(),
+  updated_at        timestamptz default now()
 );
 alter table public.modules enable row level security;
 create policy "Curators manage own modules" on public.modules
   for all using (auth.uid() = curator_id);
 create policy "Published modules readable by all" on public.modules
-  for select using (is_published = true);
+  for select using (is_published = true or visibility = true);
+
+-- Add spatial index for 'Near Me' logic
+create index if not exists modules_location_idx on public.modules using gist(location_coords);
 
 -- 4. BATCHES
 create table if not exists public.batches (

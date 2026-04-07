@@ -359,7 +359,24 @@
     "browseModules": "Browse available modules",
     "enrolledIn": "Enrolled in this module",
     "enroll": "Enrol in module",
-    "viewBatches": "View batches"
+    "moduleFull": "Module Full",
+    "viewBatches": "View batches",
+    "syllabus": "Syllabus",
+    "addSyllabusItem": "Add Syllabus Item",
+    "durationWeeks": "Duration (Weeks)",
+    "maxCapacity": "Max Capacity",
+    "locationName": "Location Name",
+    "ageRange": "Age Range",
+    "visibility": "Visibility",
+    "nearMe": "Near me",
+    "nearbyModules": "Nearby Modules"
+  },
+  "profile": {
+    "userProfile": "{username}'s Profile",
+    "academicRecord": "Academic Record",
+    "neoscore": "Neo Score",
+    "portfolio": "Portfolio",
+    "curatorStatus": "Curator Status"
   },
   "batches": {
     "title": "Batches",

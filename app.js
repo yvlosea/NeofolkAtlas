@@ -14,6 +14,39 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 const LANG_STORAGE = 'neofolk.preferredLanguage';
 const SUPPORTED_LANGS = ['en', 'hi', 'ur'];
 
+/**
+ * Hash-based Router for SPA feel
+ */
+window.Router = {
+  getRoute() {
+    const hash = window.location.hash.substring(1) || 'home';
+    const [path, query] = hash.split('?');
+    const parts = path.split('/');
+    return {
+      path: path,
+      parts: parts,
+      page: parts[0],
+      id: parts[1],
+      query: new URLSearchParams(query || '')
+    };
+  },
+  navigate(hash) {
+    window.location.hash = hash;
+  }
+};
+
+/**
+ * Debounce helper for search
+ */
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
 // Domain-based scoring system - Base 10 structure
 const domainKeys = [
   'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'chronicles', 
@@ -1009,6 +1042,150 @@ function declineGuildInvite(userId, guildId) {
 }
 
 /**
+ * Handle Syllabus Item Addition
+ */
+window.addSyllabusItem = function() {
+  const container = document.getElementById('syllabus-items');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.gap = '8px';
+  div.innerHTML = `
+    <input class="neo-input syllabus-input" placeholder="Chapter or Topic title" style="flex:1;">
+    <button onclick="this.parentElement.remove()" class="btn-ghost" style="color:var(--error); padding:0 10px;">&times;</button>
+  `;
+  container.appendChild(div);
+};
+
+/**
+ * Save Module with Advanced Schema
+ */
+window.saveModuleAdvanced = async function() {
+  const title = document.getElementById('mod-title')?.value;
+  const desc = document.getElementById('mod-desc')?.value;
+  const weeks = parseInt(document.getElementById('mod-weeks')?.value || '1');
+  const capacity = parseInt(document.getElementById('mod-capacity')?.value || '20');
+  const locName = document.getElementById('mod-loc-name')?.value;
+  
+  const syllabus = Array.from(document.querySelectorAll('.syllabus-input'))
+    .map(input => input.value.trim())
+    .filter(Boolean);
+
+  if (!title) return alert('Title is required');
+
+  const supabase = getSupabaseClient();
+  if (supabase && currentUser) {
+    const { error } = await supabase.from('modules').insert({
+      curator_id: currentUser.id,
+      title: title,
+      description: desc,
+      duration_weeks: weeks,
+      max_capacity: capacity,
+      location_name: locName,
+      syllabus: syllabus,
+      is_published: true
+    });
+    if (error) alert(error.message);
+    else {
+      alert(t('messages.moduleCreated'));
+      window.location.hash = 'teaching-log';
+    }
+  } else {
+    // Demo/Local fallback
+    const mod = { id: Date.now(), title, desc, weeks, capacity, locName, syllabus };
+    const existing = JSON.parse(localStorage.getItem('neofolk.modules.local') || '[]');
+    existing.push(mod);
+    localStorage.setItem('neofolk.modules.local', JSON.stringify(existing));
+    alert(t('messages.moduleCreated') + ' (Local session)');
+    window.location.hash = 'teaching-log';
+  }
+};
+
+/**
+ * Render Public Profile View
+ */
+async function renderPublicProfile(container, username) {
+  const supabase = getSupabaseClient();
+  let profileData = null;
+  let scoreData = null;
+
+  if (supabase) {
+    const { data: profile } = await supabase.from('curator_profiles').select('*').eq('name', username).single();
+    profileData = profile;
+    const { data: score } = await supabase.from('neo_scores').select('*').eq('user_id', profile?.user_id).single();
+    scoreData = score;
+  }
+
+  container.innerHTML = `
+    <div class="dashboard-shell">
+      <div class="dashboard-header">
+        <p class="section-label">${escapeHtml(t('profile.curatorStatus'))}</p>
+        <h1>${escapeHtml(username)}</h1>
+      </div>
+      <div class="card" style="display:grid; grid-template-columns: 1fr 2fr; gap:30px;">
+        <div style="text-align:center;">
+          <div style="width:120px; height:120px; border-radius:50%; background:var(--gold); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#000;">
+            ${username[0]}
+          </div>
+          <h3>Neo Score: ${scoreData?.score || 0}</h3>
+        </div>
+        <div>
+          <h3>${escapeHtml(t('profile.academicRecord'))}</h3>
+          <p>${escapeHtml(profileData?.teaching_style || 'This researcher has not updated their bio yet.')}</p>
+          <div style="margin-top:20px;">
+            <p><strong>Domains:</strong> ${profileData?.domains?.join(', ') || 'General'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Near Me - Surfacing local learning
+ */
+window.renderNearbyModules = function() {
+  const container = document.getElementById('near-me-root') || document.body; // Fallback
+  
+  if (!navigator.geolocation) {
+    alert(t('messages.locationUnavailableBody'));
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const { latitude, longitude } = pos.coords;
+    const supabase = getSupabaseClient();
+    
+    if (supabase) {
+      // In a real app with PostGIS:
+      // const { data } = await supabase.rpc('get_nearby_modules', { lat: latitude, lng: longitude, radius_m: 10000 });
+      // For now, let's just query modules with locations
+      const { data } = await supabase.from('modules').select('*').not('location_name', 'is', null);
+      
+      const resultsHTML = data?.map(m => `
+        <div class="record-card">
+          <h3>${escapeHtml(m.title)}</h3>
+          <p>${escapeHtml(m.location_name)}</p>
+          <button class="btn" ${m.current_enrollment >= m.max_capacity ? 'disabled' : ''}>
+            ${m.current_enrollment >= m.max_capacity ? t('modules.moduleFull') : t('modules.enroll')}
+          </button>
+        </div>
+      `).join('') || '<p>No nearby modules found.</p>';
+
+      container.innerHTML = `
+        <div class="dashboard-shell">
+          <div class="dashboard-header">
+            <p class="section-label">${escapeHtml(t('modules.nearMe'))}</p>
+            <h1>${escapeHtml(t('modules.nearbyModules'))}</h1>
+          </div>
+          <div class="record-list">${resultsHTML}</div>
+        </div>
+      `;
+    }
+  });
+};
+
+/**
  * Handle Search Centering on Map
  * @param {string} query 
  */
@@ -1978,8 +2155,21 @@ function wireLanguageSelectors() {
 }
 
 function renderPageContent() {
+  const route = window.Router.getRoute();
   const page = currentPageFile();
 
+  // Public Profile View (#profile/username)
+  const profileRoot = document.getElementById('profile-root');
+  if (profileRoot && route.page === 'profile' && route.id) {
+    renderPublicProfile(profileRoot, route.id);
+    return;
+  }
+
+  // "Near Me" - Nearby Modules Logic
+  if (route.page === 'near-me') {
+    renderNearbyModules();
+    return;
+  }
   // Dictionary page
   const dictRoot = document.getElementById('dictionary-root');
   if (dictRoot && page === 'dictionary.html') {
@@ -2315,8 +2505,8 @@ function renderPageContent() {
   }
 
   // Profile page
-  const profileRoot = document.getElementById('profile-root');
-  if (profileRoot && profileRoot.innerHTML.trim() === '') {
+  const userProfileRoot = document.getElementById('profile-root');
+  if (userProfileRoot && userProfileRoot.innerHTML.trim() === '') {
     const supabase = getSupabaseClient();
     const userId = currentUser?.id || 'guest';
     const savedProfile = JSON.parse(localStorage.getItem(`neofolk.profile.${userId}`) || '{}');
@@ -2679,27 +2869,60 @@ function renderPageContent() {
 
   // Module Editor page
   const editorRoot = document.getElementById('module-editor-root');
-  if (editorRoot && editorRoot.innerHTML.trim() === '') {
+  if (editorRoot && (editorRoot.innerHTML.trim() === '' || route.page === 'module-editor')) {
     editorRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
-          <p class="section-label">Curation</p>
-          <h1>Create Module</h1>
+          <p class="section-label">${escapeHtml(t('nav.modules'))}</p>
+          <h1>${escapeHtml(t('modules.createTitle'))}</h1>
+          <p class="lede">Define your module's academic structure, syllabus, and physical location.</p>
         </div>
-        <div class="card">
-          <input
-            class="neo-input"
-            placeholder="Module title"
-          >
-          <textarea
-            placeholder="Description"
-          ></textarea>
-          <button class="btn btn-primary">
-            Save
-          </button>
+        <div class="card curator-form-stack" style="display:grid; gap:20px;">
+          <div>
+            <label class="field-label">${escapeHtml(t('modules.moduleTitle'))}</label>
+            <input id="mod-title" class="neo-input" placeholder="e.g. Introduction to Spivakian Linguistics">
+          </div>
+          
+          <div>
+            <label class="field-label">${escapeHtml(t('modules.moduleDescription'))}</label>
+            <textarea id="mod-desc" class="neo-input" rows="4"></textarea>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+            <div>
+              <label class="field-label">${escapeHtml(t('modules.durationWeeks'))}</label>
+              <input id="mod-weeks" type="number" min="1" class="neo-input" value="4">
+            </div>
+            <div>
+              <label class="field-label">${escapeHtml(t('modules.maxCapacity'))}</label>
+              <input id="mod-capacity" type="number" min="1" class="neo-input" value="20">
+            </div>
+          </div>
+
+          <div>
+            <label class="field-label">${escapeHtml(t('modules.locationName'))}</label>
+            <input id="mod-loc-name" class="neo-input" placeholder="e.g. Bangalore Community Library">
+          </div>
+
+          <div>
+            <label class="field-label">${escapeHtml(t('modules.syllabus'))}</label>
+            <div id="syllabus-items" style="display:grid; gap:8px; margin-bottom:12px;"></div>
+            <button class="btn btn-secondary" onclick="window.addSyllabusItem()" style="font-size:0.8rem;">
+              + ${escapeHtml(t('modules.addSyllabusItem'))}
+            </button>
+          </div>
+
+          <div style="padding-top:20px; border-top:1px solid var(--border);">
+            <button onclick="window.saveModuleAdvanced()" class="btn btn-primary" style="width:100%;">
+              ${escapeHtml(t('modules.createModule'))}
+            </button>
+          </div>
         </div>
       </div>
     `;
+
+    // Initialize with one syllabus item
+    if (window.addSyllabusItem) window.addSyllabusItem();
   }
 
   // Studios page
@@ -3028,6 +3251,20 @@ async function initApp() {
   loadCuratorCards();
   loadModules();
   loadGuilds();
+
+  // Wire up hash routing
+  window.addEventListener('hashchange', () => {
+    renderPageContent();
+    scrollTo(0,0);
+  });
+
+  // Apply debounce to searches
+  const dictSearch = document.getElementById('dict-search');
+  if (dictSearch) {
+    dictSearch.addEventListener('input', debounce(() => {
+      renderPageContent(); // Re-renders with current search value
+    }, 500));
+  }
 
   renderAppNav();
   wireMobileNav();
