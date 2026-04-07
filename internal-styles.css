@@ -1861,6 +1861,146 @@ select.neo-input {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes node-pulse-ring {
+  0% { transform: scale(0.33); opacity: 0; }
+  80%, 100% { opacity: 0; }
+}
+
+@keyframes node-pulse-dot {
+  0% { transform: scale(0.8); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.8); }
+}
+
+/* ============================================================
+   NODENEED MARKERS
+   ============================================================ */
+.node-need-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto !important;
+}
+
+.node-pulse {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--node-color, #d4a373);
+  box-shadow: 0 0 12px var(--node-color, #d4a373);
+  animation: node-pulse-dot var(--pulse-speed, 1.2s) ease-in-out infinite;
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.node-pulse::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  right: -20px;
+  bottom: -20px;
+  border: 2px solid var(--node-color, #d4a373);
+  border-radius: 50%;
+  animation: node-pulse-ring var(--pulse-speed, 1.2s) cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   RADIAL MENU
+   ============================================================ */
+#radial-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 10002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.radial-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radial-item {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1px solid var(--border-color);
+  color: var(--parchment);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  text-align: center;
+  padding: 5px;
+}
+
+.radial-item:hover {
+  transform: scale(1.15) !important;
+  border-color: var(--token-color);
+  box-shadow: 0 0 20px var(--token-color);
+  z-index: 10;
+}
+
+.radial-center {
+  width: 80px;
+  height: 80px;
+  background: var(--deep-brown);
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 5;
+  color: var(--gold);
+  font-family: var(--serif);
+  font-size: 11px;
+  box-shadow: 0 0 30px rgba(198,169,107,0.2);
+}
+
+/* Demand Toggle */
+.demand-mode-indicator {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  pointer-events: none;
+  z-index: 1000;
+  display: none;
+}
+
+.demand-mode-active .demand-mode-indicator {
+  display: block;
+}
+
 /* ============================================================
    LINEAGE CARDS - BEIGE STICKY NOTES (OVERRIDE ALL)
    ============================================================ */

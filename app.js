@@ -23,7 +23,7 @@ const domainKeys = [
 const defaultNeoDomains = domainKeys.reduce((acc, k) => ({ ...acc, [k]: 0 }), {});
 const defaultNeoSpecialization = { "General": 0 };
 
-// LINEAGE_TOKENS mapping for Knowledge Topology
+// LINEAGE_TOKENS mapping for Knowledge Topology - Indian Lineage Tokens
 const LINEAGE_TOKENS = {
     lingosophy: "Spivaks", 
     arithmetics: "Shakuntis", 
@@ -129,6 +129,329 @@ const LINEAGE_DETAILS = [
     "description": "The first Indian woman elected Fellow of the Royal Society, she built vaccine infrastructure in Indian slums, ran rotavirus trials on tens of thousands of children, and became the country's clearest public voice on scientific integrity during the pandemic. A high Gaga resonance means you operate where data meets bodies: you do not separate the epistemology of science from the politics of who gets protected by it."
   }
 ];
+
+// ============================================================
+// NODENEED SYSTEM - Dynamic Node Needs Data Structure
+// ============================================================
+
+// NodeNeed collection - stores all node needs
+const nodeNeeds = [];
+
+// Valid token types for NodeNeeds (from Indian Lineage Tokens)
+const VALID_TOKEN_TYPES = [
+  'Spivaks', 'Shakuntis', 'Bhattas', 'Janakis', 'Thapars', 
+  'Savi', 'Bhanus', 'Sarabhs', 'Arunas', 'Gagas'
+];
+
+// Valid statuses for NodeNeeds
+const VALID_STATUSES = ['pending', 'provisioning', 'fulfilled'];
+
+// Current map view filter
+let nodeNeedFilter = 'all'; // 'all', 'active', 'needs'
+let demandModeActive = false;
+
+/**
+ * Toggle Demand Mode - allowing users to drop new signals
+ */
+window.toggleDemandMode = function() {
+  demandModeActive = !demandModeActive;
+  const mapOverlay = document.getElementById('map');
+  if (mapOverlay) {
+    if (demandModeActive) mapOverlay.classList.add('demand-mode-active');
+    else mapOverlay.classList.remove('demand-mode-active');
+  }
+  
+  if (demandModeActive) {
+    // Show indicator
+    let indicator = document.querySelector('.demand-mode-indicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.className = 'demand-mode-indicator';
+      indicator.textContent = 'DEMAND MODE ACTIVE: CLICK MAP TO SIGNAL NEED';
+      document.body.appendChild(indicator);
+    }
+    indicator.style.display = 'block';
+  } else {
+    const indicator = document.querySelector('.demand-mode-indicator');
+    if (indicator) indicator.style.display = 'none';
+  }
+};
+
+/**
+ * Create a new NodeNeed entry
+ * @param {number} lat - Latitude coordinate
+ * @param {number} lng - Longitude coordinate  
+ * @param {string} tokenType - Token type from VALID_TOKEN_TYPES
+ * @returns {object} The created NodeNeed object
+ */
+function createNodeNeed(lat, lng, tokenType) {
+  if (!VALID_TOKEN_TYPES.includes(tokenType)) {
+    console.error(`Invalid token type: ${tokenType}. Must be one of: ${VALID_TOKEN_TYPES.join(', ')}`);
+    return null;
+  }
+  
+  const need = {
+    id: `need_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    coordinates: [lat, lng],
+    tokenType: tokenType,
+    urgencyCount: 1,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  nodeNeeds.push(need);
+  saveNodeNeeds();
+  return need;
+}
+
+/**
+ * Drop a new need signal on the map
+ * @param {number} lat - Latitude
+ * @param {number} lng - Longitude
+ * @param {string} tokenType - Token type
+ */
+function dropNeedSignal(lat, lng, tokenType) {
+  const need = createNodeNeed(lat, lng, tokenType);
+  if (need) {
+    renderNodeNeedMarker(need);
+    console.log(`NodeNeed dropped: ${tokenType} at [${lat}, ${lng}]`);
+  }
+  return need;
+}
+
+/**
+ * Support an existing NodeNeed - increments urgencyCount
+ * @param {string} needId - ID of the NodeNeed to support
+ */
+function supportNodeNeed(needId) {
+  const need = nodeNeeds.find(n => n.id === needId);
+  if (!need) {
+    console.error(`NodeNeed not found: ${needId}`);
+    return null;
+  }
+  
+  need.urgencyCount += 1;
+  need.updatedAt = new Date().toISOString();
+  saveNodeNeeds();
+  
+  // Update marker display
+  updateNodeNeedMarker(need);
+  console.log(`NodeNeed ${needId} supported. Urgency: ${need.urgencyCount}`);
+  return need;
+}
+
+/**
+ * Update NodeNeed status
+ * @param {string} needId - ID of the NodeNeed
+ * @param {string} newStatus - New status ('pending', 'provisioning', 'fulfilled')
+ */
+function updateNodeNeedStatus(needId, newStatus) {
+  if (!VALID_STATUSES.includes(newStatus)) {
+    console.error(`Invalid status: ${newStatus}. Must be one of: ${VALID_STATUSES.join(', ')}`);
+    return null;
+  }
+  
+  const need = nodeNeeds.find(n => n.id === needId);
+  if (!need) {
+    console.error(`NodeNeed not found: ${needId}`);
+    return null;
+  }
+  
+  need.status = newStatus;
+  need.updatedAt = new Date().toISOString();
+  saveNodeNeeds();
+  updateNodeNeedMarker(need);
+  return need;
+}
+
+/**
+ * Toggle map view filter between 'active' (Studios) and 'needs' (NodeNeeds)
+ * @param {string} filter - 'all', 'active', or 'needs'
+ */
+function setNodeNeedFilter(filter) {
+  if (!['all', 'active', 'needs'].includes(filter)) {
+    console.error(`Invalid filter: ${filter}. Must be 'all', 'active', or 'needs'`);
+    return;
+  }
+  nodeNeedFilter = filter;
+  renderNodeNeedsOnMap();
+}
+
+/**
+ * Save NodeNeeds to localStorage
+ */
+function saveNodeNeeds() {
+  localStorage.setItem('neofolk.nodeNeeds', JSON.stringify(nodeNeeds));
+}
+
+/**
+ * Load NodeNeeds from localStorage
+ */
+function loadNodeNeeds() {
+  const stored = localStorage.getItem('neofolk.nodeNeeds');
+  if (stored) {
+    const loaded = JSON.parse(stored);
+    nodeNeeds.length = 0;
+    nodeNeeds.push(...loaded);
+  }
+}
+
+/**
+ * Get color for token type
+ * @param {string} tokenType 
+ * @returns {string} Hex color
+ */
+function getTokenColor(tokenType) {
+  const colors = {
+    'Spivaks': '#9c59b6',
+    'Shakuntis': '#f39c12',
+    'Bhattas': '#3498db',
+    'Janakis': '#27ae60',
+    'Thapars': '#e74c3c',
+    'Ambedis': '#ff69b4',
+    'Bhanus': '#ff7f50',
+    'Sarabhs': '#1abc9c',
+    'Arunas': '#9b59b6',
+    'Gagas': '#16a085'
+  };
+  return colors[tokenType] || '#d4a373';
+}
+
+/**
+ * Render a single NodeNeed marker on map
+ * @param {object} need - NodeNeed object
+ */
+function renderNodeNeedMarker(need) {
+  if (!window.nodeNeedMarkers) window.nodeNeedMarkers = {};
+  
+  // Remove existing marker if any
+  if (window.nodeNeedMarkers[need.id]) {
+    window.mapInstance.removeLayer(window.nodeNeedMarkers[need.id]);
+  }
+  
+  // Check if should show based on filter
+  if (nodeNeedFilter === 'active') return; // Only show active nodes
+  
+  const color = getTokenColor(need.tokenType);
+  
+  // Custom Icon with Pulsing Effect
+  // Speed and Size scale with urgencyCount
+  const pulseSpeed = Math.max(0.4, 1.2 - (need.urgencyCount * 0.1)) + "s";
+  const scaleSize = Math.min(2.5, 1 + (need.urgencyCount * 0.15));
+  
+  const markerIcon = L.divIcon({
+    className: 'node-need-marker',
+    html: `
+      <div class="node-pulse" style="--node-color: ${color}; --pulse-speed: ${pulseSpeed}; transform: scale(${scaleSize});">
+      </div>
+    `,
+    iconSize: [40, 40],
+    iconAnchor: [20, 20]
+  });
+
+  const marker = L.marker(need.coordinates, {
+    icon: markerIcon,
+    riseOnHover: true
+  }).addTo(window.mapInstance);
+  
+  // Click handler to boost demand
+  marker.on('click', (e) => {
+    L.DomEvent.stopPropagation(e);
+    supportNodeNeed(need.id);
+  });
+  
+  // Tooltip with details
+  marker.bindTooltip(`
+    <div style="font-family:monospace; padding:4px;">
+      <strong style="color:${color}">${need.tokenType}</strong><br>
+      Urgency: ${need.urgencyCount}<br>
+      <span style="font-size:9px; opacity:0.8;">Click to boost demand</span>
+    </div>
+  `);
+  
+  window.nodeNeedMarkers[need.id] = marker;
+}
+
+/**
+ * Show a radial menu to select a token type at coordinates
+ * @param {number} lat 
+ * @param {number} lng 
+ */
+function showRadialMenu(lat, lng) {
+  // Remove any existing menu
+  const existing = document.getElementById('radial-menu-overlay');
+  if (existing) existing.remove();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'radial-menu-overlay';
+  overlay.innerHTML = `
+    <div class="radial-container">
+      <div class="radial-center">
+        <span>SIGNAL</span>
+        <strong>NEED</strong>
+      </div>
+      ${VALID_TOKEN_TYPES.map((type, i) => {
+        const angle = (i / VALID_TOKEN_TYPES.length) * (2 * Math.PI) - (Math.PI / 2);
+        const radius = 110;
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        const color = getTokenColor(type);
+        return `
+          <div class="radial-item" 
+               style="transform: translate(${x}px, ${y}px); --token-color: ${color};"
+               onclick="window.dropNeedSignal(${lat}, ${lng}, '${type}'); document.getElementById('radial-menu-overlay').remove();">
+            <span>${type}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+  
+  overlay.onclick = (e) => {
+    if (e.target === overlay) overlay.remove();
+  };
+  
+  document.body.appendChild(overlay);
+}
+
+/**
+ * Update existing marker display
+ */
+function updateNodeNeedMarker(need) {
+  renderNodeNeedMarker(need);
+}
+
+/**
+ * Render all NodeNeeds on map based on current filter
+ */
+function renderNodeNeedsOnMap() {
+  if (!window.mapInstance) return;
+  
+  // Clear existing markers
+  if (window.nodeNeedMarkers) {
+    Object.values(window.nodeNeedMarkers).forEach(marker => {
+      window.mapInstance.removeLayer(marker);
+    });
+  }
+  window.nodeNeedMarkers = {};
+  
+  // Render based on filter
+  if (nodeNeedFilter === 'all' || nodeNeedFilter === 'needs') {
+    nodeNeeds.forEach(need => renderNodeNeedMarker(need));
+  }
+  
+  // TODO: Render active nodes (Studios) when filter is 'all' or 'active'
+}
+
+// Expose functions globally for HTML onclick handlers
+window.dropNeedSignal = dropNeedSignal;
+window.supportNodeNeed = supportNodeNeed;
+window.updateNodeNeedStatus = updateNodeNeedStatus;
+window.setNodeNeedFilter = setNodeNeedFilter;
+
+// Load NodeNeeds on startup
+loadNodeNeeds();
 
 
 // Live calculation engine for topology metrics
@@ -304,7 +627,7 @@ function renderTopologyPage(userData) {
                 <h3 style="font-size:10px; margin-bottom:24px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">RESONANCE FRAMEWORK</h3>
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
                     ${LINEAGE_DETAILS.map((t, idx) => `
-                        <div style="padding:20px; background:#f5f5dc; border-radius:2px; box-shadow:2px 2px 8px rgba(0,0,0,0.2); transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg); display:flex; flex-direction:column; gap:10px; transition: transform 0.2s ease;">
+                        <div style="padding:20px; background:#f5f5dc !important; border-radius:2px; box-shadow:2px 2px 8px rgba(0,0,0,0.2); transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg); display:flex; flex-direction:column; gap:10px; transition: transform 0.2s ease;">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <span style="font-size:10px; color:#8b4513; background:#e8e0c5; padding:2px 6px; font-weight:600; text-transform:uppercase; border-radius:3px; letter-spacing:1px;">${t.tokenName}</span>
                                 <span style="font-size:9px; color:#8b7355;">${t.subdomain}</span>
@@ -1302,65 +1625,95 @@ function renderPageContent() {
     const supabase = getSupabaseClient();
     const userId = currentUser?.id || 'guest';
     const savedProfile = JSON.parse(localStorage.getItem(`neofolk.profile.${userId}`) || '{}');
+    const hasProfile = savedProfile.name || savedProfile.bio;
     
     // Calculate profile completeness
     const fields = ['photo', 'name', 'bio', 'domain', 'skills'];
     const filledFields = fields.filter(f => savedProfile[f] && savedProfile[f].trim && savedProfile[f].trim()).length;
     const completeness = Math.round((filledFields / fields.length) * 100);
     
-    profileRoot.innerHTML =
-      '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">Profile</p>' +
-          '<h1>Your Profile</h1>' +
-          '<p id="profile-email" class="dashboard-meta"></p>' +
-          '<div class="profile-completeness" style="margin-top:12px;">' +
-            '<span>Profile completeness ' + completeness + '%</span>' +
-            '<div class="completeness-bar"><div style="width:' + completeness + '%"></div></div>' +
-          '</div>' +
-        '</div></div>' +
-        '<div class="card profile-form">' +
-          '<div class="profile-section">' +
-            '<label>Profile Photo</label>' +
-            '<input type="file" id="profile-photo-input" accept="image/*">' +
-            '<img id="profile-photo-preview" src="' + (savedProfile.photo || '') + '" style="display:' + (savedProfile.photo ? 'block' : 'none') + ';width:80px;height:80px;object-fit:cover;border-radius:50%;margin-top:8px;">' +
-          '</div>' +
-          '<div class="profile-section">' +
-            '<label>Display Name</label>' +
-            '<input id="profile-name" class="neo-input" value="' + escapeHtml(savedProfile.name || '') + '" placeholder="Your name">' +
-          '</div>' +
-          '<div class="profile-section">' +
-            '<label>Bio</label>' +
-            '<textarea id="profile-bio" class="neo-input" placeholder="Tell us about yourself">' + escapeHtml(savedProfile.bio || '') + '</textarea>' +
-          '</div>' +
-          '<div class="profile-section">' +
-            '<label>Primary Domain</label>' +
-            '<select id="profile-domain" class="neo-input">' +
-              '<option value="">Select domain...</option>' +
-              '<option value="Lingosophy"' + (savedProfile.domain === 'Lingosophy' ? ' selected' : '') + '>Lingosophy</option>' +
-              '<option value="Arthmetics"' + (savedProfile.domain === 'Arthmetics' ? ' selected' : '') + '>Arthmetics</option>' +
-              '<option value="Cosmology"' + (savedProfile.domain === 'Cosmology' ? ' selected' : '') + '>Cosmology</option>' +
-              '<option value="Biosphere"' + (savedProfile.domain === 'Biosphere' ? ' selected' : '') + '>Biosphere</option>' +
-              '<option value="Chronicles"' + (savedProfile.domain === 'Chronicles' ? ' selected' : '') + '>Chronicles</option>' +
-              '<option value="Civitas"' + (savedProfile.domain === 'Civitas' ? ' selected' : '') + '>Civitas</option>' +
-              '<option value="Tokenomics"' + (savedProfile.domain === 'Tokenomics' ? ' selected' : '') + '>Tokenomics</option>' +
-              '<option value="Artifex"' + (savedProfile.domain === 'Artifex' ? ' selected' : '') + '>Artifex</option>' +
-              '<option value="Praxis"' + (savedProfile.domain === 'Praxis' ? ' selected' : '') + '>Praxis</option>' +
-              '<option value="Bioepisteme"' + (savedProfile.domain === 'Bioepisteme' ? ' selected' : '') + '>Bioepisteme</option>' +
-            '</select>' +
-          '</div>' +
-          '<div class="profile-section">' +
-            '<label>Skills (comma separated)</label>' +
-            '<input id="profile-skills" class="neo-input" value="' + escapeHtml(savedProfile.skills || '') + '" placeholder="e.g. Research, Writing, Analysis">' +
-          '</div>' +
-          '<button id="save-profile-btn" class="btn btn-primary">Save Profile</button>' +
-        '</div>' +
-      '</div>';
+    // Profile display card (shown if profile exists)
+    const profileDisplayHTML = hasProfile ? `
+      <div class="card profile-display" style="margin-bottom:24px;">
+        <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+          ${savedProfile.photo ? `<img src="${escapeHtml(savedProfile.photo)}" style="width:100px;height:100px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);">` : '<div style="width:100px;height:100px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;color:var(--text-muted);">No Photo</div>'}
+          <div style="flex:1; min-width:200px;">
+            <h2 style="margin:0 0 8px 0; color:var(--gold); font-family:var(--serif); font-size:1.8rem;">${escapeHtml(savedProfile.name || 'Unnamed')}</h2>
+            ${savedProfile.domain ? `<span style="display:inline-block; background:var(--gold-soft); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:0.75rem; margin-bottom:12px;">${escapeHtml(savedProfile.domain)}</span>` : ''}
+            ${savedProfile.bio ? `<p style="margin:0 0 12px 0; color:var(--text-secondary); line-height:1.6;">${escapeHtml(savedProfile.bio)}</p>` : ''}
+            ${savedProfile.skills ? `<div style="margin-top:12px;"><span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Skills:</span> <span style="color:var(--text-primary);">${escapeHtml(savedProfile.skills)}</span></div>` : ''}
+          </div>
+        </div>
+        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:0.8rem; color:var(--text-muted);">Profile completeness: <strong style="color:var(--gold);">${completeness}%</strong></span>
+          <button id="edit-profile-btn" class="btn btn-secondary" style="font-size:0.8rem;">Edit Profile</button>
+        </div>
+      </div>
+    ` : '';
+    
+    // Edit form (hidden if profile exists, shown otherwise)
+    const editFormHTML = `
+      <div class="card profile-form" id="profile-edit-form" style="${hasProfile ? 'display:none;' : ''}">
+        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text-primary);">${hasProfile ? 'Edit Profile' : 'Create Your Profile'}</h3>
+        <div class="profile-section">
+          <label>Profile Photo</label>
+          <input type="file" id="profile-photo-input" accept="image/*">
+          <img id="profile-photo-preview" src="${escapeHtml(savedProfile.photo || '')}" style="display:${savedProfile.photo ? 'block' : 'none'};width:80px;height:80px;object-fit:cover;border-radius:50%;margin-top:8px;">
+        </div>
+        <div class="profile-section">
+          <label>Display Name *</label>
+          <input id="profile-name" class="neo-input" value="${escapeHtml(savedProfile.name || '')}" placeholder="Your name" required>
+        </div>
+        <div class="profile-section">
+          <label>Bio</label>
+          <textarea id="profile-bio" class="neo-input" placeholder="Tell us about yourself" rows="3">${escapeHtml(savedProfile.bio || '')}</textarea>
+        </div>
+        <div class="profile-section">
+          <label>Primary Domain</label>
+          <select id="profile-domain" class="neo-input">
+            <option value="">Select domain...</option>
+            <option value="Lingosophy"${savedProfile.domain === 'Lingosophy' ? ' selected' : ''}>Lingosophy</option>
+            <option value="Arthmetics"${savedProfile.domain === 'Arthmetics' ? ' selected' : ''}>Arthmetics</option>
+            <option value="Cosmology"${savedProfile.domain === 'Cosmology' ? ' selected' : ''}>Cosmology</option>
+            <option value="Biosphere"${savedProfile.domain === 'Biosphere' ? ' selected' : ''}>Biosphere</option>
+            <option value="Chronicles"${savedProfile.domain === 'Chronicles' ? ' selected' : ''}>Chronicles</option>
+            <option value="Civitas"${savedProfile.domain === 'Civitas' ? ' selected' : ''}>Civitas</option>
+            <option value="Tokenomics"${savedProfile.domain === 'Tokenomics' ? ' selected' : ''}>Tokenomics</option>
+            <option value="Artifex"${savedProfile.domain === 'Artifex' ? ' selected' : ''}>Artifex</option>
+            <option value="Praxis"${savedProfile.domain === 'Praxis' ? ' selected' : ''}>Praxis</option>
+            <option value="Bioepisteme"${savedProfile.domain === 'Bioepisteme' ? ' selected' : ''}>Bioepisteme</option>
+          </select>
+        </div>
+        <div class="profile-section">
+          <label>Skills (comma separated)</label>
+          <input id="profile-skills" class="neo-input" value="${escapeHtml(savedProfile.skills || '')}" placeholder="e.g. Research, Writing, Analysis">
+        </div>
+        <div style="display:flex; gap:12px; margin-top:20px;">
+          <button id="save-profile-btn" class="btn btn-primary">${hasProfile ? 'Save Changes' : 'Create Profile'}</button>
+          ${hasProfile ? '<button id="cancel-edit-btn" class="btn btn-secondary" style="font-size:0.8rem;">Cancel</button>' : ''}
+        </div>
+        <p id="profile-save-error" style="color:var(--error); font-size:0.8rem; margin-top:12px; display:none;">Please enter a display name.</p>
+      </div>
+    `;
+    
+    profileRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <div>
+            <p class="section-label">Account</p>
+            <h1>Your Profile</h1>
+            <p id="profile-email" class="dashboard-meta"></p>
+          </div>
+        </div>
+        ${hasProfile ? profileDisplayHTML : '<div class="card" style="margin-bottom:24px; text-align:center; padding:40px;"><p style="color:var(--text-muted);">No profile yet. Create one below.</p></div>'}
+        ${editFormHTML}
+      </div>
+    `;
 
     // Photo preview handler
     const photoInput = document.getElementById('profile-photo-input');
     const photoPreview = document.getElementById('profile-photo-preview');
-    if (photoInput) {
+    if (photoInput && photoPreview) {
       photoInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -1374,39 +1727,79 @@ function renderPageContent() {
       });
     }
     
-    // Save profile handler
+    // Edit button handler (shows form)
+    const editBtn = document.getElementById('edit-profile-btn');
+    if (editBtn) {
+      editBtn.addEventListener('click', () => {
+        const form = document.getElementById('profile-edit-form');
+        if (form) form.style.display = 'block';
+        editBtn.style.display = 'none';
+      });
+    }
+    
+    // Cancel button handler
+    const cancelBtn = document.getElementById('cancel-edit-btn');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => {
+        const form = document.getElementById('profile-edit-form');
+        if (form) form.style.display = 'none';
+        if (editBtn) editBtn.style.display = 'inline-block';
+      });
+    }
+    
+    // Save profile handler - FIXED
     const saveBtn = document.getElementById('save-profile-btn');
     if (saveBtn) {
-      saveBtn.addEventListener('click', () => {
+      saveBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        const nameInput = document.getElementById('profile-name');
+        const name = nameInput ? nameInput.value.trim() : '';
+        
+        // Validate name is required
+        if (!name) {
+          const errorMsg = document.getElementById('profile-save-error');
+          if (errorMsg) errorMsg.style.display = 'block';
+          nameInput?.focus();
+          return;
+        }
+        
+        const bioInput = document.getElementById('profile-bio');
+        const domainInput = document.getElementById('profile-domain');
+        const skillsInput = document.getElementById('profile-skills');
+        const photoPreviewEl = document.getElementById('profile-photo-preview');
+        
         const profile = {
-          photo: photoPreview?.src || '',
-          name: document.getElementById('profile-name')?.value || '',
-          bio: document.getElementById('profile-bio')?.value || '',
-          domain: document.getElementById('profile-domain')?.value || '',
-          skills: document.getElementById('profile-skills')?.value || ''
+          photo: photoPreviewEl?.src || '',
+          name: name,
+          bio: bioInput ? bioInput.value.trim() : '',
+          domain: domainInput ? domainInput.value : '',
+          skills: skillsInput ? skillsInput.value.trim() : ''
         };
+        
+        // Save to localStorage
         localStorage.setItem(`neofolk.profile.${userId}`, JSON.stringify(profile));
         
-        // Update completeness indicator
-        const filled = fields.filter(f => profile[f] && profile[f].trim()).length;
-        const newComplete = Math.round((filled / fields.length) * 100);
-        const completeEl = profileRoot.querySelector('.profile-completeness span');
-        const barEl = profileRoot.querySelector('.completeness-bar div');
-        if (completeEl) completeEl.textContent = 'Profile completeness ' + newComplete + '%';
-        if (barEl) barEl.style.width = newComplete + '%';
-        
+        // Show success
+        const originalText = saveBtn.textContent;
         saveBtn.textContent = 'Saved!';
-        setTimeout(() => saveBtn.textContent = 'Save Profile', 1500);
+        saveBtn.style.background = 'var(--success)';
+        
+        // Reload page after brief delay to show updated profile
+        setTimeout(() => {
+          location.reload();
+        }, 800);
       });
     }
 
+    // Load user email
     if (supabase) {
       supabase.auth.getUser().then(({ data }) => {
         const el = document.getElementById('profile-email');
         if (el && data?.user?.email) {
-          el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
+          el.textContent = data.user.email;
         }
-      });
+      }).catch(() => {});
     }
   }
 
@@ -1622,17 +2015,123 @@ function renderPageContent() {
   // Account Settings Page
   const accountRoot = document.getElementById('account-settings-root');
   if (accountRoot && accountRoot.innerHTML.trim() === '') {
+    const storedLang = localStorage.getItem(LANG_STORAGE) || 'en';
+    const storedRole = localStorage.getItem('neofolk.activeRole') || 'seeker';
+    
     accountRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
           <p class="section-label">Account</p>
           <h1>Settings</h1>
+          <p class="lede">Manage your account preferences and application settings.</p>
         </div>
-        <div class="card">
-          <p>Account settings appear here.</p>
+        
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0; margin-bottom:16px;">Language</h3>
+          <p style="color:var(--text-secondary); margin-bottom:12px; font-size:0.9rem;">Select your preferred interface language.</p>
+          <select id="settings-language" class="neo-input" style="max-width:300px;">
+            <option value="en"${storedLang === 'en' ? ' selected' : ''}>English</option>
+            <option value="hi"${storedLang === 'hi' ? ' selected' : ''}>हिन्दी (Hindi)</option>
+          </select>
+        </div>
+        
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0; margin-bottom:16px;">Role Context</h3>
+          <p style="color:var(--text-secondary); margin-bottom:12px; font-size:0.9rem;">Switch between learner and curator modes.</p>
+          <select id="settings-role" class="neo-input" style="max-width:300px;">
+            <option value="seeker"${storedRole === 'seeker' ? ' selected' : ''}>Seeker (Learner)</option>
+            <option value="curator"${storedRole === 'curator' ? ' selected' : ''}>Curator (Teacher)</option>
+          </select>
+        </div>
+        
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0; margin-bottom:16px;">Data Management</h3>
+          <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">Clear locally stored data. This will not affect your account.</p>
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <button id="clear-profile-btn" class="btn btn-secondary" style="font-size:0.8rem;">Clear Profile Data</button>
+            <button id="clear-all-btn" class="btn btn-secondary" style="font-size:0.8rem;">Clear All Local Data</button>
+          </div>
+          <p id="clear-msg" style="color:var(--success); font-size:0.8rem; margin-top:12px; display:none;">Data cleared successfully. Reloading...</p>
+        </div>
+        
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0; margin-bottom:16px;">Session</h3>
+          <p style="color:var(--text-secondary); margin-bottom:16px; font-size:0.9rem;">Sign out of your account.</p>
+          <button id="settings-logout-btn" class="btn btn-primary" style="background:var(--error);">Log Out</button>
+        </div>
+        
+        <div class="card" style="margin-bottom:20px; background:var(--bg-card); border:1px solid var(--border);">
+          <h3 style="margin-top:0; margin-bottom:8px; font-size:1rem; color:var(--text-muted);">About</h3>
+          <p style="color:var(--text-faint); font-size:0.8rem; margin:0;">Neofolk Atlas v1.0</p>
+          <p style="color:var(--text-faint); font-size:0.75rem; margin-top:4px;">A project of the Neo-Hindu Black Emigration</p>
         </div>
       </div>
     `;
+    
+    // Language selector handler
+    const langSelect = document.getElementById('settings-language');
+    if (langSelect) {
+      langSelect.addEventListener('change', async (e) => {
+        const lang = e.target.value;
+        localStorage.setItem(LANG_STORAGE, lang);
+        await loadDictionary(lang);
+        applyDocumentLanguage(lang);
+        applyDataI18n();
+        // Show feedback
+        const originalText = langSelect.nextElementSibling?.textContent;
+        if (langSelect.nextElementSibling) {
+          langSelect.nextElementSibling.textContent = 'Language updated!';
+          setTimeout(() => {
+            if (originalText) langSelect.nextElementSibling.textContent = originalText;
+          }, 1500);
+        }
+      });
+    }
+    
+    // Role switcher handler
+    const roleSelect = document.getElementById('settings-role');
+    if (roleSelect) {
+      roleSelect.addEventListener('change', (e) => {
+        localStorage.setItem('neofolk.activeRole', e.target.value);
+        location.reload();
+      });
+    }
+    
+    // Clear profile data
+    const clearProfileBtn = document.getElementById('clear-profile-btn');
+    if (clearProfileBtn) {
+      clearProfileBtn.addEventListener('click', () => {
+        const userId = currentUser?.id || 'guest';
+        localStorage.removeItem(`neofolk.profile.${userId}`);
+        document.getElementById('clear-msg').style.display = 'block';
+        setTimeout(() => location.reload(), 1500);
+      });
+    }
+    
+    // Clear all data
+    const clearAllBtn = document.getElementById('clear-all-btn');
+    if (clearAllBtn) {
+      clearAllBtn.addEventListener('click', () => {
+        if (confirm('This will clear all your local data including profile, domains, and settings. Continue?')) {
+          localStorage.clear();
+          document.getElementById('clear-msg').style.display = 'block';
+          setTimeout(() => location.reload(), 1500);
+        }
+      });
+    }
+    
+    // Logout button
+    const logoutBtn = document.getElementById('settings-logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        const supabase = getSupabaseClient();
+        if (supabase) {
+          await supabase.auth.signOut();
+        }
+        currentUser = null;
+        window.location.href = 'index.html';
+      });
+    }
   }
 
   
@@ -1649,21 +2148,18 @@ function renderPageContent() {
   if (nodesRoot && nodesRoot.innerHTML.trim() === "") {
     nodesRoot.innerHTML = `
       <div class="dashboard-shell">
-        <div class="dashboard-header">
-          <p class="section-label">Nodes</p>
-          <h1>Learning Nodes</h1>
-          <p class="lede">
-            Physical locations where learning happens.
-          </p>
+          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
+            <div>
+              <p class="section-label">Nodes</p>
+              <h1>Learning Nodes</h1>
+              <p class="lede">Physical locations where learning happens.</p>
+            </div>
+            <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
+              [ SIGNAL LOCAL NEED ]
+            </button>
+          </div>
         </div>
-        <div id="map"
-          style="
-            height:500px;
-            width:100%;
-            border-radius:12px;
-            margin-top:20px;
-          ">
-        </div>
+        <div id="map" style="height:500px; width:100%; border-radius:4px; border:1px solid var(--border-color); background:var(--ink);"></div>
       </div>
     `;
     setTimeout(() => {
@@ -1675,12 +2171,23 @@ function renderPageContent() {
         [20.5937, 78.9629],
         5
       );
+      window.mapInstance = map;
+      
       L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
           attribution: "© OpenStreetMap contributors"
         }
       ).addTo(map);
+
+      // Handle Map Clicks for Signal Drops
+      map.on('click', (e) => {
+        if (!demandModeActive) return;
+        showRadialMenu(e.latlng.lat, e.latlng.lng);
+      });
+
+      // Initial render for node needs
+      renderNodeNeedsOnMap();
     }, 50);
   }
 }
