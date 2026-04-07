@@ -302,16 +302,16 @@ function renderTopologyPage(userData) {
             <!-- RESONANCE FRAMEWORK (TOKENS) -->
             <div style="background:#1a1614; padding:30px; border:1px solid #2a2420;">
                 <h3 style="font-size:10px; margin-bottom:24px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px;">RESONANCE FRAMEWORK</h3>
-                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
-                    ${LINEAGE_DETAILS.map(t => `
-                        <div style="padding:20px; border:1px solid #2a2420; background:#0f0d0c; display:flex; flex-direction:column; gap:10px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <span style="font-size:10px; color:${t.colorClass}; border:1px solid ${t.colorClass}; padding:2px 6px; letter-spacing:1px;">${t.tokenName}</span>
-                                <span style="font-size:9px; color:#333;">${t.subdomain}</span>
+                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:20px;">
+                    ${LINEAGE_DETAILS.map((t, idx) => `
+                        <div style="padding:20px; background:#f5f5dc; border-radius:2px; box-shadow:2px 2px 8px rgba(0,0,0,0.2); transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg); display:flex; flex-direction:column; gap:10px; transition: transform 0.2s ease;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <span style="font-size:10px; color:#8b4513; background:#e8e0c5; padding:2px 6px; font-weight:600; text-transform:uppercase; border-radius:3px; letter-spacing:1px;">${t.tokenName}</span>
+                                <span style="font-size:9px; color:#8b7355;">${t.subdomain}</span>
                             </div>
-                            <h4 style="margin:5px 0; color:#fff; font-family:'Cormorant Garamond', serif; font-size:1.2rem;">${t.fullName}</h4>
-                            <p style="font-size:11px; color:#666; line-height:1.5; font-family:monospace; margin:0;">${t.description}</p>
-                            <div style="margin-top:auto; padding-top:10px; border-top:1px solid #2a2420; font-size:9px; color:#444; text-transform:uppercase; letter-spacing:1px;">
+                            <h4 style="margin:5px 0; color:#3d2914; font-family:'Cormorant Garamond', serif; font-size:1.3rem; font-weight:600;">${t.fullName}</h4>
+                            <p style="font-size:11px; color:#5c4033; line-height:1.5; font-family:serif; margin:0;">${t.description}</p>
+                            <div style="margin-top:auto; padding-top:10px; border-top:1px dashed #d4c4a8; font-size:9px; color:#8b7355; font-style:italic;">
                                 Pillar: ${t.resonancePillar}
                             </div>
                         </div>
