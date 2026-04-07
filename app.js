@@ -164,80 +164,6 @@ const VALID_STATUSES = ['pending', 'provisioning', 'fulfilled'];
 let nodeNeedFilter = 'all'; // 'all', 'active', 'needs'
 let demandModeActive = false;
 
-// Mode toggle: 'social' (view/interact) vs 'lockin' (focus mode)
-let userMode = 'social';
-
-/**
- * Toggle between Social Mode and Lock-in Mode
- */
-window.toggleUserMode = function() {
-  userMode = userMode === 'social' ? 'lockin' : 'social';
-  
-  // Update UI indicator
-  let indicator = document.querySelector('.mode-indicator');
-  if (!indicator) {
-    indicator = document.createElement('div');
-    indicator.className = 'mode-indicator';
-    indicator.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 10px 20px;
-      border-radius: 4px;
-      font-family: monospace;
-      font-size: 12px;
-      letter-spacing: 1px;
-      z-index: 10000;
-      transition: all 0.3s ease;
-    `;
-    document.body.appendChild(indicator);
-  }
-  
-  if (userMode === 'social') {
-    indicator.textContent = '🌐 SOCIAL MODE';
-    indicator.style.background = 'rgba(39, 174, 96, 0.2)';
-    indicator.style.border = '1px solid #27ae60';
-    indicator.style.color = '#27ae60';
-    document.body.classList.remove('lockin-mode');
-  } else {
-    indicator.textContent = '🔒 LOCK-IN MODE';
-    indicator.style.background = 'rgba(231, 76, 60, 0.2)';
-    indicator.style.border = '1px solid #e74c3c';
-    indicator.style.color = '#e74c3c';
-    document.body.classList.add('lockin-mode');
-  }
-  
-  // Save preference
-  localStorage.setItem('neofolk.userMode', userMode);
-  console.log(`Switched to ${userMode} mode`);
-  return userMode;
-};
-
-/**
- * Initialize user mode from saved preference
- */
-function initUserMode() {
-  const saved = localStorage.getItem('neofolk.userMode');
-  if (saved && saved !== userMode) {
-    userMode = saved;
-    // Trigger UI update without toggling
-    const indicator = document.querySelector('.mode-indicator');
-    if (indicator) {
-      if (userMode === 'social') {
-        indicator.textContent = '🌐 SOCIAL MODE';
-        indicator.style.background = 'rgba(39, 174, 96, 0.2)';
-        indicator.style.border = '1px solid #27ae60';
-        indicator.style.color = '#27ae60';
-      } else {
-        indicator.textContent = '🔒 LOCK-IN MODE';
-        indicator.style.background = 'rgba(231, 76, 60, 0.2)';
-        indicator.style.border = '1px solid #e74c3c';
-        indicator.style.color = '#e74c3c';
-      }
-    }
-  }
-}
-
 /**
  * Toggle Demand Mode - allowing users to drop new signals
  */
@@ -467,15 +393,10 @@ function renderNodeNeedMarker(need) {
     riseOnHover: true
   }).addTo(window.mapInstance);
   
-  // Click handler to boost (only in social mode)
+  // Click handler to boost - always interactive
   marker.on('click', (e) => {
     L.DomEvent.stopPropagation(e);
-    if (userMode === 'social') {
-      supportNodeNeed(need.id);
-    } else {
-      // In lock-in mode, just show info
-      console.log('Lock-in mode: viewing only');
-    }
+    supportNodeNeed(need.id);
   });
   
   // Tooltip with specific formatting: [Domain] > [Subject] | Tags: #tag1, #tag2 | Urgency: X/5
@@ -484,7 +405,7 @@ function renderNodeNeedMarker(need) {
     <div style="font-family:monospace; padding:6px; background:#000; border:1px solid ${color}; color:#fff; font-size:11px; white-space:nowrap;">
       <strong>${need.domain} &gt; ${need.subject}</strong>${tagsStr} | Urgency: ${need.clickCount}/5
       <br><span style="font-size:9px; opacity:0.5; margin-top:4px; display:block;">
-        ${userMode === 'social' ? 'CLICK TO BOOST (SOCIAL MODE)' : 'VIEW ONLY (LOCK-IN MODE)'}
+        CLICK TO BOOST
       </span>
     </div>
   `;
@@ -660,35 +581,524 @@ function renderNodeNeedsOnMap() {
   // TODO: Render active nodes (Studios) when filter is 'all' or 'active'
 }
 
-// Expose functions globally for HTML onclick handlers
-window.dropNeedSignal = dropNeedSignal;
-window.supportNodeNeed = supportNodeNeed;
-window.updateNodeNeedStatus = updateNodeNeedStatus;
-window.setNodeNeedFilter = setNodeNeedFilter;
-window.showNeedForm = window.showNeedForm;
-window.submitNeed = window.submitNeed;
+// ============================================================
+// CURATOR CARD SYSTEM - License and credentials management
+// ============================================================
 
-// Load NodeNeeds on startup (global for all users)
-loadGlobalNodeNeeds();
+// Curator cards collection
+const curatorCards = [];
 
-// Initialize user mode
-initUserMode();
+// Valid license levels
+const LICENSE_LEVELS = ['Level 1', 'Level 2', 'Level 3'];
 
-
-// Live calculation engine for topology metrics
-function getLiveTopology(userData) {
-    const domains = userData.domains || { ...defaultNeoDomains };
-    const specs = userData.specializations || { ...defaultNeoSpecialization };
-    
-    const domainValues = Object.values(domains);
-    const neoscore = domainValues.length > 0 ? (domainValues.reduce((a, b) => a + b, 0) / 10) * 10 : 0;
-    
-    // Depth (Specscore) - based on highest specialization value
-    // In live mode, depth might be a more complex formula, but for now we follow the user request logic
-    const specscore = Object.values(specs).length > 0 ? Math.max(...Object.values(specs)) : 0;
-    
-    return { neoscore, specscore, domains, specs };
+/**
+ * Create a new Curator Card (License)
+ * @param {string} fullName - Curator's full name
+ * @param {number} age - Curator's age
+ * @param {string[]} activeLicenses - Array of licenses (e.g., ['Level 3 Lingosophy'])
+ * @returns {object} The created CuratorCard object
+ */
+function createCuratorCard(fullName, age, activeLicenses = []) {
+  const userId = currentUser?.id || 'guest_' + localStorage.getItem('neofolk.guestId');
+  
+  const card = {
+    id: `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    userId: userId,
+    fullName: fullName,
+    age: age,
+    activeLicenses: activeLicenses,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'active' // 'active', 'suspended', 'expired'
+  };
+  
+  curatorCards.push(card);
+  saveCuratorCards();
+  return card;
 }
+
+/**
+ * Get curator card for current user
+ * @returns {object|null} CuratorCard or null if not found
+ */
+function getMyCuratorCard() {
+  const userId = currentUser?.id || 'guest_' + localStorage.getItem('neofolk.guestId');
+  return curatorCards.find(c => c.userId === userId) || null;
+}
+
+/**
+ * Add a license to an existing curator card
+ * @param {string} cardId 
+ * @param {string} license 
+ */
+function addLicenseToCard(cardId, license) {
+  const card = curatorCards.find(c => c.id === cardId);
+  if (!card) {
+    console.error(`CuratorCard not found: ${cardId}`);
+    return null;
+  }
+  
+  if (!card.activeLicenses.includes(license)) {
+    card.activeLicenses.push(license);
+    card.updatedAt = new Date().toISOString();
+    saveCuratorCards();
+  }
+  return card;
+}
+
+/**
+ * Save curator cards to localStorage
+ */
+function saveCuratorCards() {
+  localStorage.setItem('neofolk.curatorCards', JSON.stringify(curatorCards));
+}
+
+/**
+ * Load curator cards from localStorage
+ */
+function loadCuratorCards() {
+  const stored = localStorage.getItem('neofolk.curatorCards');
+  if (stored) {
+    const loaded = JSON.parse(stored);
+    curatorCards.length = 0;
+    curatorCards.push(...loaded);
+  }
+}
+
+// Expose curator card functions globally
+window.createCuratorCard = createCuratorCard;
+window.getMyCuratorCard = getMyCuratorCard;
+window.addLicenseToCard = addLicenseToCard;
+
+// ============================================================
+// MODULE SYSTEM - Module creation with curatorCardID requirement
+// ============================================================
+
+// Modules collection
+const modules = [];
+
+/**
+ * Create a new Module (requires curatorCardID)
+ * @param {string} title - Module title
+ * @param {string} description - Module description
+ * @param {string} domain - Domain from VALID_DOMAINS
+ * @param {string} curatorCardID - ID of curator's license card
+ * @returns {object} The created Module object
+ */
+function createModule(title, description, domain, curatorCardID) {
+  // Validate curator card exists
+  const card = curatorCards.find(c => c.id === curatorCardID);
+  if (!card) {
+    console.error(`Cannot create module: Invalid curatorCardID ${curatorCardID}`);
+    return null;
+  }
+  
+  // Validate domain
+  if (!VALID_DOMAINS.includes(domain)) {
+    console.error(`Invalid domain: ${domain}`);
+    return null;
+  }
+  
+  const module = {
+    id: `mod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    title: title,
+    description: description,
+    domain: domain,
+    curatorCardID: curatorCardID,
+    curatorName: card.fullName,
+    batches: [], // Array of batch IDs
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    status: 'active' // 'active', 'archived', 'draft'
+  };
+  
+  modules.push(module);
+  saveModules();
+  return module;
+}
+
+/**
+ * Get module by ID
+ * @param {string} moduleId 
+ */
+function getModule(moduleId) {
+  return modules.find(m => m.id === moduleId) || null;
+}
+
+/**
+ * Get all modules for a curator
+ * @param {string} curatorCardID 
+ */
+function getModulesByCurator(curatorCardID) {
+  return modules.filter(m => m.curatorCardID === curatorCardID);
+}
+
+/**
+ * Save modules to localStorage
+ */
+function saveModules() {
+  localStorage.setItem('neofolk.modules', JSON.stringify(modules));
+}
+
+/**
+ * Load modules from localStorage
+ */
+function loadModules() {
+  const stored = localStorage.getItem('neofolk.modules');
+  if (stored) {
+    const loaded = JSON.parse(stored);
+    modules.length = 0;
+    modules.push(...loaded);
+  }
+}
+
+// Expose module functions globally
+window.createModule = createModule;
+window.getModule = getModule;
+window.getModulesByCurator = getModulesByCurator;
+
+// ============================================================
+// ATTENDANCE SYSTEM - Module > Batch > Attendance Log
+// ============================================================
+
+/**
+ * Create a new Batch for a Module
+ * @param {string} moduleId - Parent module ID
+ * @param {string} batchName - Name of the batch
+ * @param {string[]} studentIds - Array of enrolled student IDs
+ */
+function createBatch(moduleId, batchName, studentIds = []) {
+  const module = getModule(moduleId);
+  if (!module) {
+    console.error(`Cannot create batch: Module not found ${moduleId}`);
+    return null;
+  }
+  
+  const batch = {
+    id: `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    moduleId: moduleId,
+    moduleTitle: module.title,
+    name: batchName,
+    studentIds: studentIds,
+    attendanceLogs: [], // Array of daily logs
+    createdAt: new Date().toISOString(),
+    status: 'active'
+  };
+  
+  // Add batch to module
+  module.batches.push(batch.id);
+  saveModules();
+  
+  // Store batch separately
+  const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+  batches.push(batch);
+  localStorage.setItem('neofolk.batches', JSON.stringify(batches));
+  
+  return batch;
+}
+
+/**
+ * Toggle attendance status for a student (Present/Absent)
+ * @param {string} batchId 
+ * @param {string} date 
+ * @param {string} studentId 
+ * @returns {string} New status ('present' or 'absent')
+ */
+function toggleAttendance(batchId, date, studentId) {
+  const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+  const batch = batches.find(b => b.id === batchId);
+  
+  if (!batch) {
+    console.error(`Batch not found: ${batchId}`);
+    return null;
+  }
+  
+  // Find or create log for this date
+  let log = batch.attendanceLogs.find(l => l.date === date);
+  if (!log) {
+    log = {
+      id: `log_${Date.now()}`,
+      batchId: batchId,
+      date: date,
+      records: {},
+      recordedAt: new Date().toISOString(),
+      recordedBy: currentUser?.id || 'guest'
+    };
+    batch.attendanceLogs.push(log);
+  }
+  
+  // Toggle status
+  const currentStatus = log.records[studentId];
+  const newStatus = currentStatus === 'present' ? 'absent' : 'present';
+  log.records[studentId] = newStatus;
+  
+  localStorage.setItem('neofolk.batches', JSON.stringify(batches));
+  
+  // Sync to student dashboard
+  syncAttendanceToStudents(batch, log);
+  
+  return newStatus;
+}
+
+/**
+ * Sync attendance data to student dashboards
+ * @param {object} batch 
+ * @param {object} logEntry 
+ */
+function syncAttendanceToStudents(batch, logEntry) {
+  Object.keys(logEntry.records).forEach(studentId => {
+    const key = `neofolk.attendance.${studentId}`;
+    const history = JSON.parse(localStorage.getItem(key) || '[]');
+    
+    const record = {
+      batchId: batch.id,
+      batchName: batch.name,
+      moduleId: batch.moduleId,
+      moduleTitle: batch.moduleTitle,
+      date: logEntry.date,
+      status: logEntry.records[studentId],
+      recordedAt: logEntry.recordedAt
+    };
+    
+    const existingIndex = history.findIndex(h => h.batchId === batch.id && h.date === logEntry.date);
+    if (existingIndex >= 0) {
+      history[existingIndex] = record;
+    } else {
+      history.push(record);
+    }
+    
+    localStorage.setItem(key, JSON.stringify(history));
+  });
+}
+
+/**
+ * Get attendance history for a student
+ * @param {string} studentId 
+ */
+function getStudentAttendance(studentId) {
+  return JSON.parse(localStorage.getItem(`neofolk.attendance.${studentId}`) || '[]');
+}
+
+// Expose attendance functions globally
+window.createBatch = createBatch;
+window.toggleAttendance = toggleAttendance;
+window.getStudentAttendance = getStudentAttendance;
+
+// ============================================================
+// GUILD SYSTEM - Instant Guilds with invites
+// ============================================================
+
+// Guilds collection
+const guilds = [];
+
+/**
+ * Create a new Guild
+ * @param {string} name - Guild name
+ * @param {string} description - Guild description
+ * @param {string} ownerId - Creator's user ID
+ */
+function createGuild(name, description, ownerId) {
+  const guild = {
+    id: `guild_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    name: name,
+    description: description,
+    ownerId: ownerId,
+    members: [ownerId],
+    invited: [], // Array of pending invites { targetId, invitedAt, invitedBy }
+    sharedModules: [], // Guild-shared module IDs
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  guilds.push(guild);
+  saveGuilds();
+  return guild;
+}
+
+/**
+ * Invite a profile to a guild
+ * @param {string} guildId 
+ * @param {string} targetId - User ID to invite
+ */
+function inviteProfile(guildId, targetId) {
+  const guild = guilds.find(g => g.id === guildId);
+  if (!guild) {
+    console.error(`Guild not found: ${guildId}`);
+    return null;
+  }
+  
+  if (guild.members.includes(targetId)) {
+    console.log(`User ${targetId} is already a member`);
+    return null;
+  }
+  
+  const existingInvite = guild.invited.find(i => i.targetId === targetId);
+  if (existingInvite) {
+    console.log(`User ${targetId} already has a pending invite`);
+    return existingInvite;
+  }
+  
+  const invite = {
+    targetId: targetId,
+    invitedAt: new Date().toISOString(),
+    invitedBy: currentUser?.id || 'guest'
+  };
+  
+  guild.invited.push(invite);
+  saveGuilds();
+  
+  // Add to target's pending invites
+  const pendingKey = `neofolk.pendingInvites.${targetId}`;
+  const pending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+  pending.push({
+    guildId: guild.id,
+    guildName: guild.name,
+    invitedAt: invite.invitedAt,
+    invitedBy: invite.invitedBy
+  });
+  localStorage.setItem(pendingKey, JSON.stringify(pending));
+  
+  return invite;
+}
+
+/**
+ * Accept a guild invite
+ * @param {string} userId 
+ * @param {string} guildId 
+ */
+function acceptGuildInvite(userId, guildId) {
+  const guild = guilds.find(g => g.id === guildId);
+  if (!guild) return null;
+  
+  // Remove from pending invites
+  const pendingKey = `neofolk.pendingInvites.${userId}`;
+  const pending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+  const filtered = pending.filter(p => p.guildId !== guildId);
+  localStorage.setItem(pendingKey, JSON.stringify(filtered));
+  
+  // Remove from guild's invited list
+  guild.invited = guild.invited.filter(i => i.targetId !== userId);
+  
+  // Add to members
+  if (!guild.members.includes(userId)) {
+    guild.members.push(userId);
+  }
+  
+  saveGuilds();
+  return guild;
+}
+
+/**
+ * Decline a guild invite
+ * @param {string} userId 
+ * @param {string} guildId 
+ */
+function declineGuildInvite(userId, guildId) {
+  const guild = guilds.find(g => g.id === guildId);
+  if (guild) {
+    guild.invited = guild.invited.filter(i => i.targetId !== userId);
+    saveGuilds();
+  }
+  
+  const pendingKey = `neofolk.pendingInvites.${userId}`;
+  const pending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
+  const filtered = pending.filter(p => p.guildId !== guildId);
+  localStorage.setItem(pendingKey, JSON.stringify(filtered));
+  
+  return true;
+}
+
+/**
+ * Handle Search Centering on Map
+ * @param {string} query 
+ */
+window.handleMapSearch = function(query) {
+  if (!query) return;
+  // Mock geocoding: In a real app, this would use a Geocoding API
+  const cities = {
+    'bangalore': [12.9716, 77.5946],
+    'delhi': [28.6139, 77.2090],
+    'mumbai': [19.0760, 72.8777],
+    'chennai': [13.0827, 80.2707],
+    'kolkata': [22.5726, 88.3639],
+    'pune': [18.5204, 73.8567]
+  };
+  
+  const target = cities[query.toLowerCase()] || [20.5937 + (Math.random()-0.5)*5, 78.9629 + (Math.random()-0.5)*5];
+  
+  if (window.mapInstance) {
+    window.mapInstance.setView(target, 13);
+    
+    // If in demand mode, drop radial menu automatically
+    if (demandModeActive) {
+      showRadialMenu(target[0], target[1]);
+    }
+  }
+};
+
+/**
+ * Get pending invites for a user
+ * @param {string} userId 
+ */
+function getPendingInvites(userId) {
+  return JSON.parse(localStorage.getItem(`neofolk.pendingInvites.${userId}`) || '[]');
+}
+
+/**
+ * Share a module with guild
+ * @param {string} guildId 
+ * @param {string} moduleId 
+ */
+function shareModuleWithGuild(guildId, moduleId) {
+  const guild = guilds.find(g => g.id === guildId);
+  if (!guild) {
+    console.error(`Guild not found: ${guildId}`);
+    return null;
+  }
+  
+  if (!guild.sharedModules.includes(moduleId)) {
+    guild.sharedModules.push(moduleId);
+    saveGuilds();
+  }
+  
+  return guild;
+}
+
+/**
+ * Get user's guilds
+ * @param {string} userId 
+ */
+function getUserGuilds(userId) {
+  return guilds.filter(g => g.members.includes(userId));
+}
+
+/**
+ * Save guilds to localStorage
+ */
+function saveGuilds() {
+  localStorage.setItem('neofolk.guilds', JSON.stringify(guilds));
+}
+
+/**
+ * Load guilds from localStorage
+ */
+function loadGuilds() {
+  const stored = localStorage.getItem('neofolk.guilds');
+  if (stored) {
+    const loaded = JSON.parse(stored);
+    guilds.length = 0;
+    guilds.push(...loaded);
+  }
+}
+
+// Expose guild functions globally
+window.createGuild = createGuild;
+window.inviteProfile = inviteProfile;
+window.acceptGuildInvite = acceptGuildInvite;
+window.declineGuildInvite = declineGuildInvite;
+window.getPendingInvites = getPendingInvites;
+window.shareModuleWithGuild = shareModuleWithGuild;
+window.getUserGuilds = getUserGuilds;
 
 function calculateNeoscore(domains) {
   const values = Object.values(domains);
@@ -698,6 +1108,18 @@ function calculateNeoscore(domains) {
 
 function calculateSpecscore(spec) {
   return Math.max(...Object.values(spec));
+}
+
+function getLiveTopology(userData) {
+    const domains = userData.domains || { ...defaultNeoDomains };
+    const specs = userData.specializations || { ...defaultNeoSpecialization };
+    
+    const domainValues = Object.values(domains);
+    const neoscore = domainValues.length > 0 ? (domainValues.reduce((a, b) => a + b, 0) / 10) * 10 : 0;
+    
+    const specscore = Object.values(specs).length > 0 ? Math.max(...Object.values(specs)) : 0;
+    
+    return { neoscore, specscore, domains, specs };
 }
 
 function toggleNeoscore() {
@@ -1795,17 +2217,69 @@ function renderPageContent() {
   // Guild page
   const guildRoot = document.getElementById('guild-root');
   if (guildRoot && guildRoot.innerHTML.trim() === '') {
-    guildRoot.innerHTML =
-      '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('nav.groups')) + '</p>' +
-          '<h1>' + escapeHtml(t('home.termGroups')) + '</h1>' +
-          '<p class="lede">' + escapeHtml(t('home.termGroupsBody')) + '</p>' +
-        '</div></div>' +
-        '<div class="empty-state">' +
-          '<p>' + escapeHtml(t('dashboard.groupsAdvancedEmpty')) + '</p>' +
-        '</div>' +
-      '</div>';
+    const userGuilds = getUserGuilds(currentUser?.id || 'guest');
+    const invites = getPendingInvites(currentUser?.id || 'guest');
+    
+    guildRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <div>
+            <p class="section-label">Groups</p>
+            <h1>Guilds & Craft</h1>
+            <p class="lede">Collaborative production units for high-level intellectual output.</p>
+          </div>
+          <button onclick="window.showInstantCraft()" class="btn btn-primary">
+            [ + INSTANT CRAFT ]
+          </button>
+        </div>
+
+        ${invites.length > 0 ? `
+          <div class="card" style="margin-bottom:24px; border-color:var(--gold);">
+            <h3>Pending Invites</h3>
+            <div style="display:flex; flex-direction:column; gap:12px; margin-top:16px;">
+              ${invites.map(inv => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:12px; border-radius:4px;">
+                  <div>
+                    <strong>${inv.guildName}</strong>
+                    <div style="font-size:0.75rem; color:var(--muted-text);">Invited ${new Date(inv.invitedAt).toLocaleDateString()}</div>
+                  </div>
+                  <div style="display:flex; gap:8px;">
+                    <button onclick="acceptGuildInvite('${currentUser?.id || 'guest'}', '${inv.guildId}'); location.reload();" class="btn" style="padding:4px 12px; font-size:0.8rem;">Accept</button>
+                    <button onclick="declineGuildInvite('${currentUser?.id || 'guest'}', '${inv.guildId}'); location.reload();" class="btn btn-secondary" style="padding:4px 12px; font-size:0.8rem;">Decline</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="record-list">
+          ${userGuilds.map(g => `
+            <div class="record-card">
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span class="pill" style="margin:0;">GUILD</span>
+                <div class="member-cluster">
+                  ${g.members.slice(0, 3).map(() => `<div class="member-bubble">?</div>`).join('')}
+                  ${g.members.length > 3 ? `<div class="member-bubble">+${g.members.length - 3}</div>` : ''}
+                </div>
+              </div>
+              <h3>${g.name}</h3>
+              <p style="font-size:0.85rem; color:var(--muted-text);">${g.description}</p>
+              <div style="margin-top:auto; padding-top:12px; display:flex; gap:8px;">
+                <button class="btn" style="flex:1; font-size:0.8rem;">Library</button>
+                <button class="btn btn-secondary" style="font-size:0.8rem;">Invite</button>
+              </div>
+            </div>
+          `).join('')}
+          
+          ${userGuilds.length === 0 ? `
+            <div class="empty-state" style="grid-column: 1/-1;">
+              <p>You haven't joined any guilds yet. Start an 'Instant Craft' or wait for an invitation.</p>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `;
   }
 
   // Discovery page
@@ -2088,14 +2562,34 @@ function renderPageContent() {
   // Teaching Log page
   const teachingRoot = document.getElementById('teaching-log-root');
   if (teachingRoot && teachingRoot.innerHTML.trim() === '') {
+    const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+    
     teachingRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
           <p class="section-label">Curation</p>
           <h1>Teaching Log</h1>
+          <p class="lede">Manage your batches, track attendance, and log curriculum progress.</p>
         </div>
-        <div class="empty-state">
-          <p>Teaching records will appear here.</p>
+        
+        <div class="card">
+          <h3 style="margin-bottom:20px;">Active Batches</h3>
+          ${batches.length > 0 ? `
+            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+              ${batches.map(b => `
+                <div style="background:rgba(0,0,0,0.2); border:1px solid var(--border-color); padding:20px; border-radius:4px;">
+                  <span style="font-size:0.65rem; color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:10px; margin-bottom:12px; display:inline-block;">${b.moduleTitle}</span>
+                  <h4 style="margin:0 0 8px 0; font-family:var(--serif);">${b.name}</h4>
+                  <div style="font-size:0.8rem; color:var(--muted-text); margin-bottom:16px;">${b.studentIds.length} Students Enrolled</div>
+                  <button onclick="location.href='attendance.html?batchId=${b.id}'" class="btn" style="width:100%; font-size:0.8rem;">Open Attendance</button>
+                </div>
+              `).join('')}
+            </div>
+          ` : `
+            <div class="empty-state">
+              <p>No batches found. Create a batch from a Module study page.</p>
+            </div>
+          `}
         </div>
       </div>
     `;
@@ -2104,18 +2598,84 @@ function renderPageContent() {
   // Attendance page
   const attendanceRoot = document.getElementById('attendance-root');
   if (attendanceRoot && attendanceRoot.innerHTML.trim() === '') {
-    attendanceRoot.innerHTML = `
-      <div class="dashboard-shell">
-        <div class="dashboard-header">
-          <p class="section-label">Curation</p>
-          <h1>Attendance</h1>
+    const urlParams = new URLSearchParams(window.location.search);
+    const batchId = urlParams.get('batchId');
+    const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+    const batch = batches.find(b => b.id === batchId);
+    
+    if (batch) {
+      const studentProfiles = [
+        { id: 's1', name: 'Aarav Sharma' },
+        { id: 's2', name: 'Isha Patel' },
+        { id: 's3', name: 'Kabir Das' },
+        { id: 's4', name: 'Ananya Rao' }
+      ];
+      
+      const today = new Date().toISOString().split('T')[0];
+      const log = batch.attendanceLogs.find(l => l.date === today) || { records: {} };
+      
+      attendanceRoot.innerHTML = `
+        <div class="dashboard-shell">
+          <div class="dashboard-header">
+            <div>
+              <p class="section-label">Attendance</p>
+              <h1>${batch.name}</h1>
+              <p class="lede">${batch.moduleTitle} | daily log for ${today}</p>
+            </div>
+            <button onclick="window.broadcastAttendance()" class="btn btn-primary">
+              BROADCAST LOG
+            </button>
+          </div>
+          
+          <div class="card" style="padding:0; overflow:hidden;">
+            <table class="attendance-table">
+              <thead>
+                <tr>
+                  <th>Student Name</th>
+                  <th style="width:100px;">Present</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${studentProfiles.map(s => `
+                  <tr>
+                    <td>
+                      <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:32px; height:32px; border-radius:50%; background:rgba(232, 220, 200, 0.1); border:1px solid var(--border-color); display:flex; align-items:center; justify-content:center; font-size:10px;">${s.name[0]}</div>
+                        <strong>${s.name}</strong>
+                      </div>
+                    </td>
+                    <td>
+                      <input type="checkbox" class="attendance-toggle" 
+                             ${log.records[s.id] === 'present' ? 'checked' : ''}
+                             onchange="toggleAttendance('${batch.id}', '${today}', '${s.id}')">
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+          <div id="saved-toast" class="saved-toast">Attendance Broadcast Sent!</div>
         </div>
-        <div class="empty-state">
-          <p>Attendance tracking will appear here.</p>
+      `;
+    } else {
+      attendanceRoot.innerHTML = `
+        <div class="dashboard-shell">
+          <div class="empty-state">
+            <p>Batch not found or session closed.</p>
+            <a href="teaching-log.html" class="btn">Return to Log</a>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   }
+
+  window.broadcastAttendance = function() {
+    const toast = document.getElementById('saved-toast');
+    if (toast) {
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 3000);
+    }
+  };
 
   // Module Editor page
   const editorRoot = document.getElementById('module-editor-root');
@@ -2225,6 +2785,43 @@ function renderPageContent() {
           </div>
         </div>
 
+        <div class="card" style="margin-bottom:24px;">
+          <h3 style="margin-top:0; margin-bottom:20px;">Curator License</h3>
+          <div id="curator-card-container">
+            ${getMyCuratorCard() ? `
+              <div class="curator-card-id">
+                <div class="chip"></div>
+                <div class="card-header">
+                  <div>
+                    <div class="card-meta">Curator ID</div>
+                    <div class="card-name">${getMyCuratorCard().fullName}</div>
+                  </div>
+                  <div style="text-align:right;">
+                    <div class="card-meta">Status</div>
+                    <div style="color:#4ade80; font-size:11px; font-weight:bold;">ACTIVE</div>
+                  </div>
+                </div>
+                <div style="margin-top:10px;">
+                  <div class="card-meta">Registered Age</div>
+                  <div style="font-size:1.1rem; font-weight:600;">${getMyCuratorCard().age}</div>
+                </div>
+                <div class="token-badges">
+                  ${getMyCuratorCard().activeLicenses.map(lic => {
+                    const domain = lic.replace('Level 3 ', '').replace('Level 2 ', '').replace('Level 1 ', '');
+                    const color = getTokenColor(DOMAIN_TO_TOKEN[domain] || domain);
+                    return `<span class="badge" style="border-color:${color}; color:${color}; box-shadow: 0 0 10px ${color}44;">${lic}</span>`;
+                  }).join('')}
+                </div>
+              </div>
+            ` : `
+              <div class="empty-state">
+                <p>No curator license found. Apply for curator status to unlock this feature.</p>
+                <button onclick="window.applyForCurator()" class="btn btn-primary" style="margin-top:12px;">Apply Now</button>
+              </div>
+            `}
+          </div>
+        </div>
+
         <div class="card" style="margin-top:40px;">
           <h3>Alpha Overview</h3>
           <p>This topology model evaluates breadth (Neoscore) and depth (Specscore) using your current module participation and note records. These metrics will scale into professional capability labels during the next phase.</p>
@@ -2237,7 +2834,6 @@ function renderPageContent() {
   const accountRoot = document.getElementById('account-settings-root');
   if (accountRoot && accountRoot.innerHTML.trim() === '') {
     const storedLang = localStorage.getItem(LANG_STORAGE) || 'en';
-    const savedMode = localStorage.getItem('neofolk.userMode') || 'social';
     
     accountRoot.innerHTML = `
       <div class="dashboard-shell">
@@ -2254,22 +2850,6 @@ function renderPageContent() {
             <option value="en"${storedLang === 'en' ? ' selected' : ''}>English</option>
             <option value="hi"${storedLang === 'hi' ? ' selected' : ''}>हिन्दी (Hindi)</option>
           </select>
-        </div>
-        
-        <div class="card" style="margin-bottom:20px;">
-          <h3 style="margin-top:0; margin-bottom:16px;">Interaction Mode</h3>
-          <p style="color:var(--text-secondary); margin-bottom:12px; font-size:0.9rem;">
-            <strong>Social Mode:</strong> View and interact with all Nodes and Needs.<br>
-            <strong>Lock-in Mode:</strong> System-wide focus mode for deep work.
-          </p>
-          <div style="display:flex; gap:12px;">
-            <button id="mode-toggle-btn" class="btn btn-primary" style="font-size:0.85rem;">
-              Switch to ${savedMode === 'social' ? 'Lock-in' : 'Social'} Mode
-            </button>
-          </div>
-          <p id="mode-status" style="color:var(--success); font-size:0.8rem; margin-top:12px; display:none;">
-            Mode updated! Current: ${savedMode === 'social' ? '🌐 Social' : '🔒 Lock-in'}
-          </p>
         </div>
         
         <div class="card" style="margin-bottom:20px;">
@@ -2316,21 +2896,6 @@ function renderPageContent() {
       });
     }
     
-    // Mode toggle handler
-    const modeBtn = document.getElementById('mode-toggle-btn');
-    if (modeBtn) {
-      modeBtn.addEventListener('click', () => {
-        const newMode = window.toggleUserMode();
-        modeBtn.textContent = `Switch to ${newMode === 'social' ? 'Lock-in' : 'Social'} Mode`;
-        const status = document.getElementById('mode-status');
-        if (status) {
-          status.textContent = `Mode updated! Current: ${newMode === 'social' ? '🌐 Social' : '🔒 Lock-in'}`;
-          status.style.display = 'block';
-          setTimeout(() => status.style.display = 'none', 2000);
-        }
-      });
-    }
-    
     // Clear profile data
     const clearProfileBtn = document.getElementById('clear-profile-btn');
     if (clearProfileBtn) {
@@ -2368,11 +2933,10 @@ function renderPageContent() {
     }
   }
 
-  
-  // Remove old Role Switcher Logic - replaced by Mode Toggle above
+  // Hide old role switcher if present
   const roleSelect = document.getElementById('role-context-switcher');
   if (roleSelect) {
-    roleSelect.style.display = 'none'; // Hide old role switcher
+    roleSelect.style.display = 'none';
   }
   // NODES PAGE
   const nodesRoot = document.getElementById("nodes-root");
@@ -2385,17 +2949,17 @@ function renderPageContent() {
               <h1>Learning Nodes</h1>
               <p class="lede">Physical locations where learning happens.</p>
             </div>
-            <div style="display:flex; gap:10px;">
-              <button onclick="window.toggleUserMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
-                [ ${userMode === 'social' ? 'ENTER LOCK-IN MODE' : 'BACK TO SOCIAL MODE'} ]
-              </button>
-              <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
-                [ SIGNAL LOCAL NEED ]
-              </button>
-            </div>
+            <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
+              [ SIGNAL LOCAL NEED ]
+            </button>
           </div>
         </div>
-        <div id="map" style="height:500px; width:100%; border-radius:4px; border:1px solid var(--border-color); background:var(--ink);"></div>
+        <div style="position:relative;">
+          <div class="map-search-overlay">
+            <input type="text" placeholder="Locality Search (e.g. Bangalore, Delhi)..." onkeydown="if(event.key==='Enter') window.handleMapSearch(this.value)">
+          </div>
+          <div id="map" style="height:500px; width:100%; border-radius:4px; border:1px solid var(--border-color); background:var(--ink);"></div>
+        </div>
       </div>
     `;
     setTimeout(() => {
@@ -2458,6 +3022,12 @@ async function initApp() {
   await loadDictionary(lang);
   applyDocumentLanguage(lang);
   applyDataI18n();
+
+  // Load all data systems
+  loadGlobalNodeNeeds();
+  loadCuratorCards();
+  loadModules();
+  loadGuilds();
 
   renderAppNav();
   wireMobileNav();

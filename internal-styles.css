@@ -1948,96 +1948,202 @@ select.neo-input {
 }
 
 /* ============================================================
-   RADIAL MENU
+   CURATOR ID CARD (Physical Card Visual)
    ============================================================ */
-#radial-menu-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 10002;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(4px);
-}
-
-.radial-container {
+.curator-card-id {
+  width: 380px;
+  max-width: 100%;
+  height: 240px;
+  background: linear-gradient(135deg, #1a1614 0%, #2c1f1a 100%);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 24px;
   position: relative;
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.radial-item {
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: var(--ink);
-  border: 1px solid var(--border-color);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 40px rgba(198,169,107,0.1);
+  font-family: var(--sans);
   color: var(--parchment);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+}
+
+.curator-card-id::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: var(--gold);
+  box-shadow: 0 0 15px var(--gold);
+}
+
+.curator-card-id .chip {
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(45deg, #c6a96b, #e8dcc8);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.curator-card-id .card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.curator-card-id .card-name {
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.curator-card-id .card-meta {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted-text);
+  letter-spacing: 1px;
+}
+
+.curator-card-id .token-badges {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.curator-card-id .badge {
+  padding: 4px 10px;
+  background: rgba(198, 169, 107, 0.1);
+  border: 1px solid rgba(198, 169, 107, 0.3);
+  border-radius: 4px;
   font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gold);
+  box-shadow: 0 0 5px rgba(198,169,107,0.2);
+}
+
+/* ============================================================
+   ATTENDANCE TABLE
+   ============================================================ */
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.attendance-table th {
+  text-align: left;
+  padding: 12px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: var(--muted-text);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.attendance-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid rgba(232, 220, 200, 0.05);
+}
+
+.attendance-toggle {
+  appearance: none;
+  width: 40px;
+  height: 20px;
+  background: rgba(232, 220, 200, 0.1);
+  border-radius: 20px;
+  position: relative;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  text-align: center;
-  padding: 5px;
+  transition: background 0.3s;
 }
 
-.radial-item:hover {
-  transform: scale(1.15) !important;
-  border-color: var(--token-color);
-  box-shadow: 0 0 20px var(--token-color);
-  z-index: 10;
+.attendance-toggle:checked {
+  background: var(--gold);
 }
 
-.radial-center {
-  width: 80px;
-  height: 80px;
-  background: var(--deep-brown);
-  border: 1px solid var(--gold);
+.attendance-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: white;
   border-radius: 50%;
+  transition: transform 0.3s;
+}
+
+.attendance-toggle:checked::after {
+  transform: translateX(20px);
+}
+
+.saved-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--gold);
+  color: var(--ink);
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.saved-toast.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ============================================================
+   GUILD MEMBER CLUSTER
+   ============================================================ */
+.member-cluster {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.member-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--deep-brown);
+  margin-left: -10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
-  z-index: 5;
+  font-size: 10px;
+  font-weight: bold;
   color: var(--gold);
-  font-family: var(--serif);
-  font-size: 11px;
-  box-shadow: 0 0 30px rgba(198,169,107,0.2);
+  position: relative;
+  transition: transform 0.2s;
 }
 
-/* Demand Toggle */
-.demand-mode-indicator {
+.member-bubble:hover {
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+/* SEARCH OVER MAP */
+.map-search-overlay {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(231, 76, 60, 0.1);
-  border: 1px solid #e74c3c;
-  color: #e74c3c;
-  padding: 10px 20px;
-  border-radius: 4px;
-  font-family: monospace;
-  font-size: 12px;
-  letter-spacing: 1px;
-  pointer-events: none;
+  top: 70px;
+  left: 20px;
   z-index: 1000;
-  display: none;
+  width: 300px;
+  max-width: calc(100% - 40px);
 }
 
-.demand-mode-active .demand-mode-indicator {
-  display: block;
+.map-search-overlay input {
+  width: 100%;
+  background: var(--ink);
+  border: 1px solid var(--gold);
+  color: var(--parchment);
+  padding: 12px 16px;
+  border-radius: 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  font-family: var(--sans);
+  outline: none;
 }
 
 /* ============================================================
