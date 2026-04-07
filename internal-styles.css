@@ -582,7 +582,7 @@ html[dir="rtl"] body.internal-page {
 .achievement-toast-label {
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.07em; 
   color: var(--gold);
 }
 .achievement-toast-title {
@@ -1859,6 +1859,77 @@ select.neo-input {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   LINEAGE CARDS - BEIGE STICKY NOTES (OVERRIDE ALL)
+   ============================================================ */
+.lineage-card,
+.lineage-card[style] {
+  background: #f5f5dc !important;
+  color: #3d2914 !important;
+  padding: 16px !important;
+  border-radius: 2px !important;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  border: none !important;
+}
+
+.lineage-card:hover,
+.lineage-card:hover[style] {
+  transform: rotate(0deg) scale(1.02) !important;
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.2) !important;
+  z-index: 10;
+}
+
+.lineage-card h4,
+.lineage-card h4[style] {
+  color: #3d2914 !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 1.2rem !important;
+  margin: 0 0 8px 0 !important;
+}
+
+.lineage-card p,
+.lineage-card p[style] {
+  color: #5c4033 !important;
+  font-family: Georgia, serif !important;
+  font-size: 11px !important;
+  line-height: 1.5 !important;
+  margin: 0 0 12px 0 !important;
+}
+
+.lineage-card span,
+.lineage-card span[style] {
+  color: #8b7355 !important;
+}
+
+.lineage-card span:first-child,
+.lineage-card span:first-child[style] {
+  color: #8b4513 !important;
+  background: #e8e0c5 !important;
+  padding: 2px 6px !important;
+  border-radius: 3px !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+  font-size: 10px !important;
+}
+
+/* Force beige background even with parent .card styles */
+.card .lineage-card,
+.card .lineage-card[style] {
+  background: #f5f5dc !important;
+  color: #3d2914 !important;
+}
+
+.card .lineage-card h4,
+.card .lineage-card h4[style] {
+  color: #3d2914 !important;
+}
+
+.card .lineage-card p,
+.card .lineage-card p[style] {
+  color: #5c4033 !important;
 }
 
 /* ============================================================

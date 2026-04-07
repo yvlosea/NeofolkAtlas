@@ -1584,14 +1584,14 @@ function renderPageContent() {
     `;
 
     const lineageCards = LINEAGE_DETAILS.map((t, idx) => `
-      <div class="lineage-card" style="padding:16px; background:#f5f5dc; border-radius:2px; box-shadow:2px 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1); transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg); transition:transform 0.2s ease;">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
-           <span style="font-size:10px; color:#8b4513; background:#e8e0c5; padding:2px 6px; border-radius:3px; text-transform:uppercase; font-weight:600;">${t.tokenName}</span>
-           <span style="font-size:9px; color:#8b7355;">${t.domain}</span>
+      <div class="lineage-card" style="padding:16px !important; background:#f5f5dc !important; border-radius:2px !important; box-shadow:2px 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1) !important; transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg) !important; transition:transform 0.2s ease !important;">
+        <div style="display:flex !important; justify-content:space-between !important; align-items:flex-start !important; margin-bottom:8px !important;">
+           <span style="font-size:10px !important; color:#8b4513 !important; background:#e8e0c5 !important; padding:2px 6px !important; border-radius:3px !important; text-transform:uppercase !important; font-weight:600 !important;">${t.tokenName}</span>
+           <span style="font-size:9px !important; color:#8b7355 !important;">${t.domain}</span>
         </div>
-        <h4 style="margin:0 0 8px 0; color:#3d2914; font-family:'Cormorant Garamond', serif; font-size:1.2rem;">${t.fullName}</h4>
-        <p style="font-size:11px; color:#5c4033; line-height:1.5; margin:0 0 12px 0; font-family:serif;">${t.description}</p>
-        <div style="font-size:9px; color:#8b7355; border-top:1px dashed #d4c4a8; padding-top:8px; font-style:italic;">${t.resonancePillar}</div>
+        <h4 style="margin:0 0 8px 0 !important; color:#3d2914 !important; font-family:'Cormorant Garamond', serif !important; font-size:1.2rem !important;">${t.fullName}</h4>
+        <p style="font-size:11px !important; color:#5c4033 !important; line-height:1.5 !important; margin:0 0 12px 0 !important; font-family:serif !important;">${t.description}</p>
+        <div style="font-size:9px !important; color:#8b7355 !important; border-top:1px dashed #d4c4a8 !important; padding-top:8px !important; font-style:italic !important;">${t.resonancePillar}</div>
       </div>
     `).join("");
 
