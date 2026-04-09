@@ -104,6 +104,54 @@ body {
   letter-spacing: -0.01em;
 }
 
+body[data-role-theme="seeker"] {
+  --accent: #96be9e;
+  --accent-soft: rgba(150, 190, 158, 0.14);
+  --accent-hover: #afd3b5;
+  --accent-glow: rgba(150, 190, 158, 0.36);
+  --gold: #96be9e;
+  --border-color: rgba(177, 218, 184, 0.18);
+}
+
+body[data-role-theme="curator"] {
+  --accent: #d19a6a;
+  --accent-soft: rgba(209, 154, 106, 0.16);
+  --accent-hover: #e5b483;
+  --accent-glow: rgba(209, 154, 106, 0.34);
+  --gold: #d19a6a;
+  --border-color: rgba(231, 188, 142, 0.18);
+}
+
+body[data-role-theme="arbiter"] {
+  --accent: #7fa6c7;
+  --accent-soft: rgba(127, 166, 199, 0.16);
+  --accent-hover: #9bc0df;
+  --accent-glow: rgba(127, 166, 199, 0.34);
+  --gold: #7fa6c7;
+  --border-color: rgba(143, 183, 220, 0.2);
+}
+
+body[data-role-theme="seeker"] {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(150, 190, 158, 0.1), transparent 34%),
+    radial-gradient(circle at 100% 100%, rgba(204, 165, 130, 0.06), transparent 34%),
+    #080706;
+}
+
+body[data-role-theme="curator"] {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(209, 154, 106, 0.12), transparent 38%),
+    radial-gradient(circle at 100% 100%, rgba(140, 75, 47, 0.08), transparent 38%),
+    #090706;
+}
+
+body[data-role-theme="arbiter"] {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(127, 166, 199, 0.14), transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(104, 124, 153, 0.1), transparent 36%),
+    #06080b;
+}
+
 /* Language overrides */
 [data-ui-lang="hi"] {
   --font-sans:  "Noto Sans Devanagari", system-ui, sans-serif;
@@ -605,6 +653,156 @@ body.has-sidebar .page-stack   {
   padding: var(--space-4) 0;
   border-bottom: 1px solid var(--border);
   margin-bottom: var(--space-2);
+}
+
+.role-dashboard {
+  gap: var(--space-5);
+}
+
+.dashboard-welcome {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.03), transparent 65%),
+    var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-welcome h1 {
+  margin-bottom: 10px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  border: 1px solid var(--border-glow);
+  color: var(--accent-hover);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dashboard-sections {
+  display: grid;
+  gap: 24px;
+}
+
+.module-builder-card {
+  display: grid;
+  gap: 18px;
+}
+
+.module-creation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.module-creation-grid .module-creation-textarea {
+  grid-column: 1 / -1;
+  min-height: 140px;
+}
+
+.mini-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.mini-stat {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.mini-stat strong {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.mini-stat span {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.oversight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.plain-list {
+  display: grid;
+  gap: 14px;
+}
+
+.oversight-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.oversight-row--stacked {
+  display: grid;
+  gap: 8px;
+}
+
+.oversight-row strong {
+  color: var(--text-primary);
+}
+
+.role-dashboard--seeker .dashboard-welcome {
+  background:
+    radial-gradient(circle at top right, rgba(150, 190, 158, 0.12), transparent 40%),
+    var(--bg-card);
+}
+
+.role-dashboard--curator .dashboard-welcome {
+  background:
+    radial-gradient(circle at top right, rgba(209, 154, 106, 0.14), transparent 40%),
+    var(--bg-card);
+}
+
+.role-dashboard--arbiter .dashboard-welcome {
+  background:
+    linear-gradient(135deg, rgba(127, 166, 199, 0.16), transparent 44%),
+    linear-gradient(180deg, rgba(10, 15, 22, 0.9), rgba(15, 18, 24, 0.92));
+  border-color: rgba(127, 166, 199, 0.24);
+}
+
+.role-dashboard--arbiter .card,
+.role-dashboard--arbiter .record-card,
+.role-dashboard--arbiter .stat-card,
+.role-dashboard--arbiter .chart-card {
+  background: rgba(12, 16, 22, 0.82);
+}
+
+.role-dashboard--arbiter .pill {
+  background: rgba(127, 166, 199, 0.1);
 }
 
 /* ── PREMIUM PROFILE UI ── */
@@ -1756,6 +1954,18 @@ body.has-sidebar .page-stack   {
 ════════════════════════════════════════ */
 
 @media (max-width: 1100px) {
+  .dashboard-welcome,
+  .oversight-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .oversight-grid,
+  .module-creation-grid,
+  .mini-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
   .page-shell, .page-container {
     width: min(100vw - 32px, var(--page-max));
   }
@@ -1858,6 +2068,7 @@ body.has-sidebar .page-stack   {
   .stat-divider { display: none; }
   .stat-strip { gap: 4px; }
   .about-section { padding: 24px 18px; }
+  .role-badge { width: 100%; justify-content: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {

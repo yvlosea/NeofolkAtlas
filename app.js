@@ -971,6 +971,21 @@ function createGuild(name, description, ownerId) {
   return guild;
 }
 
+window.showInstantCraft = function() {
+  const ownerId = currentUser?.id || getGuestStorageId();
+  const name = window.prompt('Name this guild or craft circle.');
+  if (!name || !name.trim()) return;
+
+  const description = window.prompt('Add a short description for the group.', '') || '';
+  const guild = createGuild(name.trim(), description.trim(), ownerId);
+  if (!guild) {
+    alert('Unable to create guild right now.');
+    return;
+  }
+
+  window.location.reload();
+};
+
 /**
  * Invite a profile to a guild
  * @param {string} guildId 
@@ -1831,57 +1846,582 @@ function getDashboardPath(user) {
 /** Currently authenticated user, set by initApp after session check. */
 let currentUser = null;
 
+function getRoleFromPage(page = currentPageFile()) {
+  const pageRoleMap = {
+    'seeker-dashboard.html': 'seeker',
+    'curator-dashboard.html': 'curator',
+    'arbiter-dashboard.html': 'arbiter',
+    'operator-dashboard.html': 'operator',
+  };
+  return pageRoleMap[page] || null;
+}
+
+function getCurrentRole() {
+  return String(
+    currentUser?.user_metadata?.role ||
+    currentUser?.app_metadata?.role ||
+    getRoleFromPage() ||
+    'seeker'
+  ).toLowerCase();
+}
+
+function applyRoleTheme(role = getCurrentRole()) {
+  if (document?.body) {
+    document.body.dataset.roleTheme = role;
+  }
+}
+
+function getAllBatches() {
+  return JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+}
+
+function getStoredProfile(userId) {
+  return JSON.parse(localStorage.getItem(`neofolk.profile.${userId}`) || 'null');
+}
+
+function getAllStoredProfiles() {
+  const profiles = [];
+  for (let index = 0; index < localStorage.length; index += 1) {
+    const key = localStorage.key(index);
+    if (!key || !key.startsWith('neofolk.profile.')) continue;
+    const userId = key.replace('neofolk.profile.', '');
+    try {
+      const value = JSON.parse(localStorage.getItem(key) || '{}');
+      profiles.push({ userId, ...value });
+    } catch (_) {
+      // Ignore malformed profile entries and keep the UI usable.
+    }
+  }
+  return profiles;
+}
+
+function getDisplayNameForUser(userId, fallback = 'Unnamed') {
+  const profile = getStoredProfile(userId);
+  if (profile?.name) return profile.name;
+
+  const curatorCard = curatorCards.find((card) => card.userId === userId);
+  if (curatorCard?.fullName) return curatorCard.fullName;
+
+  return fallback;
+}
+
+function getCuratorDashboardData() {
+  const myCard = getMyCuratorCard();
+  const myModules = myCard ? getModulesByCurator(myCard.id) : [];
+  const allBatches = getAllBatches();
+  const myBatches = allBatches.filter((batch) => myModules.some((module) => module.id === batch.moduleId));
+  const uniqueStudentIds = [...new Set(myBatches.flatMap((batch) => batch.studentIds || []))];
+
+  return {
+    myCard,
+    myModules,
+    myBatches,
+    totalStudents: uniqueStudentIds.length,
+    activeLicenses: myCard?.activeLicenses?.length || 0,
+  };
+}
+
+function getArbiterInterviewList(studentProfiles) {
+  const stored = JSON.parse(localStorage.getItem('neofolk.studentInterviews') || 'null');
+  if (Array.isArray(stored) && stored.length) return stored;
+
+  const fallbackProfiles = studentProfiles.length
+    ? studentProfiles
+    : [
+        { userId: 'sample-student-1', name: 'Aarav Sharma', domain: 'Chronicles' },
+        { userId: 'sample-student-2', name: 'Isha Patel', domain: 'Biosphere' },
+        { userId: 'sample-student-3', name: 'Kabir Das', domain: 'Praxis' },
+      ];
+
+  const states = ['Queued', 'Scheduled', 'Needs follow-up'];
+  return fallbackProfiles.slice(0, 5).map((profile, index) => ({
+    id: `interview_${index + 1}`,
+    studentId: profile.userId,
+    studentName: profile.name || `Student ${index + 1}`,
+    domain: profile.domain || 'General',
+    status: states[index % states.length],
+    slot: ['Today, 17:30', 'Tomorrow, 11:00', 'April 12, 15:00'][index % 3],
+    notes: ['Portfolio review pending', 'Guild contribution check', 'Needs writing sample'][index % 3],
+  }));
+}
+
+function getArbiterDashboardData() {
+  const storedProfiles = getAllStoredProfiles();
+  const curatorMap = new Map(curatorCards.map((card) => [card.userId, card]));
+
+  const teacherProfiles = storedProfiles
+    .filter((profile) => curatorMap.has(profile.userId))
+    .map((profile) => ({
+      ...profile,
+      licenses: curatorMap.get(profile.userId)?.activeLicenses || [],
+    }));
+
+  curatorCards.forEach((card) => {
+    if (!teacherProfiles.find((profile) => profile.userId === card.userId)) {
+      teacherProfiles.push({
+        userId: card.userId,
+        name: card.fullName,
+        domain: 'Curation',
+        bio: 'Curator profile pending completion.',
+        skills: card.activeLicenses.join(', '),
+        licenses: card.activeLicenses,
+      });
+    }
+  });
+
+  const studentProfiles = storedProfiles.filter((profile) => !curatorMap.has(profile.userId));
+  const fallbackStudents = studentProfiles.length
+    ? studentProfiles
+    : [
+        { userId: 'student-a', name: 'Aarav Sharma', domain: 'Chronicles', skills: 'Essay Drafting, Inquiry' },
+        { userId: 'student-b', name: 'Isha Patel', domain: 'Biosphere', skills: 'Field Notes, Mapping' },
+        { userId: 'student-c', name: 'Kabir Das', domain: 'Praxis', skills: 'Workshop Practice, Reflection' },
+      ];
+
+  const reviewGuilds = guilds.length
+    ? guilds
+    : [
+        { id: 'guild_seed_1', name: 'Solar Architecture Guild', members: ['student-a', 'student-b'], invited: [], description: 'Built environment and climate adaptation.' },
+        { id: 'guild_seed_2', name: 'Food Culture Guild', members: ['student-c'], invited: ['student-d'], description: 'Regional food systems and memory.' },
+      ];
+
+  const reviewModules = modules.length
+    ? modules.slice(0, 6)
+    : [
+        { id: 'mod_seed_1', title: 'History of Water Commons', domain: 'chronicles', curatorName: 'Aditi Rao', status: 'submitted' },
+        { id: 'mod_seed_2', title: 'Ecology of Monsoon Cities', domain: 'biosphere', curatorName: 'Dev Mehta', status: 'needs review' },
+      ];
+
+  return {
+    studentProfiles: fallbackStudents,
+    teacherProfiles,
+    interviews: getArbiterInterviewList(fallbackStudents),
+    reviewGuilds,
+    reviewModules,
+  };
+}
+
+function focusDashboardPanelFromQuery() {
+  const panel = new URLSearchParams(window.location.search).get('panel');
+  if (!panel) return;
+  const target = document.getElementById(panel);
+  if (!target) return;
+  setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+}
+
+function renderSeekerDashboard(root) {
+  root.innerHTML =
+    '<div class="dashboard-shell role-dashboard role-dashboard--seeker">' +
+      '<section class="dashboard-welcome">' +
+        '<div>' +
+          '<p class="section-label">Welcome Seeker</p>' +
+          '<h1>Chart your next step with clarity.</h1>' +
+          '<p id="dash-signed-in" class="dashboard-meta">Your learner dashboard keeps study, notes, and visible progress in one place.</p>' +
+        '</div>' +
+        '<div class="role-badge">Learner Track</div>' +
+      '</section>' +
+      '<div class="stats-grid">' +
+        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
+        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
+        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
+        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
+      '</div>' +
+      '<div class="dashboard-charts">' +
+        '<div class="chart-card">' +
+          '<h3>Learning Activity</h3>' +
+          '<canvas id="activityChart" width="400" height="200"></canvas>' +
+        '</div>' +
+        '<div class="chart-card">' +
+          '<h3>Neoscore Growth</h3>' +
+          '<canvas id="scoreChart" width="400" height="200"></canvas>' +
+        '</div>' +
+      '</div>' +
+      '<div class="dashboard-sections">' +
+        '<div class="card">' +
+          '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
+          '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
+          '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
+          '<div class="inline-actions flow-top-32">' +
+            '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+            '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card">' +
+          '<p class="section-label">Profile</p>' +
+          '<h2>Keep your learning identity current.</h2>' +
+          '<p>Update your profile, track your notes, and document the work you want peers and arbiters to see.</p>' +
+          '<div class="inline-actions flow-top-32">' +
+            '<a class="btn btn-primary" href="profile.html">Open Profile</a>' +
+            '<a class="btn" href="portfolio.html">Open Portfolio</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderCuratorDashboard(root) {
+  const { myCard, myModules, myBatches, totalStudents, activeLicenses } = getCuratorDashboardData();
+
+  root.innerHTML =
+    '<div class="dashboard-shell role-dashboard role-dashboard--curator">' +
+      '<section class="dashboard-welcome">' +
+        '<div>' +
+          '<p class="section-label">Welcome Curator</p>' +
+          '<h1>Run the curation floor.</h1>' +
+          '<p id="dash-signed-in" class="dashboard-meta">Build modules, track your cohorts, and maintain a serious teaching dossier.</p>' +
+        '</div>' +
+        '<div class="role-badge">Curation Studio</div>' +
+      '</section>' +
+      '<div class="stats-grid">' +
+        '<div class="stat-card"><p class="section-label">Modules Authored</p><strong>' + myModules.length + '</strong><p>Structured learning sequences under your name.</p></div>' +
+        '<div class="stat-card"><p class="section-label">Live Batches</p><strong>' + myBatches.length + '</strong><p>Cohorts currently attached to your modules.</p></div>' +
+        '<div class="stat-card"><p class="section-label">Learners Reached</p><strong>' + totalStudents + '</strong><p>Total distinct students across your batches.</p></div>' +
+        '<div class="stat-card"><p class="section-label">Active Licenses</p><strong>' + activeLicenses + '</strong><p>Domain permissions currently attached to your curator card.</p></div>' +
+      '</div>' +
+      '<div class="dashboard-sections two-column">' +
+        '<div class="card" id="curator-license">' +
+          '<p class="section-label">Curation License</p>' +
+          '<h2>Teaching authority and domain scope.</h2>' +
+          (myCard ? `
+            <div class="curator-card-id">
+              <div class="chip"></div>
+              <div class="card-header">
+                <div>
+                  <div class="card-meta">Curator ID</div>
+                  <div class="card-name">${escapeHtml(myCard.fullName)}</div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="card-meta">Status</div>
+                  <div style="color:#9fd1af; font-size:11px; font-weight:bold;">ACTIVE</div>
+                </div>
+              </div>
+              <div style="margin-top:10px;">
+                <div class="card-meta">Registered Age</div>
+                <div style="font-size:1.1rem; font-weight:600;">${escapeHtml(String(myCard.age))}</div>
+              </div>
+              <div class="token-badges">
+                ${myCard.activeLicenses.map((license) => `<span class="badge">${escapeHtml(license)}</span>`).join('')}
+              </div>
+            </div>
+          ` : `
+            <div class="empty-state">
+              <p>No curator license found yet. Create one to unlock module publishing.</p>
+              <button onclick="window.applyForCurator()" class="btn btn-primary" style="margin-top:12px;">Apply Now</button>
+            </div>
+          `) +
+        '</div>' +
+        '<div class="card" id="curator-dossier">' +
+          '<p class="section-label">Dossier</p>' +
+          '<h2>Your curator record.</h2>' +
+          '<p>Keep a living dossier of authored modules, domain authority, student reach, and public-facing teaching identity.</p>' +
+          '<div class="mini-stat-grid">' +
+            '<div class="mini-stat"><strong>' + myModules.length + '</strong><span>Modules</span></div>' +
+            '<div class="mini-stat"><strong>' + myBatches.length + '</strong><span>Batches</span></div>' +
+            '<div class="mini-stat"><strong>' + totalStudents + '</strong><span>Learners</span></div>' +
+            '<div class="mini-stat"><strong>' + activeLicenses + '</strong><span>Licenses</span></div>' +
+          '</div>' +
+          '<div class="inline-actions flow-top-32">' +
+            '<a class="btn btn-primary" href="portfolio.html">Open Dossier</a>' +
+            '<a class="btn" href="profile.html">Edit Public Profile</a>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card module-builder-card" id="curator-add-module">' +
+        '<div class="dashboard-card-topline">' +
+          '<div>' +
+            '<p class="section-label">Add Module</p>' +
+            '<h2>Launch a new module from the curation area.</h2>' +
+          '</div>' +
+          '<a class="btn" href="module-editor.html">Open Advanced Editor</a>' +
+        '</div>' +
+        '<p>Keep creation close to the dashboard. Draft a title, assign a domain, and publish the first version right here.</p>' +
+        '<div class="module-creation-grid">' +
+          '<input id="quick-mod-title" class="neo-input" placeholder="Module title">' +
+          '<select id="quick-mod-domain" class="neo-input">' +
+            Object.keys(DOMAIN_NAMES).map((key) => `<option value="${key}">${DOMAIN_NAMES[key]}</option>`).join('') +
+          '</select>' +
+          '<textarea id="quick-mod-desc" class="neo-input module-creation-textarea" rows="4" placeholder="Module description, outcomes, and what the cohort will make."></textarea>' +
+        '</div>' +
+        '<div class="inline-actions flow-top-32">' +
+          '<button onclick="window.quickCreateModule()" class="btn btn-primary">Create Module</button>' +
+          '<a class="btn" href="teaching-log.html">Open Teaching Log</a>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card" id="curator-modules">' +
+        '<div class="dashboard-card-topline">' +
+          '<div>' +
+            '<p class="section-label">Module Floor</p>' +
+            '<h2>Everything you are currently curating.</h2>' +
+          '</div>' +
+          '<a class="btn" href="modules.html">Open Library</a>' +
+        '</div>' +
+        '<div class="record-list">' +
+          (myModules.length ? myModules.map((module) => `
+            <div class="record-card">
+              <div class="dashboard-card-topline">
+                <span class="pill">${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</span>
+                <span class="muted">${module.batches.length} batches</span>
+              </div>
+              <h3>${escapeHtml(module.title)}</h3>
+              <p>${escapeHtml(module.description || 'No description yet.')}</p>
+              <div class="inline-actions">
+                <a class="btn" href="teaching-log.html">Teaching Log</a>
+                <a class="btn subtle-button" href="attendance.html">Attendance</a>
+              </div>
+            </div>
+          `).join('') : '<div class="empty-state"><p>No modules yet. Use the add module section above to create your first one.</p></div>') +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderArbiterDashboard(root) {
+  const { studentProfiles, teacherProfiles, interviews, reviewGuilds, reviewModules } = getArbiterDashboardData();
+
+  root.innerHTML = `
+    <div class="dashboard-shell role-dashboard role-dashboard--arbiter">
+      <section class="dashboard-welcome arbiter-welcome">
+        <div>
+          <p class="section-label">Welcome Arbiter</p>
+          <h1>Oversight, review, and platform trust.</h1>
+          <p id="dash-signed-in" class="dashboard-meta">You have visibility into learner records, curator activity, guild formation, and interview queues.</p>
+        </div>
+        <div class="role-badge">Review Command</div>
+      </section>
+      <div class="stats-grid">
+        <div class="stat-card"><p class="section-label">Student Profiles</p><strong>${studentProfiles.length}</strong><p>Learner records currently visible to review.</p></div>
+        <div class="stat-card"><p class="section-label">Curator Profiles</p><strong>${teacherProfiles.length}</strong><p>Teaching identities and licenses on file.</p></div>
+        <div class="stat-card"><p class="section-label">Interview Queue</p><strong>${interviews.length}</strong><p>Student interviews awaiting arbiter attention.</p></div>
+        <div class="stat-card"><p class="section-label">Guild Registry</p><strong>${reviewGuilds.length}</strong><p>Active guilds and craft circles under observation.</p></div>
+      </div>
+      <div class="oversight-grid">
+        <div class="card" id="arbiter-students">
+          <p class="section-label">Student Profiles</p>
+          <h2>All learner profiles</h2>
+          <div class="plain-list">
+            ${studentProfiles.map((profile) => `
+              <div class="oversight-row">
+                <div>
+                  <strong>${escapeHtml(profile.name || 'Unnamed Student')}</strong>
+                  <p>${escapeHtml(profile.domain || 'General')}</p>
+                </div>
+                <span class="pill">${escapeHtml(profile.skills || 'Profile pending')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="card" id="arbiter-curators">
+          <p class="section-label">Teacher Profiles</p>
+          <h2>All curator records</h2>
+          <div class="plain-list">
+            ${teacherProfiles.map((profile) => `
+              <div class="oversight-row">
+                <div>
+                  <strong>${escapeHtml(profile.name || 'Unnamed Curator')}</strong>
+                  <p>${escapeHtml(profile.domain || 'Curation')}</p>
+                </div>
+                <span class="pill">${escapeHtml((profile.licenses || []).join(', ') || profile.skills || 'License pending')}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="oversight-grid">
+        <div class="card" id="arbiter-interviews">
+          <p class="section-label">Student Interviews</p>
+          <h2>Interview list</h2>
+          <div class="plain-list">
+            ${interviews.map((entry) => `
+              <div class="oversight-row oversight-row--stacked">
+                <div class="dashboard-card-topline">
+                  <strong>${escapeHtml(entry.studentName)}</strong>
+                  <span class="pill">${escapeHtml(entry.status)}</span>
+                </div>
+                <p>${escapeHtml(entry.domain)} · ${escapeHtml(entry.slot)}</p>
+                <p>${escapeHtml(entry.notes)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div class="card" id="arbiter-guilds">
+          <p class="section-label">Guilds</p>
+          <h2>Guild and craft registry</h2>
+          <div class="plain-list">
+            ${reviewGuilds.map((guild) => `
+              <div class="oversight-row oversight-row--stacked">
+                <div class="dashboard-card-topline">
+                  <strong>${escapeHtml(guild.name)}</strong>
+                  <span class="pill">${(guild.members || []).length} members</span>
+                </div>
+                <p>${escapeHtml(guild.description || 'No guild summary available.')}</p>
+                <p>${(guild.invited || []).length} pending invites</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+      <div class="card" id="arbiter-modules">
+        <p class="section-label">Review Queue</p>
+        <h2>Module and teaching surfaces requiring review</h2>
+        <div class="plain-list">
+          ${reviewModules.map((module) => `
+            <div class="oversight-row">
+              <div>
+                <strong>${escapeHtml(module.title)}</strong>
+                <p>${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain || 'General')}</p>
+              </div>
+              <span class="pill">${escapeHtml(module.status || 'active')}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function hydrateSignedInMeta(supabase) {
+  if (!supabase) return;
+  supabase.auth.getUser().then(({ data }) => {
+    const el = document.getElementById('dash-signed-in');
+    if (!el || !data?.user?.email) return;
+    el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
+  }).catch(() => {});
+}
+
+function hydrateSeekerDashboard(supabase) {
+  if (!supabase) return;
+
+  supabase.auth.getUser().then(async ({ data }) => {
+    const el = document.getElementById('dash-signed-in');
+    if (!data?.user) return;
+
+    if (el) el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
+
+    const { count: modCount } = await supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id).eq('status', 'completed');
+    const { count: noteCount } = await supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id);
+    const neoScore = (modCount || 0) * 50 + (noteCount || 0) * 10;
+
+    if (document.getElementById('stat-modules')) document.getElementById('stat-modules').textContent = modCount || 0;
+    if (document.getElementById('stat-notes')) document.getElementById('stat-notes').textContent = noteCount || 0;
+    if (document.getElementById('stat-score')) document.getElementById('stat-score').textContent = neoScore;
+
+    await supabase.from('neo_scores').upsert({
+      user_id: data.user.id,
+      score: neoScore,
+      updated_at: new Date().toISOString()
+    });
+
+    renderDashboardCharts(modCount || 0, noteCount || 0, 2, neoScore);
+  }).catch(() => {});
+}
+
 function renderAppNav() {
   const nav = document.getElementById('app-nav');
   if (!nav) return;
 
   const here = currentPageFile();
-  const dashHref = currentUser ? getDashboardPath(currentUser) : 'seeker-dashboard.html';
+  const fallbackRole = getRoleFromPage(here) || 'seeker';
+  const dashHref = currentUser
+    ? getDashboardPath(currentUser)
+    : getDashboardPath({ user_metadata: { role: fallbackRole } });
   const isDashboardPage = here.endsWith('-dashboard.html');
+  const role = getCurrentRole();
+  applyRoleTheme(role);
 
-  const role =
-    currentUser?.user_metadata?.role ||
-    currentUser?.app_metadata?.role ||
-    'seeker';
+  const sectionsByRole = {
+    seeker: [
+      {
+        title: 'SEEKER',
+        links: [
+          { href: dashHref, label: 'Dashboard', isDash: true },
+          { href: 'subjects.html', label: 'Domains' },
+          { href: 'pathways.html', label: 'Pathways' },
+          { href: 'guild.html', label: 'Guilds' },
+          { href: 'portfolio.html', label: 'Portfolio' },
+          { href: 'nodes.html', label: 'Nodes' },
+        ]
+      },
+      {
+        title: 'KNOWLEDGE',
+        links: [
+          { href: 'guide.html', label: 'Guide' },
+          { href: 'vision.html', label: 'Vision' },
+        ]
+      },
+      {
+        title: 'ACCOUNT',
+        links: [
+          { href: 'profile.html', label: 'Profile' },
+          { href: 'account-settings.html', label: 'Settings' },
+        ]
+      }
+    ],
+    curator: [
+      {
+        title: 'CURATION',
+        links: [
+          { href: 'curator-dashboard.html', label: 'Dashboard', isDash: true },
+          { href: 'curator-dashboard.html?panel=curator-add-module', label: 'Add Module' },
+          { href: 'modules.html', label: 'Module Library' },
+          { href: 'teaching-log.html', label: 'Teaching Log' },
+          { href: 'attendance.html', label: 'Attendance' },
+          { href: 'portfolio.html', label: 'Dossier' },
+        ]
+      },
+      {
+        title: 'REFERENCE',
+        links: [
+          { href: 'subjects.html', label: 'Domains' },
+          { href: 'guide.html', label: 'Guide' },
+        ]
+      },
+      {
+        title: 'ACCOUNT',
+        links: [
+          { href: 'profile.html', label: 'Profile' },
+          { href: 'account-settings.html', label: 'Settings' },
+        ]
+      }
+    ],
+    arbiter: [
+      {
+        title: 'OVERSIGHT',
+        links: [
+          { href: 'arbiter-dashboard.html', label: 'Dashboard', isDash: true },
+          { href: 'arbiter-dashboard.html?panel=arbiter-students', label: 'Students' },
+          { href: 'arbiter-dashboard.html?panel=arbiter-curators', label: 'Curators' },
+          { href: 'arbiter-dashboard.html?panel=arbiter-interviews', label: 'Interviews' },
+          { href: 'arbiter-dashboard.html?panel=arbiter-guilds', label: 'Guilds' },
+        ]
+      },
+      {
+        title: 'PLATFORM',
+        links: [
+          { href: 'subjects.html', label: 'Domains' },
+          { href: 'vision.html', label: 'Charter' },
+          { href: 'help.html', label: 'Protocol' },
+        ]
+      },
+      {
+        title: 'ACCOUNT',
+        links: [
+          { href: 'profile.html', label: 'Profile' },
+          { href: 'account-settings.html', label: 'Settings' },
+        ]
+      }
+    ],
+    operator: [
+      {
+        title: 'OPERATOR',
+        links: [
+          { href: 'operator-dashboard.html', label: 'Console', isDash: true },
+          { href: 'subjects.html', label: 'Domains' },
+          { href: 'help.html', label: 'Help' },
+        ]
+      }
+    ]
+  };
 
-  const sections = [
-    {
-      title: 'CORE',
-      links: [
-        { href: dashHref, label: 'Dashboard', isDash: true },
-        { href: 'subjects.html', label: 'Domains' },
-        { href: 'pathways.html', label: 'Pathways' },
-        { href: 'guild.html', label: 'Guilds' },
-        { href: 'portfolio.html', label: 'Portfolio' },
-        { href: 'nodes.html', label: 'Nodes' }
-      ]
-    },
-    {
-      title: 'KNOWLEDGE',
-      links: [
-        { href: 'guide.html', label: 'Guide' },
-        { href: 'vision.html', label: 'Vision' }
-      ]
-    },
-    {
-      title: 'ACCOUNT',
-      links: [
-        { href: 'profile.html', label: 'Profile' },
-        { href: 'account-settings.html', label: 'Settings' }
-      ]
-    }
-  ];
-
-  // curator tools
-  if (role === 'curator') {
-    sections.push({
-      title: 'CURATION',
-      links: [
-        { href: 'teaching-log.html', label: 'Teaching Log' },
-        { href: 'attendance.html', label: 'Attendance' }
-      ]
-    });
-  }
+  const sections = sectionsByRole[role] || sectionsByRole.seeker;
 
   nav.innerHTML = sections
     .map(section => `
@@ -1904,7 +2444,10 @@ function renderAppNav() {
     .join('');
 
   let chip = document.getElementById("neoscore-chip");
-  if (!chip) {
+  if (role !== 'seeker') {
+    if (chip) chip.remove();
+    chip = null;
+  } else if (!chip) {
     const brandArea = document.querySelector(".brand-area");
     if (brandArea) {
       chip = document.createElement("div");
@@ -2293,219 +2836,18 @@ function renderPageContent() {
   if (dashRoot && dashRoot.innerHTML.trim() === '') {
     const supabase = getSupabaseClient();
     const roleName = page.replace('-dashboard.html', '');
-    const roleLabel = roleName.charAt(0).toUpperCase() + roleName.slice(1);
-    const isCurator = roleName === 'curator';
-
-    if (isCurator) {
-      // Curator-specific dashboard
-      const myCard = getMyCuratorCard();
-      const myModules = myCard ? getModulesByCurator(myCard.id) : [];
-      
-      dashRoot.innerHTML =
-        '<div class="dashboard-shell">' +
-          '<div class="dashboard-header"><div>' +
-            '<p class="section-label">Curator Dashboard</p>' +
-            '<h1>Curation Studio</h1>' +
-            '<p id="dash-signed-in" class="dashboard-meta"></p>' +
-            '<p class="lede">Design and deliver transformative learning experiences across domains.</p>' +
-          '</div></div>' +
-          
-          // Curator License Card
-          '<div class="card" style="margin-bottom:24px;">' +
-            '<h3 style="margin-top:0; margin-bottom:20px;">Curator License</h3>' +
-            '<div id="curator-dashboard-card">' +
-              (myCard ? `
-                <div class="curator-card-id">
-                  <div class="chip"></div>
-                  <div class="card-header">
-                    <div>
-                      <div class="card-meta">Curator ID</div>
-                      <div class="card-name">${myCard.fullName}</div>
-                    </div>
-                    <div style="text-align:right;">
-                      <div class="card-meta">Status</div>
-                      <div style="color:#4ade80; font-size:11px; font-weight:bold;">ACTIVE</div>
-                    </div>
-                  </div>
-                  <div style="margin-top:10px;">
-                    <div class="card-meta">Registered Age</div>
-                    <div style="font-size:1.1rem; font-weight:600;">${myCard.age}</div>
-                  </div>
-                  <div class="token-badges">
-                    ${myCard.activeLicenses.map(lic => {
-                      const domain = lic.replace('Level 3 ', '').replace('Level 2 ', '').replace('Level 1 ', '');
-                      const color = getTokenColor(DOMAIN_TO_TOKEN[domain] || domain);
-                      return `<span class="badge" style="border-color:${color}; color:${color}; box-shadow: 0 0 10px ${color}44;">${lic}</span>`;
-                    }).join('')}
-                  </div>
-                </div>
-              ` : `
-                <div class="empty-state">
-                  <p>No curator license found. Apply for curator status to unlock this feature.</p>
-                  <button onclick="window.applyForCurator()" class="btn btn-primary" style="margin-top:12px;">Apply Now</button>
-                </div>
-              `) +
-            '</div>' +
-          '</div>' +
-
-          // Curator Stats
-          '<div class="stats-grid">' +
-            '<div class="stat-card"><p class="section-label">Modules Created</p><strong id="stat-modules">' + myModules.length + '</strong><p>Active learning pathways</p></div>' +
-            '<div class="stat-card"><p class="section-label">Total Batches</p><strong id="stat-batches">0</strong><p>Student cohorts</p></div>' +
-            '<div class="stat-card"><p class="section-label">Active Students</p><strong id="stat-students">0</strong><p>Currently enrolled</p></div>' +
-            '<div class="stat-card"><p class="section-label">Completion Rate</p><strong id="stat-completion">0%</strong><p>Student success</p></div>' +
-          '</div>' +
-
-          // Add Module Section
-          '<div class="card" style="margin-bottom:24px;">' +
-            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">' +
-              '<h3 style="margin:0;">Module Creation Studio</h3>' +
-              '<button onclick="window.showModuleCreator()" class="btn btn-primary">+ CREATE MODULE</button>' +
-            '</div>' +
-            '<div id="quick-module-form" style="display:none; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px; margin-top:20px;">' +
-              '<div style="display:grid; gap:16px;">' +
-                '<div>' +
-                  '<label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Module Title</label>' +
-                  '<input id="quick-mod-title" class="neo-input" placeholder="e.g. Introduction to Spivakian Linguistics">' +
-                '</div>' +
-                '<div>' +
-                  '<label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Domain</label>' +
-                  '<select id="quick-mod-domain" class="neo-input">' +
-                    Object.keys(DOMAIN_NAMES).map(k => `<option value="${k}">${DOMAIN_NAMES[k]}</option>`).join('') +
-                  '</select>' +
-                '</div>' +
-                '<div>' +
-                  '<label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Description</label>' +
-                  '<textarea id="quick-mod-desc" class="neo-input" rows="3" placeholder="Module description and learning outcomes..."></textarea>' +
-                '</div>' +
-                '<div style="display:flex; gap:12px;">' +
-                  '<button onclick="window.quickCreateModule()" class="btn btn-primary" style="flex:1;">Create Module</button>' +
-                  '<button onclick="document.getElementById(\'quick-module-form\').style.display=\'none\'" class="btn btn-secondary" style="flex:1;">Cancel</button>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-
-          // My Modules
-          '<div class="card">' +
-            '<h3 style="margin-bottom:20px;">My Modules</h3>' +
-            '<div class="record-list">' +
-              (myModules.length > 0 ? myModules.map(m => `
-                <div class="record-card">
-                  <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-                    <span class="pill" style="margin:0;">${DOMAIN_NAMES[m.domain] || m.domain}</span>
-                    <span style="font-size:0.75rem; color:var(--muted-text);">${m.batches.length} batches</span>
-                  </div>
-                  <h4 style="margin:0 0 8px 0;">${m.title}</h4>
-                  <p style="font-size:0.85rem; color:var(--muted-text); margin:0 0 16px;">${m.description}</p>
-                  <div style="display:flex; gap:8px;">
-                    <button class="btn" style="flex:1; font-size:0.8rem;">Manage Batches</button>
-                    <button class="btn btn-secondary" style="flex:1; font-size:0.8rem;">View Analytics</button>
-                  </div>
-                </div>
-              `).join('') : `
-                <div class="empty-state">
-                  <p>No modules created yet. Start by creating your first module above.</p>
-                </div>
-              `) +
-            '</div>' +
-          '</div>' +
-
-          // Dossier Section (instead of Portfolio)
-          '<div class="card">' +
-            '<h3 style="margin-bottom:20px;">Curator Dossier</h3>' +
-            '<p style="color:var(--muted-text); margin-bottom:20px;">Your professional record as a learning architect and knowledge curator.</p>' +
-            '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">' +
-              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
-                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">' + myModules.length + '</div>' +
-                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Modules Authored</div>' +
-              '</div>' +
-              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
-                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">0</div>' +
-                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Students Mentored</div>' +
-              '</div>' +
-              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
-                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">0</div>' +
-                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Research Papers</div>' +
-              '</div>' +
-              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
-                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">0</div>' +
-                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Workshops Led</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+    if (roleName === 'curator') {
+      renderCuratorDashboard(dashRoot);
+      hydrateSignedInMeta(supabase);
+    } else if (roleName === 'arbiter') {
+      renderArbiterDashboard(dashRoot);
+      hydrateSignedInMeta(supabase);
     } else {
-      // Original seeker/arbiter dashboard
-      dashRoot.innerHTML =
-        '<div class="dashboard-shell">' +
-          '<div class="dashboard-header"><div>' +
-            '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
-            '<h1>' + escapeHtml(t('dashboard.title')) + '</h1>' +
-            '<p id="dash-signed-in" class="dashboard-meta"></p>' +
-            '<p class="lede">' + escapeHtml(t('dashboard.subtitle')) + '</p>' +
-          '</div></div>' +
-          '<div class="stats-grid">' +
-            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
-            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
-            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
-            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
-          '</div>' +
-          '<div class="dashboard-charts">' +
-            '<div class="chart-card">' +
-              '<h3>Learning Activity</h3>' +
-              '<canvas id="activityChart" width="400" height="200"></canvas>' +
-            '</div>' +
-            '<div class="chart-card">' +
-              '<h3>Neoscore Growth</h3>' +
-              '<canvas id="scoreChart" width="400" height="200"></canvas>' +
-            '</div>' +
-          '</div>' +
-          '<div class="card">' +
-            '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
-            '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
-            '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
-            '<div class="inline-actions flow-top-32">' +
-              '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
-              '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
+      renderSeekerDashboard(dashRoot);
+      hydrateSeekerDashboard(supabase);
     }
 
-    // Show signed-in email if we have a session
-    if (supabase) {
-      supabase.auth.getUser().then(async ({ data }) => {
-        const el = document.getElementById('dash-signed-in');
-        if (!data?.user) return;
-        
-        if (el) el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
-
-        // 1. Fetch Completed Modules (50 pts each)
-        const { count: modCount } = await supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id).eq('status', 'completed');
-        
-        // 2. Fetch Notes Written (10 pts each)
-        const { count: noteCount } = await supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id);
-        
-        // 3. Calculate Score
-        const neoScore = (modCount || 0) * 50 + (noteCount || 0) * 10;
-
-        // Update UI
-        if (document.getElementById('stat-modules')) document.getElementById('stat-modules').textContent = modCount || 0;
-        if (document.getElementById('stat-notes')) document.getElementById('stat-notes').textContent = noteCount || 0;
-        if (document.getElementById('stat-score')) document.getElementById('stat-score').textContent = neoScore;
-
-        // Persist to neo_scores table for ranking/history
-        await supabase.from('neo_scores').upsert({ 
-          user_id: data.user.id, 
-          score: neoScore,
-          updated_at: new Date().toISOString()
-        });
-
-        // Render charts
-        renderDashboardCharts(modCount || 0, noteCount || 0, 2, neoScore);
-      });
-    }
+    focusDashboardPanelFromQuery();
   }
 
   // Operator dashboard
@@ -3146,17 +3488,66 @@ function renderPageContent() {
   // Portfolio page
   const portfolioRoot = document.getElementById('portfolio-root');
   if (portfolioRoot && portfolioRoot.innerHTML.trim() === '') {
-    portfolioRoot.innerHTML = `
-      <div class="dashboard-shell">
-        <div class="dashboard-header">
-          <p class="section-label">Portfolio</p>
-          <h1>Learning Portfolio</h1>
+    if (getCurrentRole() === 'curator') {
+      const { myCard, myModules, myBatches, totalStudents, activeLicenses } = getCuratorDashboardData();
+      portfolioRoot.innerHTML = `
+        <div class="dashboard-shell role-dashboard role-dashboard--curator">
+          <div class="dashboard-header">
+            <div>
+              <p class="section-label">Dossier</p>
+              <h1>Curator Dossier</h1>
+              <p class="lede">A public-facing record of your authority, authored modules, and teaching footprint.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="mini-stat-grid">
+              <div class="mini-stat"><strong>${myModules.length}</strong><span>Modules</span></div>
+              <div class="mini-stat"><strong>${myBatches.length}</strong><span>Batches</span></div>
+              <div class="mini-stat"><strong>${totalStudents}</strong><span>Learners</span></div>
+              <div class="mini-stat"><strong>${activeLicenses}</strong><span>Licenses</span></div>
+            </div>
+          </div>
+          <div class="dashboard-sections two-column">
+            <div class="card">
+              <p class="section-label">Profile</p>
+              <h2>${escapeHtml(myCard?.fullName || getDisplayNameForUser(currentUser?.id || 'guest', 'Curator Profile'))}</h2>
+              <p>${escapeHtml((myCard?.activeLicenses || []).join(', ') || 'No domain licenses attached yet.')}</p>
+              <div class="inline-actions flow-top-32">
+                <a class="btn btn-primary" href="profile.html">Edit Profile</a>
+                <a class="btn" href="curator-dashboard.html?panel=curator-add-module">Add Module</a>
+              </div>
+            </div>
+            <div class="card">
+              <p class="section-label">Teaching Surface</p>
+              <h2>Current authored modules</h2>
+              <div class="plain-list">
+                ${myModules.length ? myModules.map((module) => `
+                  <div class="oversight-row">
+                    <div>
+                      <strong>${escapeHtml(module.title)}</strong>
+                      <p>${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</p>
+                    </div>
+                    <span class="pill">${module.batches.length} batches</span>
+                  </div>
+                `).join('') : '<p>No modules authored yet.</p>'}
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="empty-state">
-          <p>Your documented learning evidence will appear here.</p>
+      `;
+    } else {
+      portfolioRoot.innerHTML = `
+        <div class="dashboard-shell">
+          <div class="dashboard-header">
+            <p class="section-label">Portfolio</p>
+            <h1>Learning Portfolio</h1>
+          </div>
+          <div class="empty-state">
+            <p>Your documented learning evidence will appear here.</p>
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
   }
 
   // Teaching Log page
@@ -3702,9 +4093,11 @@ window.manageSpecializations = function() {
 
 // Curator Dashboard Functions
 window.showModuleCreator = function() {
-    const form = document.getElementById('quick-module-form');
-    if (form) {
-        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    const target = document.getElementById('curator-add-module');
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        window.location.assign('curator-dashboard.html?panel=curator-add-module');
     }
 };
 
@@ -3729,7 +4122,6 @@ window.quickCreateModule = function() {
         // Clear form
         document.getElementById('quick-mod-title').value = '';
         document.getElementById('quick-mod-desc').value = '';
-        document.getElementById('quick-module-form').style.display = 'none';
         
         // Refresh dashboard
         location.reload();
