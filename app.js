@@ -178,6 +178,79 @@ const LINEAGE_DETAILS = [
   }
 ];
 
+const DOMAIN_STRUCTURE = {
+  lingosophy: {
+    title: "Lingosophy",
+    definition: "Study of language as a structure of thought and culture.",
+    includes: ["etymology", "rhetoric", "semiotics", "symbolic systems", "linguistic anthropology", "script evolution", "discourse analysis"],
+    coreFunction: "Understanding how language shapes perception, identity, and civilizational continuity.",
+    examples: ["Etymological Mapping", "Script Evolution", "Dialect Analysis", "Hermeneutics"]
+  },
+  arithmetics: {
+    title: "Arthmetics",
+    definition: "Mathematics as aesthetic and structural intelligence.",
+    includes: ["geometry", "algorithmic thinking", "ratios & harmony", "formal logic", "pattern systems", "quantitative reasoning"],
+    coreFunction: "Understanding order, proportion, and computation in natural and human systems.",
+    examples: ["Golden Ratio composition", "geometric drafting", "harmonic analysis", "symbolic logic"]
+  },
+  cosmology: {
+    title: "Cosmology",
+    definition: "Understanding universal structure across physical and metaphysical scales.",
+    includes: ["astronomy", "spacetime systems", "metaphysics", "calendar systems", "cosmography", "philosophical physics"],
+    coreFunction: "Orienting human activity within larger universal cycles and frameworks.",
+    examples: ["celestial navigation", "archaeoastronomy", "orbital mechanics", "big history"]
+  },
+  biosphere: {
+    title: "Biosphere",
+    definition: "Study of living systems and ecological interdependence.",
+    includes: ["ecology", "soil science", "permaculture", "hydrology", "biodiversity", "regenerative systems"],
+    coreFunction: "Understanding how life sustains itself and how humans can participate in ecological continuity.",
+    examples: ["soil microbiology", "ecosystem mapping", "permaculture design", "plant taxonomy"]
+  },
+  chronicles: {
+    title: "Chronicles",
+    definition: "Preservation and interpretation of human memory across time.",
+    includes: ["historiography", "archival science", "oral traditions", "genealogy", "cultural continuity", "manuscript studies"],
+    coreFunction: "Maintaining civilizational memory and continuity of knowledge transmission.",
+    examples: ["oral history recording", "lineage mapping", "paleography basics", "archival structuring"]
+  },
+  civitas: {
+    title: "Civitas",
+    definition: "Study of social organization and ethical cooperation.",
+    includes: ["governance models", "law", "social coordination", "conflict mediation", "political philosophy", "commons theory"],
+    coreFunction: "Designing stable, ethical, and cooperative societies.",
+    examples: ["restorative justice frameworks", "consensus facilitation", "civic architecture", "mutual aid structures"]
+  },
+  tokenomics: {
+    title: "Tokenomics",
+    definition: "Design of value systems and resource coordination mechanisms.",
+    includes: ["incentive design", "cooperative economics", "decentralized finance logic", "accounting structures", "exchange systems", "credit networks"],
+    coreFunction: "Structuring sustainable economic relationships and resource distribution.",
+    examples: ["circular economy models", "local credit systems", "ledger design", "incentive modeling"]
+  },
+  artifex: {
+    title: "Artifex",
+    definition: "Applied craftsmanship and material intelligence.",
+    includes: ["fabrication", "tool-making", "engineering fundamentals", "traditional crafts", "material science", "applied design"],
+    coreFunction: "Transforming ideas into tangible structures and tools.",
+    examples: ["woodworking", "forging", "solar circuitry", "loom mechanics"]
+  },
+  praxis: {
+    title: "Praxis",
+    definition: "Embodied practice and disciplined action.",
+    includes: ["skill acquisition", "reflective practice", "field work", "training systems", "habit formation", "performance methods"],
+    coreFunction: "Integrating theory through repeated application and disciplined iteration.",
+    examples: ["observational journaling", "field experimentation", "conflict rehearsal", "reflective writing"]
+  },
+  bioepisteme: {
+    title: "Bioepisteme",
+    definition: "Study of knowledge as an emergent property of living systems.",
+    includes: ["cognitive science", "biosemiotics", "ethology", "systems thinking", "embodied intelligence", "perception ecology"],
+    coreFunction: "Understanding intelligence beyond human abstraction.",
+    examples: ["plant signaling studies", "sensory ecology", "animal cognition mapping", "systems modelling"]
+  }
+};
+
 // ============================================================
 // NODE DEMAND SYSTEM - Structured Node Needs with Domain/Subject/Tags
 // ============================================================
@@ -2991,23 +3064,63 @@ function renderPageContent() {
   // Subjects page
   const subjectsRoot = document.getElementById('subjects-root');
   if (subjectsRoot && subjectsRoot.innerHTML.trim() === '') {
-    const guilds = ['Lingosophy','Arthmetics','Cosmology','Biosphere','Chronicles','Civitas','Tokenomics','Artifex','Praxis','Bioepisteme'];
-    const guildCards = guilds.map((name) =>
-      '<a href="domain.html?domain=' + encodeURIComponent(name.toLowerCase()) + '" class="record-card" style="text-decoration:none;">' +
-        '<h3>' + escapeHtml(name) + '</h3>' +
-        '<p style="color:var(--text-secondary);font-size:0.9rem;">' + escapeHtml(t('home.termCoursesBody')) + '</p>' +
-      '</a>'
-    ).join('');
+    const domainCards = Object.keys(DOMAIN_STRUCTURE).map((key) => {
+      const d = DOMAIN_STRUCTURE[key];
+      return `
+        <div class="record-card domain-detail-card">
+          <div class="dashboard-card-topline">
+             <h3 style="margin:0;">${escapeHtml(d.title)}</h3>
+             <a href="domain.html?domain=${encodeURIComponent(key)}" class="btn-ghost" style="font-size:1.2rem; color:var(--gold);" title="Explore Curriculum">→</a>
+          </div>
+          <p class="domain-definition"><strong>${escapeHtml(d.definition)}</strong></p>
+          
+          <div class="domain-info-section">
+            <span class="section-label-tiny">INCLUDES:</span>
+            <p class="domain-includes">${d.includes.map(i => `<span>${escapeHtml(i)}</span>`).join(', ')}</p>
+          </div>
 
-    subjectsRoot.innerHTML =
-      '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('nav.learn')) + '</p>' +
-          '<h1>' + escapeHtml(t('home.stepsTitle')) + '</h1>' +
-          '<p class="lede">' + escapeHtml(t('home.step1Body')) + '</p>' +
-        '</div></div>' +
-        '<div class="record-list" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr));">' + guildCards + '</div>' +
-      '</div>';
+          <div class="domain-info-section" style="margin-top:12px;">
+            <span class="section-label-tiny">CORE FUNCTION:</span>
+            <p class="domain-core">${escapeHtml(d.coreFunction)}</p>
+          </div>
+
+          <div class="domain-examples-container">
+             <button class="btn-ghost-small" onclick="this.nextElementSibling.classList.toggle('visible')">
+               [ View Example Modules ]
+             </button>
+             <div class="domain-examples-popup">
+                <h4>Example Modules</h4>
+                <ul>
+                  ${d.examples.map(ex => `<li>${escapeHtml(ex)}</li>`).join('')}
+                </ul>
+                <button class="btn-ghost-small" style="margin-top:12px; display:block; width:100%; text-align:center;" onclick="this.parentElement.classList.remove('visible')">
+                  Close
+                </button>
+             </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    subjectsRoot.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <div>
+            <p class="section-label">iNHET Integrated Network</p>
+            <h1>Knowledge Domains</h1>
+            <p class="lede" style="max-width:800px; margin-bottom:24px;">
+              Below are the 10 Domains of <strong>iNHET</strong> (Integrated Network for Holistic Education & Training) with precise definitions aligned to the Neofolk Atlas epistemic structure.
+            </p>
+            <p style="color:var(--muted-text); font-size:0.9rem; max-width:800px;">
+              These domains represent fundamental lenses of knowledge, not school subjects. Every module, guild, pathway, and portfolio artifact maps to one or more domains.
+            </p>
+          </div>
+        </div>
+        <div class="record-list" style="margin-top:40px;">
+          ${domainCards}
+        </div>
+      </div>
+    `;
   }
 
   // Pathways page

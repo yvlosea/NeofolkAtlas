@@ -2269,3 +2269,132 @@ select.neo-input {
   box-shadow: 4px 4px 12px rgba(0,0,0,0.2) !important;
   z-index: 10;
 }
+
+/* Domain Detailed Cards (Subjects Page) */
+.domain-detail-card {
+  gap: 16px;
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  min-height: 380px;
+}
+
+.domain-detail-card:hover {
+  border-color: var(--gold);
+}
+
+.domain-definition {
+  font-family: var(--serif);
+  font-size: 1.15rem;
+  line-height: 1.4;
+  color: var(--parchment) !important;
+  margin-bottom: 8px !important;
+}
+
+.domain-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.section-label-tiny {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.domain-includes {
+  font-size: 0.85rem !important;
+  margin: 0 !important;
+  line-height: 1.5 !important;
+}
+
+.domain-includes span {
+  color: var(--parchment);
+}
+
+.domain-core {
+  font-size: 0.9rem !important;
+  margin: 0 !important;
+  color: var(--muted-text) !important;
+  font-style: italic;
+}
+
+.domain-examples-container {
+  margin-top: auto;
+  padding-top: 12px;
+  position: relative;
+}
+
+.btn-ghost-small {
+  background: transparent;
+  border: none;
+  color: var(--gold);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: opacity 0.2s;
+}
+
+.btn-ghost-small:hover {
+  opacity: 0.7;
+}
+
+.domain-examples-popup {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(27, 20, 16, 0.98);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 18px;
+  transform: translateY(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+  z-index: 100;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.65);
+}
+
+.domain-examples-popup.visible {
+  transform: translateY(-44px);
+  opacity: 1;
+  visibility: visible;
+}
+
+.domain-examples-popup h4 {
+  font-size: 0.85rem;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.domain-examples-popup ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.domain-examples-popup li {
+  font-size: 0.85rem;
+  color: var(--parchment);
+  padding-left: 14px;
+  position: relative;
+}
+
+.domain-examples-popup li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+}
+
