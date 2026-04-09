@@ -108,7 +108,10 @@
                         </label>
                         <label class="field-label">
                           <span>Password</span>
-                          <input id="signup-password" name="password" type="password" autocomplete="new-password" required placeholder="••••••••" />
+                          <div class="input-wrap">
+                            <input id="signup-password" name="password" type="password" autocomplete="new-password" required placeholder="••••••••" />
+                            <button type="button" class="pw-toggle" onclick="togglePassword('signup-password')">Show</button>
+                          </div>
                         </label>
                         <label class="field-label">
                           <span>Role</span>
@@ -143,7 +146,10 @@
                         </label>
                         <label class="field-label">
                           <span>Password</span>
-                          <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+                          <div class="input-wrap">
+                            <input id="login-password" name="password" type="password" autocomplete="current-password" required placeholder="••••••••" />
+                            <button type="button" class="pw-toggle" onclick="togglePassword('login-password')">Show</button>
+                          </div>
                         </label>
                         <button class="btn btn-primary" style="width:100%" type="submit" data-i18n="auth.login">Login</button>
                         <button id="forgot-password-button" class="btn-ghost" type="button" data-i18n="auth.forgotPassword">Forgot password?</button>
@@ -392,6 +398,18 @@
         syncLangSelectors(e.target.value);
         if (homeLanguageSelect) homeLanguageSelect.dispatchEvent(new Event('change'));
       });
+    }
+
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      const btn = input.nextElementSibling;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+      }
     }
   </script>
 </body>
