@@ -554,36 +554,155 @@ body.has-sidebar .page-stack   {
 
 /* ── STAT CARD ── */
 .stat-card {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: 20px 24px;
-  min-height: 120px;
+  padding: var(--space-4);
+  min-height: 140px;
+  transition: all var(--t);
 }
 
-.stat-card .section-label { font-size: 0.75rem; }
-.stat-card strong { font-family: var(--font-serif); font-size: 2rem; color: var(--accent); }
+.stat-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-card .section-label { 
+  font-size: 0.75rem; 
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+.stat-card strong { 
+  font-family: var(--font-serif); 
+  font-size: 2.5rem; 
+  color: var(--accent); 
+  line-height: 1;
+}
 
 /* ════════════════════════════════════════
    DASHBOARD SHELLS
+   Enhanced hierarchy: Title > Metric > Visualization
 ════════════════════════════════════════ */
 
-.dashboard-shell,
-.module-shell,
-.guild-shell {
+.dashboard-shell {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-4);
+  animation: fadeIn 0.4s ease-out;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  gap: var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-2);
+}
+
+/* ── PREMIUM PROFILE UI ── */
+.profile-card-premium {
+  padding: var(--space-4);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+
+.profile-avatar-lg {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-strong);
+}
+
+.profile-avatar-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--text-muted);
+  border: 2px dashed var(--border);
+}
+
+.profile-name-lg {
+  font-size: 2.25rem;
+  margin-bottom: 8px;
+  font-family: var(--font-serif);
+}
+
+.domain-badge-premium {
+  display: inline-block;
+  padding: 6px 16px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--border-glow);
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.profile-bio-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.tag-stack {
+  display: flex;
   flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill {
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.dashboard-progress-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-progress-track {
+  height: 8px;
+  background: var(--bg-surface);
+  border-radius: 99px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.dashboard-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 1s ease-out;
+}
+
+.dashboard-progress-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
 }
 
 .dashboard-header > div {
@@ -1791,6 +1910,27 @@ body.rtl-layout {
 
 [dir="rtl"] .hero-section { direction: rtl; }
 [dir="rtl"] .hero-body { max-width: none; }
+
+/* ── FOOTER ── */
+.site-footer {
+  margin-top: var(--space-7);
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0.5;
+  transition: opacity var(--t);
+}
+
+.footer-content:hover { opacity: 0.8; }
+
+.footer-v { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text-muted); }
+.footer-board { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 
 @media (max-width: 1100px) {
   [dir="rtl"] .app-sidebar {

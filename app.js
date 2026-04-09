@@ -197,6 +197,15 @@ const VALID_STATUSES = ['pending', 'provisioning', 'fulfilled'];
 let nodeNeedFilter = 'all'; // 'all', 'active', 'needs'
 let demandModeActive = false;
 
+function getGuestStorageId() {
+  let guestId = localStorage.getItem('neofolk.guestId');
+  if (!guestId) {
+    guestId = `guest_${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('neofolk.guestId', guestId);
+  }
+  return guestId;
+}
+
 /**
  * Toggle Demand Mode - allowing users to drop new signals
  */
@@ -297,7 +306,7 @@ function supportNodeNeed(needId) {
   need.updatedAt = new Date().toISOString();
   
   // Track who boosted (for analytics)
-  const userId = currentUser?.id || 'guest_' + localStorage.getItem('neofolk.guestId') || 'unknown';
+  const userId = currentUser?.id || getGuestStorageId();
   if (!need.boostedBy.includes(userId)) {
     need.boostedBy.push(userId);
   }
@@ -329,7 +338,7 @@ function updateNodeNeedStatus(needId, newStatus) {
   
   need.status = newStatus;
   need.updatedAt = new Date().toISOString();
-  saveNodeNeeds();
+  saveGlobalNodeNeeds();
   updateNodeNeedMarker(need);
   return need;
 }
@@ -367,7 +376,7 @@ function loadGlobalNodeNeeds() {
   
   // Ensure guest ID exists for tracking
   if (!localStorage.getItem('neofolk.guestId')) {
-    localStorage.setItem('neofolk.guestId', 'guest_' + Math.random().toString(36).substr(2, 9));
+    getGuestStorageId();
   }
 }
 
@@ -632,7 +641,7 @@ const LICENSE_LEVELS = ['Level 1', 'Level 2', 'Level 3'];
  * @returns {object} The created CuratorCard object
  */
 function createCuratorCard(fullName, age, activeLicenses = []) {
-  const userId = currentUser?.id || 'guest_' + localStorage.getItem('neofolk.guestId');
+  const userId = currentUser?.id || getGuestStorageId();
   
   const card = {
     id: `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -655,7 +664,7 @@ function createCuratorCard(fullName, age, activeLicenses = []) {
  * @returns {object|null} CuratorCard or null if not found
  */
 function getMyCuratorCard() {
-  const userId = currentUser?.id || 'guest_' + localStorage.getItem('neofolk.guestId');
+  const userId = currentUser?.id || getGuestStorageId();
   return curatorCards.find(c => c.userId === userId) || null;
 }
 
@@ -1284,7 +1293,8 @@ function calculateNeoscore(domains) {
 }
 
 function calculateSpecscore(spec) {
-  return Math.max(...Object.values(spec));
+  const values = Object.values(spec || {}).filter((value) => Number.isFinite(value));
+  return values.length ? Math.max(...values) : 0;
 }
 
 function getLiveTopology(userData) {
@@ -1411,7 +1421,13 @@ function renderTopologyPage(userData) {
                         <h3 style="font-size:10px; color:#8b8276; text-transform: uppercase; letter-spacing: 2px; margin:0;">SPECIALIZATION FOCUS (DONUT)</h3>
                         <button onclick="window.manageSpecializations()" style="background:none; border:1px solid #2a2420; color:#c6a96b; padding:4px 8px; cursor:pointer; font-size:9px; text-transform:uppercase;">MANAGE</button>
                     </div>
-                    <div class="topology-chart-container" style="height:350px;"><canvas id="donutChart"></canvas></div>
+                    <div class="topology-chart-container" style="height:350px; display:flex; justify-content:center; align-items:center; position:relative;">
+                        <canvas id="donutChart"></canvas>
+                        <div class="donut-center-label" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center; pointer-events:none;">
+                            <p style="font-size:10px; color:#555; text-transform:uppercase; margin:0;">Specscore</p>
+                            <p style="font-size:32px; color:#fff; font-weight:bold; margin:0;">${specscore}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -2124,6 +2140,12 @@ function wireAuthForms() {
         return;
       }
 
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData?.session) {
+        if (msg) msg.textContent = 'Recovery session missing. Open the latest reset link from your email and try again.';
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({ password: newPw });
 
       if (error) {
@@ -2519,19 +2541,39 @@ function renderPageContent() {
     
     // Profile display card (shown if profile exists)
     const profileDisplayHTML = hasProfile ? `
-      <div class="card profile-display" style="margin-bottom:24px;">
-        <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
-          ${savedProfile.photo ? `<img src="${escapeHtml(savedProfile.photo)}" style="width:100px;height:100px;object-fit:cover;border-radius:50%;border:2px solid var(--gold);">` : '<div style="width:100px;height:100px;border-radius:50%;background:var(--bg-card);display:flex;align-items:center;justify-content:center;color:var(--text-muted);">No Photo</div>'}
-          <div style="flex:1; min-width:200px;">
-            <h2 style="margin:0 0 8px 0; color:var(--gold); font-family:var(--serif); font-size:1.8rem;">${escapeHtml(savedProfile.name || 'Unnamed')}</h2>
-            ${savedProfile.domain ? `<span style="display:inline-block; background:var(--gold-soft); color:var(--gold); padding:4px 12px; border-radius:20px; font-size:0.75rem; margin-bottom:12px;">${escapeHtml(savedProfile.domain)}</span>` : ''}
-            ${savedProfile.bio ? `<p style="margin:0 0 12px 0; color:var(--text-secondary); line-height:1.6;">${escapeHtml(savedProfile.bio)}</p>` : ''}
-            ${savedProfile.skills ? `<div style="margin-top:12px;"><span style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase;">Skills:</span> <span style="color:var(--text-primary);">${escapeHtml(savedProfile.skills)}</span></div>` : ''}
+      <div class="card profile-card-premium" style="margin-bottom:var(--space-4);">
+        <div class="profile-header-premium" style="display:flex; gap:var(--space-4); align-items:center; flex-wrap:wrap; padding-bottom:var(--space-4); border-bottom:1px solid var(--border);">
+          <div class="profile-avatar-wrap">
+            ${savedProfile.photo ? `<img src="${escapeHtml(savedProfile.photo)}" class="profile-avatar-lg">` : '<div class="profile-avatar-placeholder">?</div>'}
+          </div>
+          <div class="profile-title-area">
+            <p class="section-label" style="margin-bottom:4px;">Research Profile</p>
+            <h2 class="profile-name-lg">${escapeHtml(savedProfile.name || 'Unnamed Researcher')}</h2>
+            ${savedProfile.domain ? `<div class="domain-badge-premium">${escapeHtml(savedProfile.domain)}</div>` : ''}
           </div>
         </div>
-        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.8rem; color:var(--text-muted);">Profile completeness: <strong style="color:var(--gold);">${completeness}%</strong></span>
-          <button id="edit-profile-btn" class="btn btn-secondary" style="font-size:0.8rem;">Edit Profile</button>
+        
+        <div class="profile-details-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:var(--space-4); margin-top:var(--space-4);">
+          <div class="profile-detail-block">
+            <p class="section-label">Researcher Bio</p>
+            <p class="profile-bio-text">${escapeHtml(savedProfile.bio || 'No bio documented.')}</p>
+          </div>
+          <div class="profile-detail-block">
+            <p class="section-label">Specializations</p>
+            <div class="tag-stack">
+              ${savedProfile.skills ? savedProfile.skills.split(',').map(s => `<span class="pill">${escapeHtml(s.trim())}</span>`).join('') : '<span class="muted">No skills documented.</span>'}
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-footer-premium" style="margin-top:var(--space-4); padding-top:var(--space-3); display:flex; justify-content:space-between; align-items:center; opacity:0.8;">
+          <div class="completeness-bar-wrap" style="flex:1; max-width:300px;">
+            <div class="dashboard-progress-block">
+              <div class="dashboard-progress-track"><span class="dashboard-progress-fill" style="width:${completeness}%"></span></div>
+              <span class="dashboard-progress-value">${completeness}%</span>
+            </div>
+          </div>
+          <button id="edit-profile-btn" class="btn subtle-button" style="font-size:0.85rem;">Edit Profile</button>
         </div>
       </div>
     ` : '';
@@ -2711,23 +2753,193 @@ function renderPageContent() {
     guideRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
-          <p class="section-label">Guide</p>
-          <h1>NHBE Learning Guide</h1>
+          <p class="section-label">NHBE System Guide</p>
+          <h1>How Neofolk Learning Works</h1>
           <p class="lede">
-          The Guide explains how Domains, Pathways, Guilds, Portfolio, and Nodes work together.
+            Neofolk Atlas organizes learning through interconnected structures that reflect how knowledge exists in reality: interdisciplinary, applied, and evolving.
           </p>
         </div>
+
+        <!-- SECTION 1 — DOMAINS -->
         <div class="card">
-          <h3>Domains</h3>
-          <p>Fundamental perspectives of knowledge such as Lingosophy, Arthmetics, Cosmology, Biosphere.</p>
-          <h3>Pathways</h3>
-          <p>Short learning experiences connecting real-world skills to Domains.</p>
-          <h3>Guilds</h3>
-          <p>Collaborative research groups formed by learners.</p>
-          <h3>Portfolio</h3>
-          <p>Documented record of learning evidence.</p>
-          <h3>Nodes</h3>
-          <p>Physical locations where learning occurs.</p>
+          <h2>Domains</h2>
+          <p>
+            Domains represent fundamental perspectives through which humans understand reality. Unlike traditional subjects, Domains describe modes of thinking rather than narrow academic categories.
+          </p>
+          <p>
+            Each learning activity contributes to one or more Domains, creating a multidimensional learning profile rather than a single grade.
+          </p>
+          <ul>
+            <li><strong>Lingosophy</strong> — language, interpretation, rhetoric, meaning systems</li>
+            <li><strong>Arthmetics</strong> — mathematics, logic, quantitative structure</li>
+            <li><strong>Cosmology</strong> — physics, astronomy, systems structure</li>
+            <li><strong>Biosphere</strong> — ecology, biology, environmental relationships</li>
+            <li><strong>Chronicles</strong> — history, civilization memory, cultural continuity</li>
+            <li><strong>Civitas</strong> — ethics, governance, social responsibility</li>
+            <li><strong>Tokenomics</strong> — economic behavior, incentives, value exchange</li>
+            <li><strong>Artifex</strong> — design, art, craft, material intelligence</li>
+            <li><strong>Praxis</strong> — physical discipline, embodied learning, applied action</li>
+            <li><strong>Bioepisteme</strong> — life knowledge, practical intelligence, survival skills</li>
+          </ul>
+          <p>
+            Domains create balance between analytical, creative, social, and practical abilities.
+          </p>
+        </div>
+
+        <!-- SECTION 2 — PATHWAYS -->
+        <div class="card">
+          <h2>Pathways</h2>
+          <p>
+            Pathways are short structured learning experiences connecting real-world skill development to Domains.
+          </p>
+          <p>
+            Pathways typically last between one week and three months and allow learners to experiment with multiple fields before specializing.
+          </p>
+          <p>
+            Each Pathway produces portfolio evidence and contributes to domain development.
+          </p>
+          <h3>Examples of Pathways</h3>
+          <ul>
+            <li>Urban Gardening Practice</li>
+            <li>Introduction to Phonetics</li>
+            <li>Storytelling Practice</li>
+            <li>Basic Carpentry</li>
+            <li>Yoga Foundations</li>
+            <li>Folk Music Study</li>
+            <li>Ecology Observation</li>
+            <li>Digital Illustration Basics</li>
+          </ul>
+          <p>
+            Pathways allow learning without long-term commitment pressure while still producing measurable progress.
+          </p>
+        </div>
+
+        <!-- SECTION 3 — GUILDS -->
+        <div class="card">
+          <h2>Guilds</h2>
+          <p>
+            Guilds are collaborative research communities formed by learners exploring shared interests.
+          </p>
+          <p>
+            Guilds allow open-ended inquiry beyond structured courses and replicate historical knowledge guild traditions.
+          </p>
+          <p>
+            Guilds develop:
+          </p>
+          <ul>
+            <li>initiative</li>
+            <li>research ability</li>
+            <li>collaboration skills</li>
+            <li>intellectual curiosity</li>
+          </ul>
+          <h3>Examples of Guilds</h3>
+          <ul>
+            <li>Solar Architecture Guild</li>
+            <li>Food Culture Guild</li>
+            <li>Folk Music Preservation Guild</li>
+            <li>Gender Language Guild</li>
+            <li>Local History Guild</li>
+            <li>Traditional Craft Research Guild</li>
+          </ul>
+          <p>
+            Guild participation contributes to domain depth and specialization.
+          </p>
+        </div>
+
+        <!-- SECTION 4 — PORTFOLIO -->
+        <div class="card">
+          <h2>Portfolio</h2>
+          <p>
+            Portfolio is the primary method of demonstrating learning.
+          </p>
+          <p>
+            Instead of relying only on exams, Neofolk Atlas evaluates documented evidence of skill development.
+          </p>
+          <p>
+            Portfolio entries may include:
+          </p>
+          <ul>
+            <li>written analysis</li>
+            <li>design work</li>
+            <li>project documentation</li>
+            <li>audio recordings</li>
+            <li>performance recordings</li>
+            <li>photographs of practical work</li>
+            <li>research notes</li>
+            <li>reflection journals</li>
+          </ul>
+          <h3>Portfolio Examples</h3>
+          <ul>
+            <li>Soil health analysis report</li>
+            <li>Folk song performance recording</li>
+            <li>Architectural drawing</li>
+            <li>Research interview transcript</li>
+            <li>Mathematical pattern study</li>
+            <li>Craft prototype photographs</li>
+          </ul>
+          <p>
+            Portfolio grows continuously and reflects real capability development over time.
+          </p>
+        </div>
+
+        <!-- SECTION 5 — NODES -->
+        <div class="card">
+          <h2>Nodes</h2>
+          <p>
+            Nodes are physical or digital environments where learning occurs.
+          </p>
+          <p>
+            Nodes distribute education across society rather than restricting learning to classrooms.
+          </p>
+          <p>
+            Nodes allow professionals, practitioners, and researchers to contribute to education directly.
+          </p>
+          <h3>Types of Nodes</h3>
+          <ul>
+            <li><strong>Practice Nodes</strong> — real-world skill environments</li>
+            <li><strong>Studios</strong> — design and creative production spaces</li>
+            <li><strong>Atheneums</strong> — research libraries and archives</li>
+            <li><strong>Coliseums</strong> — movement and physical training spaces</li>
+            <li><strong>Learning Commons</strong> — collaborative study environments</li>
+          </ul>
+          <p>
+            Nodes connect knowledge to real-world practice.
+          </p>
+        </div>
+
+        <!-- SECTION 6 — HOW EVERYTHING CONNECTS -->
+        <div class="card">
+          <h2>System Structure</h2>
+          <p>
+            Learning flows through interconnected layers:
+          </p>
+          <ul>
+            <li>Pathways create structured learning experiences</li>
+            <li>Guilds allow deeper collaborative research</li>
+            <li>Portfolio documents evidence of capability</li>
+            <li>Nodes provide real environments for learning</li>
+            <li>Domains track intellectual development across disciplines</li>
+          </ul>
+          <p>
+            Together these structures create a learning ecosystem that reflects real-world complexity.
+          </p>
+        </div>
+
+        <!-- SECTION 7 — NEOSCORE -->
+        <div class="card">
+          <h2>Neoscore</h2>
+          <p>
+            Neoscore measures development across multiple Domains rather than a single exam result.
+          </p>
+          <p>
+            Each learning activity contributes to one or more Domains.
+          </p>
+          <p>
+            Neoscore reflects both breadth of exploration and depth of specialization.
+          </p>
+          <p>
+            Neoscore calculation system will evolve after the alpha phase to better reflect professional capability and interdisciplinary intelligence.
+          </p>
         </div>
       </div>
     `;
