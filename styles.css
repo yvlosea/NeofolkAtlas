@@ -681,14 +681,14 @@ body.has-sidebar .page-stack   {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 0 18px;
+  min-height: 32px;
+  padding: 0 14px;
   border-radius: 999px;
-  background: var(--accent-soft);
-  border: 1px solid var(--border-glow);
-  color: var(--accent-hover);
-  font-size: 0.8rem;
-  font-weight: 700;
+  background: transparent;
+  border: 1px dashed var(--border-glow);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -773,6 +773,33 @@ body.has-sidebar .page-stack   {
 
 .oversight-row strong {
   color: var(--text-primary);
+}
+
+.syllabus-item-card {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+
+.syllabus-item-header {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.syllabus-remove-button {
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 12px;
+  color: var(--error);
+  border: 1px solid rgba(198, 122, 122, 0.2);
+}
+
+.syllabus-input-detail {
+  min-height: 100px;
 }
 
 .role-dashboard--seeker .dashboard-welcome {

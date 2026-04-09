@@ -13,6 +13,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.8';
 
 const LANG_STORAGE = 'neofolk.preferredLanguage';
 const SUPPORTED_LANGS = ['en', 'hi', 'ur'];
+const ROLE_HINT_STORAGE = 'neofolk.roleHint';
 
 /**
  * Hash-based Router for SPA feel
@@ -186,22 +187,22 @@ const nodeNeeds = [];
 
 // Valid Domains (the 10 lineage domains)
 const VALID_DOMAINS = [
-  'Lingosophy', 'Arithmetics', 'Cosmology', 'Biosphere', 'Chronicles',
-  'Civitas', 'Tokenomics', 'Artifex', 'Praxis', 'Bioepisteme'
+  'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'chronicles',
+  'civitas', 'tokenomics', 'artifex', 'praxis', 'bioepisteme'
 ];
 
 // Domain to Token mapping
 const DOMAIN_TO_TOKEN = {
-  'Lingosophy': 'Spivaks',
-  'Arithmetics': 'Shakuntis',
-  'Cosmology': 'Bhattas',
-  'Biosphere': 'Janakis',
-  'Chronicles': 'Thapars',
-  'Civitas': 'Savi',
-  'Tokenomics': 'Bhanus',
-  'Artifex': 'Sarabhs',
-  'Praxis': 'Arunas',
-  'Bioepisteme': 'Gagas'
+  'lingosophy': 'Spivaks',
+  'arithmetics': 'Shakuntis',
+  'cosmology': 'Bhattas',
+  'biosphere': 'Janakis',
+  'chronicles': 'Thapars',
+  'civitas': 'Savi',
+  'tokenomics': 'Bhanus',
+  'artifex': 'Sarabhs',
+  'praxis': 'Arunas',
+  'bioepisteme': 'Gagas'
 };
 
 // Valid statuses for NodeNeeds
@@ -1082,15 +1083,17 @@ function declineGuildInvite(userId, guildId) {
 /**
  * Handle Syllabus Item Addition
  */
-window.addSyllabusItem = function() {
+window.addSyllabusItem = function(title = '', details = '') {
   const container = document.getElementById('syllabus-items');
   if (!container) return;
   const div = document.createElement('div');
-  div.style.display = 'flex';
-  div.style.gap = '8px';
+  div.className = 'syllabus-item-card';
   div.innerHTML = `
-    <input class="neo-input syllabus-input" placeholder="Chapter or Topic title" style="flex:1;">
-    <button onclick="this.parentElement.remove()" class="btn-ghost" style="color:var(--error); padding:0 10px;">&times;</button>
+    <div class="syllabus-item-header">
+      <input class="neo-input syllabus-input" data-syllabus-field="title" placeholder="Syllabus item title" value="${escapeHtml(title)}">
+      <button onclick="this.closest('.syllabus-item-card').remove()" class="btn-ghost syllabus-remove-button" type="button">&times;</button>
+    </div>
+    <textarea class="neo-input syllabus-input-detail" data-syllabus-field="details" rows="3" placeholder="What is inside this item? Add concepts, activities, texts, or outputs.">${escapeHtml(details)}</textarea>
   `;
   container.appendChild(div);
 };
@@ -1099,34 +1102,53 @@ window.addSyllabusItem = function() {
  * Save Module with Advanced Schema
  */
 window.saveModuleAdvanced = async function() {
+  const editId = document.getElementById('mod-edit-id')?.value;
   const title = document.getElementById('mod-title')?.value;
   const desc = document.getElementById('mod-desc')?.value;
   const weeks = parseInt(document.getElementById('mod-weeks')?.value || '1');
   const capacity = parseInt(document.getElementById('mod-capacity')?.value || '20');
   const locName = document.getElementById('mod-loc-name')?.value;
   const domain = document.getElementById('mod-domain')?.value || 'lingosophy';
-  
-  const syllabus = Array.from(document.querySelectorAll('.syllabus-input'))
-    .map(input => input.value.trim())
-    .filter(Boolean);
+  const syllabus = Array.from(document.querySelectorAll('.syllabus-item-card'))
+    .map((item) => ({
+      title: item.querySelector('[data-syllabus-field="title"]')?.value.trim() || '',
+      details: item.querySelector('[data-syllabus-field="details"]')?.value.trim() || '',
+    }))
+    .filter((item) => item.title || item.details);
 
   if (!title) return alert('Title is required');
+  if (!syllabus.length) return alert('Add at least one syllabus item');
 
   // Check for curator card
   const myCard = getMyCuratorCard();
   if (!myCard) {
-    alert('You need a curator license to create modules. Please apply for curator status first.');
+    alert('You need a curator license to create or edit modules. Please apply for curator status first.');
     return;
   }
 
-  // Create module using curator card system
-  const module = createModule(title, desc, domain, myCard.id);
+  let module;
+  if (editId) {
+    module = getModule(editId);
+    if (!module) return alert('Module to edit not found');
+    
+    // Check ownership
+    if (module.curatorCardID !== myCard.id) return alert('You do not have permission to edit this module');
+    
+    module.title = title;
+    module.description = desc;
+    module.domain = domain;
+    module.updatedAt = new Date().toISOString();
+  } else {
+    // Create module using curator card system
+    module = createModule(title, desc, domain, myCard.id);
+  }
+
   if (!module) {
-    alert('Failed to create module. Please check your curator license.');
+    alert('Operation failed. Please check your curator license.');
     return;
   }
 
-  // Add additional fields
+  // Add/Update additional fields
   module.durationWeeks = weeks;
   module.maxCapacity = capacity;
   module.locationName = locName;
@@ -1139,28 +1161,38 @@ window.saveModuleAdvanced = async function() {
   const supabase = getSupabaseClient();
   if (supabase && currentUser) {
     try {
-      const { error } = await supabase.from('modules').insert({
-        curator_id: currentUser.id,
-        title: title,
-        description: desc,
-        domain: domain,
-        duration_weeks: weeks,
-        max_capacity: capacity,
-        location_name: locName,
-        syllabus: syllabus,
-        is_published: true,
-        local_id: module.id // Link to local module
-      });
-      if (error) {
-        console.warn('Supabase save failed, using local storage only:', error);
+      if (editId) {
+        await supabase.from('modules').update({
+          title: title,
+          description: desc,
+          domain: domain,
+          duration_weeks: weeks,
+          max_capacity: capacity,
+          location_name: locName,
+          syllabus: syllabus,
+          updated_at: new Date()
+        }).eq('local_id', editId);
+      } else {
+        await supabase.from('modules').insert({
+          curator_id: currentUser.id,
+          title: title,
+          description: desc,
+          domain: domain,
+          duration_weeks: weeks,
+          max_capacity: capacity,
+          location_name: locName,
+          syllabus: syllabus,
+          is_published: true,
+          local_id: module.id
+        });
       }
     } catch (e) {
       console.warn('Supabase save failed, using local storage only:', e);
     }
   }
 
-  alert('Module created successfully!');
-  window.location.hash = 'teaching-log';
+  alert(editId ? 'Module updated successfully!' : 'Module created successfully!');
+  window.location.assign('teaching-log.html');
 };
 
 /**
@@ -1856,13 +1888,45 @@ function getRoleFromPage(page = currentPageFile()) {
   return pageRoleMap[page] || null;
 }
 
-function getCurrentRole() {
-  return String(
-    currentUser?.user_metadata?.role ||
-    currentUser?.app_metadata?.role ||
-    getRoleFromPage() ||
-    'seeker'
+function getStoredRoleHint(user) {
+  if (!user) return localStorage.getItem(`${ROLE_HINT_STORAGE}.last`) || null;
+  return (
+    localStorage.getItem(`${ROLE_HINT_STORAGE}.id.${user.id}`) ||
+    (user.email ? localStorage.getItem(`${ROLE_HINT_STORAGE}.email.${user.email.toLowerCase()}`) : null) ||
+    localStorage.getItem(`${ROLE_HINT_STORAGE}.last`) ||
+    null
+  );
+}
+
+function persistRoleHint(role, user) {
+  if (!role) return;
+  localStorage.setItem(`${ROLE_HINT_STORAGE}.last`, role);
+  if (user?.id) localStorage.setItem(`${ROLE_HINT_STORAGE}.id.${user.id}`, role);
+  if (user?.email) localStorage.setItem(`${ROLE_HINT_STORAGE}.email.${user.email.toLowerCase()}`, role);
+}
+
+function resolveUserRole(user, fallbackRole = null) {
+  const explicitRole = String(
+    user?.user_metadata?.role ||
+    user?.app_metadata?.role ||
+    ''
   ).toLowerCase();
+  
+  // 1. TRUST EXPLICIT ROLE FIRST
+  if (explicitRole) return explicitRole;
+
+  // 2. TRUST VERIFIED CURATOR STATUS OVER CACHED HINTS
+  if (user?.id && curatorCards.some((card) => card.userId === user.id)) return 'curator';
+
+  // 3. FALLBACK TO HINTS
+  const hintedRole = String(getStoredRoleHint(user) || '').toLowerCase();
+  if (hintedRole) return hintedRole;
+
+  return String(fallbackRole || 'seeker').toLowerCase();
+}
+
+function getCurrentRole() {
+  return resolveUserRole(currentUser, getRoleFromPage() || 'seeker');
 }
 
 function applyRoleTheme(role = getCurrentRole()) {
@@ -1919,6 +1983,12 @@ function getCuratorDashboardData() {
     totalStudents: uniqueStudentIds.length,
     activeLicenses: myCard?.activeLicenses?.length || 0,
   };
+}
+
+function getDomainFilterFromUrl() {
+  const param = new URLSearchParams(window.location.search).get('domain');
+  if (!param) return '';
+  return String(param).toLowerCase();
 }
 
 function getArbiterInterviewList(studentProfiles) {
@@ -2112,8 +2182,8 @@ function renderCuratorDashboard(root) {
         '</div>' +
         '<div class="card" id="curator-dossier">' +
           '<p class="section-label">Dossier</p>' +
-          '<h2>Your curator record.</h2>' +
-          '<p>Keep a living dossier of authored modules, domain authority, student reach, and public-facing teaching identity.</p>' +
+          '<h2>Your curation record.</h2>' +
+          '<p>Keep a serious record of what you have authored, who you have taught, and which domains you are licensed to curate.</p>' +
           '<div class="mini-stat-grid">' +
             '<div class="mini-stat"><strong>' + myModules.length + '</strong><span>Modules</span></div>' +
             '<div class="mini-stat"><strong>' + myBatches.length + '</strong><span>Batches</span></div>' +
@@ -2122,7 +2192,7 @@ function renderCuratorDashboard(root) {
           '</div>' +
           '<div class="inline-actions flow-top-32">' +
             '<a class="btn btn-primary" href="portfolio.html">Open Dossier</a>' +
-            '<a class="btn" href="profile.html">Edit Public Profile</a>' +
+            '<a class="btn" href="teaching-log.html">Open Teaching Log</a>' +
           '</div>' +
         '</div>' +
       '</div>' +
@@ -2134,13 +2204,18 @@ function renderCuratorDashboard(root) {
           '</div>' +
           '<a class="btn" href="module-editor.html">Open Advanced Editor</a>' +
         '</div>' +
-        '<p>Keep creation close to the dashboard. Draft a title, assign a domain, and publish the first version right here.</p>' +
-        '<div class="module-creation-grid">' +
-          '<input id="quick-mod-title" class="neo-input" placeholder="Module title">' +
+        '<p>Keep creation close to the dashboard. Draft the core structure and publish the first version right here.</p>' +
+        '<div class="module-creation-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">' +
+          '<input id="quick-mod-title" class="neo-input" placeholder="Module title" style="grid-column: span 2;">' +
           '<select id="quick-mod-domain" class="neo-input">' +
             Object.keys(DOMAIN_NAMES).map((key) => `<option value="${key}">${DOMAIN_NAMES[key]}</option>`).join('') +
           '</select>' +
-          '<textarea id="quick-mod-desc" class="neo-input module-creation-textarea" rows="4" placeholder="Module description, outcomes, and what the cohort will make."></textarea>' +
+          '<div style="display:flex; gap:8px;">' +
+            '<input id="quick-mod-weeks" type="number" class="neo-input" value="4" placeholder="Weeks" style="width:70px;">' +
+            '<input id="quick-mod-capacity" type="number" class="neo-input" value="20" placeholder="Cap" style="width:70px;">' +
+          '</div>' +
+          '<input id="quick-mod-loc" class="neo-input" placeholder="Location" style="grid-column: span 2;">' +
+          '<textarea id="quick-mod-desc" class="neo-input module-creation-textarea" rows="3" placeholder="Description/Outcomes" style="grid-column: span 2;"></textarea>' +
         '</div>' +
         '<div class="inline-actions flow-top-32">' +
           '<button onclick="window.quickCreateModule()" class="btn btn-primary">Create Module</button>' +
@@ -2321,7 +2396,7 @@ function renderAppNav() {
   const here = currentPageFile();
   const fallbackRole = getRoleFromPage(here) || 'seeker';
   const dashHref = currentUser
-    ? getDashboardPath(currentUser)
+    ? getDashboardPath({ ...currentUser, user_metadata: { ...(currentUser.user_metadata || {}), role: resolveUserRole(currentUser, fallbackRole) } })
     : getDashboardPath({ user_metadata: { role: fallbackRole } });
   const isDashboardPage = here.endsWith('-dashboard.html');
   const role = getCurrentRole();
@@ -2635,7 +2710,12 @@ function wireAuthForms() {
         return;
       }
       if (data?.user) {
-        window.location.assign(getDashboardPath(data.user));
+        const resolvedRole = resolveUserRole(data.user, getRoleFromPage() || 'seeker');
+        persistRoleHint(resolvedRole, data.user);
+        window.location.assign(getDashboardPath({
+          ...data.user,
+          user_metadata: { ...(data.user.user_metadata || {}), role: resolvedRole }
+        }));
       }
     });
   }
@@ -2676,8 +2756,13 @@ function wireAuthForms() {
         return;
       }
 
+      if (data?.user) persistRoleHint(role, data.user);
+
       if (data.session && data.user) {
-        window.location.assign(getDashboardPath(data.user));
+        window.location.assign(getDashboardPath({
+          ...data.user,
+          user_metadata: { ...(data.user.user_metadata || {}), role }
+        }));
       } else if (msg) {
         msg.textContent = t('messages.checkEmail');
       }
@@ -2835,7 +2920,7 @@ function renderPageContent() {
   const dashRoot = document.getElementById('dashboard-root');
   if (dashRoot && dashRoot.innerHTML.trim() === '') {
     const supabase = getSupabaseClient();
-    const roleName = page.replace('-dashboard.html', '');
+    const roleName = getCurrentRole();
     if (roleName === 'curator') {
       renderCuratorDashboard(dashRoot);
       hydrateSignedInMeta(supabase);
@@ -2908,7 +2993,7 @@ function renderPageContent() {
   if (subjectsRoot && subjectsRoot.innerHTML.trim() === '') {
     const guilds = ['Lingosophy','Arthmetics','Cosmology','Biosphere','Chronicles','Civitas','Tokenomics','Artifex','Praxis','Bioepisteme'];
     const guildCards = guilds.map((name) =>
-      '<a href="domain.html" class="record-card" style="text-decoration:none;">' +
+      '<a href="domain.html?domain=' + encodeURIComponent(name.toLowerCase()) + '" class="record-card" style="text-decoration:none;">' +
         '<h3>' + escapeHtml(name) + '</h3>' +
         '<p style="color:var(--text-secondary);font-size:0.9rem;">' + escapeHtml(t('home.termCoursesBody')) + '</p>' +
       '</a>'
@@ -2944,25 +3029,48 @@ function renderPageContent() {
   // Domain page
   const domainRoot = document.getElementById('domain-root');
   if (domainRoot && domainRoot.innerHTML.trim() === '') {
-    const showCreate = currentUser?.user_metadata?.role === "curator";
+    const selectedDomain = getDomainFilterFromUrl();
+    const selectedDomainName = DOMAIN_NAMES[selectedDomain] || 'Modules';
+    const filteredModules = selectedDomain ? modules.filter((module) => module.domain === selectedDomain) : modules;
+    const showCreate = getCurrentRole() === 'curator';
     domainRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
           <p class="section-label">Domain</p>
-          <h1>Modules</h1>
+          <h1>${selectedDomainName}</h1>
           ${showCreate ? `
             <button id="create-module" class="btn btn-primary">
               + Module
             </button>
           ` : ""}
         </div>
-        <div class="empty-state">
-          <p>No modules yet.</p>
-        </div>
+        ${filteredModules.length ? `
+          <div class="record-list">
+            ${filteredModules.map((module) => `
+              <div class="record-card">
+                <div class="dashboard-card-topline">
+                  <span class="pill">${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</span>
+                  <span class="muted">${module.syllabus?.length || 0} syllabus items</span>
+                </div>
+                <h3>${escapeHtml(module.title)}</h3>
+                <p>${escapeHtml(module.description || 'No module description yet.')}</p>
+                <div class="inline-actions">
+                  <a class="btn" href="module.html?id=${module.id}">Open Module</a>
+                  <a class="btn subtle-button" href="teaching-log.html">Teaching Log</a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="empty-state">
+            <p>No modules yet${selectedDomain ? ` in ${selectedDomainName}` : ''}.</p>
+          </div>
+        `}
       </div>
     `;
     document.getElementById('create-module')?.addEventListener('click', () => {
-      location.href = "module-editor.html";
+      const query = selectedDomain ? `?domain=${encodeURIComponent(selectedDomain)}` : '';
+      location.href = `module-editor.html${query}`;
     });
   }
 
@@ -3273,18 +3381,81 @@ function renderPageContent() {
   // Module page
   const moduleRoot = document.getElementById('module-root');
   if (moduleRoot && moduleRoot.innerHTML.trim() === '') {
-    moduleRoot.innerHTML =
-      '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('terms.module.label')) + '</p>' +
-          '<h1>' + escapeHtml(t('terms.module.label')) + '</h1>' +
-          '<p class="lede">' + escapeHtml(t('terms.module.expanded')) + '</p>' +
-        '</div></div>' +
-        '<div class="empty-state">' +
-          '<p>Select a module from the Subjects page to view its content here.</p>' +
-          '<a class="btn" href="subjects.html" style="margin-top:12px;">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
-        '</div>' +
-      '</div>';
+    const urlParams = new URLSearchParams(window.location.search);
+    const modId = urlParams.get('id');
+    const module = modId ? getModule(modId) : null;
+
+    if (module) {
+      moduleRoot.innerHTML = `
+        <div class="dashboard-shell">
+          <div class="dashboard-header">
+            <div>
+              <p class="section-label">${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</p>
+              <h1>${escapeHtml(module.title)}</h1>
+              <p class="lede">${escapeHtml(module.description || 'No description.')}</p>
+            </div>
+            ${getCurrentRole() === 'curator' && module.curatorCardID === getMyCuratorCard()?.id ? `
+              <a class="btn" href="module-editor.html?id=${module.id}">Edit Module</a>
+            ` : ''}
+          </div>
+          
+          <div class="card-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:24px;">
+            <div class="card">
+              <h3>Module Details</h3>
+              <div style="display:grid; gap:12px; margin-top:16px;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span class="muted">Curator</span>
+                  <strong>${escapeHtml(module.curatorName)}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span class="muted">Duration</span>
+                  <strong>${module.durationWeeks || 4} Weeks</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span class="muted">Capacity</span>
+                  <strong>${module.maxCapacity || 20} Learners</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span class="muted">Location</span>
+                  <strong>${escapeHtml(module.locationName || 'Remote')}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Syllabus & Outcomes</h3>
+              <div class="record-list" style="margin-top:16px;">
+                ${(module.syllabus || []).length ? module.syllabus.map((item, idx) => `
+                  <div class="record-card" style="padding:16px; background:rgba(0,0,0,0.15);">
+                    <div class="section-label">Session ${idx + 1}</div>
+                    <strong style="display:block; margin:4px 0;">${escapeHtml(item.title)}</strong>
+                    <p style="font-size:0.85rem; margin:0;">${escapeHtml(item.details)}</p>
+                  </div>
+                `).join('') : '<p class="muted">No syllabus items defined yet.</p>'}
+              </div>
+            </div>
+          </div>
+
+          <div class="inline-actions" style="margin-top:32px;">
+            <a class="btn btn-primary" href="subjects.html">Browse More</a>
+            <a class="btn" href="discovery.html">Explore Discovery</a>
+          </div>
+        </div>
+      `;
+    } else {
+      moduleRoot.innerHTML =
+        '<div class="dashboard-shell">' +
+          '<div class="dashboard-header"><div>' +
+            '<p class="section-label">' + escapeHtml(t('terms.module.label')) + '</p>' +
+            '<h1>' + escapeHtml(t('terms.module.label')) + '</h1>' +
+            '<p class="lede">' + escapeHtml(t('terms.module.expanded')) + '</p>' +
+          '</div></div>' +
+          '<div class="empty-state">' +
+            '<p>Select a module from the Subjects page to view its content here.</p>' +
+            '<a class="btn" href="subjects.html" style="margin-top:12px;">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+          '</div>' +
+        '</div>';
+    }
   }
 
   // Guide page
@@ -3554,20 +3725,58 @@ function renderPageContent() {
   const teachingRoot = document.getElementById('teaching-log-root');
   if (teachingRoot && teachingRoot.innerHTML.trim() === '') {
     const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+    const { myCard, myModules } = getCuratorDashboardData();
     
     teachingRoot.innerHTML = `
-      <div class="dashboard-shell">
+      <div class="dashboard-shell role-dashboard role-dashboard--curator">
         <div class="dashboard-header">
-          <p class="section-label">Curation</p>
-          <h1>Teaching Log</h1>
-          <p class="lede">Manage your batches, track attendance, and log curriculum progress.</p>
+          <div>
+            <p class="section-label">Curation</p>
+            <h1>Teaching Log</h1>
+            <p class="lede">Manage modules, open new batches, and track curriculum operations.</p>
+          </div>
+          <div class="inline-actions">
+            <a class="btn btn-primary" href="module-editor.html">Add Module</a>
+            <a class="btn" href="curator-dashboard.html?panel=curator-modules">Open Dashboard</a>
+          </div>
         </div>
-        
+
+        <div class="card">
+          <div class="dashboard-card-topline">
+            <div>
+              <p class="section-label">Module Floor</p>
+              <h2>Modules ready for batching</h2>
+            </div>
+          </div>
+          ${myCard && myModules.length > 0 ? `
+            <div class="record-list">
+              ${myModules.map((module) => `
+                <div class="record-card">
+                  <div class="dashboard-card-topline">
+                    <span class="pill">${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</span>
+                    <span class="muted">${module.syllabus?.length || 0} syllabus items</span>
+                  </div>
+                  <h3>${escapeHtml(module.title)}</h3>
+                  <p>${escapeHtml(module.description || 'No description yet.')}</p>
+                  <div class="inline-actions">
+                    <button onclick="window.createBatchFromModule('${module.id}')" class="btn btn-primary">Create Batch</button>
+                    <a class="btn" href="module-editor.html?id=${module.id}">Edit Module</a>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : `
+            <div class="empty-state">
+              <p>No modules available yet. Create your first module before opening a batch.</p>
+            </div>
+          `}
+        </div>
+
         <div class="card">
           <h3 style="margin-bottom:20px;">Active Batches</h3>
           ${batches.length > 0 ? `
             <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
-              ${batches.map(b => `
+              ${batches.filter(b => myModules.some(m => m.id === b.moduleId)).map(b => `
                 <div style="background:rgba(0,0,0,0.2); border:1px solid var(--border-color); padding:20px; border-radius:4px;">
                   <span style="font-size:0.65rem; color:var(--gold); border:1px solid var(--gold); padding:2px 6px; border-radius:10px; margin-bottom:12px; display:inline-block;">${b.moduleTitle}</span>
                   <h4 style="margin:0 0 8px 0; font-family:var(--serif);">${b.name}</h4>
@@ -3596,10 +3805,12 @@ function renderPageContent() {
     
     if (batch) {
       const studentProfiles = [
-        { id: 's1', name: 'Aarav Sharma' },
-        { id: 's2', name: 'Isha Patel' },
-        { id: 's3', name: 'Kabir Das' },
-        { id: 's4', name: 'Ananya Rao' }
+        ...(batch.studentRoster?.length ? batch.studentRoster : [
+          { id: 's1', name: 'Aarav Sharma' },
+          { id: 's2', name: 'Isha Patel' },
+          { id: 's3', name: 'Kabir Das' },
+          { id: 's4', name: 'Ananya Rao' }
+        ])
       ];
       
       const today = new Date().toISOString().split('T')[0];
@@ -3671,45 +3882,51 @@ function renderPageContent() {
   // Module Editor page
   const editorRoot = document.getElementById('module-editor-root');
   if (editorRoot && (editorRoot.innerHTML.trim() === '' || route.page === 'module-editor')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const existingId = urlParams.get('id');
+    const existingModule = existingId ? getModule(existingId) : null;
+    const preselectedDomain = urlParams.get('domain') || existingModule?.domain || '';
+
     editorRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
           <p class="section-label">${escapeHtml(t('nav.modules'))}</p>
-          <h1>${escapeHtml(t('modules.createTitle'))}</h1>
+          <h1>${existingModule ? 'Edit Module' : escapeHtml(t('modules.createTitle'))}</h1>
           <p class="lede">Define your module's academic structure, syllabus, and physical location.</p>
         </div>
         <div class="card curator-form-stack" style="display:grid; gap:20px;">
+          <input type="hidden" id="mod-edit-id" value="${existingId || ''}">
           <div>
             <label class="field-label">${escapeHtml(t('modules.moduleTitle'))}</label>
-            <input id="mod-title" class="neo-input" placeholder="e.g. Introduction to Spivakian Linguistics">
+            <input id="mod-title" class="neo-input" placeholder="e.g. Introduction to Spivakian Linguistics" value="${escapeHtml(existingModule?.title || '')}">
           </div>
           
           <div>
             <label class="field-label">${escapeHtml(t('modules.moduleDescription'))}</label>
-            <textarea id="mod-desc" class="neo-input" rows="4"></textarea>
+            <textarea id="mod-desc" class="neo-input" rows="4">${escapeHtml(existingModule?.description || '')}</textarea>
           </div>
 
           <div>
             <label class="field-label">Domain</label>
             <select id="mod-domain" class="neo-input">
-              ${Object.keys(DOMAIN_NAMES).map(k => `<option value="${k}">${DOMAIN_NAMES[k]}</option>`).join('')}
+              ${Object.keys(DOMAIN_NAMES).map(k => `<option value="${k}"${preselectedDomain === k ? ' selected' : ''}>${DOMAIN_NAMES[k]}</option>`).join('')}
             </select>
           </div>
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
             <div>
               <label class="field-label">${escapeHtml(t('modules.durationWeeks'))}</label>
-              <input id="mod-weeks" type="number" min="1" class="neo-input" value="4">
+              <input id="mod-weeks" type="number" min="1" class="neo-input" value="${existingModule?.durationWeeks || 4}">
             </div>
             <div>
               <label class="field-label">${escapeHtml(t('modules.maxCapacity'))}</label>
-              <input id="mod-capacity" type="number" min="1" class="neo-input" value="20">
+              <input id="mod-capacity" type="number" min="1" class="neo-input" value="${existingModule?.maxCapacity || 20}">
             </div>
           </div>
 
           <div>
             <label class="field-label">${escapeHtml(t('modules.locationName'))}</label>
-            <input id="mod-loc-name" class="neo-input" placeholder="e.g. Bangalore Community Library">
+            <input id="mod-loc-name" class="neo-input" placeholder="e.g. Bangalore Community Library" value="${escapeHtml(existingModule?.locationName || '')}">
           </div>
 
           <div>
@@ -3722,15 +3939,19 @@ function renderPageContent() {
 
           <div style="padding-top:20px; border-top:1px solid var(--border);">
             <button onclick="window.saveModuleAdvanced()" class="btn btn-primary" style="width:100%;">
-              ${escapeHtml(t('modules.createModule'))}
+              ${existingModule ? 'Save Changes' : escapeHtml(t('modules.createModule'))}
             </button>
           </div>
         </div>
       </div>
     `;
 
-    // Initialize with one syllabus item
-    if (window.addSyllabusItem) window.addSyllabusItem();
+    // Initialize syllabus items
+    if (existingModule?.syllabus?.length) {
+      existingModule.syllabus.forEach(item => window.addSyllabusItem(item.title, item.details));
+    } else {
+      if (window.addSyllabusItem) window.addSyllabusItem();
+    }
   }
 
   // Studios page
@@ -3865,6 +4086,11 @@ function renderPageContent() {
   const accountRoot = document.getElementById('account-settings-root');
   if (accountRoot && accountRoot.innerHTML.trim() === '') {
     const storedLang = localStorage.getItem(LANG_STORAGE) || 'en';
+    const currentRole = getCurrentRole();
+    const storedModuleCount = modules.length;
+    const storedGuildCount = guilds.length;
+    const storedBatchCount = getAllBatches().length;
+    const profile = getStoredProfile(currentUser?.id || 'guest') || {};
     
     accountRoot.innerHTML = `
       <div class="dashboard-shell">
@@ -3872,6 +4098,38 @@ function renderPageContent() {
           <p class="section-label">Account</p>
           <h1>Settings</h1>
           <p class="lede">Manage your account preferences and application settings.</p>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0; margin-bottom:16px;">Identity Summary</h3>
+          <div class="mini-stat-grid">
+            <div class="mini-stat"><strong>${escapeHtml(currentRole)}</strong><span>Current Role</span></div>
+            <div class="mini-stat"><strong>${storedModuleCount}</strong><span>Modules</span></div>
+            <div class="mini-stat"><strong>${storedBatchCount}</strong><span>Batches</span></div>
+            <div class="mini-stat"><strong>${storedGuildCount}</strong><span>Guilds</span></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+          <h3 style="margin-top:0; margin-bottom:16px;">Profile Depth</h3>
+          <div style="display:grid; gap:14px;">
+            <label>Display Name
+              <input id="settings-display-name" class="neo-input" value="${escapeHtml(profile.name || '')}" placeholder="How you appear across the atlas">
+            </label>
+            <label>Public Bio
+              <textarea id="settings-bio" class="neo-input" rows="4" placeholder="How arbiters, curators, and peers should understand your work.">${escapeHtml(profile.bio || '')}</textarea>
+            </label>
+            <label>Primary Domain
+              <select id="settings-domain" class="neo-input">
+                <option value="">Select domain...</option>
+                ${Object.keys(DOMAIN_NAMES).map((key) => `<option value="${DOMAIN_NAMES[key]}"${profile.domain === DOMAIN_NAMES[key] ? ' selected' : ''}>${DOMAIN_NAMES[key]}</option>`).join('')}
+              </select>
+            </label>
+            <label>Keywords and Competencies
+              <input id="settings-skills" class="neo-input" value="${escapeHtml(profile.skills || '')}" placeholder="Research, moderation, fieldwork, historiography">
+            </label>
+            <button id="save-settings-profile-btn" class="btn btn-primary" style="max-width:260px;">Save Profile Settings</button>
+          </div>
         </div>
         
         <div class="card" style="margin-bottom:20px;">
@@ -3960,6 +4218,23 @@ function renderPageContent() {
         }
         currentUser = null;
         window.location.href = 'index.html';
+      });
+    }
+
+    const saveSettingsProfileBtn = document.getElementById('save-settings-profile-btn');
+    if (saveSettingsProfileBtn) {
+      saveSettingsProfileBtn.addEventListener('click', () => {
+        const userId = currentUser?.id || 'guest';
+        const nextProfile = {
+          ...profile,
+          name: document.getElementById('settings-display-name')?.value.trim() || '',
+          bio: document.getElementById('settings-bio')?.value.trim() || '',
+          domain: document.getElementById('settings-domain')?.value || '',
+          skills: document.getElementById('settings-skills')?.value.trim() || ''
+        };
+        localStorage.setItem(`neofolk.profile.${userId}`, JSON.stringify(nextProfile));
+        saveSettingsProfileBtn.textContent = 'Saved';
+        setTimeout(() => { saveSettingsProfileBtn.textContent = 'Save Profile Settings'; }, 1200);
       });
     }
   }
@@ -4059,6 +4334,9 @@ async function initApp() {
   loadCuratorCards();
   loadModules();
   loadGuilds();
+  if (currentUser) {
+    persistRoleHint(resolveUserRole(currentUser, getRoleFromPage() || 'seeker'), currentUser);
+  }
 
   // Wire up hash routing
   window.addEventListener('hashchange', () => {
@@ -4105,9 +4383,12 @@ window.quickCreateModule = function() {
     const title = document.getElementById('quick-mod-title')?.value;
     const domain = document.getElementById('quick-mod-domain')?.value;
     const description = document.getElementById('quick-mod-desc')?.value;
+    const weeks = document.getElementById('quick-mod-weeks')?.value;
+    const capacity = document.getElementById('quick-mod-capacity')?.value;
+    const locationName = document.getElementById('quick-mod-loc')?.value;
     
     if (!title || !domain || !description) {
-        alert('Please fill in all fields');
+        alert('Please fill in required fields (Title, Domain, Description)');
         return;
     }
     
@@ -4119,15 +4400,60 @@ window.quickCreateModule = function() {
     
     const module = createModule(title, description, domain, myCard.id);
     if (module) {
+        // Add additional quick fields
+        module.durationWeeks = parseInt(weeks || '4');
+        module.maxCapacity = parseInt(capacity || '20');
+        module.locationName = locationName || 'Remote';
+        module.syllabus = [{ title: 'Overview', details: 'Initial module introduction.' }];
+        
+        saveModules();
+
         // Clear form
-        document.getElementById('quick-mod-title').value = '';
-        document.getElementById('quick-mod-desc').value = '';
+        if (document.getElementById('quick-mod-title')) document.getElementById('quick-mod-title').value = '';
+        if (document.getElementById('quick-mod-desc')) document.getElementById('quick-mod-desc').value = '';
+        if (document.getElementById('quick-mod-loc')) document.getElementById('quick-mod-loc').value = '';
         
         // Refresh dashboard
         location.reload();
     } else {
         alert('Failed to create module');
     }
+};
+
+window.createBatchFromModule = function(moduleId) {
+    const module = getModule(moduleId);
+    if (!module) {
+        alert('Module not found');
+        return;
+    }
+
+    const batchName = window.prompt('Batch name', `${module.title} Cohort`);
+    if (!batchName || !batchName.trim()) return;
+
+    const studentNames = window.prompt('Add student names separated by commas (optional)', '') || '';
+    const roster = studentNames
+        .split(',')
+        .map((name) => name.trim())
+        .filter(Boolean)
+        .map((name, index) => ({
+            id: `student_${Date.now()}_${index}`,
+            name
+        }));
+
+    const batch = createBatch(moduleId, batchName.trim(), roster.map((student) => student.id));
+    if (!batch) {
+        alert('Failed to create batch');
+        return;
+    }
+
+    const batches = getAllBatches();
+    const storedBatch = batches.find((entry) => entry.id === batch.id);
+    if (storedBatch) {
+        storedBatch.studentRoster = roster;
+        localStorage.setItem('neofolk.batches', JSON.stringify(batches));
+    }
+
+    location.reload();
 };
 
 window.applyForCurator = function() {
