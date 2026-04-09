@@ -70,6 +70,20 @@ const LINEAGE_TOKENS = {
     bioepisteme: "Gagas"
 };
 
+// DOMAIN_NAMES mapping for radar chart and UI display
+const DOMAIN_NAMES = {
+    lingosophy: "LINGOSOPHY",
+    arithmetics: "ARITHMETICS", 
+    cosmology: "COSMOLOGY",
+    biosphere: "BIOSPHERE", 
+    chronicles: "CHRONICLES", 
+    civitas: "CIVITAS",
+    tokenomics: "TOKENOMICS", 
+    artifex: "ARTIFEX", 
+    praxis: "PRAXIS", 
+    bioepisteme: "BIOEPISTEME"
+};
+
 const LINEAGE_DETAILS = [
   {
     "domain": "Lingosophy",
@@ -1075,6 +1089,7 @@ window.saveModuleAdvanced = async function() {
   const weeks = parseInt(document.getElementById('mod-weeks')?.value || '1');
   const capacity = parseInt(document.getElementById('mod-capacity')?.value || '20');
   const locName = document.getElementById('mod-loc-name')?.value;
+  const domain = document.getElementById('mod-domain')?.value || 'lingosophy';
   
   const syllabus = Array.from(document.querySelectorAll('.syllabus-input'))
     .map(input => input.value.trim())
@@ -1082,32 +1097,55 @@ window.saveModuleAdvanced = async function() {
 
   if (!title) return alert('Title is required');
 
+  // Check for curator card
+  const myCard = getMyCuratorCard();
+  if (!myCard) {
+    alert('You need a curator license to create modules. Please apply for curator status first.');
+    return;
+  }
+
+  // Create module using curator card system
+  const module = createModule(title, desc, domain, myCard.id);
+  if (!module) {
+    alert('Failed to create module. Please check your curator license.');
+    return;
+  }
+
+  // Add additional fields
+  module.durationWeeks = weeks;
+  module.maxCapacity = capacity;
+  module.locationName = locName;
+  module.syllabus = syllabus;
+
+  // Save to localStorage
+  saveModules();
+
+  // Also try to save to Supabase if available
   const supabase = getSupabaseClient();
   if (supabase && currentUser) {
-    const { error } = await supabase.from('modules').insert({
-      curator_id: currentUser.id,
-      title: title,
-      description: desc,
-      duration_weeks: weeks,
-      max_capacity: capacity,
-      location_name: locName,
-      syllabus: syllabus,
-      is_published: true
-    });
-    if (error) alert(error.message);
-    else {
-      alert(t('messages.moduleCreated'));
-      window.location.hash = 'teaching-log';
+    try {
+      const { error } = await supabase.from('modules').insert({
+        curator_id: currentUser.id,
+        title: title,
+        description: desc,
+        domain: domain,
+        duration_weeks: weeks,
+        max_capacity: capacity,
+        location_name: locName,
+        syllabus: syllabus,
+        is_published: true,
+        local_id: module.id // Link to local module
+      });
+      if (error) {
+        console.warn('Supabase save failed, using local storage only:', error);
+      }
+    } catch (e) {
+      console.warn('Supabase save failed, using local storage only:', e);
     }
-  } else {
-    // Demo/Local fallback
-    const mod = { id: Date.now(), title, desc, weeks, capacity, locName, syllabus };
-    const existing = JSON.parse(localStorage.getItem('neofolk.modules.local') || '[]');
-    existing.push(mod);
-    localStorage.setItem('neofolk.modules.local', JSON.stringify(existing));
-    alert(t('messages.moduleCreated') + ' (Local session)');
-    window.location.hash = 'teaching-log';
   }
+
+  alert('Module created successfully!');
+  window.location.hash = 'teaching-log';
 };
 
 /**
@@ -1432,21 +1470,38 @@ function renderTopologyPage(userData) {
             </div>
 
             <!-- SPECIALIZATION SELECTION MODAL -->
-            <div id="spec-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10001; display:flex; align-items:center; justify-content:center; padding:20px;">
-                <div style="background:#1a1614; border:1px solid #2a2420; padding:30px; width:450px; max-width:100%; position:relative;">
-                    <h2 style="font-family:'Cormorant Garamond', serif; color:#fff; margin-bottom:20px;">Subjects of Specialization</h2>
-                    <p style="color:#8b8276; font-size:11px; margin-bottom:20px;">Select up to 5 subjects you want to specialize in (increases depth score).</p>
-                    <div id="spec-list" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:30px;">
-                        ${domainKeys.map(k => `
-                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:#d4a373;">
-                                <input type="checkbox" name="spec-item" value="${k}" ${specs[k] ? 'checked' : ''} style="accent-color:#d4a373;">
-                                ${LINEAGE_TOKENS[k]}
-                            </label>
-                        `).join('')}
+            <div id="spec-modal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:10001; display:flex; align-items:center; justify-content:center; padding:20px;">
+                <div style="background:linear-gradient(135deg, #1a1614 0%, #2c1f1a 100%); border:1px solid var(--gold); border-radius:12px; padding:40px; width:520px; max-width:100%; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.8), inset 0 0 40px rgba(198,169,107,0.05);">
+                    <div style="position:absolute; top:0; left:0; right:0; height:4px; background:var(--gold); border-radius:12px 12px 0 0; box-shadow:0 0 15px var(--gold);"></div>
+                    
+                    <div style="text-align:center; margin-bottom:30px;">
+                        <h2 style="font-family:'Cormorant Garamond', serif; color:var(--gold); font-size:1.8rem; margin:0 0 10px 0; font-weight:600;">Subjects of Specialization</h2>
+                        <p style="color:#8b8276; font-size:12px; margin:0; line-height:1.5;">Select domains to deepen your expertise. Each specialization increases your depth score and shapes your intellectual profile.</p>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <button onclick="window.saveSpecializations()" style="flex:1; background:#d4a373; border:none; color:#000; padding:12px; cursor:pointer; font-weight:bold;">SAVE CHANGES</button>
-                        <button onclick="document.getElementById('spec-modal').classList.add('hidden')" style="flex:1; background:none; border:1px solid #2a2420; color:#8b8276; padding:12px; cursor:pointer;">CLOSE</button>
+                    
+                    <div id="spec-list" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:35px; max-height:400px; overflow-y:auto; padding-right:10px;">
+                        ${domainKeys.map(k => {
+                            const color = getTokenColor(DOMAIN_TO_TOKEN[k] || k);
+                            return `
+                                <label style="display:flex; align-items:center; gap:12px; cursor:pointer; color:#c6a96b; font-size:13px; padding:16px; background:rgba(0,0,0,0.3); border:1px solid rgba(198,169,107,0.1); border-radius:8px; transition:all 0.3s ease; position:relative; overflow:hidden;">
+                                    <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:${color}; opacity:0;"></div>
+                                    <input type="checkbox" name="spec-item" value="${k}" style="accent-color:${color}; width:18px; height:18px; position:relative; z-index:2;">
+                                    <div style="flex:1;">
+                                        <div style="font-weight:600; margin-bottom:4px; color:var(--gold);">${DOMAIN_NAMES[k]}</div>
+                                        <div style="font-size:10px; color:#8b8276; text-transform:uppercase; letter-spacing:1px;">${DOMAIN_TO_TOKEN[k] || k}</div>
+                                    </div>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                    
+                    <div style="display:flex; gap:12px;">
+                        <button onclick="window.saveSpecializations()" style="flex:1; background:var(--gold); border:none; color:#000; padding:14px; cursor:pointer; font-weight:600; font-family:var(--serif); font-size:14px; border-radius:6px; transition:all 0.3s ease; box-shadow:0 4px 15px rgba(198,169,107,0.3);">
+                            SAVE SPECIALIZATIONS
+                        </button>
+                        <button onclick="document.getElementById('spec-modal').classList.add('hidden')" style="flex:1; background:none; border:1px solid var(--gold); color:var(--gold); padding:14px; cursor:pointer; font-family:var(--serif); font-size:14px; border-radius:6px; transition:all 0.3s ease;">
+                            CANCEL
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1491,7 +1546,7 @@ function initLiveCharts(domains, specs) {
         new Chart(radarCanvas, {
             type: 'radar',
             data: {
-                labels: Object.keys(domains).map(k => LINEAGE_TOKENS[k]),
+                labels: Object.keys(domains).map(k => DOMAIN_NAMES[k]),
                 datasets: [{
                     data: Object.values(domains),
                     backgroundColor: 'rgba(212, 163, 115, 0.1)',
@@ -1547,7 +1602,7 @@ function initLiveCharts(domains, specs) {
     if (barCanvas && barCanvas.getContext) {
         const ctx = barCanvas.getContext('2d');
         const values = Object.values(domains);
-        const names = Object.keys(domains).map(k => LINEAGE_TOKENS[k]);
+        const names = Object.keys(domains).map(k => DOMAIN_NAMES[k]);
         
         // Set canvas size
         barCanvas.width = barCanvas.offsetWidth;
@@ -2239,41 +2294,184 @@ function renderPageContent() {
     const supabase = getSupabaseClient();
     const roleName = page.replace('-dashboard.html', '');
     const roleLabel = roleName.charAt(0).toUpperCase() + roleName.slice(1);
+    const isCurator = roleName === 'curator';
 
-    dashRoot.innerHTML =
-      '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
-          '<h1>' + escapeHtml(t('dashboard.title')) + '</h1>' +
-          '<p id="dash-signed-in" class="dashboard-meta"></p>' +
-          '<p class="lede">' + escapeHtml(t('dashboard.subtitle')) + '</p>' +
-        '</div></div>' +
-        '<div class="stats-grid">' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
-          '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
-        '</div>' +
-        '<div class="dashboard-charts">' +
-          '<div class="chart-card">' +
-            '<h3>Learning Activity</h3>' +
-            '<canvas id="activityChart" width="400" height="200"></canvas>' +
+    if (isCurator) {
+      // Curator-specific dashboard
+      const myCard = getMyCuratorCard();
+      const myModules = myCard ? getModulesByCurator(myCard.id) : [];
+      
+      dashRoot.innerHTML =
+        '<div class="dashboard-shell">' +
+          '<div class="dashboard-header"><div>' +
+            '<p class="section-label">Curator Dashboard</p>' +
+            '<h1>Curation Studio</h1>' +
+            '<p id="dash-signed-in" class="dashboard-meta"></p>' +
+            '<p class="lede">Design and deliver transformative learning experiences across domains.</p>' +
+          '</div></div>' +
+          
+          // Curator License Card
+          '<div class="card" style="margin-bottom:24px;">' +
+            '<h3 style="margin-top:0; margin-bottom:20px;">Curator License</h3>' +
+            '<div id="curator-dashboard-card">' +
+              (myCard ? `
+                <div class="curator-card-id">
+                  <div class="chip"></div>
+                  <div class="card-header">
+                    <div>
+                      <div class="card-meta">Curator ID</div>
+                      <div class="card-name">${myCard.fullName}</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div class="card-meta">Status</div>
+                      <div style="color:#4ade80; font-size:11px; font-weight:bold;">ACTIVE</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:10px;">
+                    <div class="card-meta">Registered Age</div>
+                    <div style="font-size:1.1rem; font-weight:600;">${myCard.age}</div>
+                  </div>
+                  <div class="token-badges">
+                    ${myCard.activeLicenses.map(lic => {
+                      const domain = lic.replace('Level 3 ', '').replace('Level 2 ', '').replace('Level 1 ', '');
+                      const color = getTokenColor(DOMAIN_TO_TOKEN[domain] || domain);
+                      return `<span class="badge" style="border-color:${color}; color:${color}; box-shadow: 0 0 10px ${color}44;">${lic}</span>`;
+                    }).join('')}
+                  </div>
+                </div>
+              ` : `
+                <div class="empty-state">
+                  <p>No curator license found. Apply for curator status to unlock this feature.</p>
+                  <button onclick="window.applyForCurator()" class="btn btn-primary" style="margin-top:12px;">Apply Now</button>
+                </div>
+              `) +
+            '</div>' +
           '</div>' +
-          '<div class="chart-card">' +
-            '<h3>Neoscore Growth</h3>' +
-            '<canvas id="scoreChart" width="400" height="200"></canvas>' +
+
+          // Curator Stats
+          '<div class="stats-grid">' +
+            '<div class="stat-card"><p class="section-label">Modules Created</p><strong id="stat-modules">' + myModules.length + '</strong><p>Active learning pathways</p></div>' +
+            '<div class="stat-card"><p class="section-label">Total Batches</p><strong id="stat-batches">0</strong><p>Student cohorts</p></div>' +
+            '<div class="stat-card"><p class="section-label">Active Students</p><strong id="stat-students">0</strong><p>Currently enrolled</p></div>' +
+            '<div class="stat-card"><p class="section-label">Completion Rate</p><strong id="stat-completion">0%</strong><p>Student success</p></div>' +
           '</div>' +
-        '</div>' +
-        '<div class="card">' +
-          '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
-          '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
-          '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
-          '<div class="inline-actions flow-top-32">' +
-            '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
-            '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
+
+          // Add Module Section
+          '<div class="card" style="margin-bottom:24px;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">' +
+              '<h3 style="margin:0;">Module Creation Studio</h3>' +
+              '<button onclick="window.showModuleCreator()" class="btn btn-primary">+ CREATE MODULE</button>' +
+            '</div>' +
+            '<div id="quick-module-form" style="display:none; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px; margin-top:20px;">' +
+              '<div style="display:grid; gap:16px;">' +
+                '<div>' +
+                  '<label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Module Title</label>' +
+                  '<input id="quick-mod-title" class="neo-input" placeholder="e.g. Introduction to Spivakian Linguistics">' +
+                '</div>' +
+                '<div>' +
+                  '<label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Domain</label>' +
+                  '<select id="quick-mod-domain" class="neo-input">' +
+                    Object.keys(DOMAIN_NAMES).map(k => `<option value="${k}">${DOMAIN_NAMES[k]}</option>`).join('') +
+                  '</select>' +
+                '</div>' +
+                '<div>' +
+                  '<label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Description</label>' +
+                  '<textarea id="quick-mod-desc" class="neo-input" rows="3" placeholder="Module description and learning outcomes..."></textarea>' +
+                '</div>' +
+                '<div style="display:flex; gap:12px;">' +
+                  '<button onclick="window.quickCreateModule()" class="btn btn-primary" style="flex:1;">Create Module</button>' +
+                  '<button onclick="document.getElementById(\'quick-module-form\').style.display=\'none\'" class="btn btn-secondary" style="flex:1;">Cancel</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-      '</div>';
+
+          // My Modules
+          '<div class="card">' +
+            '<h3 style="margin-bottom:20px;">My Modules</h3>' +
+            '<div class="record-list">' +
+              (myModules.length > 0 ? myModules.map(m => `
+                <div class="record-card">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                    <span class="pill" style="margin:0;">${DOMAIN_NAMES[m.domain] || m.domain}</span>
+                    <span style="font-size:0.75rem; color:var(--muted-text);">${m.batches.length} batches</span>
+                  </div>
+                  <h4 style="margin:0 0 8px 0;">${m.title}</h4>
+                  <p style="font-size:0.85rem; color:var(--muted-text); margin:0 0 16px;">${m.description}</p>
+                  <div style="display:flex; gap:8px;">
+                    <button class="btn" style="flex:1; font-size:0.8rem;">Manage Batches</button>
+                    <button class="btn btn-secondary" style="flex:1; font-size:0.8rem;">View Analytics</button>
+                  </div>
+                </div>
+              `).join('') : `
+                <div class="empty-state">
+                  <p>No modules created yet. Start by creating your first module above.</p>
+                </div>
+              `) +
+            '</div>' +
+          '</div>' +
+
+          // Dossier Section (instead of Portfolio)
+          '<div class="card">' +
+            '<h3 style="margin-bottom:20px;">Curator Dossier</h3>' +
+            '<p style="color:var(--muted-text); margin-bottom:20px;">Your professional record as a learning architect and knowledge curator.</p>' +
+            '<div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px;">' +
+              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
+                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">' + myModules.length + '</div>' +
+                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Modules Authored</div>' +
+              '</div>' +
+              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
+                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">0</div>' +
+                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Students Mentored</div>' +
+              '</div>' +
+              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
+                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">0</div>' +
+                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Research Papers</div>' +
+              '</div>' +
+              '<div style="text-align:center; padding:20px; background:rgba(0,0,0,0.2); border-radius:8px;">' +
+                '<div style="font-size:2rem; font-weight:bold; color:var(--gold); margin-bottom:8px;">0</div>' +
+                '<div style="font-size:0.8rem; color:var(--muted-text); text-transform:uppercase; letter-spacing:1px;">Workshops Led</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    } else {
+      // Original seeker/arbiter dashboard
+      dashRoot.innerHTML =
+        '<div class="dashboard-shell">' +
+          '<div class="dashboard-header"><div>' +
+            '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
+            '<h1>' + escapeHtml(t('dashboard.title')) + '</h1>' +
+            '<p id="dash-signed-in" class="dashboard-meta"></p>' +
+            '<p class="lede">' + escapeHtml(t('dashboard.subtitle')) + '</p>' +
+          '</div></div>' +
+          '<div class="stats-grid">' +
+            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
+            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
+            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
+            '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
+          '</div>' +
+          '<div class="dashboard-charts">' +
+            '<div class="chart-card">' +
+              '<h3>Learning Activity</h3>' +
+              '<canvas id="activityChart" width="400" height="200"></canvas>' +
+            '</div>' +
+            '<div class="chart-card">' +
+              '<h3>Neoscore Growth</h3>' +
+              '<canvas id="scoreChart" width="400" height="200"></canvas>' +
+            '</div>' +
+          '</div>' +
+          '<div class="card">' +
+            '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
+            '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
+            '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
+            '<div class="inline-actions flow-top-32">' +
+              '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+              '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    }
 
     // Show signed-in email if we have a session
     if (supabase) {
@@ -3100,6 +3298,13 @@ function renderPageContent() {
             <textarea id="mod-desc" class="neo-input" rows="4"></textarea>
           </div>
 
+          <div>
+            <label class="field-label">Domain</label>
+            <select id="mod-domain" class="neo-input">
+              ${Object.keys(DOMAIN_NAMES).map(k => `<option value="${k}">${DOMAIN_NAMES[k]}</option>`).join('')}
+            </select>
+          </div>
+
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
             <div>
               <label class="field-label">${escapeHtml(t('modules.durationWeeks'))}</label>
@@ -3196,11 +3401,11 @@ function renderPageContent() {
       <div class="lineage-card" style="padding:16px !important; background:#f5f5dc !important; border-radius:2px !important; box-shadow:2px 2px 8px rgba(0,0,0,0.15), 0 0 2px rgba(0,0,0,0.1) !important; transform:rotate(${idx % 2 === 0 ? '-1' : '1'}deg) !important; transition:transform 0.2s ease !important;">
         <div style="display:flex !important; justify-content:space-between !important; align-items:flex-start !important; margin-bottom:8px !important;">
            <span style="font-size:10px !important; color:#8b4513 !important; background:#e8e0c5 !important; padding:2px 6px !important; border-radius:3px !important; text-transform:uppercase !important; font-weight:600 !important;">${t.tokenName}</span>
-           <span style="font-size:9px !important; color:#8b7355 !important;">${t.domain}</span>
+           <span style="font-size:9px !important; color:#8b7355 !important;">${t.domain}: ${t.subdomain}</span>
         </div>
         <h4 style="margin:0 0 8px 0 !important; color:#3d2914 !important; font-family:'Cormorant Garamond', serif !important; font-size:1.2rem !important;">${t.fullName}</h4>
         <p style="font-size:11px !important; color:#5c4033 !important; line-height:1.5 !important; margin:0 0 12px 0 !important; font-family:serif !important;">${t.description}</p>
-        <div style="font-size:9px !important; color:#8b7355 !important; border-top:1px dashed #d4c4a8 !important; padding-top:8px !important; font-style:italic !important;">${t.resonancePillar}</div>
+        <div style="font-size:9px !important; color:#8b7355 !important; border-top:1px dashed #d4c4a8 !important; padding-top:8px !important; font-style:italic !important;">Pillar: ${t.resonancePillar}</div>
       </div>
     `).join("");
 
@@ -3493,6 +3698,48 @@ async function initApp() {
 window.manageSpecializations = function() {
     const el = document.getElementById('spec-modal');
     if (el) el.classList.remove('hidden');
+};
+
+// Curator Dashboard Functions
+window.showModuleCreator = function() {
+    const form = document.getElementById('quick-module-form');
+    if (form) {
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+};
+
+window.quickCreateModule = function() {
+    const title = document.getElementById('quick-mod-title')?.value;
+    const domain = document.getElementById('quick-mod-domain')?.value;
+    const description = document.getElementById('quick-mod-desc')?.value;
+    
+    if (!title || !domain || !description) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    const myCard = getMyCuratorCard();
+    if (!myCard) {
+        alert('You need a curator license to create modules');
+        return;
+    }
+    
+    const module = createModule(title, description, domain, myCard.id);
+    if (module) {
+        // Clear form
+        document.getElementById('quick-mod-title').value = '';
+        document.getElementById('quick-mod-desc').value = '';
+        document.getElementById('quick-module-form').style.display = 'none';
+        
+        // Refresh dashboard
+        location.reload();
+    } else {
+        alert('Failed to create module');
+    }
+};
+
+window.applyForCurator = function() {
+    alert('Curator application feature coming soon. For now, use the developer console to create a curator card:\n\nwindow.createCuratorCard("Your Name", 25, ["Level 3 Lingosophy"])');
 };
 
 window.saveSpecializations = async function() {
