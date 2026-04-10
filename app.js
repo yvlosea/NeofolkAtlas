@@ -74,7 +74,7 @@ const LINEAGE_TOKENS = {
 // DOMAIN_NAMES mapping for radar chart and UI display
 const DOMAIN_NAMES = {
     lingosophy: "LINGOSOPHY",
-    arithmetics: "ARITHMETICS", 
+    arithmetics: "ARTHMETICS", 
     cosmology: "COSMOLOGY",
     biosphere: "BIOSPHERE", 
     chronicles: "CHRONICLES", 
@@ -82,7 +82,7 @@ const DOMAIN_NAMES = {
     tokenomics: "TOKENOMICS", 
     artifex: "ARTIFEX", 
     praxis: "PRAXIS", 
-    bioepisteme: "BIOEPISTEME"
+    bioepisteme: "BIOESTIPEME"
 };
 
 const LINEAGE_DETAILS = [
@@ -181,73 +181,73 @@ const LINEAGE_DETAILS = [
 const DOMAIN_STRUCTURE = {
   lingosophy: {
     title: "Lingosophy",
-    definition: "Study of language as a structure of thought and culture.",
-    includes: ["etymology", "rhetoric", "semiotics", "symbolic systems", "linguistic anthropology", "script evolution", "discourse analysis"],
-    coreFunction: "Understanding how language shapes perception, identity, and civilizational continuity.",
-    examples: ["Etymological Mapping", "Script Evolution", "Dialect Analysis", "Hermeneutics"]
+    definition: "Study of language, expression, meaning, and cultural communication.",
+    includes: ["grammar", "storytelling", "literature", "speech", "debate", "translation", "dialects", "script systems", "poetry", "semiotics", "linguistics"],
+    coreFunction: "Understanding how humans communicate ideas, emotions, and knowledge through language.",
+    examples: ["IPA Pronunciation Basics", "Shakespeare Narrative Analysis", "Hindi–English Translation", "Bhojpuri vs Hindi Dialect Studies", "Persuasive Speechcraft", "Storytelling Traditions", "Script Evolution: Brahmi to Devanagari", "Public Speaking Practice"]
   },
   arithmetics: {
     title: "Arthmetics",
-    definition: "Mathematics as aesthetic and structural intelligence.",
-    includes: ["geometry", "algorithmic thinking", "ratios & harmony", "formal logic", "pattern systems", "quantitative reasoning"],
-    coreFunction: "Understanding order, proportion, and computation in natural and human systems.",
-    examples: ["Golden Ratio composition", "geometric drafting", "harmonic analysis", "symbolic logic"]
+    definition: "Study of numbers, patterns, logic, and quantitative thinking.",
+    includes: ["mathematics", "geometry", "algebra", "statistics", "logical reasoning", "pattern recognition", "measurement systems"],
+    coreFunction: "Developing structured thinking through numerical relationships and logical systems.",
+    examples: ["Basic Algebra Applications", "Architecture Geometry", "Cricket Score Statistics", "Ratios in Cooking", "Fibonacci in Nature", "Personal Budget Calculations", "Logical Puzzle Solving"]
   },
   cosmology: {
     title: "Cosmology",
-    definition: "Understanding universal structure across physical and metaphysical scales.",
-    includes: ["astronomy", "spacetime systems", "metaphysics", "calendar systems", "cosmography", "philosophical physics"],
-    coreFunction: "Orienting human activity within larger universal cycles and frameworks.",
-    examples: ["celestial navigation", "archaeoastronomy", "orbital mechanics", "big history"]
+    definition: "Study of physical reality, matter, energy, and the structure of the universe.",
+    includes: ["physics", "planetary science", "gravity", "motion", "thermodynamics", "electricity", "magnetism", "waves", "materials science", "inorganic chemistry"],
+    coreFunction: "Understanding the physical laws governing matter, energy, and the universe.",
+    examples: ["Newton’s Laws of Motion", "Gravity & Falling Objects", "Solar System Structure", "How Electricity Works", "Basic Circuit Physics", "Energy Transfer Basics", "Light and Optics Experiments"]
   },
   biosphere: {
     title: "Biosphere",
-    definition: "Study of living systems and ecological interdependence.",
-    includes: ["ecology", "soil science", "permaculture", "hydrology", "biodiversity", "regenerative systems"],
-    coreFunction: "Understanding how life sustains itself and how humans can participate in ecological continuity.",
-    examples: ["soil microbiology", "ecosystem mapping", "permaculture design", "plant taxonomy"]
+    definition: "Study of living organisms and biological systems.",
+    includes: ["biology", "ecology", "genetics", "microbiology", "botany", "zoology", "evolution", "cell biology", "organic chemistry", "environmental biology"],
+    coreFunction: "Understanding how life functions and how living systems interact.",
+    examples: ["Plant Cell Structure", "Photosynthesis Mechanics", "Animal Kingdom Classification", "Ecosystem Balance", "Human Body Systems", "DNA Foundations", "Soil Microorganisms"]
+  },
+  bioepisteme: {
+    title: "Bioestipeme",
+    definition: "Applied knowledge for sustaining life through natural resources and daily living skills.",
+    includes: ["farming", "gardening", "animal care", "herbal knowledge", "cooking", "nutrition", "food preservation", "water management", "traditional ecological knowledge", "home skills", "craft skills", "sustainability skills"],
+    coreFunction: "Learning how humans practically sustain life using biological resources.",
+    examples: ["Growing Vegetables", "Basic Cooking Skills", "Herbal Home Remedies", "Seed Saving", "Soil Preparation", "Compost Production", "Kitchen Nutrition Basics"]
   },
   chronicles: {
     title: "Chronicles",
-    definition: "Preservation and interpretation of human memory across time.",
-    includes: ["historiography", "archival science", "oral traditions", "genealogy", "cultural continuity", "manuscript studies"],
-    coreFunction: "Maintaining civilizational memory and continuity of knowledge transmission.",
-    examples: ["oral history recording", "lineage mapping", "paleography basics", "archival structuring"]
+    definition: "Study of history, civilization, and cultural memory.",
+    includes: ["history", "timelines", "maps", "archaeology basics", "archives", "oral history", "civilizations", "historical interpretation"],
+    coreFunction: "Understanding how human societies evolved over time.",
+    examples: ["Indus Valley Civilization", "Freedom Movement Timeline", "Map Reading Proficiency", "Family History Documentation", "Ancient Scripts Overview", "Migration Patterns", "Local History Documentation"]
   },
   civitas: {
     title: "Civitas",
-    definition: "Study of social organization and ethical cooperation.",
-    includes: ["governance models", "law", "social coordination", "conflict mediation", "political philosophy", "commons theory"],
-    coreFunction: "Designing stable, ethical, and cooperative societies.",
-    examples: ["restorative justice frameworks", "consensus facilitation", "civic architecture", "mutual aid structures"]
+    definition: "Study of society, ethics, responsibility, and governance.",
+    includes: ["civics", "law basics", "ethics", "community systems", "governance", "conflict resolution", "social responsibility"],
+    coreFunction: "Understanding how humans organize societies and make collective decisions.",
+    examples: ["Democratic Mechanism", "Basic Rights & Duties", "Panchayat Structure", "Ethical Fairness Debates", "Community Problem Solving", "Social Cooperation Models"]
   },
   tokenomics: {
     title: "Tokenomics",
-    definition: "Design of value systems and resource coordination mechanisms.",
-    includes: ["incentive design", "cooperative economics", "decentralized finance logic", "accounting structures", "exchange systems", "credit networks"],
-    coreFunction: "Structuring sustainable economic relationships and resource distribution.",
-    examples: ["circular economy models", "local credit systems", "ledger design", "incentive modeling"]
+    definition: "Study of value, trade, resources, and economic behavior.",
+    includes: ["economics basics", "trade systems", "money systems", "resource allocation", "budgeting", "market systems", "local economy"],
+    coreFunction: "Understanding how value and resources move in society.",
+    examples: ["Market Mechanics", "Personal Budgeting", "Supply & Demand", "Household Economics", "Community Resource Sharing", "Digital Economy Basics"]
   },
   artifex: {
     title: "Artifex",
-    definition: "Applied craftsmanship and material intelligence.",
-    includes: ["fabrication", "tool-making", "engineering fundamentals", "traditional crafts", "material science", "applied design"],
-    coreFunction: "Transforming ideas into tangible structures and tools.",
-    examples: ["woodworking", "forging", "solar circuitry", "loom mechanics"]
+    definition: "Creative expression through visual, musical, and design arts.",
+    includes: ["drawing", "painting", "music", "design", "craft aesthetics", "visual composition", "creative production"],
+    coreFunction: "Developing creativity and aesthetic expression.",
+    examples: ["Basic Sketching", "Folk Music Rhythm", "Color Theory Basics", "Poster Design", "Pattern Creation", "Clay Modelling", "Illustration Basics"]
   },
   praxis: {
     title: "Praxis",
-    definition: "Embodied practice and disciplined action.",
-    includes: ["skill acquisition", "reflective practice", "field work", "training systems", "habit formation", "performance methods"],
-    coreFunction: "Integrating theory through repeated application and disciplined iteration.",
-    examples: ["observational journaling", "field experimentation", "conflict rehearsal", "reflective writing"]
-  },
-  bioepisteme: {
-    title: "Bioepisteme",
-    definition: "Study of knowledge as an emergent property of living systems.",
-    includes: ["cognitive science", "biosemiotics", "ethology", "systems thinking", "embodied intelligence", "perception ecology"],
-    coreFunction: "Understanding intelligence beyond human abstraction.",
-    examples: ["plant signaling studies", "sensory ecology", "animal cognition mapping", "systems modelling"]
+    definition: "Physical development through movement, sports, and bodily discipline.",
+    includes: ["sports", "fitness", "yoga", "dance", "martial arts", "athletic training", "body coordination"],
+    coreFunction: "Developing physical intelligence, coordination, and discipline.",
+    examples: ["Football Basics", "Running Training", "Yoga Sequences", "Dance Practice", "Strength Training", "Flexibility Training"]
   }
 };
 
@@ -1444,14 +1444,85 @@ window.getPendingInvites = getPendingInvites;
 window.shareModuleWithGuild = shareModuleWithGuild;
 window.getUserGuilds = getUserGuilds;
 
-function calculateNeoscore(domains) {
-  const values = Object.values(domains);
-  const avg = values.reduce((a, b) => a + b, 0) / values.length;
-  return Math.round(avg * 10);
+function calculateNeoscore(userId) {
+  if (!userId) return 0;
+  
+  // 1. Attendance count (+1 each)
+  const attendanceHistory = JSON.parse(localStorage.getItem(`neofolk.attendance.${userId}`) || '[]');
+  const attendanceCount = attendanceHistory.filter(h => h.status === 'present').length;
+  
+  // 2. Completed modules count (*2 each)
+  // We check for modules that exist in enrollment with a completed status
+  const modules = JSON.parse(localStorage.getItem('neofolk.modules') || '[]');
+  const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
+  
+  // In our local system, completion is often tracked at the student level in the batch or a separate log
+  // For now, let's look for evidence in neofolk.attendance as "completed" or just the module multiplier
+  const completedModules = new Set(attendanceHistory.map(h => h.moduleId)).size; // Simple heuristic for now
+  
+  return attendanceCount + (completedModules * 2);
 }
 
-function calculateSpecscore(spec) {
-  const values = Object.values(spec || {}).filter((value) => Number.isFinite(value));
+// Data Helpers
+function getPortfolio(userId) {
+  return JSON.parse(localStorage.getItem(`neofolk.portfolio.${userId}`) || '[]');
+}
+
+function addPortfolioEntry(userId, entry) {
+  const portfolio = getPortfolio(userId);
+  portfolio.push({
+    id: `port_${Date.now()}`,
+    userId,
+    timestamp: new Date().toISOString(),
+    ...entry
+  });
+  localStorage.setItem(`neofolk.portfolio.${userId}`, JSON.stringify(portfolio));
+}
+
+function getComments(userId) {
+  return JSON.parse(localStorage.getItem(`neofolk.comments.${userId}`) || '[]');
+}
+
+function addComment(targetId, reviewerId, message) {
+  const comments = getComments(targetId);
+  comments.push({
+    reviewerId,
+    targetId,
+    message,
+    timestamp: new Date().toISOString()
+  });
+  localStorage.setItem(`neofolk.comments.${targetId}`, JSON.stringify(comments));
+}
+
+function getMessages(userId) {
+  return JSON.parse(localStorage.getItem(`neofolk.messages.${userId}`) || '[]');
+}
+
+function sendMessage(senderId, receiverId, message) {
+  const messages = getMessages(receiverId);
+  const now = new Date();
+  
+  // Weekly restriction (check last week)
+  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  const recentMsg = messages.find(m => m.senderId === senderId && new Date(m.timestamp) > oneWeekAgo);
+  
+  if (recentMsg && getCurrentRole() !== 'operator') {
+    throw new Error('You can only send one message per week to this seeker.');
+  }
+
+  messages.push({
+    senderId,
+    receiverId,
+    message,
+    timestamp: now.toISOString()
+  });
+  localStorage.setItem(`neofolk.messages.${receiverId}`, JSON.stringify(messages));
+}
+
+function getSpecscore(userId) {
+  const userData = JSON.parse(localStorage.getItem(`neofolk.profile.${userId}`) || '{}');
+  const specs = userData.specializations || {};
+  const values = Object.values(specs).filter((value) => Number.isFinite(value));
   return values.length ? Math.max(...values) : 0;
 }
 
@@ -2164,10 +2235,10 @@ function renderSeekerDashboard(root) {
         '<div class="role-badge">Learner Track</div>' +
       '</section>' +
       '<div class="stats-grid">' +
-        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.courses')) + '</p><strong id="stat-modules">0</strong><p>' + escapeHtml(t('dashboard.coursesBody')) + '</p></div>' +
-        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.notes')) + '</p><strong id="stat-notes">0</strong><p>' + escapeHtml(t('dashboard.notesBody')) + '</p></div>' +
-        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.progressTitle')) + '</p><strong id="stat-score">0</strong><p>' + escapeHtml(t('dashboard.progressKicker')) + '</p></div>' +
-        '<div class="stat-card"><p class="section-label">' + escapeHtml(t('dashboard.groups')) + '</p><strong id="stat-groups">0</strong><p>' + escapeHtml(t('dashboard.groupsBody')) + '</p></div>' +
+        '<div class="stat-card"><p class="section-label">Active Modules</p><strong id="stat-modules">' + JSON.parse(localStorage.getItem(`neofolk.attendance.${currentUser?.id || 'guest'}`) || '[]').filter(a => a.status === 'present').length + '</strong><p>Sessions recorded in your attendance log.</p></div>' +
+        '<div class="stat-card"><p class="section-label">Evidence</p><strong id="stat-notes">' + getPortfolio(currentUser?.id || 'guest').length + '</strong><p>Artifacts documented in your dossier.</p></div>' +
+        '<div class="stat-card"><p class="section-label">Neoscore</p><strong id="stat-score">' + calculateNeoscore(currentUser?.id || 'guest') + '</strong><p>Breadth of verifiable learning across domains.</p></div>' +
+        '<div class="stat-card"><p class="section-label">Guilds</p><strong id="stat-groups">' + getUserGuilds(currentUser?.id || 'guest').length + '</strong><p>Craft circles and knowledge guilds joined.</p></div>' +
       '</div>' +
       '<div class="dashboard-charts">' +
         '<div class="chart-card">' +
@@ -2348,12 +2419,14 @@ function renderArbiterDashboard(root) {
           <h2>All learner profiles</h2>
           <div class="plain-list">
             ${studentProfiles.map((profile) => `
-              <div class="oversight-row">
+              <div class="oversight-row" style="display:flex; justify-content:space-between; align-items:center;">
                 <div>
                   <strong>${escapeHtml(profile.name || 'Unnamed Student')}</strong>
                   <p>${escapeHtml(profile.domain || 'General')}</p>
                 </div>
-                <span class="pill">${escapeHtml(profile.skills || 'Profile pending')}</span>
+                <div class="inline-actions">
+                  <a href="profile.html?id=${profile.userId}" class="btn-ghost-small" style="font-size:0.75rem;">View Dossier →</a>
+                </div>
               </div>
             `).join('')}
           </div>
@@ -3290,204 +3363,177 @@ function renderPageContent() {
   // Profile page
   const userProfileRoot = document.getElementById('profile-root');
   if (userProfileRoot && userProfileRoot.innerHTML.trim() === '') {
-    const supabase = getSupabaseClient();
-    const userId = currentUser?.id || 'guest';
-    const savedProfile = JSON.parse(localStorage.getItem(`neofolk.profile.${userId}`) || '{}');
-    const hasProfile = savedProfile.name || savedProfile.bio;
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetId = urlParams.get('id') || currentUser?.id;
     
-    // Calculate profile completeness
-    const fields = ['photo', 'name', 'bio', 'domain', 'skills'];
-    const filledFields = fields.filter(f => savedProfile[f] && savedProfile[f].trim && savedProfile[f].trim()).length;
-    const completeness = Math.round((filledFields / fields.length) * 100);
-    
-    // Profile display card (shown if profile exists)
-    const profileDisplayHTML = hasProfile ? `
-      <div class="card profile-card-premium" style="margin-bottom:var(--space-4);">
-        <div class="profile-header-premium" style="display:flex; gap:var(--space-4); align-items:center; flex-wrap:wrap; padding-bottom:var(--space-4); border-bottom:1px solid var(--border);">
-          <div class="profile-avatar-wrap">
-            ${savedProfile.photo ? `<img src="${escapeHtml(savedProfile.photo)}" class="profile-avatar-lg">` : '<div class="profile-avatar-placeholder">?</div>'}
-          </div>
-          <div class="profile-title-area">
-            <p class="section-label" style="margin-bottom:4px;">Research Profile</p>
-            <h2 class="profile-name-lg">${escapeHtml(savedProfile.name || 'Unnamed Researcher')}</h2>
-            ${savedProfile.domain ? `<div class="domain-badge-premium">${escapeHtml(savedProfile.domain)}</div>` : ''}
-          </div>
-        </div>
-        
-        <div class="profile-details-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:var(--space-4); margin-top:var(--space-4);">
-          <div class="profile-detail-block">
-            <p class="section-label">Researcher Bio</p>
-            <p class="profile-bio-text">${escapeHtml(savedProfile.bio || 'No bio documented.')}</p>
-          </div>
-          <div class="profile-detail-block">
-            <p class="section-label">Specializations</p>
-            <div class="tag-stack">
-              ${savedProfile.skills ? savedProfile.skills.split(',').map(s => `<span class="pill">${escapeHtml(s.trim())}</span>`).join('') : '<span class="muted">No skills documented.</span>'}
-            </div>
-          </div>
-        </div>
+    if (!targetId) {
+      userProfileRoot.innerHTML = '<div class="dashboard-shell"><div class="empty-state"><p>Please log in or specify a profile ID.</p></div></div>';
+      return;
+    }
 
-        <div class="profile-footer-premium" style="margin-top:var(--space-4); padding-top:var(--space-3); display:flex; justify-content:space-between; align-items:center; opacity:0.8;">
-          <div class="completeness-bar-wrap" style="flex:1; max-width:300px;">
-            <div class="dashboard-progress-block">
-              <div class="dashboard-progress-track"><span class="dashboard-progress-fill" style="width:${completeness}%"></span></div>
-              <span class="dashboard-progress-value">${completeness}%</span>
-            </div>
-          </div>
-          <button id="edit-profile-btn" class="btn subtle-button" style="font-size:0.85rem;">Edit Profile</button>
-        </div>
-      </div>
-    ` : '';
-    
-    // Edit form (hidden if profile exists, shown otherwise)
-    const editFormHTML = `
-      <div class="card profile-form" id="profile-edit-form" style="${hasProfile ? 'display:none;' : ''}">
-        <h3 style="margin-top:0; margin-bottom:20px; color:var(--text-primary);">${hasProfile ? 'Edit Profile' : 'Create Your Profile'}</h3>
-        <div class="profile-section">
-          <label>Profile Photo</label>
-          <input type="file" id="profile-photo-input" accept="image/*">
-          <img id="profile-photo-preview" src="${escapeHtml(savedProfile.photo || '')}" style="display:${savedProfile.photo ? 'block' : 'none'};width:80px;height:80px;object-fit:cover;border-radius:50%;margin-top:8px;">
-        </div>
-        <div class="profile-section">
-          <label>Display Name *</label>
-          <input id="profile-name" class="neo-input" value="${escapeHtml(savedProfile.name || '')}" placeholder="Your name" required>
-        </div>
-        <div class="profile-section">
-          <label>Bio</label>
-          <textarea id="profile-bio" class="neo-input" placeholder="Tell us about yourself" rows="3">${escapeHtml(savedProfile.bio || '')}</textarea>
-        </div>
-        <div class="profile-section">
-          <label>Primary Domain</label>
-          <select id="profile-domain" class="neo-input">
-            <option value="">Select domain...</option>
-            <option value="Lingosophy"${savedProfile.domain === 'Lingosophy' ? ' selected' : ''}>Lingosophy</option>
-            <option value="Arthmetics"${savedProfile.domain === 'Arthmetics' ? ' selected' : ''}>Arthmetics</option>
-            <option value="Cosmology"${savedProfile.domain === 'Cosmology' ? ' selected' : ''}>Cosmology</option>
-            <option value="Biosphere"${savedProfile.domain === 'Biosphere' ? ' selected' : ''}>Biosphere</option>
-            <option value="Chronicles"${savedProfile.domain === 'Chronicles' ? ' selected' : ''}>Chronicles</option>
-            <option value="Civitas"${savedProfile.domain === 'Civitas' ? ' selected' : ''}>Civitas</option>
-            <option value="Tokenomics"${savedProfile.domain === 'Tokenomics' ? ' selected' : ''}>Tokenomics</option>
-            <option value="Artifex"${savedProfile.domain === 'Artifex' ? ' selected' : ''}>Artifex</option>
-            <option value="Praxis"${savedProfile.domain === 'Praxis' ? ' selected' : ''}>Praxis</option>
-            <option value="Bioepisteme"${savedProfile.domain === 'Bioepisteme' ? ' selected' : ''}>Bioepisteme</option>
-          </select>
-        </div>
-        <div class="profile-section">
-          <label>Skills (comma separated)</label>
-          <input id="profile-skills" class="neo-input" value="${escapeHtml(savedProfile.skills || '')}" placeholder="e.g. Research, Writing, Analysis">
-        </div>
-        <div style="display:flex; gap:12px; margin-top:20px;">
-          <button id="save-profile-btn" class="btn btn-primary">${hasProfile ? 'Save Changes' : 'Create Profile'}</button>
-          ${hasProfile ? '<button id="cancel-edit-btn" class="btn btn-secondary" style="font-size:0.8rem;">Cancel</button>' : ''}
-        </div>
-        <p id="profile-save-error" style="color:var(--error); font-size:0.8rem; margin-top:12px; display:none;">Please enter a display name.</p>
-      </div>
-    `;
-    
-    profileRoot.innerHTML = `
+    const isMyProfile = targetId === currentUser?.id;
+    const profile = JSON.parse(localStorage.getItem(`neofolk.profile.${targetId}`) || '{}');
+    const hasProfile = !!profile.name;
+    const portfolio = getPortfolio(targetId);
+    const comments = getComments(targetId);
+    const messages = getMessages(targetId);
+    const role = getCurrentRole();
+    const canReview = ['arbiter', 'operator'].includes(role) && !isMyProfile;
+
+    // Neoscore calculation
+    const neoscore = calculateNeoscore(targetId);
+
+    userProfileRoot.innerHTML = `
       <div class="dashboard-shell">
-        <div class="dashboard-header">
+        <div class="dashboard-header" style="justify-content:space-between; align-items:flex-end; display:flex;">
           <div>
-            <p class="section-label">Account</p>
-            <h1>Your Profile</h1>
-            <p id="profile-email" class="dashboard-meta"></p>
+            <p class="section-label">Researcher Dossier</p>
+            <h1>${escapeHtml(profile.name || 'Anonymous Researcher')}</h1>
+            <p class="dashboard-meta">${hasProfile ? escapeHtml(profile.domain || 'General') : 'Profile not yet finalized'}</p>
+          </div>
+          <div style="text-align:right;">
+             <p class="section-label">NEOSCORE</p>
+             <div style="font-size:2.8rem; font-family:var(--serif); color:var(--gold); line-height:1;">${neoscore}</div>
           </div>
         </div>
-        ${hasProfile ? profileDisplayHTML : '<div class="card" style="margin-bottom:24px; text-align:center; padding:40px;"><p style="color:var(--text-muted);">No profile yet. Create one below.</p></div>'}
-        ${editFormHTML}
+
+        <div class="card profile-card-premium" style="display:grid; grid-template-columns: 140px 1fr; gap:32px; margin-top:24px;">
+          <div class="profile-avatar-wrap">
+            ${profile.photo ? `<img src="${escapeHtml(profile.photo)}" class="profile-avatar-lg" style="width:140px; height:140px; border-radius:4px; object-fit:cover;">` : '<div class="profile-avatar-placeholder" style="width:140px; height:140px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); font-size:3rem; border-radius:4px;">?</div>'}
+            <div class="pill" style="margin-top:12px; display:block; text-align:center; background:${profile.isVerified ? 'var(--gold)' : 'transparent'}; color:${profile.isVerified ? 'var(--ink)' : 'inherit'}; border:1px solid var(--gold);">
+              ${profile.isVerified ? 'Verified Curator' : (profile.status || 'Seeker')}
+            </div>
+          </div>
+          <div>
+            <p class="section-label">Researcher Biography</p>
+            <p style="font-size:1.1rem; line-height:1.6;">${escapeHtml(profile.bio || 'Scientific and personal biography remains undocumented.')}</p>
+            <div class="tag-stack" style="margin-top:20px; display:flex; gap:8px; flex-wrap:wrap;">
+              ${(profile.skills || '').split(',').filter(s => s).map(s => `<span class="pill" style="border-radius:4px; opacity:0.8;">${escapeHtml(s.trim())}</span>`).join('') || '<span class="muted">No explicit specializations documented.</span>'}
+            </div>
+            ${isMyProfile ? `<button id="open-edit-form" class="btn" style="margin-top:24px; font-size:0.85rem;">Edit My Profile</button>` : ''}
+          </div>
+        </div>
+
+        <!-- Evidence & Portfolio Surface -->
+        <div class="card" style="margin-top:32px;">
+          <p class="section-label">Evidence Log</p>
+          <h3>Portfolio Documentation</h3>
+          <div class="record-list" style="margin-top:24px; display:grid; gap:16px;">
+            ${portfolio.length ? portfolio.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(item => `
+              <div class="record-card" style="background:rgba(255,255,255,0.03);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                  <span class="pill" style="font-size:0.65rem;">${escapeHtml(item.domain || "General")}</span>
+                  <span class="muted" style="font-size:0.75rem;">${new Date(item.timestamp).toLocaleDateString()}</span>
+                </div>
+                <h4 style="margin:0 0 8px 0;">${escapeHtml(item.title)}</h4>
+                <p style="font-size:0.9rem; color:var(--muted-text);">${escapeHtml(item.description)}</p>
+                ${item.link ? `<a href="${item.link}" target="_blank" class="btn-ghost-small" style="margin-top:12px; display:inline-block;">Open Artifact →</a>` : ''}
+              </div>
+            `).join('') : '<div class="empty-state" style="padding:40px;"><p>No research artifacts documented in this portfolio.</p></div>'}
+          </div>
+          ${isMyProfile ? `<a href="portfolio.html" class="btn btn-primary" style="margin-top:24px;">+ Document Evidence</a>` : ''}
+        </div>
+
+        <!-- Review Surface -->
+        ${canReview ? `
+          <div class="card" style="margin-top:32px; border:1px solid var(--gold); background:rgba(198,169,107,0.05);">
+            <p class="section-label" style="color:var(--gold);">Arbiter Oversight</p>
+            <h3>Profile Review & Dialogue</h3>
+            
+            <div class="discussion-log" style="margin-top:24px; display:grid; gap:12px;">
+              ${comments.map(c => `
+                <div style="background:rgba(27, 20, 16, 0.4); padding:16px; border-radius:4px; border-left:2px solid var(--gold);">
+                  <div style="font-size:0.65rem; color:var(--gold); margin-bottom:4px; text-transform:uppercase;">Arbiter Remark</div>
+                  <p style="margin:0; font-size:0.95rem;">${escapeHtml(c.message)}</p>
+                </div>
+              `).join('')}
+              ${messages.filter(m => m.senderId === currentUser.id || m.receiverId === currentUser.id).map(m => `
+                <div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <div style="font-size:0.7rem; color:var(--muted-text);">${new Date(m.timestamp).toLocaleString()}</div>
+                  <p style="margin:4px 0 0 0;">${escapeHtml(m.message)}</p>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="review-actions" style="margin-top:32px; display:grid; gap:16px;">
+              <textarea id="review-input" class="neo-input" rows="3" placeholder="Enter review remark or secure message..."></textarea>
+              <div style="display:flex; gap:12px;">
+                <button id="submit-remark-btn" class="btn btn-primary" style="font-size:0.85rem;">Post Remark</button>
+                <button id="submit-msg-btn" class="btn" style="font-size:0.85rem;">Send Direct Message</button>
+              </div>
+              <p class="muted" style="font-size:0.75rem;">Limit: 1 direct message per week to ensure professional boundaries.</p>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Hidden Edit Modal/Form for My Profile -->
+      <div id="profile-edit-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center; padding:20px;">
+        <div class="card" style="max-width:600px; width:100%; max-height:90vh; overflow-y:auto;">
+          <h3>Update My Research Profile</h3>
+          <div style="display:grid; gap:20px; margin-top:20px;">
+            <div>
+              <label>Full Name</label>
+              <input id="edit-name" class="neo-input" value="${escapeHtml(profile.name || '')}">
+            </div>
+            <div>
+              <label>Scientific Biography</label>
+              <textarea id="edit-bio" class="neo-input" rows="4">${escapeHtml(profile.bio || '')}</textarea>
+            </div>
+            <div>
+              <label>Core Domain</label>
+              <select id="edit-domain" class="neo-input">
+                ${Object.keys(DOMAIN_NAMES).map(d => `<option value="${d}" ${profile.domain === d ? 'selected' : ''}>${DOMAIN_NAMES[d]}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label>Specializations (comma separated)</label>
+              <input id="edit-skills" class="neo-input" value="${escapeHtml(profile.skills || '')}">
+            </div>
+            <div style="display:flex; gap:12px;">
+              <button id="save-profile-changes" class="btn btn-primary">Save Changes</button>
+              <button onclick="document.getElementById('profile-edit-modal').style.display='none'" class="btn">Cancel</button>
+            </div>
+          </div>
+        </div>
       </div>
     `;
 
-    // Photo preview handler
-    const photoInput = document.getElementById('profile-photo-input');
-    const photoPreview = document.getElementById('profile-photo-preview');
-    if (photoInput && photoPreview) {
-      photoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            photoPreview.src = ev.target.result;
-            photoPreview.style.display = 'block';
-          };
-          reader.readAsDataURL(file);
-        }
+    // Interaction wiring
+    if (isMyProfile) {
+      document.getElementById('open-edit-form')?.addEventListener('click', () => {
+        document.getElementById('profile-edit-modal').style.display = 'flex';
       });
-    }
-    
-    // Edit button handler (shows form)
-    const editBtn = document.getElementById('edit-profile-btn');
-    if (editBtn) {
-      editBtn.addEventListener('click', () => {
-        const form = document.getElementById('profile-edit-form');
-        if (form) form.style.display = 'block';
-        editBtn.style.display = 'none';
-      });
-    }
-    
-    // Cancel button handler
-    const cancelBtn = document.getElementById('cancel-edit-btn');
-    if (cancelBtn) {
-      cancelBtn.addEventListener('click', () => {
-        const form = document.getElementById('profile-edit-form');
-        if (form) form.style.display = 'none';
-        if (editBtn) editBtn.style.display = 'inline-block';
-      });
-    }
-    
-    // Save profile handler - FIXED
-    const saveBtn = document.getElementById('save-profile-btn');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        const nameInput = document.getElementById('profile-name');
-        const name = nameInput ? nameInput.value.trim() : '';
-        
-        // Validate name is required
-        if (!name) {
-          const errorMsg = document.getElementById('profile-save-error');
-          if (errorMsg) errorMsg.style.display = 'block';
-          nameInput?.focus();
-          return;
-        }
-        
-        const bioInput = document.getElementById('profile-bio');
-        const domainInput = document.getElementById('profile-domain');
-        const skillsInput = document.getElementById('profile-skills');
-        const photoPreviewEl = document.getElementById('profile-photo-preview');
-        
-        const profile = {
-          photo: photoPreviewEl?.src || '',
-          name: name,
-          bio: bioInput ? bioInput.value.trim() : '',
-          domain: domainInput ? domainInput.value : '',
-          skills: skillsInput ? skillsInput.value.trim() : ''
+
+      document.getElementById('save-profile-changes')?.addEventListener('click', () => {
+        const updated = {
+          ...profile,
+          name: document.getElementById('edit-name').value.trim(),
+          bio: document.getElementById('edit-bio').value.trim(),
+          domain: document.getElementById('edit-domain').value,
+          skills: document.getElementById('edit-skills').value.trim()
         };
-        
-        // Save to localStorage
-        localStorage.setItem(`neofolk.profile.${userId}`, JSON.stringify(profile));
-        
-        // Show success
-        const originalText = saveBtn.textContent;
-        saveBtn.textContent = 'Saved!';
-        saveBtn.style.background = 'var(--success)';
-        
-        // Reload page after brief delay to show updated profile
-        setTimeout(() => {
-          location.reload();
-        }, 800);
+        localStorage.setItem(`neofolk.profile.${currentUser.id}`, JSON.stringify(updated));
+        location.reload();
       });
     }
 
-    // Load user email
-    if (supabase) {
-      supabase.auth.getUser().then(({ data }) => {
-        const el = document.getElementById('profile-email');
-        if (el && data?.user?.email) {
-          el.textContent = data.user.email;
-        }
-      }).catch(() => {});
+    if (canReview) {
+      document.getElementById('submit-remark-btn')?.addEventListener('click', () => {
+        const msg = document.getElementById('review-input').value.trim();
+        if (!msg) return;
+        addComment(targetId, currentUser.id, msg);
+        location.reload();
+      });
+
+      document.getElementById('submit-msg-btn')?.addEventListener('click', () => {
+        const msg = document.getElementById('review-input').value.trim();
+        if (!msg) return;
+        try {
+          sendMessage(currentUser.id, targetId, msg);
+          location.reload();
+        } catch (e) { alert(e.message); }
+      });
     }
   }
 
@@ -3772,7 +3818,10 @@ function renderPageContent() {
   // Portfolio page
   const portfolioRoot = document.getElementById('portfolio-root');
   if (portfolioRoot && portfolioRoot.innerHTML.trim() === '') {
-    if (getCurrentRole() === 'curator') {
+    const userId = currentUser?.id || 'guest';
+    const isCurator = getCurrentRole() === 'curator';
+    
+    if (isCurator) {
       const { myCard, myModules, myBatches, totalStudents, activeLicenses } = getCuratorDashboardData();
       portfolioRoot.innerHTML = `
         <div class="dashboard-shell role-dashboard role-dashboard--curator">
@@ -3782,55 +3831,104 @@ function renderPageContent() {
               <h1>Curator Dossier</h1>
               <p class="lede">A public-facing record of your authority, authored modules, and teaching footprint.</p>
             </div>
+            <div class="inline-actions">
+               <a class="btn btn-primary" href="profile.html">Edit Public Profile</a>
+            </div>
           </div>
           <div class="card">
             <div class="mini-stat-grid">
               <div class="mini-stat"><strong>${myModules.length}</strong><span>Modules</span></div>
               <div class="mini-stat"><strong>${myBatches.length}</strong><span>Batches</span></div>
               <div class="mini-stat"><strong>${totalStudents}</strong><span>Learners</span></div>
-              <div class="mini-stat"><strong>${activeLicenses}</strong><span>Licenses</span></div>
+              <div class="mini-stat"><strong>${activeLicenses.length}</strong><span>Licenses</span></div>
             </div>
           </div>
           <div class="dashboard-sections two-column">
             <div class="card">
-              <p class="section-label">Profile</p>
-              <h2>${escapeHtml(myCard?.fullName || getDisplayNameForUser(currentUser?.id || 'guest', 'Curator Profile'))}</h2>
-              <p>${escapeHtml((myCard?.activeLicenses || []).join(', ') || 'No domain licenses attached yet.')}</p>
-              <div class="inline-actions flow-top-32">
-                <a class="btn btn-primary" href="profile.html">Edit Profile</a>
-                <a class="btn" href="curator-dashboard.html?panel=curator-add-module">Add Module</a>
+              <p class="section-label">Teaching Surface</p>
+              <h3>Current authored modules</h3>
+              <div class="plain-list" style="margin-top:16px;">
+                ${myModules.length ? myModules.map(m => `<div class="oversight-row"><strong>${escapeHtml(m.title)}</strong><span class="pill">${escapeHtml(m.domain)}</span></div>`).join('') : '<p class="muted">No modules authored yet.</p>'}
               </div>
             </div>
             <div class="card">
-              <p class="section-label">Teaching Surface</p>
-              <h2>Current authored modules</h2>
-              <div class="plain-list">
-                ${myModules.length ? myModules.map((module) => `
-                  <div class="oversight-row">
-                    <div>
-                      <strong>${escapeHtml(module.title)}</strong>
-                      <p>${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</p>
-                    </div>
-                    <span class="pill">${module.batches.length} batches</span>
-                  </div>
-                `).join('') : '<p>No modules authored yet.</p>'}
-              </div>
+              <p class="section-label">Identity</p>
+              <h3>${escapeHtml(myCard?.fullName || 'Academic Curator')}</h3>
+              <p class="muted">${escapeHtml(myCard?.tagline || 'Licensed curator within the Neofolk network.')}</p>
             </div>
           </div>
         </div>
       `;
     } else {
+      // Seeker/Learner Portfolio Creation
+      const entries = getPortfolio(userId);
       portfolioRoot.innerHTML = `
         <div class="dashboard-shell">
           <div class="dashboard-header">
-            <p class="section-label">Portfolio</p>
-            <h1>Learning Portfolio</h1>
+            <div>
+              <p class="section-label">Evidence</p>
+              <h1>Artifact Portfolio</h1>
+              <p class="lede">Submit proof of learning, project artifacts, or completed research for Arbiter review.</p>
+            </div>
           </div>
-          <div class="empty-state">
-            <p>Your documented learning evidence will appear here.</p>
+
+          <div class="dashboard-sections two-column">
+            <div class="card">
+              <h3>Add New Evidence</h3>
+              <form id="portfolio-form" style="display:grid; gap:16px; margin-top:20px;">
+                <div class="form-group">
+                  <label>Artifact Title</label>
+                  <input id="p-title" class="neo-input" placeholder="e.g. Soil Microbiology Analysis" required>
+                </div>
+                <div class="form-group">
+                  <label>Relevant Domain</label>
+                  <select id="p-domain" class="neo-input">
+                    <option value="">Select Domain...</option>
+                    ${Object.keys(DOMAIN_NAMES).map(d => `<option value="${d}">${DOMAIN_NAMES[d]}</option>`).join('')}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Description (Context & Achievement)</label>
+                  <textarea id="p-desc" class="neo-input" rows="4" placeholder="Briefly describe the significance of this artifact."></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Verification Link (Optional)</label>
+                  <input id="p-link" class="neo-input" placeholder="https://github.com/..." type="url">
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-top:12px;">Submit Artifact to Portfolio</button>
+              </form>
+            </div>
+            
+            <div class="card">
+              <h3>Recent Successes</h3>
+              <div class="record-list" style="margin-top:20px;">
+                ${entries.length ? entries.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(e => `
+                  <div class="record-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                      <span class="pill" style="font-size:0.6rem;">${escapeHtml(e.domain)}</span>
+                      <span class="muted" style="font-size:0.7rem;">${new Date(e.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <h4 style="margin:4px 0;">${escapeHtml(e.title)}</h4>
+                    <p style="font-size:0.85rem; color:var(--muted-text);">${escapeHtml(e.description)}</p>
+                  </div>
+                `).join('') : '<div class="empty-state"><p>No artifacts found. Begin your documentation journey.</p></div>'}
+              </div>
+            </div>
           </div>
         </div>
       `;
+      
+      document.getElementById('portfolio-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const entry = {
+          title: document.getElementById('p-title').value,
+          domain: document.getElementById('p-domain').value,
+          description: document.getElementById('p-desc').value,
+          link: document.getElementById('p-link').value
+        };
+        addPortfolioEntry(userId, entry);
+        location.reload();
+      });
     }
   }
 
@@ -4095,8 +4193,8 @@ function renderPageContent() {
       neoSpecialization: storedSpec || defaultNeoSpecialization
     };
     
-    const score = calculateNeoscore(band.neoDomains);
-    const specscore = calculateSpecscore(band.neoSpecialization);
+    const score = calculateNeoscore(userId);
+    const specscore = getSpecscore(userId);
     
     const domainBars = Object.entries(band.neoDomains).map(([name, val]) => `
       <div class="domain-row">
@@ -4358,56 +4456,65 @@ function renderPageContent() {
     roleSelect.style.display = 'none';
   }
   // NODES PAGE
+  // Nodes page
   const nodesRoot = document.getElementById("nodes-root");
-  if (nodesRoot && nodesRoot.innerHTML.trim() === "") {
+  if (nodesRoot && nodesRoot.innerHTML.trim() === '') {
+    const nodes = JSON.parse(localStorage.getItem('neofolk.nodeNeeds') || '[]');
+    
     nodesRoot.innerHTML = `
       <div class="dashboard-shell">
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:20px;">
-            <div>
-              <p class="section-label">Nodes</p>
-              <h1>Learning Nodes</h1>
-              <p class="lede">Physical locations where learning happens.</p>
-            </div>
-            <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:11px; padding:8px 16px;">
-              [ SIGNAL LOCAL NEED ]
-            </button>
-          </div>
+        <div class="dashboard-header" style="justify-content:space-between; align-items:flex-end; display:flex;">
+           <div>
+            <p class="section-label">Spatiotemporal Network</p>
+            <h1>Physical Learning Nodes</h1>
+            <p class="lede">Active sites for curriculum delivery, craft circles, and local academic coordination.</p>
+           </div>
+           <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:0.75rem;">[ SIGNAL LOCAL NEED ]</button>
         </div>
-        <div style="position:relative;">
-          <div class="map-search-overlay">
-            <input type="text" placeholder="Locality Search (e.g. Bangalore, Delhi)..." onkeydown="if(event.key==='Enter') window.handleMapSearch(this.value)">
-          </div>
-          <div id="map" style="height:500px; width:100%; border-radius:4px; border:1px solid var(--border-color); background:var(--ink);"></div>
+        
+        <div class="card" style="margin-top:24px;">
+          ${nodes.length ? `
+            <div class="record-list">
+              ${nodes.map(node => `
+                <div class="record-card">
+                  <div class="dashboard-card-topline">
+                    <span class="pill">${escapeHtml(node.type || 'Research Node')}</span>
+                    <span class="muted">${escapeHtml(node.city || node.locationName || 'Unknown Locality')}</span>
+                  </div>
+                  <h3 style="margin-top:8px;">${escapeHtml(node.nodeName || node.title)}</h3>
+                  <p style="font-size:0.85rem; color:var(--muted-text);">Resonates with: ${escapeHtml(DOMAIN_NAMES[node.domain] || node.domain || 'Cross-disciplinary')}</p>
+                </div>
+              `).join('')}
+            </div>
+          ` : `
+            <div class="empty-state">
+              <p>No active nodes detected in this sector. Signal a local need to initiate site establishment.</p>
+            </div>
+          `}
+        </div>
+
+        <div style="margin-top:40px;">
+          <p class="section-label">TOPOLOGY MAP</p>
+          <div id="map" style="height:400px; width:100%; border:1px solid var(--border-color); background:var(--ink); border-radius:4px;"></div>
         </div>
       </div>
     `;
+    
+    // Map setup
     setTimeout(() => {
-      if (!window.L) {
-        console.error("Leaflet not loaded");
-        return;
-      }
-      const map = L.map("map").setView(
-        [20.5937, 78.9629],
-        5
-      );
-      window.mapInstance = map;
+      if (typeof L === 'undefined') return;
+      const map = L.map("map").setView([20.5937, 78.9629], 5);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors"
+      }).addTo(map);
       
-      L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-          attribution: "© OpenStreetMap contributors"
+      nodes.forEach(node => {
+        if (node.lat && node.lng) {
+          L.marker([node.lat, node.lng]).addTo(map)
+            .bindPopup(`<strong>${escapeHtml(node.nodeName)}</strong><br>${escapeHtml(node.type)}`);
         }
-      ).addTo(map);
-
-      // Handle Map Clicks for Signal Drops
-      map.on('click', (e) => {
-        if (!demandModeActive) return;
-        showRadialMenu(e.latlng.lat, e.latlng.lng);
       });
-
-      // Initial render for node needs
-      renderNodeNeedsOnMap();
-    }, 50);
+    }, 100);
   }
 }
 
