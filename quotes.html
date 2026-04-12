@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeofolkAtlas — The Quote Archive</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1b1410;
+    --deep-brown: #2c1f1a;
+    --parchment: #e8dcc8;
+    --gold: #c6a96b;
+    --olive: #6f7b5c;
+    --terracotta: #8c4b2f;
+    --muted: #a69b8d;
+    --border: rgba(232, 220, 200, 0.15);
+
+    --domain-lingosophy: #5b21b6;
+    --domain-arithmetics: #92400e;
+    --domain-cosmology: #075985;
+    --domain-biosphere: #166534;
+    --domain-chronicles: #991b1b;
+    --domain-civitas: #9f1239;
+    --domain-tokenomics: #9a3412;
+    --domain-artifex: #134e4a;
+    --domain-praxis: #4c1d95;
+    --domain-bioepisteme: #155e75;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: 'Manrope', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* noise texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .masthead {
+    position: relative;
+    z-index: 1;
+    padding: 60px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+  }
+
+  .masthead-label {
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .masthead-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    color: var(--parchment);
+  }
+
+  .masthead-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .masthead-sub {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 420px;
+    line-height: 1.6;
+  }
+
+  .masthead-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    opacity: 0.3;
+    user-select: none;
+  }
+
+  /* filter bar */
+  .filter-bar {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--deep-brown);
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all .15s;
+    font-weight: 500;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+
+  /* main grid */
+  .quote-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    margin: 24px 40px;
+  }
+
+  .quote-card {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all .15s;
+    animation: fadeUp .4s ease both;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .quote-card.hidden { display: none; }
+
+  .quote-card:hover { 
+    background: rgba(198, 169, 107, 0.05);
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .domain-tag {
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+
+  .card-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    color: var(--muted);
+    opacity: .5;
+    flex-shrink: 0;
+  }
+
+  .quote-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-style: italic;
+    line-height: 1.65;
+    color: var(--parchment);
+    flex: 1;
+  }
+
+  .quote-text::before { content: '\201C'; }
+  .quote-text::after  { content: '\201D'; }
+
+  .quote-meta {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .author-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--parchment);
+    line-height: 1.3;
+  }
+
+  .author-desc {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .origin-flag {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* domain colors - dark theme versions */
+  .d-lingosophy  { background: rgba(91, 33, 182, 0.2); color: #a78bfa; border-color: rgba(91, 33, 182, 0.4); }
+  .d-arithmetics { background: rgba(146, 64, 14, 0.2); color: #fbbf24; border-color: rgba(146, 64, 14, 0.4); }
+  .d-cosmology   { background: rgba(7, 89, 133, 0.2); color: #7dd3fc; border-color: rgba(7, 89, 133, 0.4); }
+  .d-biosphere   { background: rgba(22, 101, 52, 0.2); color: #86efac; border-color: rgba(22, 101, 52, 0.4); }
+  .d-chronicles  { background: rgba(153, 27, 27, 0.2); color: #fca5a5; border-color: rgba(153, 27, 27, 0.4); }
+  .d-civitas     { background: rgba(159, 18, 57, 0.2); color: #fda4af; border-color: rgba(159, 18, 57, 0.4); }
+  .d-tokenomics  { background: rgba(154, 52, 18, 0.2); color: #fdba74; border-color: rgba(154, 52, 18, 0.4); }
+  .d-artifex     { background: rgba(19, 78, 74, 0.2); color: #6ee7b7; border-color: rgba(19, 78, 74, 0.4); }
+  .d-praxis      { background: rgba(76, 29, 149, 0.2); color: #c4b5fd; border-color: rgba(76, 29, 149, 0.4); }
+  .d-bioepisteme { background: rgba(21, 94, 117, 0.2); color: #67e8f9; border-color: rgba(21, 94, 117, 0.4); }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    padding: 32px 40px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--deep-brown);
+  }
+
+  .footer-label {
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .masthead { padding: 32px 20px 24px; grid-template-columns: 1fr; }
+    .masthead-count { display: none; }
+    .filter-bar { padding: 12px 20px; }
+    .quote-grid { margin: 24px 20px; grid-template-columns: 1fr; }
+    .footer { padding: 24px 20px; flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div>
+    <div class="masthead-label">NeofolkAtlas — The Quote Archive</div>
+    <h1 class="masthead-title">Words that<br><em>built worlds.</em></h1>
+    <p class="masthead-sub">50 voices across ten domains. Freedom fighters, scientists, poets, and the generation that grew up online — all part of the same unbroken chain.</p>
+  </div>
+  <div class="masthead-count">50</div>
+</header>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterDomain('all', this)">All</button>
+  <button class="filter-btn" onclick="filterDomain('lingosophy', this)">Lingosophy</button>
+  <button class="filter-btn" onclick="filterDomain('arithmetics', this)">Arithmetics</button>
+  <button class="filter-btn" onclick="filterDomain('cosmology', this)">Cosmology</button>
+  <button class="filter-btn" onclick="filterDomain('biosphere', this)">Biosphere</button>
+  <button class="filter-btn" onclick="filterDomain('chronicles', this)">Chronicles</button>
+  <button class="filter-btn" onclick="filterDomain('civitas', this)">Civitas</button>
+  <button class="filter-btn" onclick="filterDomain('tokenomics', this)">Tokenomics</button>
+  <button class="filter-btn" onclick="filterDomain('artifex', this)">Artifex</button>
+  <button class="filter-btn" onclick="filterDomain('praxis', this)">Praxis</button>
+  <button class="filter-btn" onclick="filterDomain('bioepisteme', this)">Bioepisteme</button>
+  <button class="filter-btn" onclick="filterDomain('indian', this)">🇮🇳 Indian only</button>
+</div>
+
+<div class="quote-grid" id="grid"></div>
+
+<footer class="footer">
+  <span class="footer-label">NeofolkAtlas — Resonance Archive v1.0</span>
+  <span class="footer-label">50 voices · 10 domains · 1 continuum</span>
+</footer>
+
+<script>
+const quotes = [
+  // LINGOSOPHY
+  { n:1, domain:"lingosophy", label:"Lingosophy", quote:"You cannot use the master's tools to dismantle the master's house.", author:"Audre Lorde", desc:"Poet & activist", flag:"🇺🇸", indian:false },
+  { n:2, domain:"lingosophy", label:"Lingosophy", quote:"Language is the road map of a culture. It tells you where its people come from and where they are going.", author:"Rita Mae Brown", desc:"Author", flag:"🇺🇸", indian:false },
+  { n:3, domain:"lingosophy", label:"Lingosophy", quote:"Our mother tongue is never a dead language — it breathes inside us even when we speak another.", author:"Agha Shahid Ali", desc:"Kashmiri-American poet", flag:"🇮🇳", indian:true },
+  { n:4, domain:"lingosophy", label:"Lingosophy", quote:"The subaltern cannot speak — not because she has no voice, but because the structures of knowledge refuse to hear.", author:"Gayatri Chakravorty Spivak", desc:"Postcolonial theorist", flag:"🇮🇳", indian:true },
+  { n:5, domain:"lingosophy", label:"Lingosophy", quote:"Philosophy is not a body of doctrine but an activity.", author:"Ludwig Wittgenstein", desc:"Philosopher", flag:"🇦🇹", indian:false },
+
+  // ARITHMETICS
+  { n:6, domain:"arithmetics", label:"Arithmetics", quote:"Numbers have life; they're not just symbols on paper.", author:"Shakuntala Devi", desc:"Human computer, mathematician", flag:"🇮🇳", indian:true },
+  { n:7, domain:"arithmetics", label:"Arithmetics", quote:"Mathematics is the language in which God has written the universe.", author:"Galileo Galilei", desc:"Astronomer & physicist", flag:"🇮🇹", indian:false },
+  { n:8, domain:"arithmetics", label:"Arithmetics", quote:"An equation for me has no meaning unless it represents a thought of God.", author:"Srinivasa Ramanujan", desc:"Mathematician", flag:"🇮🇳", indian:true },
+  { n:9, domain:"arithmetics", label:"Arithmetics", quote:"Pure mathematics is, in its way, the poetry of logical ideas.", author:"Albert Einstein", desc:"Theoretical physicist", flag:"🇩🇪", indian:false },
+  { n:10, domain:"arithmetics", label:"Arithmetics", quote:"Do not worry about your difficulties in mathematics. I can assure you mine are still greater.", author:"Albert Einstein", desc:"Theoretical physicist", flag:"🇩🇪", indian:false },
+
+  // COSMOLOGY
+  { n:11, domain:"cosmology", label:"Cosmology", quote:"The cosmos is within us. We are made of star-stuff.", author:"Carl Sagan", desc:"Astronomer & author", flag:"🇺🇸", indian:false },
+  { n:12, domain:"cosmology", label:"Cosmology", quote:"Science is not a body of facts. Science is a method for deciding whether what we choose to believe has a basis in the laws of nature or not.", author:"Marcia McNutt", desc:"Geophysicist", flag:"🇺🇸", indian:false },
+  { n:13, domain:"cosmology", label:"Cosmology", quote:"When you look at the stars and the galaxy, you feel that you are not just from any particular piece of land, but from the solar system.", author:"Kalpana Chawla", desc:"Astronaut, first Indian woman in space", flag:"🇮🇳", indian:true },
+  { n:14, domain:"cosmology", label:"Cosmology", quote:"Science does not know its debt to imagination.", author:"Ralph Waldo Emerson", desc:"Philosopher & poet", flag:"🇺🇸", indian:false },
+  { n:15, domain:"cosmology", label:"Cosmology", quote:"We are just an advanced breed of monkeys on a minor planet of a very average star. But we can understand the universe.", author:"Stephen Hawking", desc:"Theoretical physicist", flag:"🇬🇧", indian:false },
+
+  // BIOSPHERE
+  { n:16, domain:"biosphere", label:"Biosphere", quote:"The conservation of nature is the conservation of humanity's future.", author:"Sundarlal Bahuguna", desc:"Chipko movement leader", flag:"🇮🇳", indian:true },
+  { n:17, domain:"biosphere", label:"Biosphere", quote:"In every walk with nature, one receives far more than he seeks.", author:"John Muir", desc:"Naturalist & conservationist", flag:"🇺🇸", indian:false },
+  { n:18, domain:"biosphere", label:"Biosphere", quote:"The earth does not belong to us, we belong to the earth.", author:"Chief Seattle", desc:"Suquamish leader", flag:"🇺🇸", indian:false },
+  { n:19, domain:"biosphere", label:"Biosphere", quote:"I speak for the trees, for the trees have no tongues.", author:"Dr. Seuss", desc:"Author (citing environmental metaphor)", flag:"🇺🇸", indian:false },
+  { n:20, domain:"biosphere", label:"Biosphere", quote:"Nature is not a place to visit. It is home.", author:"Gary Snyder", desc:"Poet & environmentalist", flag:"🇺🇸", indian:false },
+
+  // CHRONICLES
+  { n:21, domain:"chronicles", label:"Chronicles", quote:"The most dangerous creation of any society is the man who has nothing to lose.", author:"James Baldwin", desc:"Writer & activist", flag:"🇺🇸", indian:false },
+  { n:22, domain:"chronicles", label:"Chronicles", quote:"Those who cannot remember the past are condemned to repeat it.", author:"George Santayana", desc:"Philosopher", flag:"🇪🇸", indian:false },
+  { n:23, domain:"chronicles", label:"Chronicles", quote:"History is not the past. It is the present. We carry our history with us. We are our history.", author:"James Baldwin", desc:"Writer & activist", flag:"🇺🇸", indian:false },
+  { n:24, domain:"chronicles", label:"Chronicles", quote:"The past is never dead. It's not even past.", author:"William Faulkner", desc:"Novelist", flag:"🇺🇸", indian:false },
+  { n:25, domain:"chronicles", label:"Chronicles", quote:"Myths and legends die hard in America. We love them for the extra dimension they provide.", author:"Hunter S. Thompson", desc:"Journalist", flag:"🇺🇸", indian:false },
+
+  // CIVITAS
+  { n:26, domain:"civitas", label:"Civitas", quote:"Education is the most powerful weapon which you can use to change the world.", author:"Nelson Mandela", desc:"Anti-apartheid revolutionary", flag:"🇿🇦", indian:false },
+  { n:27, domain:"civitas", label:"Civitas", quote:"The strength of a nation derives from the integrity of the home.", author:"Confucius", desc:"Philosopher", flag:"🇨🇳", indian:false },
+  { n:28, domain:"civitas", label:"Civitas", quote:"I measure the progress of a community by the degree of progress which women have achieved.", author:"B.R. Ambedkar", desc:"Jurist, economist & social reformer", flag:"🇮🇳", indian:true },
+  { n:29, domain:"civitas", label:"Civitas", quote:"Educate, agitate, organise.", author:"Savitribai Phule", desc:"Pioneer educator, social reformer", flag:"🇮🇳", indian:true },
+  { n:30, domain:"civitas", label:"Civitas", quote:"The day the power of love overrules the love of power, the world will know peace.", author:"Mahatma Gandhi", desc:"Independence leader", flag:"🇮🇳", indian:true },
+
+  // TOKENOMICS
+  { n:31, domain:"tokenomics", label:"Tokenomics", quote:"The economy is a means to an end, not an end in itself.", author:"E.F. Schumacher", desc:"Economist, Small is Beautiful", flag:"🇬🇧", indian:false },
+  { n:32, domain:"tokenomics", label:"Tokenomics", quote:"Poverty is not an accident. Like slavery and apartheid, it is man-made and can be removed by the actions of human beings.", author:"Nelson Mandela", desc:"Anti-apartheid revolutionary", flag:"🇿🇦", indian:false },
+  { n:33, domain:"tokenomics", label:"Tokenomics", quote:"A resource-based economy would use technology to overcome the conditions that are now scarce and make them abundantly available to everyone.", author:"Vandana Shiva", desc:"Environmental activist & author", flag:"🇮🇳", indian:true },
+  { n:34, domain:"tokenomics", label:"Tokenomics", quote:"Economic growth without investment in human development is unsustainable and unethical.", author:"Amartya Sen", desc:"Nobel laureate in economics", flag:"🇮🇳", indian:true },
+  { n:35, domain:"tokenomics", label:"Tokenomics", quote:"The commons is not a tragedy — it's a possibility we have been taught to forget.", author:"David Bollier", desc:"Commons scholar & activist", flag:"🇺🇸", indian:false },
+
+  // ARTIFEX
+  { n:36, domain:"artifex", label:"Artifex", quote:"Art is not what you see, but what you make others see.", author:"Edgar Degas", desc:"Impressionist painter", flag:"🇫🇷", indian:false },
+  { n:37, domain:"artifex", label:"Artifex", quote:"Every child is an artist. The problem is how to remain an artist once we grow up.", author:"Pablo Picasso", desc:"Artist", flag:"🇪🇸", indian:false },
+  { n:38, domain:"artifex", label:"Artifex", quote:"Design is not just what it looks like and feels like. Design is how it works.", author:"Steve Jobs", desc:"Apple co-founder", flag:"🇺🇸", indian:false },
+  { n:39, domain:"artifex", label:"Artifex", quote:"My body is the instrument through which my art speaks. When I stop dancing, I stop existing.", author:"Mrinalini Sarabhai", desc:"Classical dancer & choreographer", flag:"🇮🇳", indian:true },
+  { n:40, domain:"artifex", label:"Artifex", quote:"Art is a wound turned into light.", author:"Georges Braque", desc:"Painter", flag:"🇫🇷", indian:false },
+
+  // PRAXIS
+  { n:41, domain:"praxis", label:"Praxis", quote:"The question is not whether we will be extremists, but what kind of extremists we will be.", author:"Martin Luther King Jr.", desc:"Civil rights leader", flag:"🇺🇸", indian:false },
+  { n:42, domain:"praxis", label:"Praxis", quote:"Speak up, even if your voice shakes.", author:"Maggie Kuhn", desc:"Social activist", flag:"🇺🇸", indian:false },
+  { n:43, domain:"praxis", label:"Praxis", quote:"The right to information is the right to live with dignity.", author:"Aruna Roy", desc:"RTI activist, MKSS founder", flag:"🇮🇳", indian:true },
+  { n:44, domain:"praxis", label:"Praxis", quote:"Non-cooperation with evil is as much a duty as cooperation with good.", author:"Mahatma Gandhi", desc:"Independence leader", flag:"🇮🇳", indian:true },
+  { n:45, domain:"praxis", label:"Praxis", quote:"One child, one teacher, one book, one pen can change the world.", author:"Malala Yousafzai", desc:"Education activist", flag:"🇵🇰", indian:false },
+
+  // BIOEPISTEME
+  { n:46, domain:"bioepisteme", label:"Bioepisteme", quote:"Science is not a boy's game; it's not a girl's game. It's everyone's game.", author:"Nichelle Nichols", desc:"Actress & NASA ambassador", flag:"🇺🇸", indian:false },
+  { n:47, domain:"bioepisteme", label:"Bioepisteme", quote:"The good thing about science is that it's true whether or not you believe in it.", author:"Neil deGrasse Tyson", desc:"Astrophysicist", flag:"🇺🇸", indian:false },
+  { n:48, domain:"bioepisteme", label:"Bioepisteme", quote:"Vaccines are the tugboats of preventive health.", author:"William Foege", desc:"Epidemiologist, smallpox eradication", flag:"🇺🇸", indian:false },
+  { n:49, domain:"bioepisteme", label:"Bioepisteme", quote:"Science thrives on diversity of thought. It's not a monologue — it's a conversation across generations.", author:"Gagandeep Kang", desc:"Virologist, first Indian woman FRS", flag:"🇮🇳", indian:true },
+  { n:50, domain:"bioepisteme", label:"Bioepisteme", quote:"The good physician treats the disease; the great physician treats the patient who has the disease.", author:"William Osler", desc:"Father of modern medicine", flag:"🇨🇦", indian:false },
+];
+
+function renderCards(filtered) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  filtered.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'quote-card';
+    card.style.animationDelay = (i * 0.03) + 's';
+    card.innerHTML = `
+      <div class="card-top">
+        <span class="domain-tag d-${q.domain}">${q.label}</span>
+        <span class="card-num">#${String(q.n).padStart(2,'0')}</span>
+      </div>
+      <p class="quote-text">${q.quote}</p>
+      <div class="quote-meta">
+        <div>
+          <div class="author-name">${q.author}</div>
+          <div class="author-desc">${q.desc}</div>
+        </div>
+        <span class="origin-flag" title="${q.indian ? 'Indian' : 'International'}">${q.flag}</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function filterDomain(domain, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  let filtered;
+  if (domain === 'all') filtered = quotes;
+  else if (domain === 'indian') filtered = quotes.filter(q => q.indian);
+  else filtered = quotes.filter(q => q.domain === domain);
+  renderCards(filtered);
+}
+
+renderCards(quotes);
+</script>
+</body>
+</html>

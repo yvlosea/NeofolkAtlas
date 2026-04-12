@@ -2668,6 +2668,16 @@ function renderAppNav() {
   const role = getCurrentRole();
   applyRoleTheme(role);
 
+  // Add Beta label to brand area
+  const brandArea = document.querySelector('.brand-area');
+  if (brandArea && !brandArea.querySelector('.beta-label')) {
+    const betaLabel = document.createElement('span');
+    betaLabel.className = 'beta-label';
+    betaLabel.style.cssText = 'font-size: 0.65rem; background: var(--gold); color: #000; padding: 2px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-left: 8px;';
+    betaLabel.textContent = 'Beta';
+    brandArea.appendChild(betaLabel);
+  }
+
   const sectionsByRole = {
     seeker: [
       {
@@ -2932,7 +2942,37 @@ function renderSidebarLangPicker() {
   if (!container || container.querySelector('.lang-select')) return;
 
   const currentLang = localStorage.getItem(LANG_STORAGE) || 'en';
+  
+  // Quotes carousel data
+  const quotes = [
+    { quote: "You cannot use the master's tools to dismantle the master's house.", author: "Audre Lorde", domain: "Lingosophy" },
+    { quote: "Numbers have life; they're not just symbols on paper.", author: "Shakuntala Devi", domain: "Arithmetics" },
+    { quote: "The cosmos is within us. We are made of star-stuff.", author: "Carl Sagan", domain: "Cosmology" },
+    { quote: "The conservation of nature is the conservation of humanity's future.", author: "Sundarlal Bahuguna", domain: "Biosphere" },
+    { quote: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela", domain: "Civitas" },
+    { quote: "Art is not what you see, but what you make others see.", author: "Edgar Degas", domain: "Artifex" },
+    { quote: "The right to information is the right to live with dignity.", author: "Aruna Roy", domain: "Praxis" },
+    { quote: "Science is not a boy's game; it's not a girl's game. It's everyone's game.", author: "Nichelle Nichols", domain: "Bioepisteme" }
+  ];
+  
+  let currentQuoteIndex = 0;
+  
   container.innerHTML =
+    '<div class="quotes-carousel">' +
+      '<div class="quote-label">Quote of the Moment</div>' +
+      '<div class="quote-content" id="sidebar-quote">' +
+        '<p class="quote-text">"' + escapeHtml(quotes[0].quote) + '"</p>' +
+        '<div class="quote-meta">' +
+          '<span class="quote-author">' + escapeHtml(quotes[0].author) + '</span>' +
+          '<span class="quote-domain">' + escapeHtml(quotes[0].domain) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="quote-nav">' +
+        '<button class="quote-nav-btn prev" onclick="window.prevQuote()">←</button>' +
+        '<button class="quote-nav-btn next" onclick="window.nextQuote()">→</button>' +
+      '</div>' +
+      '<a href="quotes.html" class="quote-archive-link">View All Quotes →</a>' +
+    '</div>' +
     '<div class="language-row">' +
       '<span class="sidebar-lang-label">' + escapeHtml(t('toolbar.language')) + '</span>' +
       '<select class="lang-select" aria-label="Select language">' +
@@ -2944,7 +2984,65 @@ function renderSidebarLangPicker() {
 
   const sel = container.querySelector('.lang-select');
   if (sel) sel.value = currentLang;
+  
+  // Auto-rotate quotes every 8 seconds
+  setInterval(() => {
+    currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+    updateQuoteCarousel(quotes, currentQuoteIndex);
+  }, 8000);
 }
+
+function updateQuoteCarousel(quotes, index) {
+  const quoteEl = document.getElementById('sidebar-quote');
+  if (!quoteEl) return;
+  
+  const quote = quotes[index];
+  quoteEl.style.opacity = '0';
+  
+  setTimeout(() => {
+    quoteEl.innerHTML = 
+      '<p class="quote-text">"' + escapeHtml(quote.quote) + '"</p>' +
+      '<div class="quote-meta">' +
+        '<span class="quote-author">' + escapeHtml(quote.author) + '</span>' +
+        '<span class="quote-domain">' + escapeHtml(quote.domain) + '</span>' +
+      '</div>';
+    quoteEl.style.opacity = '1';
+  }, 300);
+}
+
+window.prevQuote = function() {
+  const quotes = [
+    { quote: "You cannot use the master's tools to dismantle the master's house.", author: "Audre Lorde", domain: "Lingosophy" },
+    { quote: "Numbers have life; they're not just symbols on paper.", author: "Shakuntala Devi", domain: "Arithmetics" },
+    { quote: "The cosmos is within us. We are made of star-stuff.", author: "Carl Sagan", domain: "Cosmology" },
+    { quote: "The conservation of nature is the conservation of humanity's future.", author: "Sundarlal Bahuguna", domain: "Biosphere" },
+    { quote: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela", domain: "Civitas" },
+    { quote: "Art is not what you see, but what you make others see.", author: "Edgar Degas", domain: "Artifex" },
+    { quote: "The right to information is the right to live with dignity.", author: "Aruna Roy", domain: "Praxis" },
+    { quote: "Science is not a boy's game; it's not a girl's game. It's everyone's game.", author: "Nichelle Nichols", domain: "Bioepisteme" }
+  ];
+  let currentQuoteIndex = parseInt(localStorage.getItem('currentQuoteIndex') || '0');
+  currentQuoteIndex = (currentQuoteIndex - 1 + quotes.length) % quotes.length;
+  localStorage.setItem('currentQuoteIndex', currentQuoteIndex.toString());
+  updateQuoteCarousel(quotes, currentQuoteIndex);
+};
+
+window.nextQuote = function() {
+  const quotes = [
+    { quote: "You cannot use the master's tools to dismantle the master's house.", author: "Audre Lorde", domain: "Lingosophy" },
+    { quote: "Numbers have life; they're not just symbols on paper.", author: "Shakuntala Devi", domain: "Arithmetics" },
+    { quote: "The cosmos is within us. We are made of star-stuff.", author: "Carl Sagan", domain: "Cosmology" },
+    { quote: "The conservation of nature is the conservation of humanity's future.", author: "Sundarlal Bahuguna", domain: "Biosphere" },
+    { quote: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela", domain: "Civitas" },
+    { quote: "Art is not what you see, but what you make others see.", author: "Edgar Degas", domain: "Artifex" },
+    { quote: "The right to information is the right to live with dignity.", author: "Aruna Roy", domain: "Praxis" },
+    { quote: "Science is not a boy's game; it's not a girl's game. It's everyone's game.", author: "Nichelle Nichols", domain: "Bioepisteme" }
+  ];
+  let currentQuoteIndex = parseInt(localStorage.getItem('currentQuoteIndex') || '0');
+  currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+  localStorage.setItem('currentQuoteIndex', currentQuoteIndex.toString());
+  updateQuoteCarousel(quotes, currentQuoteIndex);
+};
 
 function wireAuthForms() {
   const loginForm = document.getElementById('login-form');
@@ -3299,7 +3397,7 @@ function renderPageContent() {
             <p class="section-label">iNHET Integrated Network</p>
             <h1>Knowledge Domains</h1>
             <p class="lede" style="max-width:800px; margin-bottom:24px;">
-              Below are the 10 Domains of <strong>iNHET</strong> (Integrated Network for Holistic Education & Training) with precise definitions aligned to the Neofolk Atlas epistemic structure.
+              Below are the 10 Domains of <strong>iNHET</strong> (Indian Neofolk Humanitarian Education Trust) with precise definitions aligned to the Neofolk Atlas epistemic structure.
             </p>
             <p style="color:var(--muted-text); font-size:0.9rem; max-width:800px;">
               These domains represent fundamental lenses of knowledge, not school subjects. Every module, guild, pathway, and portfolio artifact maps to one or more domains.
@@ -3500,34 +3598,67 @@ function renderPageContent() {
     // Neoscore calculation
     const neoscore = calculateNeoscore(targetId);
 
+    // Parse hobbies
+    const hobbies = (profile.hobbies || '').split(',').filter(h => h.trim()).map(h => h.trim());
+
     userProfileRoot.innerHTML = `
       <div class="dashboard-shell">
-        <div class="dashboard-header profile-header-row">
-          <div>
-            <p class="section-label">Researcher Dossier</p>
-            <h1>${escapeHtml(profile.name || 'Anonymous Researcher')}</h1>
-            <p class="dashboard-meta">${hasProfile ? escapeHtml(profile.domain || 'General') : 'Profile not yet finalized'}</p>
-          </div>
-          <div style="text-align:right;">
-             <p class="section-label">NEOSCORE</p>
-             <div style="font-size:2.8rem; font-family:var(--serif); color:var(--gold); line-height:1;">${neoscore}</div>
+        <div class="dashboard-header" style="flex-direction:column; align-items:flex-start;">
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <div>
+              <p class="section-label">Researcher Dossier</p>
+              <h1>${escapeHtml(profile.name || 'Anonymous Researcher')}</h1>
+              <p class="dashboard-meta">${hasProfile ? escapeHtml(profile.domain || 'General') : 'Profile not yet finalized'}</p>
+            </div>
+            <div style="text-align:right;">
+               <p class="section-label">NEOSCORE</p>
+               <div style="font-size:2.8rem; font-family:var(--serif); color:var(--gold); line-height:1;">${neoscore}</div>
+            </div>
           </div>
         </div>
 
-        <div class="card profile-card-premium">
-          <div class="profile-avatar-wrap">
-            ${profile.photo ? `<img src="${escapeHtml(profile.photo)}" class="profile-avatar-lg" style="width:140px; height:140px; border-radius:4px; object-fit:cover;">` : '<div class="profile-avatar-placeholder" style="width:140px; height:140px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); font-size:3rem; border-radius:4px;">?</div>'}
-            <div class="pill" style="margin-top:12px; display:block; text-align:center; background:${profile.isVerified ? 'var(--gold)' : 'transparent'}; color:${profile.isVerified ? 'var(--ink)' : 'inherit'}; border:1px solid var(--gold);">
-              ${profile.isVerified ? 'Verified Curator' : (profile.status || 'Seeker')}
+        <div class="card profile-card-premium" style="display:grid; grid-template-columns: auto 1fr; gap:32px; padding:32px;">
+          <div class="profile-avatar-wrap" style="text-align:center;">
+            <div style="position:relative; display:inline-block;">
+              ${profile.photo ? `
+                <img src="${escapeHtml(profile.photo)}" class="profile-avatar-lg" style="width:160px; height:160px; border-radius:50%; object-fit:cover; border:4px solid var(--gold); box-shadow:0 0 30px rgba(198,169,107,0.3);">
+              ` : `
+                <div class="profile-avatar-placeholder" style="width:160px; height:160px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, rgba(198,169,107,0.1), rgba(198,169,107,0.05)); border:4px solid var(--gold); border-radius:50%; font-size:4rem; box-shadow:0 0 30px rgba(198,169,107,0.2);">
+                  ${profile.name ? profile.name.charAt(0).toUpperCase() : '?'}
+                </div>
+              `}
+              ${isMyProfile ? `
+                <button onclick="document.getElementById('profile-photo-input').click()" style="position:absolute; bottom:0; right:0; width:40px; height:40px; border-radius:50%; background:var(--gold); border:none; color:#000; cursor:pointer; font-size:1.2rem; box-shadow:0 4px 12px rgba(0,0,0,0.3);">📷</button>
+              ` : ''}
+            </div>
+            <div class="pill" style="margin-top:16px; display:inline-block; background:${profile.isVerified ? 'var(--gold)' : 'transparent'}; color:${profile.isVerified ? 'var(--ink)' : 'inherit'}; border:1px solid var(--gold); padding:6px 16px;">
+              ${profile.isVerified ? '✓ Verified Curator' : (profile.status || 'Seeker')}
             </div>
           </div>
           <div>
-            <p class="section-label">Researcher Biography</p>
-            <p style="font-size:1.1rem; line-height:1.6;">${escapeHtml(profile.bio || 'Scientific and personal biography remains undocumented.')}</p>
-            <div class="tag-stack" style="margin-top:20px; display:flex; gap:8px; flex-wrap:wrap;">
-              ${(profile.skills || '').split(',').filter(s => s).map(s => `<span class="pill" style="border-radius:4px; opacity:0.8;">${escapeHtml(s.trim())}</span>`).join('') || '<span class="muted">No explicit specializations documented.</span>'}
+            <p class="section-label" style="margin-bottom:12px;">Researcher Biography</p>
+            <p style="font-size:1.05rem; line-height:1.7; color:var(--parchment);">${escapeHtml(profile.bio || 'Scientific and personal biography remains undocumented.')}</p>
+            
+            ${hobbies.length > 0 ? `
+              <div style="margin-top:24px;">
+                <p class="section-label" style="margin-bottom:12px;">Hobbies & Interests</p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                  ${hobbies.map(hobby => `
+                    <span style="padding:8px 16px; background:rgba(198,169,107,0.1); border:1px solid rgba(198,169,107,0.3); border-radius:20px; font-size:0.85rem; color:var(--gold);">✨ ${escapeHtml(hobby)}</span>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+            
+            <div class="tag-stack" style="margin-top:24px; display:flex; gap:10px; flex-wrap:wrap;">
+              <p class="section-label" style="margin-right:16px;">Specializations:</p>
+              ${(profile.skills || '').split(',').filter(s => s).map(s => `<span class="pill" style="border-radius:20px; padding:6px 14px; font-size:0.8rem;">${escapeHtml(s.trim())}</span>`).join('') || '<span class="muted">No explicit specializations documented.</span>'}
             </div>
-            ${isMyProfile ? `<button id="open-edit-form" class="btn" style="margin-top:24px; font-size:0.85rem;">Edit My Profile</button>` : ''}
+            
+            ${isMyProfile ? `
+              <button id="open-edit-form" class="btn btn-primary" style="margin-top:24px;">Edit My Profile</button>
+              <input type="file" id="profile-photo-input" accept="image/*" style="display:none;">
+            ` : ''}
           </div>
         </div>
 
@@ -3607,6 +3738,10 @@ function renderPageContent() {
               <label>Specializations (comma separated)</label>
               <input id="edit-skills" class="neo-input" value="${escapeHtml(profile.skills || '')}">
             </div>
+            <div>
+              <label>Hobbies & Interests (comma separated)</label>
+              <input id="edit-hobbies" class="neo-input" value="${escapeHtml(profile.hobbies || '')}" placeholder="e.g. Reading, Hiking, Music, Photography">
+            </div>
             <div style="display:flex; gap:12px;">
               <button id="save-profile-changes" class="btn btn-primary">Save Changes</button>
               <button onclick="document.getElementById('profile-edit-modal').style.display='none'" class="btn">Cancel</button>
@@ -3622,13 +3757,28 @@ function renderPageContent() {
         document.getElementById('profile-edit-modal').style.display = 'flex';
       });
 
+      // Profile photo upload handler
+      document.getElementById('profile-photo-input')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const updated = { ...profile, photo: event.target.result };
+            localStorage.setItem(`neofolk.profile.${currentUser.id}`, JSON.stringify(updated));
+            location.reload();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
       document.getElementById('save-profile-changes')?.addEventListener('click', () => {
         const updated = {
           ...profile,
           name: document.getElementById('edit-name').value.trim(),
           bio: document.getElementById('edit-bio').value.trim(),
           domain: document.getElementById('edit-domain').value,
-          skills: document.getElementById('edit-skills').value.trim()
+          skills: document.getElementById('edit-skills').value.trim(),
+          hobbies: document.getElementById('edit-hobbies').value.trim()
         };
         localStorage.setItem(`neofolk.profile.${currentUser.id}`, JSON.stringify(updated));
         location.reload();
@@ -3740,7 +3890,7 @@ function renderPageContent() {
     guideRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
-          <p class="section-label">NHBE System Guide</p>
+          <p class="section-label">iNHET System Guide</p>
           <h1>How Neofolk Learning Works</h1>
           <p class="lede">
             Neofolk Atlas organizes learning through interconnected structures that reflect how knowledge exists in reality: interdisciplinary, applied, and evolving.
@@ -3748,185 +3898,238 @@ function renderPageContent() {
         </div>
 
         <!-- SECTION 1 — DOMAINS -->
-        <div class="card">
-          <h2>Domains</h2>
-          <p>
+        <div class="card" style="border-left:4px solid var(--gold);">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">🎯</span>
+            <h2 style="margin:0;">Domains</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Domains represent fundamental perspectives through which humans understand reality. Unlike traditional subjects, Domains describe modes of thinking rather than narrow academic categories.
           </p>
-          <p>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
             Each learning activity contributes to one or more Domains, creating a multidimensional learning profile rather than a single grade.
           </p>
-          <ul>
-            <li><strong>Lingosophy</strong> — language, interpretation, rhetoric, meaning systems</li>
-            <li><strong>Arthmetics</strong> — mathematics, logic, quantitative structure</li>
-            <li><strong>Cosmology</strong> — physics, astronomy, systems structure</li>
-            <li><strong>Biosphere</strong> — ecology, biology, environmental relationships</li>
-            <li><strong>Chronicles</strong> — history, civilization memory, cultural continuity</li>
-            <li><strong>Civitas</strong> — ethics, governance, social responsibility</li>
-            <li><strong>Tokenomics</strong> — economic behavior, incentives, value exchange</li>
-            <li><strong>Artifex</strong> — design, art, craft, material intelligence</li>
-            <li><strong>Praxis</strong> — physical discipline, embodied learning, applied action</li>
-            <li><strong>Bioepisteme</strong> — life knowledge, practical intelligence, survival skills</li>
-          </ul>
-          <p>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px;">
+            ${Object.entries(DOMAIN_NAMES).map(([key, name]) => {
+              const color = getTokenColor(DOMAIN_TO_TOKEN[key] || key);
+              return `<div style="padding:12px; background:rgba(0,0,0,0.2); border:1px solid ${color}30; border-radius:6px;">
+                <div style="font-weight:600; color:${color}; font-size:0.85rem; margin-bottom:4px;">${name}</div>
+                <div style="font-size:0.75rem; color:var(--muted-text);">${DOMAIN_TO_TOKEN[key] || key}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          <p style="color:var(--muted-text); font-style:italic; margin:0;">
             Domains create balance between analytical, creative, social, and practical abilities.
           </p>
         </div>
 
         <!-- SECTION 2 — PATHWAYS -->
-        <div class="card">
-          <h2>Pathways</h2>
-          <p>
+        <div class="card" style="border-left:4px solid #a89984;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">🛤️</span>
+            <h2 style="margin:0;">Pathways</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Pathways are short structured learning experiences connecting real-world skill development to Domains.
           </p>
-          <p>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Pathways typically last between one week and three months and allow learners to experiment with multiple fields before specializing.
           </p>
-          <p>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
             Each Pathway produces portfolio evidence and contributes to domain development.
           </p>
-          <h3>Examples of Pathways</h3>
-          <ul>
-            <li>Urban Gardening Practice</li>
-            <li>Introduction to Phonetics</li>
-            <li>Storytelling Practice</li>
-            <li>Basic Carpentry</li>
-            <li>Yoga Foundations</li>
-            <li>Folk Music Study</li>
-            <li>Ecology Observation</li>
-            <li>Digital Illustration Basics</li>
-          </ul>
-          <p>
+          <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; margin-bottom:20px;">
+            <h4 style="margin:0 0 12px 0; color:var(--gold);">Examples of Pathways</h4>
+            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+              ${['Urban Gardening Practice', 'Introduction to Phonetics', 'Storytelling Practice', 'Basic Carpentry', 'Yoga Foundations', 'Folk Music Study', 'Ecology Observation', 'Digital Illustration Basics'].map(p => 
+                `<span style="padding:6px 12px; background:rgba(168,153,132,0.2); border-radius:20px; font-size:0.8rem;">${p}</span>`
+              ).join('')}
+            </div>
+          </div>
+          <p style="color:var(--muted-text); font-style:italic; margin:0;">
             Pathways allow learning without long-term commitment pressure while still producing measurable progress.
           </p>
         </div>
 
         <!-- SECTION 3 — GUILDS -->
-        <div class="card">
-          <h2>Guilds</h2>
-          <p>
+        <div class="card" style="border-left:4px solid #7c6f64;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">🏛️</span>
+            <h2 style="margin:0;">Guilds</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Guilds are collaborative research communities formed by learners exploring shared interests.
           </p>
-          <p>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Guilds allow open-ended inquiry beyond structured courses and replicate historical knowledge guild traditions.
           </p>
-          <p>
-            Guilds develop:
-          </p>
-          <ul>
-            <li>initiative</li>
-            <li>research ability</li>
-            <li>collaboration skills</li>
-            <li>intellectual curiosity</li>
-          </ul>
-          <h3>Examples of Guilds</h3>
-          <ul>
-            <li>Solar Architecture Guild</li>
-            <li>Food Culture Guild</li>
-            <li>Folk Music Preservation Guild</li>
-            <li>Gender Language Guild</li>
-            <li>Local History Guild</li>
-            <li>Traditional Craft Research Guild</li>
-          </ul>
-          <p>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin:20px 0;">
+            ${['initiative', 'research ability', 'collaboration skills', 'intellectual curiosity'].map(skill => 
+              `<div style="text-align:center; padding:16px; background:rgba(124,111,100,0.15); border-radius:8px;">
+                <div style="font-size:1.5rem; margin-bottom:8px;">✨</div>
+                <div style="font-size:0.85rem; font-weight:600;">${skill}</div>
+              </div>`
+            ).join('')}
+          </div>
+          <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
+            <h4 style="margin:0 0 12px 0; color:var(--gold);">Examples of Guilds</h4>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:8px;">
+              ${['Solar Architecture Guild', 'Food Culture Guild', 'Folk Music Preservation Guild', 'Gender Language Guild', 'Local History Guild', 'Traditional Craft Research Guild'].map(g => 
+                `<div style="padding:8px; background:rgba(124,111,100,0.2); border-radius:6px; font-size:0.8rem;">${g}</div>`
+              ).join('')}
+            </div>
+          </div>
+          <p style="color:var(--muted-text); font-style:italic; margin-top:20px;">
             Guild participation contributes to domain depth and specialization.
           </p>
         </div>
 
         <!-- SECTION 4 — PORTFOLIO -->
-        <div class="card">
-          <h2>Portfolio</h2>
-          <p>
-            Portfolio is the primary method of demonstrating learning.
+        <div class="card" style="border-left:4px solid #928374;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">📁</span>
+            <h2 style="margin:0;">Portfolio</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
+            Portfolio is the primary method of demonstrating learning, structured around your module completion, attendance records, and curator remarks.
           </p>
-          <p>
-            Instead of relying only on exams, Neofolk Atlas evaluates documented evidence of skill development.
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
+            Each portfolio entry includes: Module completion → Attendance record → Curator remark (optional Arbiter remark). You can also add media reviews for songs, books, and films with your critiques and essays.
           </p>
-          <p>
-            Portfolio entries may include:
-          </p>
-          <ul>
-            <li>written analysis</li>
-            <li>design work</li>
-            <li>project documentation</li>
-            <li>audio recordings</li>
-            <li>performance recordings</li>
-            <li>photographs of practical work</li>
-            <li>research notes</li>
-            <li>reflection journals</li>
-          </ul>
-          <h3>Portfolio Examples</h3>
-          <ul>
-            <li>Soil health analysis report</li>
-            <li>Folk song performance recording</li>
-            <li>Architectural drawing</li>
-            <li>Research interview transcript</li>
-            <li>Mathematical pattern study</li>
-            <li>Craft prototype photographs</li>
-          </ul>
-          <p>
+          <div style="background:rgba(0,0,0,0.2); padding:20px; border-radius:8px;">
+            <h4 style="margin:0 0 16px 0; color:var(--gold);">Portfolio Structure</h4>
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(146,131,116,0.15); border-radius:6px;">
+                <span style="font-size:1.5rem;">📚</span>
+                <div>
+                  <div style="font-weight:600;">Module Completion</div>
+                  <div style="font-size:0.8rem; color:var(--muted-text);">Finished learning pathway</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(146,131,116,0.15); border-radius:6px;">
+                <span style="font-size:1.5rem;">✅</span>
+                <div>
+                  <div style="font-weight:600;">Attendance Record</div>
+                  <div style="font-size:0.8rem; color:var(--muted-text);">Session participation tracking</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(146,131,116,0.15); border-radius:6px;">
+                <span style="font-size:1.5rem;">📝</span>
+                <div>
+                  <div style="font-weight:600;">Curator Remark</div>
+                  <div style="font-size:0.8rem; color:var(--muted-text);">Mentor feedback (optional Arbiter)</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(146,131,116,0.15); border-radius:6px;">
+                <span style="font-size:1.5rem;">🎬</span>
+                <div>
+                  <div style="font-weight:600;">Media Reviews</div>
+                  <div style="font-size:0.8rem; color:var(--muted-text);">Songs, books, films with critiques</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p style="color:var(--muted-text); font-style:italic; margin-top:20px;">
             Portfolio grows continuously and reflects real capability development over time.
           </p>
         </div>
 
-        <!-- SECTION 5 — NODES -->
-        <div class="card">
-          <h2>Nodes</h2>
-          <p>
-            Nodes are physical or digital environments where learning occurs.
+        <!-- SECTION 5 — CARTONODES -->
+        <div class="card" style="border-left:4px solid #504945;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">🗺️</span>
+            <h2 style="margin:0;">CartoNodes</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
+            CartoNodes are physical or digital environments where learning occurs, distributed across society rather than restricted to classrooms.
           </p>
-          <p>
-            Nodes distribute education across society rather than restricting learning to classrooms.
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
+            CartoNodes allow professionals, practitioners, and researchers to contribute to education directly. You can request access to nodes based on nearby user density.
           </p>
-          <p>
-            Nodes allow professionals, practitioners, and researchers to contribute to education directly.
-          </p>
-          <h3>Types of Nodes</h3>
-          <ul>
-            <li><strong>Practice Nodes</strong> — real-world skill environments</li>
-            <li><strong>Studios</strong> — design and creative production spaces</li>
-            <li><strong>Atheneums</strong> — research libraries and archives</li>
-            <li><strong>Coliseums</strong> — movement and physical training spaces</li>
-            <li><strong>Learning Commons</strong> — collaborative study environments</li>
-          </ul>
-          <p>
-            Nodes connect knowledge to real-world practice.
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px;">
+            <div style="padding:16px; background:rgba(80,73,69,0.2); border:1px solid rgba(80,73,69,0.3); border-radius:8px;">
+              <div style="font-size:1.5rem; margin-bottom:8px;">🔨</div>
+              <div style="font-weight:600; margin-bottom:4px;">Practice Node</div>
+              <div style="font-size:0.75rem; color:var(--muted-text);">Real-world skill environments</div>
+            </div>
+            <div style="padding:16px; background:rgba(80,73,69,0.2); border:1px solid rgba(80,73,69,0.3); border-radius:8px;">
+              <div style="font-size:1.5rem; margin-bottom:8px;">🎨</div>
+              <div style="font-weight:600; margin-bottom:4px;">Studio</div>
+              <div style="font-size:0.75rem; color:var(--muted-text);">Design and creative production spaces</div>
+            </div>
+            <div style="padding:16px; background:rgba(80,73,69,0.2); border:1px solid rgba(80,73,69,0.3); border-radius:8px;">
+              <div style="font-size:1.5rem; margin-bottom:8px;">📚</div>
+              <div style="font-weight:600; margin-bottom:4px;">Atheneum</div>
+              <div style="font-size:0.75rem; color:var(--muted-text);">Research libraries and archives</div>
+            </div>
+            <div style="padding:16px; background:rgba(80,73,69,0.2); border:1px solid rgba(80,73,69,0.3); border-radius:8px;">
+              <div style="font-size:1.5rem; margin-bottom:8px;">💪</div>
+              <div style="font-weight:600; margin-bottom:4px;">Coliseum</div>
+              <div style="font-size:0.75rem; color:var(--muted-text);">Movement and physical training spaces</div>
+            </div>
+            <div style="padding:16px; background:rgba(80,73,69,0.2); border:1px solid rgba(80,73,69,0.3); border-radius:8px;">
+              <div style="font-size:1.5rem; margin-bottom:8px;">🏛️</div>
+              <div style="font-weight:600; margin-bottom:4px;">Learning Commons</div>
+              <div style="font-size:0.75rem; color:var(--muted-text);">Collaborative study environments</div>
+            </div>
+          </div>
+          <p style="color:var(--muted-text); font-style:italic; margin:0;">
+            CartoNodes connect knowledge to real-world practice through distributed learning networks.
           </p>
         </div>
 
         <!-- SECTION 6 — HOW EVERYTHING CONNECTS -->
-        <div class="card">
-          <h2>System Structure</h2>
-          <p>
-            Learning flows through interconnected layers:
+        <div class="card" style="border-left:4px solid #4e463f;">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">🔗</span>
+            <h2 style="margin:0;">System Structure</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
+            Learning flows through interconnected layers within the iNHET ecosystem:
           </p>
-          <ul>
-            <li>Pathways create structured learning experiences</li>
-            <li>Guilds allow deeper collaborative research</li>
-            <li>Portfolio documents evidence of capability</li>
-            <li>Nodes provide real environments for learning</li>
-            <li>Domains track intellectual development across disciplines</li>
-          </ul>
-          <p>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            ${[
+              { icon: '🛤️', text: 'Pathways create structured learning experiences' },
+              { icon: '🏛️', text: 'Guilds allow deeper collaborative research' },
+              { icon: '📁', text: 'Portfolio documents evidence of capability' },
+              { icon: '🗺️', text: 'CartoNodes provide real environments for learning' },
+              { icon: '🎯', text: 'Domains track intellectual development across disciplines' }
+            ].map(item => `
+              <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(78,70,63,0.15); border-radius:6px;">
+                <span style="font-size:1.5rem;">${item.icon}</span>
+                <div style="font-size:0.95rem;">${item.text}</div>
+              </div>
+            `).join('')}
+          </div>
+          <p style="color:var(--muted-text); font-style:italic; margin-top:20px;">
             Together these structures create a learning ecosystem that reflects real-world complexity.
           </p>
         </div>
 
         <!-- SECTION 7 — NEOSCORE -->
-        <div class="card">
-          <h2>Neoscore</h2>
-          <p>
+        <div class="card" style="border-left:4px solid var(--gold);">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+            <span style="font-size:2rem;">📊</span>
+            <h2 style="margin:0;">Neoscore</h2>
+          </div>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Neoscore measures development across multiple Domains rather than a single exam result.
           </p>
-          <p>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Each learning activity contributes to one or more Domains.
           </p>
-          <p>
+          <p style="font-size:1.05rem; line-height:1.7; margin-bottom:16px;">
             Neoscore reflects both breadth of exploration and depth of specialization.
           </p>
-          <p>
-            Neoscore calculation system will evolve after the alpha phase to better reflect professional capability and interdisciplinary intelligence.
-          </p>
+          <div style="background:linear-gradient(135deg, rgba(198,169,107,0.1), rgba(198,169,107,0.05)); padding:20px; border-radius:8px; border:1px solid var(--gold)30;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <span style="font-weight:600; color:var(--gold);">Current Phase</span>
+              <span style="padding:4px 12px; background:var(--gold); color:#000; border-radius:20px; font-size:0.75rem; font-weight:600;">ALPHA</span>
+            </div>
+            <p style="font-size:0.9rem; color:var(--muted-text); margin:0;">
+              Neoscore calculation system will evolve after the alpha phase to better reflect professional capability and interdisciplinary intelligence.
+            </p>
+          </div>
         </div>
       </div>
     `;
@@ -3977,75 +4180,145 @@ function renderPageContent() {
         </div>
       `;
     } else {
-      // Seeker/Learner Portfolio Creation
+      // Seeker/Learner Portfolio - Module-Attendance-Curator Remark structure
       const entries = getPortfolio(userId);
+      const mediaReviews = JSON.parse(localStorage.getItem(`neofolk.mediaReviews.${userId}`) || '[]');
       portfolioRoot.innerHTML = `
         <div class="dashboard-shell">
           <div class="dashboard-header">
             <div>
-              <p class="section-label">Evidence</p>
-              <h1>Artifact Portfolio</h1>
-              <p class="lede">Submit proof of learning, project artifacts, or completed research for Arbiter review.</p>
+              <p class="section-label">Portfolio</p>
+              <h1>Learning Portfolio</h1>
+              <p class="lede">Your module completions, attendance records, and curator remarks form the core of your portfolio. Add optional media reviews to showcase your critical thinking.</p>
+            </div>
+            <div class="inline-actions">
+              <button onclick="window.showAddMediaReview()" class="btn btn-secondary">+ Add Media Review</button>
             </div>
           </div>
 
-          <div class="dashboard-sections two-column">
+          <!-- Tab Navigation -->
+          <div style="display:flex; gap:12px; margin:24px 0; border-bottom:1px solid var(--border-color);">
+            <button onclick="window.switchPortfolioTab('modules')" class="btn btn-secondary portfolio-tab" data-tab="modules" style="border-bottom:2px solid var(--gold);">Modules</button>
+            <button onclick="window.switchPortfolioTab('media')" class="btn portfolio-tab" data-tab="media">Media Reviews</button>
+          </div>
+
+          <!-- Modules Tab -->
+          <div id="portfolio-modules-tab" class="portfolio-tab-content">
             <div class="card">
-              <h3>Add New Evidence</h3>
-              <form id="portfolio-form" style="display:grid; gap:16px; margin-top:20px;">
-                <div class="form-group">
-                  <label>Artifact Title</label>
-                  <input id="p-title" class="neo-input" placeholder="e.g. Soil Microbiology Analysis" required>
-                </div>
-                <div class="form-group">
-                  <label>Relevant Domain</label>
-                  <select id="p-domain" class="neo-input">
-                    <option value="">Select Domain...</option>
-                    ${Object.keys(DOMAIN_NAMES).map(d => `<option value="${d}">${DOMAIN_NAMES[d]}</option>`).join('')}
+              <h3 style="margin-bottom:20px;">Module Completions</h3>
+              <div class="record-list">
+                ${entries.length ? entries.filter(e => e.type === 'module').sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(e => `
+                  <div class="record-card" style="border-left:4px solid ${getTokenColor(DOMAIN_TO_TOKEN[e.domain] || e.domain)};">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                      <span class="pill">${escapeHtml(DOMAIN_NAMES[e.domain] || e.domain)}</span>
+                      <span class="muted" style="font-size:0.75rem;">${new Date(e.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <h4 style="margin:0 0 8px 0;">${escapeHtml(e.title)}</h4>
+                    <div style="background:rgba(0,0,0,0.2); padding:12px; border-radius:6px; margin:12px 0;">
+                      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <span style="font-size:1.2rem;">✅</span>
+                        <span style="font-size:0.85rem; font-weight:600;">Attendance: ${escapeHtml(e.attendance || '100%')}</span>
+                      </div>
+                      <div style="display:flex; align-items:flex-start; gap:8px;">
+                        <span style="font-size:1.2rem;">📝</span>
+                        <div>
+                          <div style="font-size:0.85rem; font-weight:600; margin-bottom:4px;">Curator Remark</div>
+                          <div style="font-size:0.8rem; color:var(--muted-text); font-style:italic;">"${escapeHtml(e.curatorRemark || 'No remark provided')}"</div>
+                        </div>
+                      </div>
+                      ${e.arbiterRemark ? `
+                        <div style="display:flex; align-items:flex-start; gap:8px; margin-top:8px;">
+                          <span style="font-size:1.2rem;">⚖️</span>
+                          <div>
+                            <div style="font-size:0.85rem; font-weight:600; margin-bottom:4px;">Arbiter Remark</div>
+                            <div style="font-size:0.8rem; color:var(--muted-text); font-style:italic;">"${escapeHtml(e.arbiterRemark)}"</div>
+                          </div>
+                        </div>
+                      ` : ''}
+                    </div>
+                  </div>
+                `).join('') : `
+                  <div class="empty-state">
+                    <p>No module completions yet. Complete modules to build your portfolio.</p>
+                  </div>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <!-- Media Reviews Tab -->
+          <div id="portfolio-media-tab" class="portfolio-tab-content" style="display:none;">
+            <div class="card">
+              <h3 style="margin-bottom:20px;">Media Reviews</h3>
+              <div class="record-list">
+                ${mediaReviews.length ? mediaReviews.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(review => `
+                  <div class="record-card">
+                    <div style="display:flex; gap:16px; margin-bottom:12px;">
+                      <div style="width:80px; height:80px; border-radius:8px; background:rgba(0,0,0,0.3); overflow:hidden; flex-shrink:0;">
+                        ${review.image ? `<img src="${escapeHtml(review.image)}" style="width:100%; height:100%; object-fit:cover;">` : `<div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2rem;">🎬</div>`}
+                      </div>
+                      <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                          <span class="pill">${escapeHtml(review.mediaType)}</span>
+                          <span class="muted" style="font-size:0.75rem;">${new Date(review.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <h4 style="margin:0 0 4px 0;">${escapeHtml(review.title)}</h4>
+                        <p style="font-size:0.8rem; color:var(--muted-text); margin:0;">${escapeHtml(review.author || '')}</p>
+                      </div>
+                    </div>
+                    <p style="font-size:0.9rem; line-height:1.6; color:var(--parchment);">${escapeHtml(review.review)}</p>
+                  </div>
+                `).join('') : `
+                  <div class="empty-state">
+                    <p>No media reviews yet. Add reviews for songs, books, or films to showcase your critical thinking.</p>
+                  </div>
+                `}
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Media Review Modal -->
+          <div id="media-review-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(8px); z-index:10001; display:flex; align-items:center; justify-content:center; padding:20px;">
+            <div style="background:linear-gradient(135deg, #1a1614 0%, #2c1f1a 100%); border:1px solid var(--gold); border-radius:12px; padding:40px; width:500px; max-width:100%; position:relative;">
+              <div style="position:absolute; top:0; left:0; right:0; height:4px; background:var(--gold); border-radius:12px 12px 0 0;"></div>
+              
+              <h2 style="font-family:'Cormorant Garamond', serif; color:var(--gold); font-size:1.6rem; margin:0 0 10px 0;">Add Media Review</h2>
+              <p style="color:#8b8276; font-size:12px; margin-bottom:20px;">Share your critique or essay on a song, book, or film.</p>
+              
+              <div style="display:grid; gap:16px;">
+                <div>
+                  <label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Media Type</label>
+                  <select id="media-type" class="neo-input">
+                    <option value="Song">Song</option>
+                    <option value="Book">Book</option>
+                    <option value="Film">Film</option>
                   </select>
                 </div>
-                <div class="form-group">
-                  <label>Description (Context & Achievement)</label>
-                  <textarea id="p-desc" class="neo-input" rows="4" placeholder="Briefly describe the significance of this artifact."></textarea>
+                <div>
+                  <label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Title</label>
+                  <input id="media-title" class="neo-input" placeholder="e.g. Bohemian Rhapsody">
                 </div>
-                <div class="form-group">
-                  <label>Verification Link (Optional)</label>
-                  <input id="p-link" class="neo-input" placeholder="https://github.com/..." type="url">
+                <div>
+                  <label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Author/Artist (Optional)</label>
+                  <input id="media-author" class="neo-input" placeholder="e.g. Queen">
                 </div>
-                <button type="submit" class="btn btn-primary" style="margin-top:12px;">Submit Artifact to Portfolio</button>
-              </form>
-            </div>
-            
-            <div class="card">
-              <h3>Recent Successes</h3>
-              <div class="record-list" style="margin-top:20px;">
-                ${entries.length ? entries.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(e => `
-                  <div class="record-card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                      <span class="pill" style="font-size:0.6rem;">${escapeHtml(e.domain)}</span>
-                      <span class="muted" style="font-size:0.7rem;">${new Date(e.timestamp).toLocaleDateString()}</span>
-                    </div>
-                    <h4 style="margin:4px 0;">${escapeHtml(e.title)}</h4>
-                    <p style="font-size:0.85rem; color:var(--muted-text);">${escapeHtml(e.description)}</p>
-                  </div>
-                `).join('') : '<div class="empty-state"><p>No artifacts found. Begin your documentation journey.</p></div>'}
+                <div>
+                  <label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Image URL (Optional)</label>
+                  <input id="media-image" class="neo-input" placeholder="https://...">
+                </div>
+                <div>
+                  <label style="display:block; color:var(--muted-text); font-size:11px; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Your Review/Critique</label>
+                  <textarea id="media-review" class="neo-input" rows="5" placeholder="Share your thoughts, analysis, or critique..."></textarea>
+                </div>
+                <div style="display:flex; gap:12px;">
+                  <button onclick="window.saveMediaReview()" class="btn btn-primary" style="flex:1;">Save Review</button>
+                  <button onclick="window.hideMediaReviewModal()" class="btn btn-secondary" style="flex:1;">Cancel</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       `;
-      
-      document.getElementById('portfolio-form')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const entry = {
-          title: document.getElementById('p-title').value,
-          domain: document.getElementById('p-domain').value,
-          description: document.getElementById('p-desc').value,
-          link: document.getElementById('p-link').value
-        };
-        addPortfolioEntry(userId, entry);
-        location.reload();
-      });
     }
   }
 
@@ -4573,39 +4846,73 @@ function renderPageContent() {
     roleSelect.style.display = 'none';
   }
   // NODES PAGE
-  // Nodes page
+  // CartoNodes page
   const nodesRoot = document.getElementById("nodes-root");
   if (nodesRoot && nodesRoot.innerHTML.trim() === '') {
     const nodes = JSON.parse(localStorage.getItem('neofolk.nodeNeeds') || '[]');
     
+    // Node types with descriptions
+    const nodeTypes = {
+      'practice': { label: 'Practice Node', desc: 'Real-world skill environments', icon: '🔨' },
+      'studio': { label: 'Studio', desc: 'Design and creative production spaces', icon: '🎨' },
+      'atheneum': { label: 'Atheneum', desc: 'Research libraries and archives', icon: '📚' },
+      'coliseum': { label: 'Coliseum', desc: 'Movement and physical training spaces', icon: '💪' },
+      'commons': { label: 'Learning Commons', desc: 'Collaborative study environments', icon: '🏛️' }
+    };
+    
     nodesRoot.innerHTML = `
       <div class="dashboard-shell">
-        <div class="dashboard-header" style="justify-content:space-between; align-items:flex-end; display:flex;">
-           <div>
-            <p class="section-label">Spatiotemporal Network</p>
-            <h1>Physical Learning Nodes</h1>
-            <p class="lede">Active sites for curriculum delivery, craft circles, and local academic coordination.</p>
-           </div>
-           <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:0.75rem;">[ SIGNAL LOCAL NEED ]</button>
+        <div class="dashboard-header">
+          <div>
+            <p class="section-label">CartoNodes Network</p>
+            <h1>Learning Environments</h1>
+            <p class="lede">Discover and request physical spaces for collaborative learning across the iNHET network.</p>
+          </div>
+          <button onclick="window.toggleDemandMode()" class="btn btn-secondary" style="font-size:0.75rem;">[ SIGNAL LOCAL NEED ]</button>
+        </div>
+        
+        <!-- Node Type Filter -->
+        <div style="display:flex; gap:10px; margin:24px 0; flex-wrap:wrap;">
+          <button class="btn btn-secondary" onclick="window.filterNodes('all')" style="font-size:0.75rem;">All Types</button>
+          ${Object.entries(nodeTypes).map(([key, type]) => `
+            <button class="btn" onclick="window.filterNodes('${key}')" style="font-size:0.75rem;">${type.icon} ${type.label}</button>
+          `).join('')}
         </div>
         
         <div class="card" style="margin-top:24px;">
           ${nodes.length ? `
-            <div class="record-list">
-              ${nodes.map(node => `
-                <div class="record-card">
+            <div class="record-list" id="nodes-list">
+              ${nodes.map(node => {
+                const nodeType = nodeTypes[node.nodeType] || nodeTypes['practice'];
+                const vicinityCount = Math.floor(Math.random() * 50) + 5; // Simulated vicinity count
+                const canAsk = vicinityCount >= 10;
+                
+                return `
+                <div class="record-card" data-node-type="${node.nodeType || 'practice'}">
                   <div class="dashboard-card-topline">
-                    <span class="pill">${escapeHtml(node.type || 'Research Node')}</span>
+                    <span class="pill" style="background:${getTokenColor(DOMAIN_TO_TOKEN[node.domain] || node.domain)}20; border-color:${getTokenColor(DOMAIN_TO_TOKEN[node.domain] || node.domain)};">${nodeType.icon} ${nodeType.label}</span>
                     <span class="muted">${escapeHtml(node.city || node.locationName || 'Unknown Locality')}</span>
                   </div>
                   <h3 style="margin-top:8px;">${escapeHtml(node.nodeName || node.title)}</h3>
-                  <p style="font-size:0.85rem; color:var(--muted-text);">Resonates with: ${escapeHtml(DOMAIN_NAMES[node.domain] || node.domain || 'Cross-disciplinary')}</p>
+                  <p style="font-size:0.85rem; color:var(--muted-text); margin-bottom:12px;">${nodeType.desc} • Resonates with: ${escapeHtml(DOMAIN_NAMES[node.domain] || node.domain || 'Cross-disciplinary')}</p>
+                  
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:16px; border-top:1px solid rgba(232,220,200,0.1);">
+                    <div style="font-size:0.75rem; color:var(--muted-text);">
+                      <span style="color:${canAsk ? '#4ade80' : '#f59e0b'};">${vicinityCount} people nearby</span>
+                    </div>
+                    ${canAsk ? `
+                      <button onclick="window.askForNode('${node.id}')" class="btn btn-primary" style="font-size:0.75rem; padding:8px 16px;">Ask for This</button>
+                    ` : `
+                      <button disabled class="btn btn-secondary" style="font-size:0.75rem; padding:8px 16px; opacity:0.5;">Need 10+ nearby</button>
+                    `}
+                  </div>
                 </div>
-              `).join('')}
+              `;
+              }).join('')}
             </div>
           ` : `
             <div class="empty-state">
-              <p>No active nodes detected in this sector. Signal a local need to initiate site establishment.</p>
+              <p>No active CartoNodes detected in this sector. Signal a local need to initiate site establishment.</p>
             </div>
           `}
         </div>
@@ -4795,6 +5102,93 @@ window.createBatchFromModule = function(moduleId) {
 
 window.applyForCurator = function() {
     alert('Curator application feature coming soon. For now, use the developer console to create a curator card:\n\nwindow.createCuratorCard("Your Name", 25, ["Level 3 Lingosophy"])');
+};
+
+// CartoNodes Functions
+window.filterNodes = function(nodeType) {
+    const nodes = document.querySelectorAll('#nodes-list .record-card');
+    nodes.forEach(node => {
+        if (nodeType === 'all' || node.dataset.nodeType === nodeType) {
+            node.style.display = 'block';
+        } else {
+            node.style.display = 'none';
+        }
+    });
+};
+
+window.askForNode = function(nodeId) {
+    const nodes = JSON.parse(localStorage.getItem('neofolk.nodeNeeds') || '[]');
+    const node = nodes.find(n => n.id === nodeId);
+    
+    if (node) {
+        const request = {
+            nodeId: nodeId,
+            nodeName: node.nodeName || node.title,
+            userId: currentUser?.id || 'guest',
+            requestedAt: new Date().toISOString(),
+            status: 'pending'
+        };
+        
+        const requests = JSON.parse(localStorage.getItem('neofolk.nodeRequests') || '[]');
+        requests.push(request);
+        localStorage.setItem('neofolk.nodeRequests', JSON.stringify(requests));
+        
+        alert(`Request sent for "${node.nodeName || node.title}". You will be notified when enough people are interested.`);
+    }
+};
+
+// Portfolio Tab Functions
+window.switchPortfolioTab = function(tabName) {
+    document.querySelectorAll('.portfolio-tab-content').forEach(tab => tab.style.display = 'none');
+    document.querySelectorAll('.portfolio-tab').forEach(btn => btn.style.borderBottom = 'none');
+    
+    document.getElementById(`portfolio-${tabName}-tab`).style.display = 'block';
+    document.querySelector(`.portfolio-tab[data-tab="${tabName}"]`).style.borderBottom = '2px solid var(--gold)';
+};
+
+window.showAddMediaReview = function() {
+    document.getElementById('media-review-modal').style.display = 'flex';
+};
+
+window.hideMediaReviewModal = function() {
+    document.getElementById('media-review-modal').style.display = 'none';
+};
+
+window.saveMediaReview = function() {
+    const mediaType = document.getElementById('media-type')?.value;
+    const title = document.getElementById('media-title')?.value;
+    const author = document.getElementById('media-author')?.value;
+    const image = document.getElementById('media-image')?.value;
+    const review = document.getElementById('media-review')?.value;
+    
+    if (!title || !review) {
+        alert('Please fill in title and review');
+        return;
+    }
+    
+    const userId = currentUser?.id || 'guest';
+    const mediaReviews = JSON.parse(localStorage.getItem(`neofolk.mediaReviews.${userId}`) || '[]');
+    
+    mediaReviews.push({
+        id: Date.now(),
+        mediaType,
+        title,
+        author,
+        image,
+        review,
+        timestamp: new Date().toISOString()
+    });
+    
+    localStorage.setItem(`neofolk.mediaReviews.${userId}`, JSON.stringify(mediaReviews));
+    
+    // Clear form
+    document.getElementById('media-title').value = '';
+    document.getElementById('media-author').value = '';
+    document.getElementById('media-image').value = '';
+    document.getElementById('media-review').value = '';
+    
+    window.hideMediaReviewModal();
+    location.reload();
 };
 
 window.saveSpecializations = async function() {
