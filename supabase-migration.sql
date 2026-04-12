@@ -66,6 +66,8 @@ create policy "Curators manage own modules" on public.modules
   for all using (auth.uid() = curator_id);
 create policy "Published modules readable by all" on public.modules
   for select using (is_published = true or visibility = true);
+alter table public.modules add column if not exists local_id text;
+create unique index if not exists modules_local_id_unique on public.modules(local_id) where local_id is not null;
 
 -- Add spatial index for 'Near Me' logic
 create index if not exists modules_location_idx on public.modules using gist(location_coords);
@@ -277,10 +279,48 @@ create table if not exists public.neo_scores (
   unique(user_id, role)
 );
 alter table public.neo_scores enable row level security;
-create policy "Users read own scores" on public.neo_scores
-  for select using (auth.uid() = user_id);
+drop policy if exists "Users read own scores" on public.neo_scores;
+drop policy if exists "Users manage own neo scores" on public.neo_scores;
+drop policy if exists "Curator neo scores publicly readable" on public.neo_scores;
+create policy "Users manage own neo scores" on public.neo_scores
+  for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+create policy "Curator neo scores publicly readable" on public.neo_scores
+  for select using (role = 'curator');
 
--- 18. Storage bucket for avatars (run separately if needed)
+-- 18. ENROLLMENTS
+create table if not exists public.enrolled_modules (
+  id            uuid default gen_random_uuid() primary key,
+  user_id       uuid references auth.users(id) on delete cascade not null,
+  module_id     uuid references public.modules(id) on delete cascade not null,
+  status        text check (status in ('enrolled','in_progress','completed','dropped')) default 'enrolled',
+  enrolled_at   timestamptz default now(),
+  completed_at  timestamptz,
+  unique(user_id, module_id)
+);
+alter table public.enrolled_modules enable row level security;
+drop policy if exists "Users manage own enrollments" on public.enrolled_modules;
+create policy "Users manage own enrollments" on public.enrolled_modules
+  for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- 19. NOTES
+create table if not exists public.notes (
+  id          uuid default gen_random_uuid() primary key,
+  user_id     uuid references auth.users(id) on delete cascade not null,
+  module_id   uuid references public.modules(id) on delete cascade,
+  title       text,
+  body        text,
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+alter table public.notes enable row level security;
+drop policy if exists "Users manage own notes" on public.notes;
+create policy "Users manage own notes" on public.notes
+  for all using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- 20. Storage bucket for avatars (run separately if needed)
 -- insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true);
 -- create policy "Avatar uploads" on storage.objects for insert with check (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
 -- create policy "Avatar reads" on storage.objects for select using (bucket_id = 'avatars');

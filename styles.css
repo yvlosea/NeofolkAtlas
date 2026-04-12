@@ -834,11 +834,38 @@ body.has-sidebar .page-stack   {
 
 /* ── PREMIUM PROFILE UI ── */
 .profile-card-premium {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  gap: 32px;
+  margin-top: 24px;
   padding: var(--space-4);
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow);
+}
+
+.public-profile-card {
+  display: grid;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  gap: 30px;
+}
+
+.public-profile-summary {
+  text-align: center;
+}
+
+.profile-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.module-editor-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .profile-avatar-lg {
@@ -2037,8 +2064,16 @@ body.has-sidebar .page-stack   {
   .hero-grid,
   .wisdom-grid,
   .hero-section,
+  .public-profile-card,
+  .profile-card-premium,
+  .module-editor-meta-grid,
   .about-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profile-header-row {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   /* Atlas index sidebar */

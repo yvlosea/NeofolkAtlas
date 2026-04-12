@@ -1234,30 +1234,49 @@ window.saveModuleAdvanced = async function() {
   const supabase = getSupabaseClient();
   if (supabase && currentUser) {
     try {
+      const modulePayload = {
+        title: title,
+        description: desc,
+        domain: domain,
+        duration_weeks: weeks,
+        max_capacity: capacity,
+        location_name: locName,
+        syllabus: syllabus,
+        updated_at: new Date().toISOString()
+      };
+
       if (editId) {
-        await supabase.from('modules').update({
-          title: title,
-          description: desc,
-          domain: domain,
-          duration_weeks: weeks,
-          max_capacity: capacity,
-          location_name: locName,
-          syllabus: syllabus,
-          updated_at: new Date()
-        }).eq('local_id', editId);
+        const syncColumn = module.supabaseId ? 'id' : 'local_id';
+        const syncValue = module.supabaseId || editId;
+        const { data, error } = await supabase
+          .from('modules')
+          .update(modulePayload)
+          .eq(syncColumn, syncValue)
+          .select('id')
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data?.id && !module.supabaseId) {
+          module.supabaseId = data.id;
+          saveModules();
+        }
       } else {
-        await supabase.from('modules').insert({
-          curator_id: currentUser.id,
-          title: title,
-          description: desc,
-          domain: domain,
-          duration_weeks: weeks,
-          max_capacity: capacity,
-          location_name: locName,
-          syllabus: syllabus,
-          is_published: true,
-          local_id: module.id
-        });
+        const { data, error } = await supabase
+          .from('modules')
+          .insert({
+            ...modulePayload,
+            curator_id: currentUser.id,
+            is_published: true,
+            local_id: module.id
+          })
+          .select('id')
+          .single();
+
+        if (error) throw error;
+        if (data?.id) {
+          module.supabaseId = data.id;
+          saveModules();
+        }
       }
     } catch (e) {
       console.warn('Supabase save failed, using local storage only:', e);
@@ -1277,11 +1296,21 @@ async function renderPublicProfile(container, username) {
   let scoreData = null;
 
   if (supabase) {
-    const { data: profile } = await supabase.from('curator_profiles').select('*').eq('name', username).single();
-    profileData = profile;
-    const { data: score } = await supabase.from('neo_scores').select('*').eq('user_id', profile?.user_id).single();
-    scoreData = score;
+    const { data: profile, error: profileError } = await supabase
+      .from('curator_profiles')
+      .select('*')
+      .eq('name', username)
+      .maybeSingle();
+
+    if (profileError) {
+      console.warn('Public profile fetch failed:', profileError.message);
+    } else {
+      profileData = profile;
+      scoreData = await getRoleNeoScore(supabase, profile?.user_id, 'curator');
+    }
   }
+
+  const publicNeoScore = scoreData?.score ?? 'Unavailable';
 
   container.innerHTML = `
     <div class="dashboard-shell">
@@ -1289,12 +1318,12 @@ async function renderPublicProfile(container, username) {
         <p class="section-label">${escapeHtml(t('profile.curatorStatus'))}</p>
         <h1>${escapeHtml(username)}</h1>
       </div>
-      <div class="card" style="display:grid; grid-template-columns: 1fr 2fr; gap:30px;">
-        <div style="text-align:center;">
+      <div class="card public-profile-card">
+        <div class="public-profile-summary">
           <div style="width:120px; height:120px; border-radius:50%; background:var(--gold); margin:0 auto 16px; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#000;">
             ${username[0]}
           </div>
-          <h3>Neo Score: ${scoreData?.score || 0}</h3>
+          <h3>Neo Score: ${publicNeoScore}</h3>
         </div>
         <div>
           <h3>${escapeHtml(t('profile.academicRecord'))}</h3>
@@ -1953,6 +1982,97 @@ function getSupabaseClient() {
   return supabaseClient;
 }
 
+function getLocalCompletedModuleCount(userId) {
+  const attendanceHistory = JSON.parse(localStorage.getItem(`neofolk.attendance.${userId}`) || '[]');
+  return new Set(
+    attendanceHistory
+      .filter((entry) => entry?.status === 'present' || entry?.status === 'completed')
+      .map((entry) => entry?.moduleId)
+      .filter(Boolean)
+  ).size;
+}
+
+function getLocalNoteCount(userId) {
+  return getPortfolio(userId).length;
+}
+
+async function getSeekerActivityCounts(supabase, userId) {
+  const fallback = {
+    modCount: getLocalCompletedModuleCount(userId),
+    noteCount: getLocalNoteCount(userId),
+  };
+
+  if (!supabase || !userId) return fallback;
+
+  const [
+    { count: enrolledCount, error: enrolledError },
+    { count: noteCount, error: noteError },
+  ] = await Promise.all([
+    supabase
+      .from('enrolled_modules')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('status', 'completed'),
+    supabase
+      .from('notes')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+  ]);
+
+  if (enrolledError) {
+    console.warn('Falling back to local completed-module count:', enrolledError.message);
+  }
+  if (noteError) {
+    console.warn('Falling back to local note count:', noteError.message);
+  }
+
+  return {
+    modCount: enrolledError ? fallback.modCount : (enrolledCount || 0),
+    noteCount: noteError ? fallback.noteCount : (noteCount || 0),
+  };
+}
+
+async function upsertNeoScoreRecord(supabase, payload) {
+  if (!supabase) return null;
+
+  const { data, error } = await supabase
+    .from('neo_scores')
+    .upsert(
+      {
+        updated_at: new Date().toISOString(),
+        ...payload,
+      },
+      { onConflict: 'user_id,role' }
+    )
+    .select('*')
+    .maybeSingle();
+
+  if (error) {
+    console.warn('Neo score sync failed:', error.message);
+    return null;
+  }
+
+  return data;
+}
+
+async function getRoleNeoScore(supabase, userId, role) {
+  if (!supabase || !userId || !role) return null;
+
+  const { data, error } = await supabase
+    .from('neo_scores')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('role', role)
+    .maybeSingle();
+
+  if (error) {
+    console.warn(`Neo score fetch failed for role "${role}":`, error.message);
+    return null;
+  }
+
+  return data;
+}
+
 function t(path) {
   const value = path.split('.').reduce((o, key) => (o && o[key] !== undefined ? o[key] : null), dictionary);
   return typeof value === 'string' ? value : path;
@@ -2517,18 +2637,18 @@ function hydrateSeekerDashboard(supabase) {
 
     if (el) el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
 
-    const { count: modCount } = await supabase.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id).eq('status', 'completed');
-    const { count: noteCount } = await supabase.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', data.user.id);
+    const { modCount, noteCount } = await getSeekerActivityCounts(supabase, data.user.id);
     const neoScore = (modCount || 0) * 50 + (noteCount || 0) * 10;
 
     if (document.getElementById('stat-modules')) document.getElementById('stat-modules').textContent = modCount || 0;
     if (document.getElementById('stat-notes')) document.getElementById('stat-notes').textContent = noteCount || 0;
     if (document.getElementById('stat-score')) document.getElementById('stat-score').textContent = neoScore;
 
-    await supabase.from('neo_scores').upsert({
+    await upsertNeoScoreRecord(supabase, {
       user_id: data.user.id,
+      role: 'seeker',
       score: neoScore,
-      updated_at: new Date().toISOString()
+      breakdown: { modulesCompleted: modCount || 0, notesCreated: noteCount || 0 }
     });
 
     renderDashboardCharts(modCount || 0, noteCount || 0, 2, neoScore);
@@ -2692,14 +2812,11 @@ function renderAppNav() {
 
       // Fetch and update score
       if (currentUser) {
-        getSupabaseClient()?.from('enrolled_modules').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'completed')
-          .then(({ count: mCount }) => {
-            getSupabaseClient()?.from('notes').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id)
-              .then(({ count: nCount }) => {
-                const score = (mCount || 0) * 50 + (nCount || 0) * 10;
-                const el = document.getElementById("neoscore-value");
-                if (el) el.textContent = score;
-              });
+        getSeekerActivityCounts(getSupabaseClient(), currentUser.id)
+          .then(({ modCount, noteCount }) => {
+            const score = (modCount || 0) * 50 + (noteCount || 0) * 10;
+            const el = document.getElementById("neoscore-value");
+            if (el) el.textContent = score;
           });
       }
     }
@@ -3385,7 +3502,7 @@ function renderPageContent() {
 
     userProfileRoot.innerHTML = `
       <div class="dashboard-shell">
-        <div class="dashboard-header" style="justify-content:space-between; align-items:flex-end; display:flex;">
+        <div class="dashboard-header profile-header-row">
           <div>
             <p class="section-label">Researcher Dossier</p>
             <h1>${escapeHtml(profile.name || 'Anonymous Researcher')}</h1>
@@ -3397,7 +3514,7 @@ function renderPageContent() {
           </div>
         </div>
 
-        <div class="card profile-card-premium" style="display:grid; grid-template-columns: 140px 1fr; gap:32px; margin-top:24px;">
+        <div class="card profile-card-premium">
           <div class="profile-avatar-wrap">
             ${profile.photo ? `<img src="${escapeHtml(profile.photo)}" class="profile-avatar-lg" style="width:140px; height:140px; border-radius:4px; object-fit:cover;">` : '<div class="profile-avatar-placeholder" style="width:140px; height:140px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.05); font-size:3rem; border-radius:4px;">?</div>'}
             <div class="pill" style="margin-top:12px; display:block; text-align:center; background:${profile.isVerified ? 'var(--gold)' : 'transparent'}; color:${profile.isVerified ? 'var(--ink)' : 'inherit'}; border:1px solid var(--gold);">
@@ -4124,7 +4241,7 @@ function renderPageContent() {
             </select>
           </div>
 
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+          <div class="module-editor-meta-grid">
             <div>
               <label class="field-label">${escapeHtml(t('modules.durationWeeks'))}</label>
               <input id="mod-weeks" type="number" min="1" class="neo-input" value="${existingModule?.durationWeeks || 4}">
@@ -4691,16 +4808,23 @@ window.saveSpecializations = async function() {
         const supabase = getSupabaseClient();
         if (supabase) {
             // Update neo_scores breakdown
-            const { data: current } = await supabase.from('neo_scores').select('breakdown').eq('user_id', currentUser.id).eq('role', 'seeker').single();
+            const { data: current, error } = await supabase
+                .from('neo_scores')
+                .select('breakdown')
+                .eq('user_id', currentUser.id)
+                .eq('role', 'seeker')
+                .maybeSingle();
+            if (error) {
+                console.warn('Could not load existing specialization breakdown:', error.message);
+            }
             const breakdown = current?.breakdown || {};
             breakdown.specializations = newSpecs;
 
-            await supabase.from('neo_scores').upsert({
+            await upsertNeoScoreRecord(supabase, {
                 user_id: currentUser.id,
                 role: 'seeker',
                 breakdown,
-                score: 100, // Placeholder total score
-                updated_at: new Date()
+                score: 100 // Placeholder total score
             });
         }
     } else {
