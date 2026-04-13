@@ -85,6 +85,702 @@ const DOMAIN_NAMES = {
     bioepisteme: "BIOESTIPEME"
 };
 
+// AutoEdu Domain Data with subjects
+const AUTOEDU_DOMAINS = [
+  { id: "lingosophy",  label: "Lingosophy",  token: "Spivaks",   color: "#5b21b6", sub: "Linguistics & Philosophy" },
+  { id: "arithmetics", label: "Arithmetics", token: "Shakuntis", color: "#92400e", sub: "Mathematics" },
+  { id: "cosmology",   label: "Cosmology",   token: "Bhattas",   color: "#075985", sub: "Astronomy & Physics" },
+  { id: "biosphere",   label: "Biosphere",   token: "Janakis",   color: "#166534", sub: "Biology & Botany" },
+  { id: "chronicles",  label: "Chronicles",  token: "Thapars",   color: "#7c2d12", sub: "History" },
+  { id: "civitas",     label: "Civitas",     token: "Phulis",    color: "#9f1239", sub: "Political Theory & Social" },
+  { id: "tokenomics",  label: "Tokenomics",  token: "Bhanus",    color: "#1e3a5f", sub: "Economics & Commons" },
+  { id: "artifex",     label: "Artifex",     token: "Sarabhs",   color: "#134e4a", sub: "Design & Craft" },
+  { id: "praxis",      label: "Praxis",      token: "Arunas",    color: "#4c1d95", sub: "Action & Reform" },
+  { id: "bioepisteme", label: "Bioepisteme", token: "Gagas",     color: "#155e75", sub: "Life Sciences" },
+];
+
+// AutoEdu Courses Data
+const AUTOEDU_COURSES = [
+  {
+    id: "c1",
+    domain: "civitas",
+    title: "Savitribai Phule & the First School",
+    subtitle: "How one woman's defiance in 1848 rewrote what a republic could mean.",
+    contributor: "Meera Nair",
+    level: "Foundational",
+    readTime: "12 min",
+    rabbitHoles: ["c2", "c4"],
+    sections: [
+      {
+        heading: "The walk to school",
+        body: "On January 3, 1848, Savitribai Phule walked to the first school for girls in Pune — founded by her husband Jyotirao and herself — while passersby pelted her with dung and stones. She carried a spare sari in her bag and changed when she arrived. This act was not symbolic; it was infrastructural. She was building a delivery mechanism for something her society had declared contraband: the education of Dalit and lower-caste women. The school at Bhide Wada was not an institution in the modern sense. It had no government sanction, no endowment, and no guarantee of survival. What it had was Savitribai — a woman who had taught herself to read using Jyotirao's lessons, then turned around and taught others. Within a year, they had expanded to five schools. The missionary Thomas Candy, who observed the effort, wrote to his superiors that what the Phules were doing was more radical than any reform movement he had witnessed.",
+        keyIdea: "Education was not a gift Savitribai offered — it was a weapon she distributed.",
+        connections: ["Jyotirao Phule's Satyashodhak Samaj", "Fatima Sheikh — the first Muslim woman teacher in India", "The colonial education policy that excluded women"],
+      },
+      {
+        heading: "The poems she wrote while teaching",
+        body: "Savitribai was also a poet. Her collection Kavya Phule (1854) and Bavan Kashi Subodh Ratnakar (1892) are among the earliest published works by a Marathi woman. Her poems are not decorative — they are pedagogical instruments. She wrote in simple Marathi so that her students could read them. She wrote about the necessity of education with the same directness she brought to running schools: 'Get up, get educated, and emancipate yourself.' This phrase, often attributed to Ambedkar, is older. It runs through Savitribai's letters and poems decades before Ambedkar codified it. The literary establishment of her time largely ignored her. She was neither Brahmin nor male. Her work circulated in communities, not in journals. It is only in recent decades — primarily through Dalit feminist scholarship — that her literary output has been recovered as a body of work rather than a footnote.",
+        keyIdea: "Her poems were curriculum before curriculum had a name.",
+        connections: ["Dalit feminist literary tradition", "Tarabai Shinde's Stri Purush Tulana (1882)", "Oral traditions of resistance in Maharashtra"],
+      },
+      {
+        heading: "Plague, care, and her death",
+        body: "In 1897, the bubonic plague reached Pune. Savitribai, now in her sixties, opened a care home for plague victims in a mango grove outside the city — a deliberate choice, since the victims were predominantly lower-caste and untouchable people being turned away from formal hospitals. She personally carried a plague-stricken child to the care home. She contracted the plague herself and died on March 10, 1897. Her death was as direct a consequence of her life's work as her walk to school had been. She died in contact with the people she had spent fifty years trying to bring into the republic. The Maharashtra government declared her birthday a holiday. Her face appeared on a stamp. These honors arrived more than a century late and remain inadequate to what she actually built.",
+        keyIdea: "She died the way she lived — in proximity to those the state had abandoned.",
+        connections: ["1897 Pune plague & colonial relief failures", "Pandita Ramabai's parallel work in Maharashtra", "History of epidemic response and caste discrimination"],
+      },
+    ],
+    questions: [
+      { id: "q1", type: "mcq", q: "What was the name of Savitribai Phule's first poetry collection?", options: ["A) Bavan Kashi", "B) Kavya Phule", "C) Stri Shakti", "D) Phule Gatha"], correct: "B", explanation: "Kavya Phule (1854) was her first published collection." },
+      { id: "q2", type: "mcq", q: "Why did Savitribai carry a spare sari to school?", options: ["A) School uniform requirement", "B) She taught sewing alongside literacy", "C) Villagers threw dung at her on the way", "D) It was a Phule family tradition"], correct: "C", explanation: "She faced physical harassment daily and changed clothes upon arrival." },
+      { id: "q3", type: "mcq", q: "Where did Savitribai open her plague care home?", options: ["A) Inside Pune city centre", "B) A government hospital wing", "C) A mango grove outside Pune", "D) The Bhide Wada school building"], correct: "C", explanation: "She chose a location outside the city to serve those turned away from official care." },
+      { id: "q4", type: "mcq", q: "Which phrase is documented in Savitribai's work before being associated with Ambedkar?", options: ["A) Justice for all castes", "B) Get up, get educated, and emancipate yourself", "C) The land belongs to those who till it", "D) No religion is above humanity"], correct: "B", explanation: "This phrase appears in her poems and letters decades before Ambedkar's speeches." },
+      { id: "q5", type: "mcq", q: "Fatima Sheikh is significant in this context because she was:", options: ["A) The first woman to vote in Maharashtra", "B) A co-founder of the Satyashodhak Samaj", "C) The first Muslim woman teacher in India, working alongside Savitribai", "D) The author of Stri Purush Tulana"], correct: "C", explanation: "Fatima Sheikh taught at Savitribai's school, making her a foundational figure in Indian education history." },
+      { id: "q6", type: "essay", q: "Savitribai Phule operated without state sanction, institutional support, or social approval. In 200–300 words, argue why her model of education was more radical than the colonial education system being built simultaneously — and what it would mean to apply her model today." },
+    ],
+  },
+  {
+    id: "c2",
+    domain: "chronicles",
+    title: "The Chipko Movement: Bodies as Blockades",
+    subtitle: "When Himalayan women wrapped their arms around trees and stopped a state.",
+    contributor: "Arjun Vaidyanathan",
+    level: "Intermediate",
+    readTime: "10 min",
+    rabbitHoles: ["c3", "c1"],
+    sections: [
+      {
+        heading: "Reni, 1974",
+        body: "In March 1974, contractors arrived in the Reni forest in Uttarakhand to fell trees for a sporting goods company. The men of the village had been lured away by officials under the pretence of receiving land compensation payments in Chamoli town. What the officials did not account for was Gaura Devi. The 50-year-old head of the Mahila Mangal Dal — a women's collective — saw the contractors arrive and gathered twenty-seven women. They went to the forest and physically embraced the trees. The contractors threatened them. The women held. They stayed through the night. The contractors eventually left. This act — chipko, meaning 'to cling' — gave the movement its name. But the movement had roots going back to 1730, when Amrita Devi of the Bishnoi community in Rajasthan died defending a Khejri tree with the same logic: the forest is not a resource, it is a relationship.",
+        keyIdea: "Gaura Devi's night in the forest was not a protest — it was a property claim made with the body.",
+        connections: ["Sundarlal Bahuguna's hunger strikes", "The 1980 Forest Conservation Act", "Bishnoi environmental tradition"],
+      },
+      {
+        heading: "Why it was women, specifically",
+        body: "The Chipko movement's leadership was overwhelmingly female, and this was not accidental. In the hill economy of Uttarakhand, women were the primary collectors of fodder, fuel, and water from the forest. Deforestation did not abstract cost for them — it added hours to their daily labour and removed the microecology their families depended on. Men, by contrast, were more integrated into the cash economy and more likely to see timber contracts as income. The movement therefore split along gender lines that also mapped onto ecological dependence. Vandana Shiva, who studied the movement extensively, argued in Staying Alive (1988) that women's relationship to nature in subsistence economies is not sentimental but structural — they are the primary ecological managers, and their knowledge is systematically devalued by both the state and male-dominated environmental organisations. This argument remains contested but foundational in ecofeminist thought.",
+        keyIdea: "The women who hugged trees were the people who had always managed them — the hug was a continuation of work, not a departure from it.",
+        connections: ["Vandana Shiva's ecofeminism", "Subsistence vs. market economies", "Gender and land rights in India"],
+      },
+    ],
+    questions: [
+      { id: "q1", type: "mcq", q: "What does 'chipko' mean?", options: ["A) To resist", "B) To cling", "C) To march", "D) To plant"], correct: "B", explanation: "'Chipko' means to cling or embrace — referring to the act of hugging trees." },
+      { id: "q2", type: "mcq", q: "Who led the women of Reni village in the 1974 confrontation?", options: ["A) Vandana Shiva", "B) Sundarlal Bahuguna", "C) Gaura Devi", "D) Amrita Devi"], correct: "C", explanation: "Gaura Devi, head of the Mahila Mangal Dal, organized and led the women that night." },
+      { id: "q3", type: "mcq", q: "Vandana Shiva's Staying Alive argued that women's relationship to nature in subsistence economies is:", options: ["A) Sentimental and cultural", "B) Structural — rooted in ecological dependence and labour", "C) Primarily spiritual", "D) A result of colonial land policy"], correct: "B", explanation: "Shiva argued the relationship is structural, not sentimental — women are primary ecological managers." },
+      { id: "q4", type: "essay", q: "The Chipko movement is sometimes described as an environmental movement and sometimes as a feminist one. In 200–300 words, make the case that this distinction is a false one — and explain what is lost when we separate the two framings." },
+    ],
+  },
+  {
+    id: "c3",
+    domain: "tokenomics",
+    title: "Bina Agarwal & the Economics of Land",
+    subtitle: "Why the question of who owns the soil determines everything else.",
+    contributor: "Priya Subramanian",
+    level: "Intermediate",
+    readTime: "9 min",
+    rabbitHoles: ["c2"],
+    sections: [
+      {
+        heading: "A Field of One's Own",
+        body: "Bina Agarwal's 1994 book A Field of One's Own is one of the most consequential works in development economics. Its central argument is deceptively simple: women's lack of land rights is the single most structurally significant driver of gender inequality in South Asia — more significant than education gaps, wage gaps, or legal discrimination, because land is the asset from which all other bargaining power derives. Agarwal's method was empirical. She mapped land ownership patterns across Bangladesh, India, Nepal, and Sri Lanka, then traced the downstream effects: women without land had less leverage in marriage negotiations, less ability to leave abusive relationships, less access to credit, and less political voice at the village level. The book was a direct challenge to the dominant development framework of the 1980s, which focused on income and education as primary levers. Agarwal showed that without property, income and education produced limited structural change for women.",
+        keyIdea: "Land is not one resource among many — it is the meta-resource that determines access to all others.",
+        connections: ["Chipko movement & forest rights", "Hernando de Soto's property rights theory", "Self-Employed Women's Association (SEWA)"],
+      },
+    ],
+    questions: [
+      { id: "q1", type: "mcq", q: "What is the central argument of Bina Agarwal's A Field of One's Own?", options: ["A) Education is the primary lever for gender equality", "B) Women's lack of land rights is the most structurally significant driver of gender inequality", "C) Income gaps are more important than property gaps", "D) Legal discrimination is the root cause of inequality"], correct: "B", explanation: "Agarwal argued land ownership is the meta-resource from which all other bargaining power derives." },
+      { id: "q2", type: "mcq", q: "Which countries did Agarwal's empirical research cover?", options: ["A) India and Pakistan only", "B) Bangladesh, India, Nepal, Sri Lanka", "C) All of South and Southeast Asia", "D) India, Sri Lanka, Myanmar, Thailand"], correct: "B", explanation: "She mapped land ownership patterns across four South Asian countries." },
+      { id: "q3", type: "essay", q: "Agarwal argues that without property, income and education produce limited structural change for women. In 200–300 words, either defend or challenge this claim using examples from Indian economic or social history." },
+    ],
+  },
+  {
+    id: "c4",
+    domain: "biosphere",
+    title: "Janaki Ammal: The Botanist Who Refused to Be Minor",
+    subtitle: "She hybridized sugarcane, saved Silent Valley, and is still barely in the textbooks.",
+    contributor: "Meera Nair",
+    level: "Foundational",
+    readTime: "8 min",
+    rabbitHoles: ["c2"],
+    sections: [
+      {
+        heading: "The sugarcane work",
+        body: "Janaki Ammal was born in 1897 in Thalassery, Kerala, into the Ezhava community — a caste that faced severe social discrimination. She won a scholarship to the University of Michigan and completed her doctorate in 1931, becoming one of the first Indian women to earn a PhD in botany from an American university. Her early research focused on cytogenetics — the study of chromosomes. At the John Innes Centre in London and later at the Sugarcane Breeding Institute in Coimbatore, she developed hybrid varieties of sugarcane that significantly increased the sucrose content in Indian cultivars. This was not abstract science. The British had maintained control over high-yield sugarcane varieties as a form of agricultural colonialism. Janaki's hybridization work was one thread in the longer project of Indian agricultural self-sufficiency. She later collaborated with C.D. Darlington on The Chromosome Atlas of Cultivated Plants (1945), a foundational reference work in plant genetics that documented the chromosome counts of thousands of species.",
+        keyIdea: "Her science was always entangled with the question of who controls the food supply.",
+        connections: ["Green Revolution & plant genetics", "Colonial botany and Kew Gardens", "History of the Sugarcane Breeding Institute"],
+      },
+      {
+        heading: "Silent Valley",
+        body: "In 1980, the Kerala government proposed a hydroelectric dam that would flood Silent Valley — one of the last undisturbed tropical rainforests in India, home to the lion-tailed macaque and thousands of endemic plant species. Janaki Ammal, then in her eighties, became one of the most prominent scientific voices opposing the dam. She wrote letters, testified, and lent her authority to the movement at a moment when scientific credibility was essential to the opposition's case. The dam was cancelled in 1983 after a national campaign. The Silent Valley National Park was established in 1984. Janaki died in 1984, the same year the park was created. Her role in the campaign is often omitted from mainstream accounts, which tend to credit male political figures. The botanist who studied flowers her whole life died having helped preserve a forest full of them.",
+        keyIdea: "Conservation is not separate from science — it is science applied to survival.",
+        connections: ["Silent Valley National Park", "M.S. Swaminathan and Indian ecology", "Chipko and the politics of Indian forests"],
+      },
+    ],
+    questions: [
+      { id: "q1", type: "mcq", q: "What was Janaki Ammal's primary area of scientific research?", options: ["A) Marine biology", "B) Cytogenetics and plant hybridization", "C) Atmospheric chemistry", "D) Animal behaviour"], correct: "B", explanation: "She specialized in cytogenetics — the study of chromosomes — and applied it to plant hybridization." },
+      { id: "q2", type: "mcq", q: "The Chromosome Atlas of Cultivated Plants was co-authored with:", options: ["A) M.S. Swaminathan", "B) C.D. Darlington", "C) Norman Borlaug", "D) J.B.S. Haldane"], correct: "B", explanation: "She collaborated with C.D. Darlington on this foundational 1945 reference work." },
+      { id: "q3", type: "mcq", q: "The Silent Valley dam was ultimately cancelled in:", options: ["A) 1975", "B) 1980", "C) 1983", "D) 1990"], correct: "C", explanation: "After sustained campaigning, the dam was cancelled in 1983 and the park established in 1984." },
+      { id: "q4", type: "essay", q: "Janaki Ammal's work spans laboratory science, colonial agricultural politics, and conservation activism. In 200–300 words, argue that these were not separate phases of her career but expressions of a single coherent intellectual project." },
+    ],
+  },
+];
+
+// AutoEdu View State
+let autoeduView = 'home';
+let autoeduActiveCourse = null;
+let autoeduResult = null;
+let autoeduTokens = {};
+let autoeduSection = 0;
+let autoeduAnswers = {};
+let autoeduEssayText = '';
+let autoeduAssessmentMode = null;
+let autoeduFilter = 'all';
+
+// AutoEdu Helper Functions
+function getAutoeduDomain(id) {
+  return AUTOEDU_DOMAINS.find(d => d.id === id);
+}
+
+function renderAutoeduChip(domain, earned, small = false) {
+  const d = getAutoeduDomain(domain);
+  if (!d) return '';
+  const size = small ? 'padding: 4px 10px; font-size: 10px;' : 'padding: 6px 14px; font-size: 11px;';
+  return `
+    <span class="autoedu-chip" style="
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      ${size}
+      background: ${earned ? d.color : 'rgba(255,255,255,0.05)'};
+      color: ${earned ? '#fff' : 'var(--muted-text)'};
+      border: 1px solid ${earned ? d.color : 'rgba(255,255,255,0.1)'};
+      border-radius: 4px;
+      font-family: var(--sans);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+      transition: all 0.2s;
+    ">
+      ${earned ? '✦ ' : ''}${d.token}
+    </span>
+  `;
+}
+
+// AutoEdu Home View
+function renderAutoeduHome() {
+  const earned = Object.keys(autoeduTokens).length;
+  const total = AUTOEDU_DOMAINS.length;
+  
+  const root = document.getElementById('autoedu-root');
+  if (!root) return;
+  
+  root.innerHTML = `
+    <div class="dashboard-shell">
+      <div class="dashboard-header">
+        <div>
+          <p class="section-label">AutoEdu</p>
+          <h1>Knowledge built by the community,<br /><span style="color: var(--gold);">free for everyone.</span></h1>
+          <p class="dashboard-meta">Read courses written by contributors. Explore rabbit holes. Pass assessments. Earn Lineage Tokens in your domain.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button onclick="window.autoeduNavigate('library')" class="btn btn-primary">Course Library</button>
+          <button onclick="window.autoeduNavigate('contribute')" class="btn" style="border-color: var(--gold); color: var(--gold);">+ Contribute</button>
+        </div>
+      </div>
+
+      <!-- Domain Token Board -->
+      <div class="card" style="margin-top: 32px;">
+        <div class="dashboard-card-topline">
+          <p class="section-label">Your Lineage Tokens</p>
+          <span class="muted">${earned} / ${total}</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 20px;">
+          ${AUTOEDU_DOMAINS.map(d => {
+            const has = autoeduTokens[d.id];
+            return `
+              <div class="record-card" style="
+                padding: 16px;
+                background: ${has ? d.color + '18' : 'rgba(0,0,0,0.2)'};
+                border: 1px solid ${has ? d.color + '44' : 'rgba(255,255,255,0.08)'};
+                cursor: default;
+              ">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <!-- Domain Name (Primary) -->
+                  <div style="font-size: 14px; font-weight: 600; color: ${has ? 'var(--parchment)' : 'var(--muted-text)'};">${d.label}</div>
+                  <!-- Subject (Secondary) -->
+                  <div style="font-size: 11px; color: var(--muted-text); font-style: italic;">${d.sub}</div>
+                  ${renderAutoeduChip(d.id, has, true)}
+                </div>
+                ${has ? `<div style="margin-top: 12px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;"><div style="width: 100%; height: 100%; background: ${d.color};"></div></div>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- How It Works -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; margin-top: 24px;">
+        ${[
+          ["01", "Read", "Community-written courses. Dense, honest, no fluff."],
+          ["02", "Explore", "Follow rabbit holes from any course into connected topics."],
+          ["03", "Assess", "Quiz or essay. Human-written questions. You pass, or you don't."],
+          ["04", "Earn", "Pass the assessment → earn the domain's Lineage Token."],
+        ].map(([n, title, desc]) => `
+          <div style="padding: 24px; background: var(--ink);">
+            <div style="font-size: 10px; color: var(--gold); letter-spacing: 0.15em; margin-bottom: 8px;">${n}</div>
+            <div style="font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--parchment);">${title}</div>
+            <div style="font-size: 13px; color: var(--muted-text); line-height: 1.6;">${desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// AutoEdu Library View
+function renderAutoeduLibrary() {
+  const root = document.getElementById('autoedu-root');
+  if (!root) return;
+  
+  const filtered = autoeduFilter === 'all' ? AUTOEDU_COURSES : AUTOEDU_COURSES.filter(c => c.domain === autoeduFilter);
+  
+  root.innerHTML = `
+    <div class="dashboard-shell">
+      <div class="dashboard-header">
+        <button onclick="window.autoeduNavigate('home')" class="btn" style="padding: 8px 16px;">← Back</button>
+        <div>
+          <p class="section-label">Course Library</p>
+          <h1>${AUTOEDU_COURSES.length} courses</h1>
+        </div>
+      </div>
+
+      <!-- Domain Filter -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px;">
+        <button onclick="window.autoeduSetFilter('all')" class="btn" style="${autoeduFilter === 'all' ? 'background: var(--gold); color: #000;' : ''}">All</button>
+        ${AUTOEDU_DOMAINS.map(d => `
+          <button onclick="window.autoeduSetFilter('${d.id}')" class="btn" style="${autoeduFilter === d.id ? `background: ${d.color}; color: #fff;` : ''}">${d.label}</button>
+        `).join('')}
+      </div>
+
+      <!-- Course Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+        ${filtered.map((c, i) => {
+          const d = getAutoeduDomain(c.domain);
+          const done = autoeduTokens[c.domain];
+          return `
+            <div onclick="window.autoeduSelectCourse('${c.id}')" class="record-card" style="
+              padding: 24px;
+              background: rgba(0,0,0,0.2);
+              border: 1px solid ${done ? d.color + '44' : 'rgba(255,255,255,0.08)'};
+              cursor: pointer;
+              transition: all 0.2s;
+              animation: fadeUp 0.3s ${i * 0.04}s ease both;
+            " onmouseover="this.style.background='${d.color}0e'; this.style.borderColor='${d.color}66';" onmouseout="this.style.background='rgba(0,0,0,0.2)'; this.style.borderColor='${done ? d.color + '44' : 'rgba(255,255,255,0.08)'}';">
+              ${done ? `<div style="position: absolute; top: 12px; right: 12px; font-size: 18px; color: ${d.color};">✦</div>` : ''}
+              ${renderAutoeduChip(c.domain, done, true)}
+              <h3 style="font-size: 17px; font-weight: 400; font-style: italic; line-height: 1.35; margin: 14px 0 8px; color: var(--parchment);">${c.title}</h3>
+              <p style="font-size: 13px; color: var(--muted-text); line-height: 1.55; margin-bottom: 16px;">${c.subtitle}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 11px; color: var(--muted-text);">${c.level} · ${c.readTime}</div>
+                <div style="font-size: 11px; color: var(--muted-text); opacity: 0.6;">by ${c.contributor}</div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      ${filtered.length === 0 ? `
+        <div style="text-align: center; padding: 80px 0; color: var(--muted-text);">
+          <p>No courses yet in this domain.</p>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// AutoEdu Course Reader View
+function renderAutoeduCourse() {
+  const root = document.getElementById('autoedu-root');
+  if (!root || !autoeduActiveCourse) return;
+  
+  const course = autoeduActiveCourse;
+  const d = getAutoeduDomain(course.domain);
+  const sec = course.sections[autoeduSection];
+  const linked = AUTOEDU_COURSES.filter(c => course.rabbitHoles?.includes(c.id));
+  
+  root.innerHTML = `
+    <div class="dashboard-shell">
+      <div class="dashboard-header">
+        <button onclick="window.autoeduNavigate('library')" class="btn" style="padding: 8px 16px;">← Back</button>
+        <div style="flex: 1; text-align: center;">
+          <p class="section-label">${course.title}</p>
+        </div>
+        ${renderAutoeduChip(course.domain, false, true)}
+      </div>
+
+      <div style="display: grid; grid-template-columns: 240px 1fr; gap: 32px; margin-top: 32px; max-width: 1200px;">
+        <!-- Sidebar -->
+        <div style="position: sticky; top: 80px; height: fit-content;">
+          <p class="section-label" style="margin-bottom: 12px;">Sections</p>
+          ${course.sections.map((s, i) => `
+            <button onclick="window.autoeduSetSection(${i})" class="btn" style="
+              display: block;
+              width: 100%;
+              text-align: left;
+              padding: 10px 14px;
+              margin-bottom: 6px;
+              background: ${i === autoeduSection ? d.color + '22' : 'transparent'};
+              border: 1px solid ${i === autoeduSection ? d.color + '55' : 'rgba(255,255,255,0.08)'};
+              color: ${i === autoeduSection ? 'var(--parchment)' : 'var(--muted-text)'};
+              font-size: 12px;
+              line-height: 1.4;
+              font-family: var(--serif);
+              font-style: italic;
+            ">
+              <span style="font-family: var(--sans); font-size: 10px; color: ${i === autoeduSection ? d.color : 'var(--muted-text)'}; display: block; margin-bottom: 4px;">0${i + 1}</span>
+              ${s.heading}
+            </button>
+          `).join('')}
+
+          ${linked.length > 0 ? `
+            <p class="section-label" style="margin-top: 24px; margin-bottom: 12px;">Rabbit holes</p>
+            ${linked.map(l => {
+              const ld = getAutoeduDomain(l.domain);
+              return `
+                <button onclick="window.autoeduSelectCourse('${l.id}')" class="btn" style="
+                  display: block;
+                  width: 100%;
+                  text-align: left;
+                  padding: 10px 14px;
+                  margin-bottom: 6px;
+                  background: transparent;
+                  border: 1px solid rgba(255,255,255,0.08);
+                  color: var(--muted-text);
+                  font-size: 11px;
+                  line-height: 1.4;
+                  font-family: var(--serif);
+                  font-style: italic;
+                " onmouseover="this.style.borderColor='${ld.color}55'; this.style.background='${ld.color}0e';" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.background='transparent';">
+                  ${renderAutoeduChip(l.domain, false, true)}
+                  <div style="margin-top: 6px; font-size: 12px; color: var(--muted-text);">${l.title}</div>
+                </button>
+              `;
+            }).join('')}
+          ` : ''}
+        </div>
+
+        <!-- Main Content -->
+        <div style="max-width: 700px;">
+          <div style="animation: fadeUp 0.3s ease;">
+            <p class="section-label" style="color: ${d.color}; opacity: 0.7; margin-bottom: 16px;">Section ${autoeduSection + 1} of ${course.sections.length}</p>
+            <h2 style="font-size: 28px; font-weight: 400; font-style: italic; line-height: 1.25; margin-bottom: 28px; color: var(--parchment);">${sec.heading}</h2>
+            <div style="font-size: 16px; line-height: 1.9; color: var(--parchment); margin-bottom: 32px;">${sec.body}</div>
+
+            <!-- Key Idea -->
+            <div style="border-left: 3px solid ${d.color}; padding-left: 20px; margin-bottom: 32px;">
+              <p class="section-label" style="color: ${d.color}; opacity: 0.6; margin-bottom: 8px;">Core insight</p>
+              <p style="font-size: 15px; font-style: italic; color: var(--parchment); line-height: 1.65;">${sec.keyIdea}</p>
+            </div>
+
+            <!-- Connections -->
+            ${sec.connections?.length > 0 ? `
+              <div style="margin-bottom: 40px;">
+                <p class="section-label" style="margin-bottom: 12px;">Connected threads</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                  ${sec.connections.map(c => `
+                    <span style="padding: 5px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; font-size: 12px; color: var(--muted-text); font-style: italic;">${c}</span>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Navigation -->
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);">
+              ${autoeduSection > 0 ? `<button onclick="window.autoeduSetSection(${autoeduSection - 1})" class="btn">← Previous</button>` : ''}
+              ${autoeduSection < course.sections.length - 1 ? `
+                <button onclick="window.autoeduSetSection(${autoeduSection + 1})" class="btn btn-primary">Next section →</button>
+              ` : `
+                <button onclick="window.autoeduNavigate('assessment')" class="btn btn-primary" style="background: var(--gold); color: #000;">✦ Take Assessment →</button>
+              `}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// AutoEdu Assessment View
+function renderAutoeduAssessment() {
+  const root = document.getElementById('autoedu-root');
+  if (!root || !autoeduActiveCourse) return;
+  
+  const course = autoeduActiveCourse;
+  const d = getAutoeduDomain(course.domain);
+  const mcqs = course.questions.filter(q => q.type === 'mcq');
+  const essays = course.questions.filter(q => q.type === 'essay');
+  
+  if (!autoeduAssessmentMode) {
+    root.innerHTML = `
+      <div class="dashboard-shell" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
+        <div style="max-width: 520px; width: 100%; text-align: center;">
+          ${renderAutoeduChip(course.domain)}
+          <h2 style="font-size: 36px; font-weight: 400; font-style: italic; margin: 20px 0 12px;">Prove you were there.</h2>
+          <p style="color: var(--muted-text); font-size: 14px; line-height: 1.7; margin-bottom: 40px;">Pass to earn your <strong style="color: var(--gold);">${d.token}</strong> token. Choose your mode.</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+            <button onclick="window.autoeduSetAssessmentMode('quiz')" class="btn" style="
+              padding: 22px 18px;
+              background: rgba(255,255,255,0.04);
+              border: 1px solid rgba(255,255,255,0.08);
+              text-align: left;
+              transition: all 0.2s;
+            " onmouseover="this.style.background='${d.color}22'; this.style.borderColor='${d.color}55';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';">
+              <p class="section-label" style="color: ${d.color}; margin-bottom: 8px;">quiz</p>
+              <div style="font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--parchment);">Quiz</div>
+              <div style="font-size: 11px; color: var(--muted-text); margin-bottom: 8px;">${mcqs.length} questions · 60% to pass</div>
+              <div style="font-size: 12px; color: var(--muted-text); line-height: 1.5;">Multiple choice. Precise and immediate.</div>
+            </button>
+            <button onclick="window.autoeduSetAssessmentMode('essay')" class="btn" style="
+              padding: 22px 18px;
+              background: rgba(255,255,255,0.04);
+              border: 1px solid rgba(255,255,255,0.08);
+              text-align: left;
+              transition: all 0.2s;
+            " onmouseover="this.style.background='${d.color}22'; this.style.borderColor='${d.color}55';" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.08)';">
+              <p class="section-label" style="color: ${d.color}; margin-bottom: 8px;">essay</p>
+              <div style="font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--parchment);">Essay</div>
+              <div style="font-size: 11px; color: var(--muted-text); margin-bottom: 8px;">200–300 words · curator reviewed</div>
+              <div style="font-size: 12px; color: var(--muted-text); line-height: 1.5;">Open response. Depth over speed.</div>
+            </button>
+          </div>
+          <button onclick="window.autoeduNavigate('course')" class="btn" style="background: none; color: var(--muted-text);">← Back to course</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  
+  if (autoeduAssessmentMode === 'quiz') {
+    root.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <button onclick="window.autoeduSetAssessmentMode(null)" class="btn" style="padding: 8px 16px;">← Back</button>
+          <div>
+            <p class="section-label">Quiz — ${course.title}</p>
+            <span class="muted">${Object.keys(autoeduAnswers).length}/${mcqs.length}</span>
+          </div>
+        </div>
+        <div style="max-width: 680px; margin: 0 auto; padding: 48px 40px;">
+          ${mcqs.map((q, i) => `
+            <div style="margin-bottom: 36px; animation: fadeUp 0.3s ${i * 0.05}s ease both;">
+              <div style="font-size: 15px; line-height: 1.6; margin-bottom: 14px; color: var(--parchment);">
+                <span style="font-size: 10px; color: ${d.color}; margin-right: 10px;">Q${i + 1}</span>${q.q}
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${q.options.map(opt => {
+                  const letter = opt.charAt(0);
+                  const sel = autoeduAnswers[q.id] === letter;
+                  return `
+                    <button onclick="window.autoeduSetAnswer('${q.id}', '${letter}')" class="btn" style="
+                      padding: 11px 16px;
+                      border-radius: 5px;
+                      text-align: left;
+                      background: ${sel ? d.color + '33' : 'rgba(255,255,255,0.03)'};
+                      border: 1px solid ${sel ? d.color + '77' : 'rgba(255,255,255,0.08)'};
+                      color: ${sel ? 'var(--parchment)' : 'var(--parchment)'};
+                      font-size: 14px;
+                      font-family: var(--serif);
+                      transition: all 0.12s;
+                    ">
+                      ${opt}
+                    </button>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `).join('')}
+          <button onclick="window.autoeduSubmitQuiz()" ${Object.keys(autoeduAnswers).length < mcqs.length ? 'disabled' : ''} class="btn btn-primary" style="
+            ${Object.keys(autoeduAnswers).length >= mcqs.length ? '' : 'opacity: 0.4; cursor: not-allowed;'}
+          ">Submit →</button>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  
+  if (autoeduAssessmentMode === 'essay') {
+    const ep = essays[0];
+    const words = autoeduEssayText.trim() ? autoeduEssayText.trim().split(/\s+/).length : 0;
+    root.innerHTML = `
+      <div class="dashboard-shell">
+        <div class="dashboard-header">
+          <button onclick="window.autoeduSetAssessmentMode(null)" class="btn" style="padding: 8px 16px;">← Back</button>
+          <div>
+            <p class="section-label">Essay Assessment</p>
+            <span class="muted" style="color: ${words >= 80 ? 'var(--gold)' : 'var(--muted-text)'};">${words} words</span>
+          </div>
+        </div>
+        <div style="max-width: 680px; margin: 0 auto; padding: 48px 40px;">
+          <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 24px; margin-bottom: 28px;">
+            <p class="section-label" style="margin-bottom: 12px;">Essay Prompt</p>
+            <p style="font-size: 16px; line-height: 1.75; color: var(--parchment);">${ep?.q}</p>
+            <div style="margin-top: 14px; font-size: 11px; color: var(--muted-text);">Target: 200–300 words · Reviewed by a curator before token is awarded</div>
+          </div>
+          <textarea id="autoedu-essay" onchange="window.autoeduSetEssay(this.value)" placeholder="Write your response here..." style="
+            width: 100%;
+            min-height: 260px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 18px;
+            color: var(--parchment);
+            font-family: var(--serif);
+            font-size: 15px;
+            line-height: 1.8;
+            resize: vertical;
+          ">${autoeduEssayText}</textarea>
+          <button onclick="window.autoeduSubmitEssay()" ${words < 80 ? 'disabled' : ''} class="btn btn-primary" style="
+            margin-top: 20px;
+            ${words >= 80 ? '' : 'opacity: 0.4; cursor: not-allowed;'}
+          ">Submit for review →</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// AutoEdu Result View
+function renderAutoeduResult() {
+  const root = document.getElementById('autoedu-root');
+  if (!root || !autoeduResult) return;
+  
+  const d = getAutoeduDomain(autoeduResult.domain);
+  const { passed, score, mode, details, pending } = autoeduResult;
+  
+  root.innerHTML = `
+    <div class="dashboard-shell" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
+      <div style="max-width: 620px; width: 100%; text-align: center;">
+        <div style="font-size: 56px; margin-bottom: 16px; animation: fadeUp 0.4s ease;">${pending ? '⏳' : passed ? '✦' : '◌'}</div>
+        <h2 style="font-size: clamp(32px, 5vw, 52px); font-weight: 400; font-style: italic; letter-spacing: -0.02em; margin-bottom: 12px; animation: fadeUp 0.4s 0.05s ease both;">
+          ${pending ? 'Essay submitted.' : passed ? 'Token earned.' : 'Not yet.'}
+        </h2>
+        ${score !== null ? `<div style="font-size: 36px; color: ${passed ? '#4ade80' : '#f87171'}; font-weight: 700; margin-bottom: 16px; animation: fadeUp 0.4s 0.1s ease both;">${score}%</div>` : ''}
+        ${pending ? '<p style="font-size: 14px; color: var(--muted-text); line-height: 1.7; margin-bottom: 16px;">A curator will review your essay. Your token will be awarded once approved.</p>' : ''}
+        ${passed && !pending ? renderAutoeduChip(autoeduResult.domain, true) : ''}
+        
+        ${mode === 'quiz' && details ? `
+          <div style="margin-bottom: 40px; text-align: left;">
+            ${details.map((q, i) => {
+              const correct = q.yours === q.correct;
+              return `
+                <div style="margin-bottom: 12px; padding: 14px 16px; border-radius: 7px; background: ${correct ? 'rgba(255,255,255,0.03)' : 'rgba(255,0,0,0.03)'}; border: 1px solid ${correct ? 'rgba(255,255,255,0.08)' : 'rgba(255,0,0,0.1)'}; animation: fadeUp 0.3s ${i * 0.05}s ease both;">
+                  <div style="font-size: 13px; color: var(--muted-text); margin-bottom: 6px; line-height: 1.4;">${q.q}</div>
+                  <div style="font-size: 11px; color: ${correct ? '#4ade80' : '#f87171'};">
+                    ${correct ? '✓ Correct' : `✗ You: ${q.yours || '—'} · Answer: ${q.correct}`}
+                  </div>
+                  ${!correct && q.explanation ? `<div style="font-size: 12px; color: var(--muted-text); margin-top: 6px; line-height: 1.5; font-style: italic;">${q.explanation}</div>` : ''}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        ` : ''}
+        
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <button onclick="window.autoeduNavigate('library')" class="btn btn-primary" style="${passed || pending ? '' : 'background: rgba(255,255,255,0.08); color: var(--parchment);'}">
+            ${passed ? 'Keep learning →' : 'Back to library'}
+          </button>
+          ${!passed && !pending ? `<button onclick="window.autoeduNavigate('assessment')" class="btn">Try again</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// AutoEdu Navigation Functions
+window.autoeduNavigate = function(view) {
+  autoeduView = view;
+  if (view === 'home') renderAutoeduHome();
+  else if (view === 'library') renderAutoeduLibrary();
+  else if (view === 'course') renderAutoeduCourse();
+  else if (view === 'assessment') renderAutoeduAssessment();
+  else if (view === 'result') renderAutoeduResult();
+  else if (view === 'contribute') {
+    // TODO: Implement contribute view
+    alert('Contribute feature coming soon!');
+  }
+};
+
+window.autoeduSetFilter = function(filter) {
+  autoeduFilter = filter;
+  renderAutoeduLibrary();
+};
+
+window.autoeduSelectCourse = function(courseId) {
+  autoeduActiveCourse = AUTOEDU_COURSES.find(c => c.id === courseId);
+  autoeduSection = 0;
+  autoeduView = 'course';
+  renderAutoeduCourse();
+};
+
+window.autoeduSetSection = function(sectionIndex) {
+  autoeduSection = sectionIndex;
+  renderAutoeduCourse();
+};
+
+window.autoeduSetAssessmentMode = function(mode) {
+  autoeduAssessmentMode = mode;
+  autoeduAnswers = {};
+  autoeduEssayText = '';
+  renderAutoeduAssessment();
+};
+
+window.autoeduSetAnswer = function(questionId, answer) {
+  autoeduAnswers[questionId] = answer;
+  renderAutoeduAssessment();
+};
+
+window.autoeduSetEssay = function(text) {
+  autoeduEssayText = text;
+};
+
+window.autoeduSubmitQuiz = function() {
+  const course = autoeduActiveCourse;
+  const mcqs = course.questions.filter(q => q.type === 'mcq');
+  const correct = mcqs.filter(q => autoeduAnswers[q.id] === q.correct).length;
+  const pct = Math.round((correct / mcqs.length) * 100);
+  autoeduResult = { passed: pct >= 60, score: pct, mode: 'quiz', domain: course.domain, details: mcqs.map(q => ({ ...q, yours: autoeduAnswers[q.id] })) };
+  if (autoeduResult.passed) autoeduTokens[course.domain] = true;
+  autoeduView = 'result';
+  renderAutoeduResult();
+};
+
+window.autoeduSubmitEssay = function() {
+  const words = autoeduEssayText.trim().split(/\s+/).length;
+  if (words < 80) return;
+  autoeduResult = { passed: true, score: null, mode: 'essay', domain: autoeduActiveCourse.domain, pending: true };
+  autoeduView = 'result';
+  renderAutoeduResult();
+};
+
+// Initialize AutoEdu if on autoedu.html
+function initAutoEdu() {
+  const root = document.getElementById('autoedu-root');
+  if (root) {
+    // Load tokens from localStorage
+    const savedTokens = localStorage.getItem('neofolk.autoeduTokens');
+    if (savedTokens) {
+      autoeduTokens = JSON.parse(savedTokens);
+    }
+    renderAutoeduHome();
+  }
+}
+
+// Auto-save tokens
+const originalAutoeduNavigate = window.autoeduNavigate;
+window.autoeduNavigate = function(view) {
+  localStorage.setItem('neofolk.autoeduTokens', JSON.stringify(autoeduTokens));
+  originalAutoeduNavigate(view);
+};
+
 const LINEAGE_DETAILS = [
   {
     "domain": "Lingosophy",
@@ -2695,6 +3391,7 @@ function renderAppNav() {
         title: 'KNOWLEDGE',
         links: [
           { href: 'guide.html', label: 'Guide' },
+          { href: 'autoedu.html', label: 'AutoEdu' },
           { href: 'vision.html', label: 'Vision' },
         ]
       },
@@ -2722,6 +3419,7 @@ function renderAppNav() {
         title: 'REFERENCE',
         links: [
           { href: 'subjects.html', label: 'Domains' },
+          { href: 'autoedu.html', label: 'AutoEdu' },
           { href: 'guide.html', label: 'Guide' },
         ]
       },
@@ -3223,6 +3921,9 @@ function wireLanguageSelectors() {
 function renderPageContent() {
   const route = window.Router.getRoute();
   const page = currentPageFile();
+
+  // Initialize AutoEdu if on autoedu.html
+  initAutoEdu();
 
   // Public Profile View (#profile/username)
   const profileRoot = document.getElementById('profile-root');
