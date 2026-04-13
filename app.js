@@ -269,26 +269,192 @@ function renderAutoeduChip(domain, earned, small = false) {
 function renderAutoeduHome() {
   const earned = Object.keys(autoeduTokens).length;
   const total = AUTOEDU_DOMAINS.length;
+  const userId = currentUser?.id || 'guest';
+  const stats = getSubmissionStats(userId);
+  const portfolio = getPortfolioByCategory(userId);
   
   const root = document.getElementById('autoedu-root');
   if (!root) return;
   
   root.innerHTML = `
     <div class="dashboard-shell">
+      <!-- Header with Neoscore -->
       <div class="dashboard-header">
         <div>
-          <p class="section-label">AutoEdu</p>
-          <h1>Knowledge built by the community,<br /><span style="color: var(--gold);">free for everyone.</span></h1>
-          <p class="dashboard-meta">Read courses written by contributors. Explore rabbit holes. Pass assessments. Earn Lineage Tokens in your domain.</p>
+          <p class="section-label">AutoEdu — Regulated Intellectual Network</p>
+          <h1>Knowledge Civilization Platform</h1>
+          <p class="dashboard-meta">Not a course platform. A civilization engine. Build your portfolio through real contribution.</p>
         </div>
-        <div style="display: flex; gap: 12px;">
-          <button onclick="window.autoeduNavigate('library')" class="btn btn-primary">Course Library</button>
-          <button onclick="window.autoeduNavigate('contribute')" class="btn" style="border-color: var(--gold); color: var(--gold);">+ Contribute</button>
+        <div style="text-align: right;">
+          <div style="font-size: 48px; font-weight: 700; color: var(--gold); line-height: 1;">${stats.neoscore}</div>
+          <div style="font-size: 11px; color: var(--muted-text); text-transform: uppercase; letter-spacing: 1px;">Neoscore</div>
+          <div style="font-size: 14px; color: var(--parchment); margin-top: 8px;">${stats.totalWorks} works · Credibility: ${autoeduReputation.credibility}</div>
         </div>
       </div>
 
-      <!-- Domain Token Board -->
-      <div class="card" style="margin-top: 32px;">
+      <!-- Navigation Tabs -->
+      <div style="display: flex; gap: 8px; margin: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+        <button onclick="window.autoeduSetHomeTab('portfolio')" class="btn ${autoeduHomeTab === 'portfolio' ? 'btn-primary' : ''}" id="tab-portfolio">Portfolio</button>
+        <button onclick="window.autoeduSetHomeTab('galleries')" class="btn ${autoeduHomeTab === 'galleries' ? 'btn-primary' : ''}" id="tab-galleries">Galleries</button>
+        <button onclick="window.autoeduSetHomeTab('feed')" class="btn ${autoeduHomeTab === 'feed' ? 'btn-primary' : ''}" id="tab-feed">Feed</button>
+        <button onclick="window.autoeduSetHomeTab('courses')" class="btn ${autoeduHomeTab === 'courses' ? 'btn-primary' : ''}" id="tab-courses">Courses</button>
+        <button onclick="window.autoeduSetHomeTab('submit')" class="btn ${autoeduHomeTab === 'submit' ? 'btn-primary' : ''}" id="tab-submit" style="border-color: var(--gold); color: var(--gold);">+ Submit Work</button>
+      </div>
+
+      <!-- PORTFOLIO TAB -->
+      <div id="home-portfolio" style="display: ${autoeduHomeTab === 'portfolio' ? 'block' : 'none'};">
+        <!-- Neoscore Breakdown -->
+        <div class="card" style="margin-bottom: 24px;">
+          <div class="dashboard-card-topline">
+            <p class="section-label">Score Composition</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 16px;">
+            ${[
+              ['Learning Activity', stats.neoscoreBreakdown?.learningActivity || 0, '30%', '#5b21b6'],
+              ['Portfolio Quality', stats.neoscoreBreakdown?.portfolioQuality || 0, '25%', '#c8a84b'],
+              ['Impact', stats.neoscoreBreakdown?.impactContribution || 0, '20%', '#166534'],
+              ['Domain Balance', stats.neoscoreBreakdown?.domainBalance || 0, '15%', '#075985'],
+              ['Peer Validation', stats.neoscoreBreakdown?.peerValidation || 0, '10%', '#9f1239']
+            ].map(([label, value, max, color]) => `
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: 600; color: ${color};">${value}</div>
+                <div style="font-size: 10px; color: var(--muted-text); text-transform: uppercase; letter-spacing: 0.5px;">${label}</div>
+                <div style="font-size: 9px; color: var(--muted-text); opacity: 0.6;">max ${max}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Portfolio Categories -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+          ${Object.entries(AUTOEDU_CATEGORIES).map(([key, cat]) => {
+            const works = portfolio[cat.id] || [];
+            const monthlyCount = stats.monthlyCaps?.[cat.id] || 0;
+            const monthlyCap = AUTOEDU_MONTHLY_CAPS[cat.id];
+            return `
+              <div class="card" style="border-left: 4px solid ${cat.color};">
+                <div class="dashboard-card-topline">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 20px;">${cat.icon}</span>
+                    <div>
+                      <p class="section-label" style="margin: 0;">${cat.label}</p>
+                      <small style="color: var(--muted-text);">${cat.description}</small>
+                    </div>
+                  </div>
+                  <span class="pill" style="background: ${monthlyCount >= monthlyCap ? '#ff444422' : 'rgba(255,255,255,0.1)'};">${monthlyCount}/${monthlyCap}</span>
+                </div>
+                <div style="margin-top: 16px;">
+                  ${works.slice(0, 3).map(work => `
+                    <div style="padding: 12px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 8px;">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="font-size: 13px; font-weight: 500; color: var(--parchment);">${work.title}</div>
+                        <span style="font-size: 11px; color: ${work.arbiterApproved ? '#4ade80' : 'var(--muted-text)'};">
+                          ${work.arbiterApproved ? '✦ ' : ''}${Math.round(work.score)}pts
+                        </span>
+                      </div>
+                      <div style="font-size: 10px; color: var(--muted-text); margin-top: 4px;">
+                        ${AUTOEDU_SUBMISSION_TYPES[work.type]?.label} · ${work.communityRating > 0 ? `★${work.communityRating.toFixed(1)}` : 'No rating'}
+                      </div>
+                    </div>
+                  `).join('') || '<p style="color: var(--muted-text); font-size: 12px; font-style: italic;">No submissions yet</p>'}
+                  ${works.length > 3 ? `<div style="text-align: center; margin-top: 8px; font-size: 11px; color: var(--muted-text);">+${works.length - 3} more</div>` : ''}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- GALLERIES TAB -->
+      <div id="home-galleries" style="display: ${autoeduHomeTab === 'galleries' ? 'block' : 'none'};">
+        <div style="display: grid; gap: 24px;">
+          ${AUTOEDU_GALLERIES.map(gallery => {
+            const works = getGalleryWorks(gallery.id, 5);
+            return `
+              <div class="card">
+                <div class="dashboard-card-topline">
+                  <h3 style="margin: 0; font-weight: 400; font-style: italic;">${gallery.label}</h3>
+                  <button onclick="window.autoeduViewGallery('${gallery.id}')" class="btn" style="padding: 6px 12px; font-size: 11px;">View All →</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 16px;">
+                  ${works.length ? works.map(work => `
+                    <div onclick="window.autoeduViewSubmission('${work.id}')" class="record-card" style="cursor: pointer; padding: 16px;">
+                      <div style="font-size: 12px; font-weight: 500; color: var(--parchment); margin-bottom: 8px; line-height: 1.4;">${work.title}</div>
+                      <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--muted-text);">
+                        <span>${AUTOEDU_SUBMISSION_TYPES[work.type]?.label}</span>
+                        <span style="color: ${work.arbiterApproved ? '#4ade80' : 'inherit'};">${work.arbiterApproved ? '✦ ' : ''}${Math.round(work.score)}pts</span>
+                      </div>
+                    </div>
+                  `).join('') : '<p style="color: var(--muted-text); font-size: 12px;">No works in this gallery yet</p>'}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- FEED TAB -->
+      <div id="home-feed" style="display: ${autoeduHomeTab === 'feed' ? 'block' : 'none'};">
+        <div class="card">
+          <div class="dashboard-card-topline">
+            <p class="section-label">Structured Feed — Not Addictive, Meaningful</p>
+          </div>
+          <div style="margin-top: 16px;">
+            ${getAutoEduFeed(userId, 15).map(item => `
+              <div onclick="window.autoeduViewSubmission('${item.id}')" style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent';">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                  <span class="pill" style="font-size: 9px; text-transform: uppercase;">${item.feedType.replace('_', ' ')}</span>
+                  <span style="font-size: 10px; color: var(--muted-text);">${new Date(item.timestamp).toLocaleDateString()}</span>
+                </div>
+                <div style="font-size: 14px; font-weight: 500; color: var(--parchment); margin-bottom: 4px;">${item.title}</div>
+                <div style="font-size: 11px; color: var(--muted-text); line-height: 1.5;">
+                  ${item.abstract ? item.abstract.substring(0, 120) + '...' : 'No abstract'}
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 8px; font-size: 10px; color: var(--muted-text);">
+                  <span>★ ${item.communityRating.toFixed(1)} (${item.communityRatingsCount})</span>
+                  <span>${item.citations || 0} citations</span>
+                  <span>${item.bookmarks || 0} bookmarks</span>
+                  ${item.arbiterApproved ? '<span style="color: #4ade80;">✦ Arbiter Approved</span>' : ''}
+                </div>
+              </div>
+            `).join('') || '<p style="color: var(--muted-text); padding: 20px;">Feed is quiet. Submit work to seed the network.</p>'}
+          </div>
+        </div>
+      </div>
+
+      <!-- COURSES TAB (Original) -->
+      <div id="home-courses" style="display: ${autoeduHomeTab === 'courses' ? 'block' : 'none'};">
+        ${renderAutoeduCoursesSection()}
+      </div>
+
+      <!-- SUBMIT TAB -->
+      <div id="home-submit" style="display: ${autoeduHomeTab === 'submit' ? 'block' : 'none'};">
+        ${renderAutoeduSubmitForm()}
+      </div>
+    </div>
+  `;
+}
+
+// AutoEdu Home Tab State
+let autoeduHomeTab = 'portfolio';
+
+window.autoeduSetHomeTab = function(tab) {
+  autoeduHomeTab = tab;
+  renderAutoeduHome();
+};
+
+// Render Courses Section (original content)
+function renderAutoeduCoursesSection() {
+  const earned = Object.keys(autoeduTokens).length;
+  const total = AUTOEDU_DOMAINS.length;
+  
+  return `
+    <div>
+      <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+        <button onclick="window.autoeduNavigate('library')" class="btn btn-primary">Browse Course Library</button>
+      </div>
+      
+      <div class="card" style="margin-bottom: 24px;">
         <div class="dashboard-card-topline">
           <p class="section-label">Your Lineage Tokens</p>
           <span class="muted">${earned} / ${total}</span>
@@ -301,28 +467,23 @@ function renderAutoeduHome() {
                 padding: 16px;
                 background: ${has ? d.color + '18' : 'rgba(0,0,0,0.2)'};
                 border: 1px solid ${has ? d.color + '44' : 'rgba(255,255,255,0.08)'};
-                cursor: default;
               ">
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                  <!-- Domain Name (Primary) -->
                   <div style="font-size: 14px; font-weight: 600; color: ${has ? 'var(--parchment)' : 'var(--muted-text)'};">${d.label}</div>
-                  <!-- Subject (Secondary) -->
                   <div style="font-size: 11px; color: var(--muted-text); font-style: italic;">${d.sub}</div>
                   ${renderAutoeduChip(d.id, has, true)}
                 </div>
-                ${has ? `<div style="margin-top: 12px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;"><div style="width: 100%; height: 100%; background: ${d.color};"></div></div>` : ''}
               </div>
             `;
           }).join('')}
         </div>
       </div>
 
-      <!-- How It Works -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; margin-top: 24px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
         ${[
           ["01", "Read", "Community-written courses. Dense, honest, no fluff."],
           ["02", "Explore", "Follow rabbit holes from any course into connected topics."],
-          ["03", "Assess", "Quiz or essay. Human-written questions. You pass, or you don't."],
+          ["03", "Assess", "Quiz or essay. Human-written questions."],
           ["04", "Earn", "Pass the assessment → earn the domain's Lineage Token."],
         ].map(([n, title, desc]) => `
           <div style="padding: 24px; background: var(--ink);">
@@ -335,6 +496,399 @@ function renderAutoeduHome() {
     </div>
   `;
 }
+
+// Render Submit Form
+function renderAutoeduSubmitForm() {
+  const userId = currentUser?.id || 'guest';
+  const stats = getSubmissionStats(userId);
+  
+  return `
+    <div>
+      <!-- Monthly Caps Warning -->
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px;">
+        ${Object.entries(AUTOEDU_CATEGORIES).map(([key, cat]) => {
+          const count = stats.monthlyCaps?.[cat.id] || 0;
+          const cap = AUTOEDU_MONTHLY_CAPS[cat.id];
+          const isNearCap = count >= cap * 0.8;
+          return `
+            <div style="
+              padding: 12px; 
+              background: ${isNearCap ? 'rgba(255,68,68,0.1)' : 'rgba(0,0,0,0.2)'}; 
+              border: 1px solid ${isNearCap ? '#ff444444' : 'rgba(255,255,255,0.08)'};
+              border-radius: 6px;
+              text-align: center;
+            ">
+              <div style="font-size: 18px; margin-bottom: 4px;">${cat.icon}</div>
+              <div style="font-size: 11px; color: var(--muted-text);">${cat.label}</div>
+              <div style="font-size: 14px; font-weight: 600; color: ${isNearCap ? '#ff4444' : 'var(--parchment)'};">${count}/${cap}</div>
+              <div style="font-size: 9px; color: var(--muted-text);">this month</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- Submission Forms by Category -->
+      <div style="display: grid; gap: 16px;">
+        ${Object.entries(AUTOEDU_CATEGORIES).map(([key, cat]) => `
+          <div class="card" style="border-left: 4px solid ${cat.color};">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+              <span style="font-size: 24px;">${cat.icon}</span>
+              <div>
+                <h3 style="margin: 0; font-weight: 400;">${cat.label}</h3>
+                <p style="margin: 0; font-size: 12px; color: var(--muted-text);">${cat.description}</p>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+              ${cat.types.map(type => {
+                const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
+                const monthlyCount = stats.monthlyCaps?.[cat.id] || 0;
+                const isAtCap = monthlyCount >= AUTOEDU_MONTHLY_CAPS[cat.id];
+                return `
+                  <button 
+                    onclick="window.autoeduShowSubmitModal('${type}')" 
+                    class="btn" 
+                    ${isAtCap ? 'disabled style="opacity: 0.4; cursor: not-allowed;"' : ''}
+                    style="text-align: left; padding: 16px;"
+                  >
+                    <div style="font-size: 13px; font-weight: 500; color: var(--parchment); margin-bottom: 4px;">${typeConfig?.label || type}</div>
+                    <div style="font-size: 10px; color: var(--muted-text);">
+                      Base: ${typeConfig?.baseScore || 0} pts · Max: ${typeConfig?.maxPerMonth || 0}/mo
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Show Submit Modal
+window.autoeduShowSubmitModal = function(type) {
+  const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
+  if (!typeConfig) return;
+  
+  const userId = currentUser?.id || 'guest';
+  const capCheck = checkMonthlyCap(userId, type);
+  if (!capCheck.allowed) {
+    alert(capCheck.reason);
+    return;
+  }
+  
+  const modal = document.createElement('div');
+  modal.id = 'autoedu-submit-modal';
+  modal.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+      <div style="background: linear-gradient(135deg, #1a1614 0%, #2c1f1a 100%); border: 1px solid var(--gold); border-radius: 12px; padding: 32px; width: 600px; max-width: 100%; max-height: 90vh; overflow-y: auto; position: relative;">
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--gold); border-radius: 12px 12px 0 0;"></div>
+        
+        <h2 style="font-family: 'Cormorant Garamond', serif; color: var(--gold); font-size: 1.6rem; margin: 0 0 8px 0;">Submit ${typeConfig.label}</h2>
+        <p style="color: var(--muted-text); font-size: 12px; margin-bottom: 24px;">
+          Base score: ${typeConfig.baseScore} pts · Weight: ${typeConfig.weight}x · Monthly max: ${typeConfig.maxPerMonth}
+        </p>
+        
+        <form id="autoedu-submit-form" style="display: grid; gap: 16px;">
+          <div>
+            <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Title *</label>
+            <input id="submit-title" class="neo-input" placeholder="Clear, descriptive title" required>
+          </div>
+          
+          <div>
+            <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Domain *</label>
+            <select id="submit-domain" class="neo-input" required>
+              <option value="">Select domain...</option>
+              ${AUTOEDU_DOMAINS.map(d => `<option value="${d.id}">${d.label} — ${d.sub}</option>`).join('')}
+            </select>
+          </div>
+          
+          <div>
+            <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Abstract / Description *</label>
+            <textarea id="submit-abstract" class="neo-input" rows="4" placeholder="Describe your work in 2-3 sentences. What is it? Why does it matter?" required></textarea>
+          </div>
+          
+          <div>
+            <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Full Content / Link *</label>
+            <textarea id="submit-content" class="neo-input" rows="8" placeholder="Paste your full work here, or provide a detailed description with external links..." required></textarea>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Word Count (optional)</label>
+              <input id="submit-wordcount" type="number" class="neo-input" placeholder="e.g. 1200">
+            </div>
+            <div>
+              <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">External Link (optional)</label>
+              <input id="submit-link" class="neo-input" placeholder="https://...">
+            </div>
+          </div>
+          
+          <div>
+            <label style="display: block; color: var(--muted-text); font-size: 11px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;">Tags (comma separated)</label>
+            <input id="submit-tags" class="neo-input" placeholder="e.g. philosophy, india, education, history">
+          </div>
+          
+          <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+            <p style="font-size: 11px; color: var(--muted-text); margin: 0 0 8px 0;">
+              <strong style="color: var(--gold);">How scoring works:</strong>
+            </p>
+            <ul style="font-size: 10px; color: var(--muted-text); margin: 0; padding-left: 16px; line-height: 1.6;">
+              <li>Base: ${typeConfig.baseScore} pts for submission</li>
+              <li>Community rating (1-5): multiplies base by 0.8x to 1.5x</li>
+              <li>Arbiter approval: 2x multiplier</li>
+              <li>Citations, bookmarks, references add bonus points</li>
+              <li>Maximum per submission: ${Math.round(typeConfig.baseScore * typeConfig.weight * 4)} pts</li>
+            </ul>
+          </div>
+          
+          <div style="display: flex; gap: 12px; margin-top: 8px;">
+            <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Work</button>
+            <button type="button" onclick="window.autoeduCloseSubmitModal()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Handle form submission
+  document.getElementById('autoedu-submit-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const submission = {
+      type: type,
+      title: document.getElementById('submit-title').value,
+      domain: document.getElementById('submit-domain').value,
+      abstract: document.getElementById('submit-abstract').value,
+      content: document.getElementById('submit-content').value,
+      wordCount: parseInt(document.getElementById('submit-wordcount').value) || 0,
+      externalLink: document.getElementById('submit-link').value,
+      tags: document.getElementById('submit-tags').value.split(',').map(t => t.trim()).filter(t => t)
+    };
+    
+    const result = addAutoEduSubmission(userId, submission);
+    if (result.success) {
+      alert(`Work submitted! Initial score: ${Math.round(result.submission.score)} points. Pending community review.`);
+      window.autoeduCloseSubmitModal();
+      renderAutoeduHome();
+    } else {
+      alert(result.error);
+    }
+  });
+};
+
+window.autoeduCloseSubmitModal = function() {
+  const modal = document.getElementById('autoedu-submit-modal');
+  if (modal) modal.remove();
+};
+
+// View Single Submission
+window.autoeduViewSubmission = function(submissionId) {
+  const submission = autoeduPortfolio.find(p => p.id === submissionId);
+  if (!submission) return;
+  
+  const typeConfig = AUTOEDU_SUBMISSION_TYPES[submission.type];
+  const catConfig = Object.values(AUTOEDU_CATEGORIES).find(c => c.id === typeConfig?.category);
+  const userId = currentUser?.id || 'guest';
+  const hasRated = submission.raters?.includes(userId);
+  
+  const modal = document.createElement('div');
+  modal.id = 'autoedu-view-modal';
+  modal.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+      <div style="background: linear-gradient(135deg, #1a1614 0%, #0f0d0c 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 32px; width: 800px; max-width: 100%; max-height: 90vh; overflow-y: auto;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="font-size: 20px;">${catConfig?.icon || '📄'}</span>
+              <span class="pill">${typeConfig?.label || submission.type}</span>
+              ${submission.arbiterApproved ? '<span class="pill" style="background: rgba(74,222,128,0.2); color: #4ade80;">✦ Arbiter Approved</span>' : ''}
+            </div>
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin: 0 0 8px 0; color: var(--parchment);">${submission.title}</h2>
+            <div style="font-size: 12px; color: var(--muted-text);">
+              ${new Date(submission.timestamp).toLocaleDateString()} · ${submission.wordCount ? submission.wordCount + ' words · ' : ''}${submission.readTime || 0} min read
+            </div>
+          </div>
+          <button onclick="window.autoeduCloseViewModal()" class="btn" style="padding: 8px 12px;">✕</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 280px; gap: 24px;">
+          <div>
+            <div style="font-size: 14px; line-height: 1.8; color: var(--parchment); margin-bottom: 24px;">
+              ${submission.abstract || 'No abstract provided.'}
+            </div>
+            
+            ${submission.externalLink ? `
+              <a href="${escapeHtml(submission.externalLink)}" target="_blank" class="btn btn-primary" style="display: inline-block; margin-bottom: 24px;">
+                View Full Work →
+              </a>
+            ` : ''}
+            
+            <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08);">
+              <h4 style="margin: 0 0 12px 0; font-size: 14px; color: var(--gold);">Full Content</h4>
+              <div style="font-size: 13px; line-height: 1.7; color: var(--parchment); white-space: pre-wrap;">
+                ${submission.content || 'No content provided.'}
+              </div>
+            </div>
+            
+            ${submission.comments.length > 0 ? `
+              <div style="margin-top: 24px;">
+                <h4 style="margin: 0 0 12px 0; font-size: 14px; color: var(--muted-text);">Comments (${submission.comments.length})</h4>
+                ${submission.comments.map(c => `
+                  <div style="padding: 12px; background: rgba(255,255,255,0.03); border-radius: 6px; margin-bottom: 8px;">
+                    <div style="font-size: 11px; color: var(--muted-text); margin-bottom: 4px;">${new Date(c.timestamp).toLocaleDateString()}</div>
+                    <div style="font-size: 13px; color: var(--parchment);">${escapeHtml(c.text)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+          
+          <div>
+            <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 8px; margin-bottom: 16px;">
+              <div style="text-align: center; margin-bottom: 16px;">
+                <div style="font-size: 36px; font-weight: 700; color: var(--gold); line-height: 1;">${Math.round(submission.score)}</div>
+                <div style="font-size: 10px; color: var(--muted-text); text-transform: uppercase; letter-spacing: 1px;">Points</div>
+              </div>
+              
+              <div style="font-size: 12px; color: var(--muted-text); margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>Base:</span>
+                  <span>${typeConfig?.baseScore || 0} pts</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>Weight:</span>
+                  <span>${typeConfig?.weight || 1}x</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>Community:</span>
+                  <span>${submission.communityRating > 0 ? `★${submission.communityRating.toFixed(1)}` : 'No rating'}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                  <span>Citations:</span>
+                  <span>${submission.citations || 0}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                  <span>Bookmarks:</span>
+                  <span>${submission.bookmarks || 0}</span>
+                </div>
+              </div>
+            </div>
+            
+            ${!hasRated && userId !== submission.userId ? `
+              <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 11px; color: var(--muted-text); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Rate this work</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                  ${[1, 2, 3, 4, 5].map(star => `
+                    <button onclick="window.autoeduRateWork('${submissionId}', ${star})" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted-text);" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted-text)'">★</button>
+                  `).join('')}
+                </div>
+                <textarea id="rating-comment-${submissionId}" class="neo-input" rows="2" placeholder="Optional comment..."></textarea>
+              </div>
+            ` : hasRated ? '<p style="font-size: 12px; color: var(--muted-text); text-align: center; margin-bottom: 16px;">You have rated this work</p>' : ''}
+            
+            <div style="display: grid; gap: 8px;">
+              <button onclick="window.autoeduEngage('${submissionId}', 'bookmark')" class="btn" style="font-size: 12px;">🔖 Bookmark</button>
+              <button onclick="window.autoeduEngage('${submissionId}', 'cite')" class="btn" style="font-size: 12px;">📚 Cite in my work</button>
+              <button onclick="window.autoeduEngage('${submissionId}', 'reference')" class="btn" style="font-size: 12px;">🔗 Reference</button>
+            </div>
+            
+            ${submission.arbiterNotes ? `
+              <div style="margin-top: 16px; padding: 12px; background: rgba(74,222,128,0.1); border-radius: 6px; border-left: 3px solid #4ade80;">
+                <div style="font-size: 10px; color: #4ade80; text-transform: uppercase; margin-bottom: 4px;">Arbiter Notes</div>
+                <div style="font-size: 12px; color: var(--parchment); font-style: italic;">${escapeHtml(submission.arbiterNotes)}</div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+};
+
+window.autoeduCloseViewModal = function() {
+  const modal = document.getElementById('autoedu-view-modal');
+  if (modal) modal.remove();
+};
+
+// Rate Work
+window.autoeduRateWork = function(submissionId, rating) {
+  const userId = currentUser?.id || 'guest';
+  const comment = document.getElementById(`rating-comment-${submissionId}`)?.value;
+  
+  const result = rateSubmission(submissionId, userId, rating, comment);
+  if (result.success) {
+    alert(`Rated ${rating} stars! Thank you for contributing to quality assessment.`);
+    window.autoeduCloseViewModal();
+  } else {
+    alert(result.error);
+  }
+};
+
+// Engage with Work
+window.autoeduEngage = function(submissionId, action) {
+  const userId = currentUser?.id || 'guest';
+  const result = engageWithSubmission(submissionId, userId, action);
+  if (result.success) {
+    const actionLabel = action === 'bookmark' ? 'Bookmarked' : action === 'cite' ? 'Cited' : 'Referenced';
+    alert(`${actionLabel}! Your engagement contributes to the author's reputation.`);
+    window.autoeduCloseViewModal();
+    renderAutoeduHome();
+  }
+};
+
+// View Gallery
+window.autoeduViewGallery = function(galleryId) {
+  const gallery = AUTOEDU_GALLERIES.find(g => g.id === galleryId);
+  if (!gallery) return;
+  
+  const works = getGalleryWorks(galleryId, 20);
+  
+  const modal = document.createElement('div');
+  modal.id = 'autoedu-gallery-modal';
+  modal.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); z-index: 10001; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto;">
+      <div style="background: linear-gradient(135deg, #1a1614 0%, #0f0d0c 100%); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 32px; width: 900px; max-width: 100%; max-height: 90vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; margin: 0; color: var(--parchment);">${gallery.label}</h2>
+          <button onclick="window.autoeduCloseGalleryModal()" class="btn" style="padding: 8px 12px;">✕</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px;">
+          ${works.map((work, index) => `
+            <div onclick="window.autoeduViewSubmission('${work.id}')" class="record-card" style="cursor: pointer; position: relative; overflow: hidden;">
+              <div style="position: absolute; top: 8px; left: 8px; background: var(--gold); color: #000; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">#${index + 1}</div>
+              <div style="font-size: 14px; font-weight: 500; color: var(--parchment); margin-bottom: 8px; line-height: 1.4;">${work.title}</div>
+              <div style="font-size: 11px; color: var(--muted-text); margin-bottom: 8px;">
+                ${AUTOEDU_SUBMISSION_TYPES[work.type]?.label} · ${new Date(work.timestamp).toLocaleDateString()}
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11px; color: var(--muted-text);">
+                  ★ ${work.communityRating.toFixed(1)} · ${work.citations || 0} citations
+                </span>
+                <span style="font-size: 12px; font-weight: 600; color: ${work.arbiterApproved ? '#4ade80' : 'var(--gold)'};">
+                  ${work.arbiterApproved ? '✦ ' : ''}${Math.round(work.score)}pts
+                </span>
+              </div>
+            </div>
+          `).join('') || '<p style="color: var(--muted-text); text-align: center; padding: 40px;">No works in this gallery yet</p>'}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+};
+
+window.autoeduCloseGalleryModal = function() {
+  const modal = document.getElementById('autoedu-gallery-modal');
+  if (modal) modal.remove();
+};
 
 // AutoEdu Library View
 function renderAutoeduLibrary() {
@@ -770,6 +1324,8 @@ function initAutoEdu() {
     if (savedTokens) {
       autoeduTokens = JSON.parse(savedTokens);
     }
+    // Load new AutoEdu portfolio system
+    initAutoEduPortfolio();
     renderAutoeduHome();
   }
 }
@@ -778,8 +1334,633 @@ function initAutoEdu() {
 const originalAutoeduNavigate = window.autoeduNavigate;
 window.autoeduNavigate = function(view) {
   localStorage.setItem('neofolk.autoeduTokens', JSON.stringify(autoeduTokens));
+  localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
+  localStorage.setItem('neofolk.autoeduReputation', JSON.stringify(autoeduReputation));
   originalAutoeduNavigate(view);
 };
+
+// ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
+// NEW AUTOEDU ARCHITECTURE: Regulated Intellectual Social Network
+// ⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻⸻
+
+// Portfolio Categories Structure
+const AUTOEDU_CATEGORIES = {
+  WORK: {
+    id: 'work',
+    label: 'Work',
+    description: 'Intellectual output and analysis',
+    types: ['article', 'essay', 'research'],
+    icon: '✍️',
+    color: '#c8a84b'
+  },
+  BUILD: {
+    id: 'build',
+    label: 'Build',
+    description: 'Real-world applied projects',
+    types: ['project', 'prototype', 'experiment'],
+    icon: '🔧',
+    color: '#5b21b6'
+  },
+  IMPACT: {
+    id: 'impact',
+    label: 'Impact',
+    description: 'Humanitarian contributions to society',
+    types: ['artifact', 'community_work', 'social_contribution'],
+    icon: '💎',
+    color: '#166534'
+  },
+  ACADEMIC: {
+    id: 'academic',
+    label: 'Academic',
+    description: 'Certifications and pathway completions',
+    types: ['certification', 'pathway', 'module'],
+    icon: '📜',
+    color: '#075985'
+  },
+  PUBLICATION: {
+    id: 'publication',
+    label: 'Publication',
+    description: 'Selected and featured works',
+    types: ['internal_pub', 'external_pub', 'featured'],
+    icon: '📚',
+    color: '#9f1239'
+  }
+};
+
+// Submission Types with Base Scores
+const AUTOEDU_SUBMISSION_TYPES = {
+  // WORK
+  article: { category: 'work', baseScore: 2, maxPerMonth: 5, weight: 1.0, label: 'Article' },
+  essay: { category: 'work', baseScore: 2, maxPerMonth: 5, weight: 1.0, label: 'Essay' },
+  research: { category: 'work', baseScore: 3, maxPerMonth: 3, weight: 1.5, label: 'Research' },
+  
+  // BUILD
+  project: { category: 'build', baseScore: 5, maxPerMonth: 2, weight: 2.0, label: 'Project' },
+  prototype: { category: 'build', baseScore: 5, maxPerMonth: 2, weight: 2.0, label: 'Prototype' },
+  experiment: { category: 'build', baseScore: 4, maxPerMonth: 3, weight: 1.8, label: 'Experiment' },
+  
+  // IMPACT
+  artifact: { category: 'impact', baseScore: 8, maxPerMonth: 2, weight: 3.0, label: 'Artifact' },
+  community_work: { category: 'impact', baseScore: 6, maxPerMonth: 3, weight: 2.5, label: 'Community Work' },
+  social_contribution: { category: 'impact', baseScore: 7, maxPerMonth: 2, weight: 2.8, label: 'Social Contribution' },
+  
+  // ACADEMIC
+  certification: { category: 'academic', baseScore: 1, maxPerMonth: 10, weight: 0.5, label: 'Certification' },
+  pathway: { category: 'academic', baseScore: 2, maxPerMonth: 5, weight: 0.8, label: 'Pathway' },
+  module: { category: 'academic', baseScore: 1, maxPerMonth: 10, weight: 0.5, label: 'Module' },
+  
+  // PUBLICATION
+  internal_pub: { category: 'publication', baseScore: 15, maxPerMonth: 2, weight: 4.0, label: 'Internal Publication' },
+  external_pub: { category: 'publication', baseScore: 12, maxPerMonth: 2, weight: 3.5, label: 'External Publication' },
+  featured: { category: 'publication', baseScore: 20, maxPerMonth: 1, weight: 5.0, label: 'Featured Work' }
+};
+
+// Evaluation Layers Multipliers
+const AUTOEDU_EVALUATION_MULTIPLIERS = {
+  self: 1.0,        // Base submission
+  community_high: 1.5,  // Rating 4-5
+  community_med: 1.2,   // Rating 3
+  community_low: 0.8,   // Rating 1-2
+  arbiter_approve: 2.0, // Arbiter approval
+  citation: 2.0,        // Each citation
+  bookmark: 1.1,        // Each bookmark
+  reference: 1.3        // Referenced by others
+};
+
+// Gallery Categories
+const AUTOEDU_GALLERIES = [
+  { id: 'best_research', label: 'Best Research This Month', filter: 'research', sort: 'arbiterApproved' },
+  { id: 'best_visual', label: 'Best Visual Work', filter: 'project', sort: 'communityRating' },
+  { id: 'best_impact', label: 'Best Community Impact', filter: 'artifact', sort: 'impactScore' },
+  { id: 'emerging', label: 'Emerging Thinkers', filter: 'all', sort: 'growthVelocity', maxReputation: 50 },
+  { id: 'young_researchers', label: 'Young Researchers', filter: 'research', sort: 'quality', maxAge: 25 }
+];
+
+// AutoEdu Portfolio State
+let autoeduPortfolio = [];
+let autoeduReputation = {
+  credibility: 10,  // Starting credibility
+  totalWorks: 0,
+  citations: 0,
+  references: 0,
+  bookmarks: 0,
+  arbiterEndorsements: 0,
+  communityRatings: [],
+  impactScore: 0
+};
+
+// Score Caps Per Month
+const AUTOEDU_MONTHLY_CAPS = {
+  work: 20,      // Articles + Essays + Research
+  build: 25,     // Projects + Prototypes
+  impact: 40,    // Artifacts + Community work
+  academic: 15,  // Certifications + Pathways
+  publication: 50 // Publications
+};
+
+// Initialize AutoEdu Portfolio System
+function initAutoEduPortfolio() {
+  const savedPortfolio = localStorage.getItem('neofolk.autoeduPortfolio');
+  const savedReputation = localStorage.getItem('neofolk.autoeduReputation');
+  
+  if (savedPortfolio) {
+    autoeduPortfolio = JSON.parse(savedPortfolio);
+  }
+  if (savedReputation) {
+    autoeduReputation = JSON.parse(savedReputation);
+  }
+}
+
+// Calculate Weighted Score for a Submission
+function calculateSubmissionScore(submission) {
+  const type = AUTOEDU_SUBMISSION_TYPES[submission.type];
+  if (!type) return 0;
+  
+  let score = type.baseScore * type.weight;
+  
+  // Layer 2: Community feedback multipliers
+  if (submission.communityRating >= 4) {
+    score *= AUTOEDU_EVALUATION_MULTIPLIERS.community_high;
+  } else if (submission.communityRating === 3) {
+    score *= AUTOEDU_EVALUATION_MULTIPLIERS.community_med;
+  } else if (submission.communityRating <= 2) {
+    score *= AUTOEDU_EVALUATION_MULTIPLIERS.community_low;
+  }
+  
+  // Citations bonus
+  score += (submission.citations || 0) * AUTOEDU_EVALUATION_MULTIPLIERS.citation;
+  
+  // Bookmarks bonus
+  score += (submission.bookmarks || 0) * AUTOEDU_EVALUATION_MULTIPLIERS.bookmark;
+  
+  // References bonus
+  score += (submission.references || 0) * AUTOEDU_EVALUATION_MULTIPLIERS.reference;
+  
+  // Layer 3: Arbiter approval
+  if (submission.arbiterApproved) {
+    score *= AUTOEDU_EVALUATION_MULTIPLIERS.arbiter_approve;
+  }
+  
+  // Cap per submission
+  const maxScore = type.baseScore * type.weight * 4; // Max 4x multiplier
+  return Math.min(score, maxScore);
+}
+
+// Calculate Monthly Submission Count
+function getMonthlySubmissionCount(userId, category) {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  return autoeduPortfolio.filter(p => {
+    const type = AUTOEDU_SUBMISSION_TYPES[p.type];
+    return p.userId === userId && 
+           type && 
+           type.category === category &&
+           new Date(p.timestamp) >= monthStart;
+  }).length;
+}
+
+// Check if submission cap reached
+function checkMonthlyCap(userId, type) {
+  const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
+  if (!typeConfig) return { allowed: false, reason: 'Invalid submission type' };
+  
+  const monthlyCount = getMonthlySubmissionCount(userId, typeConfig.category);
+  const cap = AUTOEDU_SUBMISSION_TYPES[type].maxPerMonth;
+  
+  if (monthlyCount >= cap) {
+    return { 
+      allowed: false, 
+      reason: `Monthly cap reached: ${cap} ${typeConfig.label}s per month. Focus on quality.` 
+    };
+  }
+  
+  // Check category cap
+  const categoryMonthly = getMonthlySubmissionCount(userId, typeConfig.category);
+  const categoryCap = AUTOEDU_MONTHLY_CAPS[typeConfig.category];
+  
+  if (categoryMonthly >= categoryCap) {
+    return {
+      allowed: false,
+      reason: `${typeConfig.category} category cap reached: ${categoryCap} submissions per month. Focus on other categories.`
+    };
+  }
+  
+  return { allowed: true };
+}
+
+// Add Submission to Portfolio
+function addAutoEduSubmission(userId, submission) {
+  // Check caps
+  const capCheck = checkMonthlyCap(userId, submission.type);
+  if (!capCheck.allowed) {
+    return { success: false, error: capCheck.reason };
+  }
+  
+  // Create submission
+  const newSubmission = {
+    id: `aedu_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    userId,
+    ...submission,
+    timestamp: new Date().toISOString(),
+    score: 0, // Will be calculated
+    status: 'pending', // pending, approved, rejected
+    
+    // Evaluation layers (initially empty)
+    selfScore: AUTOEDU_SUBMISSION_TYPES[submission.type]?.baseScore || 0,
+    communityRating: 0,
+    communityRatingsCount: 0,
+    citations: 0,
+    bookmarks: 0,
+    references: 0,
+    arbiterApproved: false,
+    arbiterNotes: null,
+    
+    // Engagement
+    views: 0,
+    comments: [],
+    
+    // Quality signals
+    readTime: submission.wordCount ? Math.ceil(submission.wordCount / 200) : 0,
+    originalityScore: null, // Set by arbiter
+    
+    // Metadata
+    domain: submission.domain || 'general',
+    tags: submission.tags || [],
+    featured: false
+  };
+  
+  // Calculate initial score
+  newSubmission.score = calculateSubmissionScore(newSubmission);
+  
+  // Add to portfolio
+  autoeduPortfolio.push(newSubmission);
+  
+  // Update reputation
+  autoeduReputation.totalWorks++;
+  updateCredibilityScore(userId);
+  
+  // Save
+  localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
+  localStorage.setItem('neofolk.autoeduReputation', JSON.stringify(autoeduReputation));
+  
+  return { success: true, submission: newSubmission };
+}
+
+// Update Credibility Score
+function updateCredibilityScore(userId) {
+  const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
+  
+  // Base credibility
+  let credibility = 10;
+  
+  // + for total quality works
+  credibility += userWorks.filter(w => w.score > 5).length * 2;
+  
+  // + for arbiter endorsements
+  credibility += userWorks.filter(w => w.arbiterApproved).length * 5;
+  
+  // + for citations received
+  const citationsReceived = userWorks.reduce((sum, w) => sum + (w.citations || 0), 0);
+  credibility += citationsReceived * 3;
+  
+  // + for references
+  const referencesReceived = userWorks.reduce((sum, w) => sum + (w.references || 0), 0);
+  credibility += referencesReceived * 2;
+  
+  // + for bookmarks
+  const bookmarksReceived = userWorks.reduce((sum, w) => sum + (w.bookmarks || 0), 0);
+  credibility += bookmarksReceived * 0.5;
+  
+  // Cap at 100 for early version
+  autoeduReputation.credibility = Math.min(credibility, 100);
+  
+  // Store user-specific reputation
+  localStorage.setItem(`neofolk.autoeduReputation.${userId}`, JSON.stringify(autoeduReputation));
+}
+
+// Rate Submission (Community Layer)
+function rateSubmission(submissionId, raterId, rating, comment = null) {
+  const submission = autoeduPortfolio.find(p => p.id === submissionId);
+  if (!submission) return { success: false, error: 'Submission not found' };
+  
+  // Check if already rated
+  if (submission.raters?.includes(raterId)) {
+    return { success: false, error: 'Already rated this work' };
+  }
+  
+  // Update rating
+  const currentTotal = submission.communityRating * submission.communityRatingsCount;
+  submission.communityRatingsCount++;
+  submission.communityRating = (currentTotal + rating) / submission.communityRatingsCount;
+  submission.raters = [...(submission.raters || []), raterId];
+  
+  if (comment) {
+    submission.comments.push({
+      id: `comment_${Date.now()}`,
+      userId: raterId,
+      text: comment,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
+  // Recalculate score
+  submission.score = calculateSubmissionScore(submission);
+  
+  // Update reputation of submitter
+  const raterReputation = JSON.parse(localStorage.getItem(`neofolk.autoeduReputation.${raterId}`) || '{"credibility":10}');
+  const ratingWeight = raterReputation.credibility / 100; // Higher credibility = more weight
+  
+  // Save
+  localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
+  
+  return { success: true, submission };
+}
+
+// Arbiter Review (Layer 3)
+function arbiterReview(submissionId, arbiterId, decision, notes = null, originalityScore = null) {
+  const submission = autoeduPortfolio.find(p => p.id === submissionId);
+  if (!submission) return { success: false, error: 'Submission not found' };
+  
+  submission.arbiterApproved = decision === 'approve';
+  submission.arbiterId = arbiterId;
+  submission.arbiterNotes = notes;
+  submission.status = decision === 'approve' ? 'approved' : 'rejected';
+  submission.originalityScore = originalityScore;
+  submission.reviewedAt = new Date().toISOString();
+  
+  if (decision === 'approve') {
+    submission.featured = originalityScore >= 8; // Auto-feature high quality
+    
+    // Update submitter reputation
+    autoeduReputation.arbiterEndorsements++;
+    updateCredibilityScore(submission.userId);
+  }
+  
+  // Recalculate score
+  submission.score = calculateSubmissionScore(submission);
+  
+  // Save
+  localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
+  
+  return { success: true, submission };
+}
+
+// Cite/Bookmark/Reference a Submission
+function engageWithSubmission(submissionId, userId, action) {
+  const submission = autoeduPortfolio.find(p => p.id === submissionId);
+  if (!submission) return { success: false, error: 'Submission not found' };
+  
+  if (action === 'cite') {
+    submission.citations = (submission.citations || 0) + 1;
+  } else if (action === 'bookmark') {
+    submission.bookmarks = (submission.bookmarks || 0) + 1;
+  } else if (action === 'reference') {
+    submission.references = (submission.references || 0) + 1;
+  }
+  
+  // Recalculate score
+  submission.score = calculateSubmissionScore(submission);
+  
+  // Update submitter credibility
+  updateCredibilityScore(submission.userId);
+  
+  // Save
+  localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
+  
+  return { success: true, submission };
+}
+
+// Calculate Composite Neoscore
+function calculateAutoEduNeoscore(userId) {
+  const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
+  
+  if (userWorks.length === 0) return 0;
+  
+  // Component 1: Learning Activity (30%) - breadth of engagement
+  const uniqueDomains = new Set(userWorks.map(w => w.domain)).size;
+  const learningActivityScore = Math.min(uniqueDomains * 3, 30);
+  
+  // Component 2: Portfolio Quality (25%) - average score of works
+  const avgScore = userWorks.reduce((sum, w) => sum + (w.score || 0), 0) / userWorks.length;
+  const portfolioQualityScore = Math.min(avgScore * 2, 25);
+  
+  // Component 3: Impact Contribution (20%) - impact category works
+  const impactWorks = userWorks.filter(w => {
+    const type = AUTOEDU_SUBMISSION_TYPES[w.type];
+    return type && type.category === 'impact';
+  });
+  const impactScore = Math.min(impactWorks.length * 5, 20);
+  
+  // Component 4: Domain Balance (15%) - diversity across categories
+  const categories = {};
+  userWorks.forEach(w => {
+    const type = AUTOEDU_SUBMISSION_TYPES[w.type];
+    if (type) {
+      categories[type.category] = (categories[type.category] || 0) + 1;
+    }
+  });
+  const categoryCount = Object.keys(categories).length;
+  const domainBalanceScore = categoryCount * 3; // Max 15 with 5 categories
+  
+  // Component 5: Peer Validation (10%) - community engagement
+  const totalEngagement = userWorks.reduce((sum, w) => 
+    sum + (w.citations || 0) + (w.bookmarks || 0) + (w.references || 0), 0
+  );
+  const peerValidationScore = Math.min(totalEngagement * 2, 10);
+  
+  const totalNeoscore = learningActivityScore + portfolioQualityScore + impactScore + domainBalanceScore + peerValidationScore;
+  
+  return {
+    total: Math.round(totalNeoscore),
+    breakdown: {
+      learningActivity: learningActivityScore,
+      portfolioQuality: portfolioQualityScore,
+      impactContribution: impactScore,
+      domainBalance: domainBalanceScore,
+      peerValidation: peerValidationScore
+    }
+  };
+}
+
+// Calculate Specscore (Specialization Depth)
+function calculateAutoEduSpecscore(userId, domainId) {
+  const userWorks = autoeduPortfolio.filter(p => p.userId === userId && p.domain === domainId);
+  
+  if (userWorks.length === 0) return 0;
+  
+  // Base: number of works in domain
+  let specscore = userWorks.length * 2;
+  
+  // Bonus for quality
+  const qualityWorks = userWorks.filter(w => w.score > 10).length;
+  specscore += qualityWorks * 3;
+  
+  // Bonus for arbiter approval
+  const approvedWorks = userWorks.filter(w => w.arbiterApproved).length;
+  specscore += approvedWorks * 5;
+  
+  // Bonus for citations within domain
+  const citations = userWorks.reduce((sum, w) => sum + (w.citations || 0), 0);
+  specscore += citations * 2;
+  
+  // Diminishing returns after 20 works
+  if (userWorks.length > 20) {
+    specscore = 50 + (userWorks.length - 20) * 0.5;
+  }
+  
+  return Math.round(specscore);
+}
+
+// Get Gallery Works
+function getGalleryWorks(galleryId, limit = 10) {
+  const gallery = AUTOEDU_GALLERIES.find(g => g.id === galleryId);
+  if (!gallery) return [];
+  
+  let works = [...autoeduPortfolio];
+  
+  // Filter by type if specified
+  if (gallery.filter && gallery.filter !== 'all') {
+    const typeConfig = AUTOEDU_SUBMISSION_TYPES[gallery.filter];
+    if (typeConfig) {
+      works = works.filter(w => {
+        const wType = AUTOEDU_SUBMISSION_TYPES[w.type];
+        return wType && wType.category === typeConfig.category;
+      });
+    }
+  }
+  
+  // Filter by max reputation for emerging
+  if (gallery.maxReputation) {
+    works = works.filter(w => {
+      const rep = JSON.parse(localStorage.getItem(`neofolk.autoeduReputation.${w.userId}`) || '{"credibility":10}');
+      return rep.credibility <= gallery.maxReputation;
+    });
+  }
+  
+  // Sort
+  switch (gallery.sort) {
+    case 'arbiterApproved':
+      works = works.filter(w => w.arbiterApproved).sort((a, b) => b.score - a.score);
+      break;
+    case 'communityRating':
+      works.sort((a, b) => b.communityRating - a.communityRating);
+      break;
+    case 'impactScore':
+      works.sort((a, b) => {
+        const aImpact = AUTOEDU_SUBMISSION_TYPES[a.type]?.category === 'impact' ? a.score : 0;
+        const bImpact = AUTOEDU_SUBMISSION_TYPES[b.type]?.category === 'impact' ? b.score : 0;
+        return bImpact - aImpact;
+      });
+      break;
+    case 'quality':
+      works.sort((a, b) => b.score - a.score);
+      break;
+    default:
+      works.sort((a, b) => b.score - a.score);
+  }
+  
+  return works.slice(0, limit);
+}
+
+// Get Feed Content (Structured, not addictive)
+function getAutoEduFeed(userId, limit = 20) {
+  const feed = [];
+  
+  // 1. New publications (high priority)
+  const newPublications = autoeduPortfolio
+    .filter(p => AUTOEDU_SUBMISSION_TYPES[p.type]?.category === 'publication')
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 5);
+  feed.push(...newPublications.map(p => ({ ...p, feedType: 'publication' })));
+  
+  // 2. Research questions from community
+  const researchQuestions = autoeduPortfolio
+    .filter(p => p.type === 'research' && p.arbiterApproved)
+    .sort((a, b) => b.communityRating - a.communityRating)
+    .slice(0, 5);
+  feed.push(...researchQuestions.map(p => ({ ...p, feedType: 'research_question' })));
+  
+  // 3. Community debates (high engagement)
+  const debates = autoeduPortfolio
+    .filter(p => p.comments.length > 3)
+    .sort((a, b) => b.comments.length - a.comments.length)
+    .slice(0, 5);
+  feed.push(...debates.map(p => ({ ...p, feedType: 'debate' })));
+  
+  // 4. Field observations (impact category)
+  const observations = autoeduPortfolio
+    .filter(p => AUTOEDU_SUBMISSION_TYPES[p.type]?.category === 'impact')
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+  feed.push(...observations.map(p => ({ ...p, feedType: 'field_observation' })));
+  
+  // Shuffle slightly to avoid pure recency bias
+  return feed.sort(() => Math.random() - 0.5).slice(0, limit);
+}
+
+// Get Portfolio by Category for Display
+function getPortfolioByCategory(userId) {
+  const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
+  
+  const categorized = {
+    work: [],
+    build: [],
+    impact: [],
+    academic: [],
+    publication: []
+  };
+  
+  userWorks.forEach(work => {
+    const type = AUTOEDU_SUBMISSION_TYPES[work.type];
+    if (type && categorized[type.category]) {
+      categorized[type.category].push(work);
+    }
+  });
+  
+  // Sort each category by score (descending)
+  Object.keys(categorized).forEach(cat => {
+    categorized[cat].sort((a, b) => b.score - a.score);
+  });
+  
+  return categorized;
+}
+
+// Get Submission Stats
+function getSubmissionStats(userId) {
+  const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
+  const neoscore = calculateAutoEduNeoscore(userId);
+  
+  // Calculate specscores for all domains
+  const specscores = {};
+  AUTOEDU_DOMAINS.forEach(d => {
+    specscores[d.id] = calculateAutoEduSpecscore(userId, d.id);
+  });
+  
+  // Primary specialization (highest specscore)
+  const primarySpec = Object.entries(specscores)
+    .sort(([,a], [,b]) => b - a)[0];
+  
+  return {
+    totalWorks: userWorks.length,
+    neoscore: neoscore.total,
+    neoscoreBreakdown: neoscore.breakdown,
+    specscores,
+    primarySpecialization: primarySpec ? { domain: primarySpec[0], score: primarySpec[1] } : null,
+    arbiterApprovedCount: userWorks.filter(w => w.arbiterApproved).length,
+    totalCitations: userWorks.reduce((sum, w) => sum + (w.citations || 0), 0),
+    avgCommunityRating: userWorks.length > 0 
+      ? (userWorks.reduce((sum, w) => sum + (w.communityRating || 0), 0) / userWorks.length).toFixed(1)
+      : 0,
+    monthlyCaps: {
+      work: getMonthlySubmissionCount(userId, 'work'),
+      build: getMonthlySubmissionCount(userId, 'build'),
+      impact: getMonthlySubmissionCount(userId, 'impact'),
+      academic: getMonthlySubmissionCount(userId, 'academic'),
+      publication: getMonthlySubmissionCount(userId, 'publication')
+    }
+  };
+}
 
 const LINEAGE_DETAILS = [
   {
