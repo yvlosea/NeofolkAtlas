@@ -13,6 +13,201 @@
   <link rel="stylesheet" href="internal-styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link rel="icon" type="image/jpeg" href="neofolk-logo.jpg" />
+  <style>
+    /* Hide sidebar until logged in */
+    .neo-layout:not(.logged-in) .neo-sidebar {
+      display: none;
+    }
+    .neo-layout:not(.logged-in) .neo-main {
+      margin-left: 0;
+    }
+    .neo-layout:not(.logged-in) .mobile-topbar .hamburger {
+      display: none;
+    }
+
+    /* Project Info Section */
+    .project-info {
+      background: linear-gradient(135deg, rgba(30, 24, 19, 0.8) 0%, rgba(20, 16, 12, 0.9) 100%);
+      border: 1px solid rgba(185, 155, 124, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-info::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #b99b7c, #c4aa8f, #b99b7c);
+    }
+    .project-info-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .project-info-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid rgba(185, 155, 124, 0.3);
+    }
+    .project-info-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      color: #e8dcc9;
+      margin: 0;
+      font-weight: 500;
+    }
+    .project-info-tagline {
+      font-size: 0.85rem;
+      color: #8b7f6e;
+      margin: 0;
+    }
+    .project-info-description {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #c4b5a4;
+      margin-bottom: 20px;
+    }
+    .project-info-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(185, 155, 124, 0.15);
+    }
+    .project-stat {
+      text-align: center;
+    }
+    .project-stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      color: #b99b7c;
+      font-weight: 600;
+      display: block;
+    }
+    .project-stat-label {
+      font-size: 0.7rem;
+      color: #8b7f6e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+    .project-trust {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(185, 155, 124, 0.15);
+      font-size: 0.75rem;
+      color: #6a5f4f;
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* Adjust auth card when sidebar is hidden */
+    .neo-layout:not(.logged-in) .auth-card {
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      .project-info {
+        padding: 24px;
+        margin: 16px;
+      }
+      .project-info-title {
+        font-size: 1.3rem;
+      }
+      .project-info-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .project-stat-value {
+        font-size: 1.4rem;
+      }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .glass-card:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .entry-btn:hover {
+        transform: none;
+      }
+
+      .auth-btn:hover {
+        color: var(--home-text-muted);
+        border-color: var(--home-border);
+      }
+
+      .auth-btn.primary:hover {
+        color: var(--home-bg);
+      }
+    }
+
+    /* Connection Status Indicator */
+    .conn-status {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .conn-status.visible {
+      opacity: 1;
+    }
+    .conn-status.connected {
+      background: rgba(122, 180, 122, 0.15);
+      color: #7ab47a;
+      border: 1px solid rgba(122, 180, 122, 0.3);
+    }
+    .conn-status.error {
+      background: rgba(180, 122, 122, 0.15);
+      color: #b47a7a;
+      border: 1px solid rgba(180, 122, 122, 0.3);
+    }
+    .conn-status.checking {
+      background: rgba(185, 155, 124, 0.15);
+      color: #b99b7c;
+      border: 1px solid rgba(185, 155, 124, 0.3);
+    }
+    .conn-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .conn-status.connected .conn-dot {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+  </style>
 </head>
 <body class="internal-page neo-theme" data-page="home">
 
@@ -94,7 +289,41 @@
                     </div>
                   </div>
 
-                  <div class="auth-card">
+                  <div style="flex: 0 0 420px; max-width: 100%;">
+                    <!-- Project Information -->
+                    <div class="project-info">
+                      <div class="project-info-header">
+                        <img src="neofolk-logo.jpg" alt="Neofolk Atlas" class="project-info-logo">
+                        <div>
+                          <h2 class="project-info-title">Neofolk Atlas</h2>
+                          <p class="project-info-tagline">Indian Neofolk Humanitarian Education Trust</p>
+                        </div>
+                      </div>
+                      <p class="project-info-description">
+                        A decentralized learning system recognizing diverse forms of intelligence. 
+                        Education should reflect real life — reconnecting language, logic, creativity, 
+                        ethics, and practical skill.
+                      </p>
+                      <div class="project-info-stats">
+                        <div class="project-stat">
+                          <span class="project-stat-value">10</span>
+                          <span class="project-stat-label">Domains</span>
+                        </div>
+                        <div class="project-stat">
+                          <span class="project-stat-value">3</span>
+                          <span class="project-stat-label">Roles</span>
+                        </div>
+                        <div class="project-stat">
+                          <span class="project-stat-value">∞</span>
+                          <span class="project-stat-label">Paths</span>
+                        </div>
+                      </div>
+                      <div class="project-trust">
+                        Beta 1.3 • Founded under INHET
+                      </div>
+                    </div>
+
+                    <div class="auth-card">
                     <div class="auth-tabs">
                       <button type="button" class="auth-tab active" id="tabSignup" data-i18n="home.signupLabel">Create Account</button>
                       <button type="button" class="auth-tab" id="tabLogin" data-i18n="home.loginTitle">Login</button>
@@ -158,7 +387,8 @@
                       </form>
                       <p id="login-message" class="status-text" aria-live="polite"></p>
                     </div>
-                  </div>
+                    </div> <!-- /auth-card -->
+                  </div> <!-- /project info + auth wrapper -->
                 </section>
 
                 <section class="quote-section card" id="quoteSection">
@@ -248,14 +478,44 @@
 
   </div>
 
+  <!-- Connection Status Indicator -->
+  <div class="conn-status checking" id="connStatus">
+    <span class="conn-dot"></span>
+    <span id="connText">Checking connection...</span>
+  </div>
+
   <script type="module" src="app.js"></script>
 
   <script>
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
     const hamburger = document.getElementById('hamburgerBtn');
+    const layout = document.querySelector('.neo-layout');
+
+    // Auth state management for sidebar visibility
+    function updateLayoutForAuth() {
+      const isLoggedIn = localStorage.getItem('neofolk_current_user') !== null;
+      if (isLoggedIn) {
+        layout.classList.add('logged-in');
+        sidebar.style.display = '';
+      } else {
+        layout.classList.remove('logged-in');
+        sidebar.style.display = 'none';
+      }
+    }
+
+    // Check auth state on load
+    updateLayoutForAuth();
+
+    // Listen for storage changes (login/logout from other tabs)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'neofolk_current_user') {
+        updateLayoutForAuth();
+      }
+    });
 
     function openSidebar() {
+      if (!layout.classList.contains('logged-in')) return;
       sidebar.classList.add('open');
       overlay.classList.add('active');
       hamburger.classList.add('open');
@@ -413,6 +673,52 @@
         btn.textContent = 'Show';
       }
     }
+
+    // === Connection Status Check ===
+    async function checkConnection() {
+      const statusEl = document.getElementById('connStatus');
+      const textEl = document.getElementById('connText');
+
+      try {
+        const supabaseUrl = document.querySelector('meta[name="supabase-url"]')?.content;
+        const supabaseKey = document.querySelector('meta[name="supabase-anon-key"]')?.content;
+
+        if (!supabaseUrl || !supabaseKey) {
+          throw new Error('Missing Supabase config');
+        }
+
+        // Wait for app.js to load Supabase
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Check if Supabase client is available (from app.js)
+        if (typeof getSupabaseClient === 'function') {
+          const client = getSupabaseClient();
+          if (!client) throw new Error('Supabase client not initialized');
+
+          const { data, error } = await client.auth.getSession();
+          if (error) throw error;
+
+          // Connection successful
+          statusEl.classList.remove('checking', 'error');
+          statusEl.classList.add('connected', 'visible');
+          textEl.textContent = 'Backend connected';
+
+          setTimeout(() => statusEl.classList.remove('visible'), 3000);
+        } else {
+          throw new Error('Supabase not loaded');
+        }
+      } catch (e) {
+        console.warn('Backend connection check:', e.message);
+        statusEl.classList.remove('checking');
+        statusEl.classList.add('error', 'visible');
+        textEl.textContent = 'Backend offline';
+      }
+    }
+
+    // Run connection check on load
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(checkConnection, 1500);
+    });
   </script>
 </body>
 </html>

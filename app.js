@@ -3859,6 +3859,9 @@ function getSupabaseClient() {
   return supabaseClient;
 }
 
+// Expose globally for connection checks
+window.getSupabaseClient = getSupabaseClient;
+
 function getLocalCompletedModuleCount(userId) {
   const attendanceHistory = JSON.parse(localStorage.getItem(`neofolk.attendance.${userId}`) || '[]');
   return new Set(
@@ -4730,6 +4733,7 @@ function renderAppNav() {
       const supabase = getSupabaseClient();
       if (supabase) await supabase.auth.signOut();
       currentUser = null;
+      localStorage.removeItem('neofolk_current_user');
       location.href = 'index.html';
     };
     nav.appendChild(logoutBtn);
@@ -4949,9 +4953,15 @@ function wireAuthForms() {
         if (msg) msg.textContent = error.message || t('messages.authFailed');
         return;
       }
+
       if (data?.user) {
         const resolvedRole = resolveUserRole(data.user, getRoleFromPage() || 'seeker');
         persistRoleHint(resolvedRole, data.user);
+        localStorage.setItem('neofolk_current_user', JSON.stringify({
+          id: data.user.id,
+          email: data.user.email,
+          role: data.user.user_metadata?.role || 'seeker'
+        }));
         window.location.assign(getDashboardPath({
           ...data.user,
           user_metadata: { ...(data.user.user_metadata || {}), role: resolvedRole }
@@ -4999,6 +5009,12 @@ function wireAuthForms() {
       if (data?.user) persistRoleHint(role, data.user);
 
       if (data.session && data.user) {
+        // Store user in localStorage for sidebar visibility sync
+        localStorage.setItem('neofolk_current_user', JSON.stringify({
+          id: data.user.id,
+          email: data.user.email,
+          role: role
+        }));
         window.location.assign(getDashboardPath({
           ...data.user,
           user_metadata: { ...(data.user.user_metadata || {}), role }
@@ -6700,6 +6716,7 @@ function renderPageContent() {
           await supabase.auth.signOut();
         }
         currentUser = null;
+        localStorage.removeItem('neofolk_current_user');
         window.location.href = 'index.html';
       });
     }
@@ -6844,8 +6861,18 @@ async function initApp() {
     try {
       const { data } = await supabase.auth.getUser();
       currentUser = data?.user || null;
+      if (currentUser) {
+        localStorage.setItem('neofolk_current_user', JSON.stringify({
+          id: currentUser.id,
+          email: currentUser.email,
+          role: currentUser.user_metadata?.role || 'seeker'
+        }));
+      } else {
+        localStorage.removeItem('neofolk_current_user');
+      }
     } catch (_) {
       currentUser = null;
+      localStorage.removeItem('neofolk_current_user');
     }
   }
 
