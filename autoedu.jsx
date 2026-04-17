@@ -189,7 +189,7 @@ function Home({ onNav, tokens }) {
   return (
     <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif" }}>
       {/* nav */}
-      <nav style={{ borderBottom: "1px solid #ffffff0c", padding: "16px 40px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <nav className="main-nav" style={{ borderBottom: "1px solid #ffffff0c" }}>
         <div style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "#ffffff44" }}>NeofolkAtlas</div>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
           <button onClick={() => onNav(V.LIBRARY)} style={navBtn}>Course Library</button>
@@ -197,13 +197,13 @@ function Home({ onNav, tokens }) {
         </div>
       </nav>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "80px 40px 60px" }}>
+      <div className="hero-container">
         {/* hero */}
         <div style={{ marginBottom: 72 }}>
           <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: "0.25em", textTransform: "uppercase", color: "#ffffff33", marginBottom: 20 }}>
             AutoEdu — Free forever
           </div>
-          <h1 style={{ fontSize: "clamp(40px, 6vw, 76px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", margin: "0 0 24px", fontStyle: "italic" }}>
+          <h1 style={{ fontSize: "clamp(32px, 8vw, 76px)", fontWeight: 400, lineHeight: 1.08, letterSpacing: "-0.02em", margin: "0 0 24px", fontStyle: "italic" }}>
             Knowledge built<br />by the community,<br /><span style={{ color: "#c8a84b", fontStyle: "normal" }}>free for everyone.</span>
           </h1>
           <p style={{ fontSize: 17, color: "#ffffff55", lineHeight: 1.75, maxWidth: 500, margin: "0 0 40px" }}>
@@ -272,7 +272,7 @@ function Library({ onSelect, onBack, tokens }) {
     <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif" }}>
       <TopBar onBack={onBack} label="Course Library" right={<span style={{ fontFamily: "monospace", fontSize: 11, color: "#ffffff33" }}>{COURSES.length} courses</span>} />
 
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 40px 60px" }}>
+      <div className="lib-container">
         {/* domain filter */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 40 }}>
           <button onClick={() => setFilter("all")} style={filter === "all" ? activeFilter : inactiveFilter}>All</button>
@@ -336,10 +336,10 @@ function CourseReader({ course, onBack, onAssess, onRabbitHole }) {
     <div style={{ minHeight: "100vh", background: "#0d0c0a", color: "#ede8dc", fontFamily: "'Georgia', serif" }}>
       <TopBar onBack={onBack} label={course.title} right={<Chip domain={course.domain} small />} />
 
-      <div style={{ display: "grid", gridTemplateColumns: "220px 1fr", maxWidth: 1060, margin: "0 auto", gap: 0, minHeight: "calc(100vh - 53px)" }}>
+      <div className="course-grid">
 
         {/* sidebar */}
-        <div style={{ borderRight: "1px solid #ffffff08", padding: "32px 24px", position: "sticky", top: 53, height: "calc(100vh - 53px)", overflowY: "auto" }}>
+        <div className="course-sidebar">
           <div style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "#ffffff22", marginBottom: 16 }}>Sections</div>
           {course.sections.map((s, i) => (
             <button key={i} onClick={() => setSection(i)}
@@ -378,7 +378,7 @@ function CourseReader({ course, onBack, onAssess, onRabbitHole }) {
         </div>
 
         {/* main content */}
-        <div style={{ padding: "48px 56px", maxWidth: 700 }}>
+        <div className="course-main">
           <div key={section} style={{ animation: "fadeUp .3s ease" }}>
             <div style={{ fontFamily: "monospace", fontSize: 10, color: d.bg, letterSpacing: "0.15em", textTransform: "uppercase", opacity: 0.7, marginBottom: 16 }}>
               Section {section + 1} of {course.sections.length}
@@ -458,11 +458,11 @@ function Assessment({ course, onBack, onResult }) {
 
   if (!mode) return (
     <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ maxWidth: 520, padding: "0 32px", width: "100%", textAlign: "center" }}>
+      <div style={{ maxWidth: 520, padding: "0 20px", width: "100%", textAlign: "center" }}>
         <Chip domain={course.domain} />
         <h2 style={{ fontSize: 36, fontWeight: 400, fontStyle: "italic", margin: "20px 0 12px" }}>Prove you were there.</h2>
         <p style={{ color: "#ffffff44", fontSize: 14, lineHeight: 1.7, marginBottom: 40 }}>Pass to earn your <strong style={{ color: d.bg }}>{d.token}</strong> token. Choose your mode.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 24 }}>
+        <div className="assess-grid">
           {[
             { key: "quiz", title: "Quiz", meta: `${mcqs.length} questions · 60% to pass`, desc: "Multiple choice. Precise and immediate." },
             { key: "essay", meta: "200–300 words · curator reviewed", title: "Essay", desc: "Open response. Depth over speed." },
@@ -486,7 +486,7 @@ function Assessment({ course, onBack, onResult }) {
   if (mode === "quiz") return (
     <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif" }}>
       <TopBar onBack={() => setMode(null)} label={`Quiz — ${course.title}`} right={<span style={{ fontFamily: "monospace", fontSize: 11, color: "#ffffff33" }}>{Object.keys(answers).length}/{mcqs.length}</span>} />
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 40px" }}>
+      <div className="assess-container">
         {mcqs.map((q, i) => (
           <div key={q.id} style={{ marginBottom: 36, animation: `fadeUp .3s ${i * 0.05}s ease both` }}>
             <div style={{ fontSize: 15, lineHeight: 1.6, marginBottom: 14, color: "#ede8dc" }}>
@@ -533,7 +533,7 @@ function Assessment({ course, onBack, onResult }) {
     return (
       <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif" }}>
         <TopBar onBack={() => setMode(null)} label="Essay Assessment" right={<span style={{ fontFamily: "monospace", fontSize: 11, color: words >= 80 ? "#c8a84b" : "#ffffff33" }}>{words} words</span>} />
-        <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 40px" }}>
+        <div className="assess-container">
           <div style={{ background: "#ffffff06", border: "1px solid #ffffff0a", borderRadius: 8, padding: "24px", marginBottom: 28 }}>
             <div style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase", color: "#ffffff22", marginBottom: 12 }}>Essay Prompt</div>
             <p style={{ fontSize: 16, lineHeight: 1.75, color: "#ede8dc" }}>{ep?.q}</p>
@@ -561,7 +561,7 @@ function Result({ result, onHome, onRetry }) {
 
   return (
     <div style={{ minHeight: "100vh", background: passed ? "#060a06" : "#0a0606", color: "#ede8dc", fontFamily: "'Georgia', serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ maxWidth: 620, padding: "0 32px", width: "100%" }}>
+      <div style={{ maxWidth: 620, padding: "40px 20px", width: "100%" }}>
         <div style={{ textAlign: "center", marginBottom: 48 }}>
           <div style={{ fontSize: 56, marginBottom: 16, animation: "fadeUp .4s ease" }}>{pending ? "⏳" : passed ? "✦" : "◌"}</div>
           <h2 style={{ fontSize: "clamp(32px, 5vw, 52px)", fontWeight: 400, fontStyle: "italic", letterSpacing: "-0.02em", marginBottom: 12, animation: "fadeUp .4s .05s ease both" }}>
@@ -620,7 +620,7 @@ function Contribute({ onBack }) {
 
   if (submitted) return (
     <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <div style={{ maxWidth: 480, padding: "0 32px", textAlign: "center" }}>
+      <div style={{ maxWidth: 480, padding: "0 20px", textAlign: "center" }}>
         <div style={{ fontSize: 48, marginBottom: 20 }}>✦</div>
         <h2 style={{ fontSize: 32, fontWeight: 400, fontStyle: "italic", marginBottom: 16 }}>Submission received.</h2>
         <p style={{ fontSize: 14, color: "#ffffff55", lineHeight: 1.75, marginBottom: 32 }}>Your course will be reviewed and published once approved. The community thanks you.</p>
@@ -634,7 +634,7 @@ function Contribute({ onBack }) {
   return (
     <div style={{ minHeight: "100vh", background: "#0c0b09", color: "#ede8dc", fontFamily: "'Georgia', serif" }}>
       <TopBar onBack={onBack} label="Contribute a Course" right={<span style={{ fontFamily: "monospace", fontSize: 11, color: "#ffffff33" }}>Step {step} / 3</span>} />
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "48px 40px 80px" }}>
+      <div className="contribute-container">
 
         {/* step indicator */}
         <div style={{ display: "flex", gap: 8, marginBottom: 48 }}>
@@ -751,7 +751,7 @@ function Contribute({ onBack }) {
 // ─────────────────────────────────────────────
 function TopBar({ onBack, label, right }) {
   return (
-    <div style={{ borderBottom: "1px solid #ffffff08", padding: "14px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, background: "#0c0b09", zIndex: 20 }}>
+    <div className="top-bar" style={{ borderBottom: "1px solid #ffffff08", position: "sticky", top: 0, background: "#0c0b09", zIndex: 20 }}>
       <button onClick={onBack} style={{ background: "none", border: "none", color: "#ffffff44", cursor: "pointer", fontFamily: "monospace", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>← Back</button>
       <div style={{ fontFamily: "monospace", fontSize: 11, color: "#ffffff44", maxWidth: 340, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{label}</div>
       <div>{right}</div>
@@ -813,6 +813,30 @@ export default function AutoEdu() {
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #ffffff18; border-radius: 3px; }
         textarea, input, select { box-sizing: border-box; }
+
+        .main-nav { padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .hero-container { max-width: 900px; margin: 0 auto; padding: 80px 40px 60px; }
+        .top-bar { padding: 14px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .lib-container { max-width: 960px; margin: 0 auto; padding: 40px 40px 60px; }
+        .course-grid { display: grid; grid-template-columns: 220px 1fr; max-width: 1060px; margin: 0 auto; gap: 0; min-height: calc(100vh - 53px); }
+        .course-sidebar { border-right: 1px solid #ffffff08; padding: 32px 24px; position: sticky; top: 53px; height: calc(100vh - 53px); overflow-y: auto; }
+        .course-main { padding: 48px 56px; max-width: 700px; }
+        .assess-container { max-width: 680px; margin: 0 auto; padding: 48px 40px; }
+        .assess-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+        .contribute-container { max-width: 680px; margin: 0 auto; padding: 48px 40px 80px; }
+        
+        @media (max-width: 768px) {
+          .main-nav { padding: 16px 20px; flex-direction: column; gap: 16px; align-items: flex-start; }
+          .hero-container { padding: 40px 20px; }
+          .top-bar { padding: 14px 20px; flex-wrap: wrap; gap: 12px; }
+          .lib-container { padding: 24px 20px; }
+          .course-grid { grid-template-columns: 1fr; }
+          .course-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid #ffffff08; padding: 24px 20px; }
+          .course-main { padding: 32px 20px; }
+          .assess-container { padding: 32px 20px; }
+          .assess-grid { grid-template-columns: 1fr; }
+          .contribute-container { padding: 32px 20px 60px; }
+        }
       `}</style>
 
       {view === V.HOME && <Home onNav={v => { setStack([]); setView(v); }} tokens={tokens} />}

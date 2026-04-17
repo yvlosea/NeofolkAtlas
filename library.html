@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Library — Neofolk Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+Devanagari:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="internal-styles.css" />
+  <link rel="icon" type="image/jpeg" href="neofolk-logo.jpg" />
+  <style>
+    :root {
+      --library-bg: #f5f3ef;
+      --library-ink: #1a1814;
+      --library-line: #d4cfc7;
+      --library-accent: #8b7355;
+      --library-muted: #6b655d;
+    }
+
+    .library-page {
+      background: var(--library-bg);
+      color: var(--library-ink);
+      min-height: 100vh;
+    }
+
+    .library-page .neo-sidebar {
+      background: var(--library-bg);
+      border-right-color: var(--library-line);
+    }
+
+    .library-page .brand-area h2 {
+      color: var(--library-ink);
+    }
+
+    .library-page .neo-main {
+      background: var(--library-bg);
+    }
+
+    .library-page .mobile-topbar {
+      background: var(--library-bg);
+      border-bottom-color: var(--library-line);
+    }
+
+    .library-page .mobile-brand {
+      color: var(--library-ink);
+    }
+
+    .library-header {
+      padding: 48px 40px 32px;
+      border-bottom: 1px solid var(--library-line);
+    }
+
+    .library-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--library-ink);
+      margin: 0 0 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .library-header p {
+      font-size: 0.85rem;
+      color: var(--library-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .library-container {
+      display: flex;
+      min-height: calc(100vh - 140px);
+    }
+
+    .library-nav {
+      width: 320px;
+      border-right: 1px solid var(--library-line);
+      padding: 24px 0;
+      position: sticky;
+      top: 0;
+      height: fit-content;
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+    }
+
+    .library-search {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--library-line);
+    }
+
+    .library-search input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--library-line);
+      background: rgba(255,255,255,0.5);
+      font-size: 0.9rem;
+      color: var(--library-ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .library-search input:focus {
+      border-color: var(--library-accent);
+    }
+
+    .library-search input::placeholder {
+      color: var(--library-muted);
+    }
+
+    .library-nav-header {
+      padding: 16px 20px;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--library-muted);
+      font-weight: 600;
+    }
+
+    .library-nav-item {
+      display: block;
+      padding: 12px 20px;
+      font-size: 0.9rem;
+      color: var(--library-ink);
+      text-decoration: none;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .library-nav-item:hover {
+      background: rgba(139,115,85,0.08);
+      border-left-color: var(--library-accent);
+    }
+
+    .library-nav-item.active {
+      background: rgba(139,115,85,0.12);
+      border-left-color: var(--library-accent);
+      font-weight: 500;
+    }
+
+    .library-content {
+      flex: 1;
+      padding: 40px;
+      max-width: 800px;
+    }
+
+    .library-intro {
+      margin-bottom: 48px;
+    }
+
+    .library-intro h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--library-ink);
+      margin: 0 0 16px;
+    }
+
+    .library-intro p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--library-muted);
+    }
+
+    .library-section {
+      margin-bottom: 40px;
+    }
+
+    .library-section h3 {
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--library-accent);
+      margin: 0 0 16px;
+      font-weight: 600;
+    }
+
+    .library-section p {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--library-ink);
+      margin: 0 0 16px;
+    }
+
+    .library-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .library-section li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--library-line);
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--library-ink);
+    }
+
+    .library-section li:last-child {
+      border-bottom: none;
+    }
+
+    .library-book {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--library-line);
+    }
+
+    .library-book:last-child {
+      border-bottom: none;
+    }
+
+    .library-book-title {
+      font-weight: 600;
+      color: var(--library-ink);
+      margin: 0 0 4px;
+    }
+
+    .library-book-author {
+      font-size: 0.85rem;
+      color: var(--library-muted);
+      margin: 0 0 8px;
+    }
+
+    .library-book-quote {
+      font-style: italic;
+      color: var(--library-muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      padding-left: 16px;
+      border-left: 2px solid var(--library-line);
+    }
+
+    .library-media-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(139,115,85,0.1);
+      border: 1px solid var(--library-line);
+      font-size: 0.8rem;
+      color: var(--library-muted);
+      margin: 4px 8px 4px 0;
+    }
+
+    .library-link {
+      display: block;
+      padding: 8px 0;
+      color: var(--library-accent);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .library-link:hover {
+      color: var(--library-ink);
+    }
+
+    .language-switcher {
+      display: flex;
+      gap: 4px;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--library-line);
+    }
+
+    .language-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--library-line);
+      background: transparent;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--library-muted);
+    }
+
+    .language-btn:hover {
+      border-color: var(--library-accent);
+      color: var(--library-accent);
+    }
+
+    .language-btn.active {
+      background: var(--library-ink);
+      color: var(--library-bg);
+      border-color: var(--library-ink);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--library-accent);
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--library-ink);
+    }
+
+    @media (max-width: 768px) {
+      .library-container {
+        flex-direction: column;
+      }
+
+      .library-nav {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--library-line);
+        position: static;
+        max-height: none;
+      }
+
+      .library-content {
+        padding: 24px;
+      }
+
+      .library-header {
+        padding: 24px;
+      }
+
+      .library-header h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body class="internal-page library-page" data-page="library">
+
+  <div class="neo-layout">
+
+    <aside class="neo-sidebar sidebar" id="sidebar">
+      <div class="brand-area">
+        <h2>Neofolk</h2>
+      </div>
+      <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
+      <div class="sidebar-content"></div>
+    </aside>
+
+    <main class="neo-main">
+
+      <section class="neo-board">
+        <div class="neo-board-layer"></div>
+        <div class="neo-board-grid"></div>
+      </section>
+
+      <section class="page-shell">
+        <div class="page-stack">
+          <div id="library-root">
+
+            <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+            <div class="main-wrap">
+              <header class="mobile-topbar">
+                <button class="hamburger" id="hamburgerBtn" aria-label="Open menu">
+                  <span></span><span></span><span></span>
+                </button>
+                <span class="mobile-brand">The Library</span>
+              </header>
+
+              <div class="library-header">
+                <h1>The Library</h1>
+                <p>Public Knowledge Infrastructure • Open-Access / Non-Certified</p>
+              </div>
+
+              <div class="library-container">
+                <nav class="library-nav" id="libraryNav">
+                  <div class="language-switcher">
+                    <button class="language-btn active" data-lang="en">EN</button>
+                    <button class="language-btn" data-lang="hi">हि</button>
+                    <button class="language-btn" data-lang="ur">UR</button>
+                  </div>
+                  <div class="library-search">
+                    <input type="text" id="searchInput" placeholder="Lookup..." />
+                  </div>
+                  <div class="library-nav-header">Knowledge Pillars</div>
+                  <div id="navItems"></div>
+                </nav>
+
+                <div class="library-content" id="libraryContent">
+                  <!-- Content loaded dynamically -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <script>
+    // Library Data (converted from React/TypeScript)
+    const LIBRARY_DATA = [
+      {
+        id: "propaganda",
+        title: {
+          en: "Understanding Propaganda and Political Manipulation",
+          hi: "प्रोपेगैंडा और राजनीतिक हेरफेर को समझना",
+          ur: "پروپیگنڈہ اور سیاسی ہیرا پھیری کو سمجھنا"
+        },
+        coreIdea: {
+          en: "Propaganda is the systematic dissemination of information—true, false, or distorted—to influence public opinion and control social behavior through emotional triggers and selective narrative framing.",
+          hi: "प्रोपेगैंडा सूचना का व्यवस्थित प्रसार है—सच्चा, झूठा या विकृत—ताकि भावनात्मक उत्प्रेरकों और चुनिंदा कथाओं के माध्यम से जनमत को प्रभावित किया जा सके और सामाजिक व्यवहार को नियंत्रित किया जा सके।",
+          ur: "پروپیگنڈہ معلومات کی منظم تشہیر ہے—سچی، جھوٹی یا مسخ شدہ—تاکہ جذباتی محرکات اور منتخب بیانیے کے ذریعے رائے عامہ پر اثر انداز ہو کر سماجی رویوں کو کنٹرول کیا جا سکے۔"
+        },
+        whyThisMatters: {
+          en: "Individual autonomy is impossible if perception is managed by external interests. Failing to recognize manipulation leads to mass mobilization for causes that often contradict a person's actual well-being.",
+          hi: "यदि धारणा बाहरी हितों द्वारा प्रबंधित की जाती है तो व्यक्तिगत स्वायत्तता असंभव है। हेरफेर को पहचानने में विफलता उन कारणों के लिए सामूहिक लामबंदी की ओर ले जाती है जो अक्सर व्यक्ति के वास्तविक कल्याण के विपरीत होते हैं।",
+          ur: "انفرادی خودمختاری ناممکن ہے اگر ادراک کا انتظام بیرونی مفادات کے ذریعے کیا جائے۔ ہیرا پھیری کو پہچاننے میں ناکامی ان وجوہات کے لیے اجتماعی تحریک کا باعث بنتی ہے جو اکثر انسان کی حقیقی فلاح کے متصادم ہوتی ہیں۔"
+        },
+        keyConcepts: {
+          en: [
+            "Narrative Control: Dictating the story through which people interpret reality.",
+            "Emotional Priming: Using fear, anger, or tribal loyalty to bypass rational analysis.",
+            "Repetition (The Illusion of Truth): The tendency to believe information after multiple exposures."
+          ],
+          hi: [
+            "कथा नियंत्रण: उस कहानी को निर्देशित करना जिसके माध्यम से लोग वास्तविकता की व्याख्या करते हैं।",
+            "भावनात्मक प्राइमिंग: तर्कसंगत विश्लेषण को दरकिनार करने के लिए डर, क्रोध या जनजातीय वफादारी का उपयोग करना।",
+            "दोहराव (सत्य का भ्रम): सूचना पर बार-बार विश्वास करने की प्रवृत्ति।"
+          ],
+          ur: [
+            "بیانیہ کنٹرول: اس کہانی کا حکم دینا جس کے ذریعے لوگ حقیقت کی تشریح کرتے ہیں۔",
+            "جذباتی پرائمنگ: منطقی تجزیے کو نظرانداز کرنے کے لیے خوف ، غصے یا قبائلی وفاداری کا استعمال۔",
+            "تکرار (سچ کا وہم): بار بار سامنے آنے والی معلومات پر یقین کرنے کا رجحان۔"
+          ]
+        },
+        practicalSkills: {
+          en: [
+            "Deconstruct news headlines for 'loaded' language.",
+            "Identify logical fallacies like ad hominem or straw man.",
+            "Triangulate information via opposing perspectives."
+          ],
+          hi: [
+            "समाचारों की सुर्खियों में 'लोडेड' भाषा का विघटन करना।",
+            "तर्कसंगत दोषों जैसे एड होमिनेम की पहचान करना।",
+            "विपरीत दृष्टिकोणों के माध्यम से सूचना का त्रिकोणीयकरण करना।"
+          ],
+          ur: [
+            "نیوز سرخیوں میں 'لوڈڈ' زبان کا تجزیہ کرنا۔",
+            "منطقی مغالطوں جیسے اد ہومینم کی شناخت کرنا۔",
+            "مخالف نقطہ نظر کے ذریعے معلومات کی تصدیق کرنا۔"
+          ]
+        },
+        commonMisunderstandings: {
+          en: [
+            "Propaganda is only used by 'bad guys'.",
+            "Propaganda is always based on lies (it often uses selected facts).",
+            "Intelligence protects you from manipulation."
+          ],
+          hi: [
+            "प्रोपेगैंडा केवल 'बुरे लोग' ही करते हैं।",
+            "प्रोपेगैंडा हमेशा झूठ पर आधारित होता है (यह अक्सर चुनिंदा तथ्यों का उपयोग करता है)।",
+            "बुद्धिमत्ता आपको हेरफेर से बचाती है।"
+          ],
+          ur: [
+            "پروپیگنڈہ صرف 'برے لوگ' استعمال کرتے ہیں۔",
+            "پروپیگنڈہ ہمیشہ جھوٹ پر مبنی ہوتا ہے (یہ اکثر منتخب حقائق استعمال کرتا ہے)۔",
+            "ذہانت آپ کو ہیرا پھیری سے بچاتی ہے۔"
+          ]
+        },
+        booksToRead: [
+          {
+            title: "1984",
+            author: "George Orwell",
+            quote: {
+              en: "The party told you to reject the evidence of your eyes and ears. It was their final, most essential command.",
+              hi: "पार्टी ने आपसे अपनी आंखों और कानों के सबूतों को खारिज करने के लिए कहा। यह उनका अंतिम, सबसे आवश्यक आदेश था।",
+              ur: "پارٹی نے آپ کو اپنی آنکھوں اور کانوں کے ثبوتوں کو رد کرنے کا حکم دیا۔ یہ ان کا آخری اور سب سے اہم حکم تھا۔"
+            }
+          },
+          { title: "Propaganda", author: "Edward Bernays" },
+          { title: "Manufacturing Consent", author: "Noam Chomsky" }
+        ],
+        mediaReferences: ["Wag the Dog", "The Century of the Self", "The Great Hack"],
+        realWorldApplications: {
+          en: "Used in election campaigning, corporate branding, and social engineering to ensure public compliance.",
+          hi: "सार्वजनिक अनुपालन सुनिश्चित करने के लिए चुनावी प्रचार, कॉर्पोरेट ब्रांडिंग और सोशल इंजीनियरिंग में उपयोग किया जाता है।",
+          ur: "عوامی تعمیل کو یقینی بنانے کے لیے انتخابی مہم، کارپوریٹ برانڈنگ اور سوشل انجینئرنگ میں استعمال کیا جاتا ہے۔"
+        },
+        furtherLearningResources: ["Propaganda Analysis Tools", "Cognitive Bias Documentation"]
+      },
+      {
+        id: "communalism",
+        title: {
+          en: "Communalism and Identity Politics",
+          hi: "सांप्रदायिकता और पहचान की राजनीति",
+          ur: "فرقہ واریت اور شناخت کی سیاست"
+        },
+        coreIdea: {
+          en: "Communalism is the political mobilization of religious or ethnic identity as the primary category of citizenship, often overriding class, economic interest, or shared governance concerns.",
+          hi: "सांप्रदायिकता धार्मिक या जातीय पहचान की राजनीतिक लामबंदी है जो नागरिकता की प्राथमिक श्रेणी के रूप में कार्य करती है, जो अक्सर वर्ग, आर्थिक हित या साझा शासन की चिंताओं को प्रभावित करती है।",
+          ur: "فرقہ واریت مذہبی یا نسلی شناخت کی سیاسی تحریک ہے جو شہریت کی بنیادی زمروں کے طور پر کام کرتی ہے، جو اکثر طبقے، معاشی مفاد یا مشترکہ حکمرانی کے خدشات کو زیر کر دیتی ہے۔"
+        },
+        whyThisMatters: {
+          en: "Communal politics fractures solidarity, making collective action on economic or environmental issues nearly impossible. It replaces systemic critique with inter-group hostility.",
+          hi: "सांप्रदायिक राजनीति एकजुटता को तोड़ देती है, जिससे आर्थिक या पर्यावरणीय मुद्दों पर सामूहिक कार्रवाई लगभग असंभव हो जाती है। यह व्यवस्थागत आलोचना को अंतर-समूह शत्रुता से बदल देती है।",
+          ur: "فرقہ وارانہ سیاست یکجہتی کو توڑ دیتی ہے، جس سے معاشی یا ماحولیاتی مسائل پر اجتماعی عمل تقریباً ناممکن ہو جاتا ہے۔ یہ نظامی تنقید کو گروہوں کے درمیان دشمنی سے بدل دیتی ہے۔"
+        },
+        keyConcepts: {
+          en: [
+            "Majoritarianism: The belief that the largest group's preferences should dominate.",
+            "Minoritization: The political construction of groups as 'outsiders'.",
+            "Vote-Bank Politics: Treating communities as homogeneous electoral blocs."
+          ],
+          hi: [
+            "बहुसंख्यकवाद: विश्वास कि सबसे बड़े समूह की पसंद हावी होनी चाहिए।",
+            "अल्पसंख्यक बनाना: समूहों को 'बाहरी' के रूप में राजनीतिक निर्माण।",
+            "वोट-बैंक राजनीति: समुदायों को एकजात निर्वाचक खंडों के रूप में देखना।"
+          ],
+          ur: [
+            "اکثریت پرستی: یقین کہ سب سے بڑے گروہ کی ترجیحات غالب ہونی چاہئیں۔",
+            "اقلیت بنانا: گروہوں کو 'باہر والے' کے طور پر سیاسی تشکیل دینا۔",
+            "ووٹ بینک سیاست: برادریوں کو ایک جINS انتخابی بلاکس کے طور پر دیکھنا۔"
+          ]
+        },
+        practicalSkills: {
+          en: [
+            "Identify coded language in political speech.",
+            "Map funding flows to 'religious' organizations.",
+            "Distinguish cultural pride from political exclusion."
+          ],
+          hi: [
+            "राजनीतिक भाषण में कोडित भाषा की पहचान करना।",
+            "'धार्मिक' संगठनों को धन प्रवाह का मानचित्रण करना।",
+            "सांस्कृतिक गौरव को राजनीतिक बहिष्करण से अलग करना।"
+          ],
+          ur: [
+            "سیاسی تقریر میں کوڈڈ زبان کی شناخت کرنا۔",
+            "'مذہبی' تنظیموں کے لیے فنڈنگ کے بہاؤ کا نقشہ بنانا۔",
+            "ثقافتی فخر کو سیاسی علیحدگی سے الگ کرنا۔"
+          ]
+        },
+        commonMisunderstandings: {
+          en: [
+            "Only minorities are communal.",
+            "Secularism means being 'anti-religion'.",
+            "Communal violence is spontaneous (it is usually orchestrated)."
+          ],
+          hi: [
+            "केवल अल्पसंख्यक ही सांप्रदायिक होते हैं।",
+            "धर्मनिरपेक्षता का अर्थ है 'धर्म-विरोधी' होना।",
+            "सांप्रदायिक हिंसा स्वतःस्फूर्त है (यह आमतौर पर संचालित होती है)।"
+          ],
+          ur: [
+            "صرف اقلیتیں ہی فرقہ وار ہوتی ہیں۔",
+            "سیکولرزم کا مطلب 'دشمن مذہب' ہونا ہے۔",
+            "فرقہ وارانہ تشدد خود بخود ہوتا ہے (یہ عام طور پر تیار کیا جاتا ہے)۔"
+          ]
+        },
+        booksToRead: [
+          { title: "The Idea of India", author: "Sunil Khilnani" },
+          { title: "Communalism in Modern India", author: "Bipan Chandra" },
+          { title: "Gujarat: The Making of a Tragedy", author: "Siddharth Varadarajan" }
+        ],
+        mediaReferences: ["Garam Hava", "Final Solution", "Article 15"],
+        realWorldApplications: {
+          en: "Electoral strategy, riot prevention, policy analysis, media literacy.",
+          hi: "चुनावी रणनीति, दंगा रोकथाम, नीति विश्लेषण, मीडिया साक्षरता।",
+          ur: "انتخابی حکمت عملی، فساد روک تھام، پالیسی تجزیہ، میڈیا literacy۔"
+        },
+        furtherLearningResources: ["Fact-checking tools", "Electoral commission reports"]
+      }
+    ];
+
+    const UI_TRANSLATIONS = {
+      en: {
+        brand: "The Library",
+        motto: "Public Knowledge Infrastructure • Open-Access / Non-Certified",
+        navHeader: "Knowledge Pillars",
+        lookup: "Lookup...",
+        whyTitle: "Why This Matters",
+        conceptsTitle: "Key Concepts",
+        skillsTitle: "Practical Skills",
+        misunderstandingsTitle: "Common Misunderstandings",
+        booksTitle: "Required Reading",
+        mediaTitle: "Media References",
+        appsTitle: "Real-World Applications",
+        resourcesTitle: "Further Learning"
+      },
+      hi: {
+        brand: "द लाइब्रेरी",
+        motto: "सार्वजनिक ज्ञान अवसंरचना • खुली पहुँच / गैर-प्रमाणित",
+        navHeader: "ज्ञान के स्तंभ",
+        lookup: "खोजें...",
+        whyTitle: "यह क्यों मायने रखता है",
+        conceptsTitle: "मुख्य अवधारणाएं",
+        skillsTitle: "व्यावहारिक कौशल",
+        misunderstandingsTitle: "आम गलतफहमियां",
+        booksTitle: "आवश्यक पठन",
+        mediaTitle: "मीडिया संदर्भ",
+        appsTitle: "वास्तविक दुनिया के अनुप्रयोग",
+        resourcesTitle: "आगे सीखना"
+      },
+      ur: {
+        brand: "دی لائبریری",
+        motto: "عوامی علمی انفراسٹرکچر • اوپن ایکسیس / غیر تصدیق شدہ",
+        navHeader: "علم کے ستون",
+        lookup: "تلاش کریں...",
+        whyTitle: "یہ کیوں ضروری ہے",
+        conceptsTitle: "بنیادی تصورات",
+        skillsTitle: "عملی مہارتیں",
+        misunderstandingsTitle: "عام غلط فہمیاں",
+        booksTitle: "ضروری مطالعہ",
+        mediaTitle: "میڈیا کے حوالے",
+        appsTitle: "حقیقی دنیا میں اطلاق",
+        resourcesTitle: "مزید سیکھنا"
+      }
+    };
+
+    // State
+    let currentLang = 'en';
+    let selectedTopicId = null;
+    let searchQuery = '';
+
+    // DOM Elements
+    const navItems = document.getElementById('navItems');
+    const libraryContent = document.getElementById('libraryContent');
+    const searchInput = document.getElementById('searchInput');
+    const langBtns = document.querySelectorAll('.language-btn');
+
+    // Functions
+    function getTranslation(key) {
+      return UI_TRANSLATIONS[currentLang][key] || UI_TRANSLATIONS.en[key];
+    }
+
+    function filterTopics() {
+      if (!searchQuery) return LIBRARY_DATA;
+      return LIBRARY_DATA.filter(topic => {
+        const title = topic.title[currentLang] || topic.title.en;
+        const coreIdea = topic.coreIdea[currentLang] || topic.coreIdea.en;
+        return title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+               coreIdea.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+    }
+
+    function renderNav() {
+      const filtered = filterTopics();
+      navItems.innerHTML = filtered.map(topic => {
+        const title = topic.title[currentLang] || topic.title.en;
+        const isActive = selectedTopicId === topic.id;
+        return `<a class="library-nav-item ${isActive ? 'active' : ''}" data-topic="${topic.id}">${title}</a>`;
+      }).join('');
+
+      // Add click handlers
+      document.querySelectorAll('.library-nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          selectedTopicId = item.dataset.topic;
+          renderNav();
+          renderContent();
+        });
+      });
+    }
+
+    function renderContent() {
+      if (!selectedTopicId) {
+        renderIntro();
+        return;
+      }
+
+      const topic = LIBRARY_DATA.find(t => t.id === selectedTopicId);
+      if (!topic) return;
+
+      const t = UI_TRANSLATIONS[currentLang];
+      const title = topic.title[currentLang] || topic.title.en;
+      const coreIdea = topic.coreIdea[currentLang] || topic.coreIdea.en;
+      const why = topic.whyThisMatters[currentLang] || topic.whyThisMatters.en;
+      const concepts = topic.keyConcepts[currentLang] || topic.keyConcepts.en;
+      const skills = topic.practicalSkills[currentLang] || topic.practicalSkills.en;
+      const misunderstandings = topic.commonMisunderstandings[currentLang] || topic.commonMisunderstandings.en;
+      const apps = topic.realWorldApplications[currentLang] || topic.realWorldApplications.en;
+
+      libraryContent.innerHTML = `
+        <a class="back-link" onclick="showIntro()">← Back to Overview</a>
+
+        <div class="library-section">
+          <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 500; color: var(--library-ink); margin: 0 0 16px;">${title}</h2>
+          <p style="font-size: 1.1rem; line-height: 1.8; color: var(--library-muted); font-style: italic;">${coreIdea}</p>
+        </div>
+
+        <div class="library-section">
+          <h3>${t.whyTitle}</h3>
+          <p>${why}</p>
+        </div>
+
+        <div class="library-section">
+          <h3>${t.conceptsTitle}</h3>
+          <ul>
+            ${concepts.map(c => `<li>${c}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="library-section">
+          <h3>${t.skillsTitle}</h3>
+          <ul>
+            ${skills.map(s => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="library-section">
+          <h3>${t.misunderstandingsTitle}</h3>
+          <ul>
+            ${misunderstandings.map(m => `<li>${m}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="library-section">
+          <h3>${t.booksTitle}</h3>
+          ${topic.booksToRead.map(book => {
+            const quote = book.quote ? (book.quote[currentLang] || book.quote.en) : null;
+            return `
+              <div class="library-book">
+                <p class="library-book-title">${book.title}</p>
+                <p class="library-book-author">by ${book.author}</p>
+                ${quote ? `<p class="library-book-quote">"${quote}"</p>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="library-section">
+          <h3>${t.mediaTitle}</h3>
+          ${topic.mediaReferences.map(media => `<span class="library-media-tag">${media}</span>`).join('')}
+        </div>
+
+        <div class="library-section">
+          <h3>${t.appsTitle}</h3>
+          <p>${apps}</p>
+        </div>
+
+        <div class="library-section">
+          <h3>${t.resourcesTitle}</h3>
+          <ul>
+            ${topic.furtherLearningResources.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+    }
+
+    function renderIntro() {
+      selectedTopicId = null;
+      renderNav();
+
+      libraryContent.innerHTML = `
+        <div class="library-intro">
+          <h2>Infrastructure Overview</h2>
+          <p>The Library is a structured collection of open knowledge designed to help individuals develop intellectual independence, civic awareness, and critical thinking in the modern world.</p>
+          <p style="margin-top: 16px;">All content is available in English, Hindi, and Urdu. Select a topic from the sidebar to begin.</p>
+        </div>
+
+        <div class="library-section">
+          <h3>System Identity</h3>
+          <ul>
+            <li><strong>Personal Autonomy Foundations</strong> — Building independent thinking skills</li>
+            <li><strong>Technological Literacy</strong> — Understanding systems that shape our lives</li>
+            <li><strong>Resilience Protocols</strong> — Practical knowledge for uncertain times</li>
+            <li><strong>Civic Stabilization</strong> — Understanding social and political dynamics</li>
+          </ul>
+        </div>
+
+        <div class="library-section">
+          <h3>Provision</h3>
+          <p>Open-access, non-certified, freely distributable knowledge. The Library is a human right.</p>
+        </div>
+
+        <div class="library-section">
+          <h3>Constraints</h3>
+          <ul>
+            <li>No Certification — Knowledge for its own sake</li>
+            <li>No Gatekeeping — Open to all</li>
+            <li>No Ideological Preaching — Evidence-based, balanced perspectives</li>
+          </ul>
+        </div>
+
+        <div class="library-section">
+          <p style="font-style: italic; color: var(--library-accent); font-size: 1.1rem;">"Knowledge is the first line of defense for a free citizen."</p>
+        </div>
+      `;
+    }
+
+    function showIntro() {
+      selectedTopicId = null;
+      renderNav();
+      renderIntro();
+    }
+
+    // Event Listeners
+    langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        langBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentLang = btn.dataset.lang;
+        document.documentElement.lang = currentLang;
+        document.documentElement.dir = currentLang === 'ur' ? 'rtl' : 'ltr';
+        renderNav();
+        renderContent();
+      });
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderNav();
+    });
+
+    // Expose showIntro globally
+    window.showIntro = showIntro;
+
+    // Initialize
+    renderIntro();
+  </script>
+
+</body>
+</html>

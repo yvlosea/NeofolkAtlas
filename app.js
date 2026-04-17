@@ -4574,6 +4574,7 @@ function renderAppNav() {
       {
         title: 'KNOWLEDGE',
         links: [
+          { href: 'library.html', label: 'Library' },
           { href: 'guide.html', label: 'Guide' },
           { href: 'autoedu.html', label: 'AutoEdu' },
           { href: 'vision.html', label: 'Vision' },
@@ -4602,6 +4603,7 @@ function renderAppNav() {
       {
         title: 'REFERENCE',
         links: [
+          { href: 'library.html', label: 'Library' },
           { href: 'subjects.html', label: 'Domains' },
           { href: 'autoedu.html', label: 'AutoEdu' },
           { href: 'guide.html', label: 'Guide' },
@@ -4629,6 +4631,7 @@ function renderAppNav() {
       {
         title: 'PLATFORM',
         links: [
+          { href: 'library.html', label: 'Library' },
           { href: 'subjects.html', label: 'Domains' },
           { href: 'vision.html', label: 'Charter' },
           { href: 'help.html', label: 'Protocol' },
@@ -4647,6 +4650,7 @@ function renderAppNav() {
         title: 'OPERATOR',
         links: [
           { href: 'operator-dashboard.html', label: 'Console', isDash: true },
+          { href: 'library.html', label: 'Library' },
           { href: 'subjects.html', label: 'Domains' },
           { href: 'help.html', label: 'Help' },
         ]
