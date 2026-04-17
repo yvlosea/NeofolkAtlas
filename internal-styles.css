@@ -2549,3 +2549,324 @@ select.neo-input {
   color: var(--gold);
 }
 
+/* ============================================
+   AUTOEDU MOBILE STYLES
+   ============================================ */
+
+/* AutoEdu Base Mobile Styles */
+@media (max-width: 768px) {
+  /* AutoEdu Home */
+  #autoedu-root .dashboard-header {
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+  }
+
+  #autoedu-root .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Course Grid - Single Column */
+  #autoedu-root .dashboard-shell > div[style*="grid-template-columns: repeat(auto-fill"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* Course Cards */
+  #autoedu-root .record-card {
+    padding: 16px !important;
+    margin-bottom: 0;
+  }
+
+  #autoedu-root .record-card h3 {
+    font-size: 1rem !important;
+  }
+
+  /* Course Reader Layout */
+  #autoedu-root .dashboard-shell > div[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Sidebar becomes collapsible top nav on mobile */
+  #autoedu-root .dashboard-shell > div > div:first-child[style*="position: sticky"] {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    max-height: 40vh;
+    overflow-y: auto;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 16px !important;
+  }
+
+  /* Main Content Area */
+  #autoedu-root .dashboard-shell > div > div:last-child {
+    padding: 16px !important;
+    max-width: 100% !important;
+  }
+
+  /* Section Buttons */
+  #autoedu-root button[style*="display: block"] {
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+
+  /* Rabbit Holes */
+  #autoedu-root button[onclick*="autoeduSelectCourse"] {
+    margin-bottom: 8px !important;
+  }
+
+  /* Assessment Layout */
+  #autoedu-root .dashboard-shell form > div[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Essay Textarea */
+  #autoedu-root textarea[style*="min-height: 200px"] {
+    min-height: 150px !important;
+  }
+
+  /* Navigation Buttons */
+  #autoedu-root .btn,
+  #autoedu-root button[class="btn"] {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-height: 44px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  /* Mobile Touch Targets */
+  #autoedu-root button,
+  #autoedu-root a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Filter Buttons */
+  #autoedu-root div[style*="display: flex"] > button {
+    padding: 8px 12px;
+    font-size: 12px;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+  }
+
+  /* Result View */
+  #autoedu-root .dashboard-shell > div > div[style*="text-align: center"] {
+    padding: 24px 16px !important;
+  }
+
+  /* Token Display */
+  #autoedu-root div[style*="display: grid"][style*="token"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+  }
+}
+
+/* Extra Small Screens */
+@media (max-width: 480px) {
+  #autoedu-root .dashboard-header h1 {
+    font-size: 1.25rem;
+  }
+
+  #autoedu-root h2 {
+    font-size: 1.1rem !important;
+  }
+
+  #autoedu-root p {
+    font-size: 0.9rem !important;
+    line-height: 1.7 !important;
+  }
+
+  /* Course Cards */
+  #autoedu-root .record-card {
+    padding: 12px !important;
+  }
+
+  #autoedu-root .record-card h3 {
+    font-size: 0.95rem !important;
+  }
+
+  /* Make domain filter scrollable */
+  #autoedu-root div[style*="display: flex"] {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+  }
+
+  #autoedu-root div[style*="display: flex"]::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  #autoedu-root div[style*="display: flex"]::-webkit-scrollbar-thumb {
+    background: var(--gold);
+    border-radius: 2px;
+  }
+
+  /* Sidebar section buttons */
+  #autoedu-root button[style*="font-family: var(--sans)"] {
+    font-size: 11px !important;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  #autoedu-root .record-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  #autoedu-root button:active {
+    opacity: 0.8;
+  }
+}
+
+/* Landscape Mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  #autoedu-root .dashboard-shell > div > div:first-child[style*="position: sticky"] {
+    max-height: 60vh;
+  }
+}
+
+/* Prevent horizontal overflow */
+#autoedu-root {
+  overflow-x: hidden;
+}
+
+#autoedu-root img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fix text overflow in cards */
+#autoedu-root .record-card h3,
+#autoedu-root .record-card p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* ============================================
+   GENERAL MOBILE IMPROVEMENTS
+   ============================================ */
+
+/* Improve form inputs on mobile */
+@media (max-width: 768px) {
+  input, textarea, select {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .form-stack input,
+  .form-stack textarea,
+  .form-stack select {
+    padding: 14px;
+    min-height: 48px;
+  }
+
+  /* Better touch targets for checkboxes and radio buttons */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  /* Mobile-optimized buttons */
+  .btn {
+    min-height: 48px;
+    padding: 14px 24px;
+  }
+
+  /* Sidebar improvements */
+  .sidebar {
+    width: 280px;
+  }
+
+  /* Mobile menu overlay */
+  .sidebar-overlay {
+    backdrop-filter: blur(4px);
+  }
+
+  /* Card improvements */
+  .record-card {
+    padding: 16px;
+  }
+
+  /* Dashboard panels */
+  .dashboard-panel {
+    padding: 16px;
+  }
+
+  /* Fix table overflow */
+  .dashboard-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mobile typography adjustments */
+  h1 { font-size: 1.75rem; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.25rem; }
+
+  /* Compact navigation */
+  .sidebar-link {
+    padding: 14px 20px;
+    min-height: 48px;
+  }
+}
+
+/* iPhone Safe Area Support */
+@supports (padding-top: env(safe-area-inset-top)) {
+  @media (max-width: 768px) {
+    .mobile-topbar {
+      padding-top: calc(12px + env(safe-area-inset-top));
+    }
+
+    .sidebar {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .main-wrap {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+  }
+}
+
+/* Disable animations on mobile for performance */
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Mobile-specific utility classes */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .full-width-mobile {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .stack-mobile {
+    flex-direction: column !important;
+  }
+
+  .text-center-mobile {
+    text-align: center !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
