@@ -50,8 +50,8 @@ function debounce(func, wait) {
 
 // Domain-based scoring system - Base 10 structure
 const domainKeys = [
-  'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'chronicles', 
-  'civitas', 'tokenomics', 'artifex', 'praxis', 'bioepisteme'
+  'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'civitas_chronicles', 
+  'tokenomics', 'artifex', 'praxis', 'bioepisteme', 'cyberonics', 'jurisprudence', 'technologia', 'medicina'
 ];
 
 const defaultNeoDomains = domainKeys.reduce((acc, k) => ({ ...acc, [k]: 0 }), {});
@@ -63,12 +63,15 @@ const LINEAGE_TOKENS = {
     arithmetics: "Shakuntis", 
     cosmology: "Bhattas",
     biosphere: "Janakis", 
-    chronicles: "Thapars", 
-    civitas: "Savi",
+    civitas_chronicles: "Savi-Thapars", 
     tokenomics: "Bhanus", 
     artifex: "Sarabhs", 
     praxis: "Arunas", 
-    bioepisteme: "Gagas"
+    bioepisteme: "Gagas",
+    cyberonics: "Nyayas",
+    jurisprudence: "Vidhans",
+    technologia: "Vishwas",
+    medicina: "Charakas"
 };
 
 // DOMAIN_NAMES mapping for radar chart and UI display
@@ -77,12 +80,15 @@ const DOMAIN_NAMES = {
     arithmetics: "ARTHMETICS", 
     cosmology: "COSMOLOGY",
     biosphere: "BIOSPHERE", 
-    chronicles: "CHRONICLES", 
-    civitas: "CIVITAS",
+    civitas_chronicles: "CIVICS & CHRONICLES", 
     tokenomics: "TOKENOMICS", 
     artifex: "ARTIFEX", 
     praxis: "PRAXIS", 
-    bioepisteme: "BIOESTIPEME"
+    bioepisteme: "BIOESTIPEME",
+    cyberonics: "CYBERONICS",
+    jurisprudence: "JURISPRUDENCE",
+    technologia: "TECHNOLOGIA",
+    medicina: "MEDICINA"
 };
 
 // AutoEdu Domain Data with subjects
@@ -91,12 +97,15 @@ const AUTOEDU_DOMAINS = [
   { id: "arithmetics", label: "Arithmetics", token: "Shakuntis", color: "#92400e", sub: "Mathematics" },
   { id: "cosmology",   label: "Cosmology",   token: "Bhattas",   color: "#075985", sub: "Astronomy & Physics" },
   { id: "biosphere",   label: "Biosphere",   token: "Janakis",   color: "#166534", sub: "Biology & Botany" },
-  { id: "chronicles",  label: "Chronicles",  token: "Thapars",   color: "#7c2d12", sub: "History" },
-  { id: "civitas",     label: "Civitas",     token: "Phulis",    color: "#9f1239", sub: "Political Theory & Social" },
+  { id: "civitas_chronicles", label: "Civics & Chronicles", token: "Savi-Thapars", color: "#7c2d12", sub: "History & Political Theory" },
   { id: "tokenomics",  label: "Tokenomics",  token: "Bhanus",    color: "#1e3a5f", sub: "Economics & Commons" },
   { id: "artifex",     label: "Artifex",     token: "Sarabhs",   color: "#134e4a", sub: "Design & Craft" },
   { id: "praxis",      label: "Praxis",      token: "Arunas",    color: "#4c1d95", sub: "Action & Reform" },
   { id: "bioepisteme", label: "Bioepisteme", token: "Gagas",     color: "#155e75", sub: "Life Sciences" },
+  { id: "cyberonics",  label: "Cyberonics",  token: "Nyayas",    color: "#0f766e", sub: "Systems & Cybernetics" },
+  { id: "jurisprudence", label: "Jurisprudence", token: "Vidhans", color: "#b45309", sub: "Law & Ethics" },
+  { id: "technologia", label: "Technologia", token: "Vishwas",   color: "#4338ca", sub: "Applied Technology" },
+  { id: "medicina",    label: "Medicina",    token: "Charakas",  color: "#be123c", sub: "Medicine & Healing" }
 ];
 
 // AutoEdu Courses Data
@@ -293,7 +302,7 @@ function renderAutoeduHome() {
       </div>
 
       <!-- Navigation Tabs -->
-      <div style="display: flex; gap: 8px; margin: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+      <div style="display: flex; gap: 8px; margin: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; overflow-x: auto; white-space: nowrap;">
         <button onclick="window.autoeduSetHomeTab('portfolio')" class="btn ${autoeduHomeTab === 'portfolio' ? 'btn-primary' : ''}" id="tab-portfolio">Portfolio</button>
         <button onclick="window.autoeduSetHomeTab('galleries')" class="btn ${autoeduHomeTab === 'galleries' ? 'btn-primary' : ''}" id="tab-galleries">Galleries</button>
         <button onclick="window.autoeduSetHomeTab('feed')" class="btn ${autoeduHomeTab === 'feed' ? 'btn-primary' : ''}" id="tab-feed">Feed</button>
@@ -1735,7 +1744,18 @@ function engageWithSubmission(submissionId, userId, action) {
 function calculateAutoEduNeoscore(userId) {
   const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
   
-  if (userWorks.length === 0) return 0;
+  if (userWorks.length === 0) {
+    return {
+      total: 0,
+      breakdown: {
+        learningActivity: 0,
+        portfolioQuality: 0,
+        impactContribution: 0,
+        domainBalance: 0,
+        peerValidation: 0
+      }
+    };
+  }
   
   // Component 1: Learning Activity (30%) - breadth of engagement
   const uniqueDomains = new Set(userWorks.map(w => w.domain)).size;
@@ -4409,9 +4429,8 @@ function renderArbiterDashboard(root) {
       </section>
       <div class="stats-grid">
         <div class="stat-card"><p class="section-label">Student Profiles</p><strong>${studentProfiles.length}</strong><p>Learner records currently visible to review.</p></div>
-        <div class="stat-card"><p class="section-label">Curator Profiles</p><strong>${teacherProfiles.length}</strong><p>Teaching identities and licenses on file.</p></div>
-        <div class="stat-card"><p class="section-label">Interview Queue</p><strong>${interviews.length}</strong><p>Student interviews awaiting arbiter attention.</p></div>
-        <div class="stat-card"><p class="section-label">Guild Registry</p><strong>${reviewGuilds.length}</strong><p>Active guilds and craft circles under observation.</p></div>
+        <div class="stat-card"><p class="section-label">Topology Notes</p><strong>14</strong><p>Active notes on the knowledge topology.</p></div>
+        <div class="stat-card"><p class="section-label">Score Reviews</p><strong>7</strong><p>Student scores awaiting approval.</p></div>
       </div>
       <div class="oversight-grid">
         <div class="card" id="arbiter-students">
@@ -4431,19 +4450,20 @@ function renderArbiterDashboard(root) {
             `).join('')}
           </div>
         </div>
-        <div class="card" id="arbiter-curators">
-          <p class="section-label">Teacher Profiles</p>
-          <h2>All curator records</h2>
+        <div class="card" id="arbiter-topology">
+          <p class="section-label">Knowledge Topology</p>
+          <h2>Manage Topology Notes</h2>
           <div class="plain-list">
-            ${teacherProfiles.map((profile) => `
-              <div class="oversight-row">
-                <div>
-                  <strong>${escapeHtml(profile.name || 'Unnamed Curator')}</strong>
-                  <p>${escapeHtml(profile.domain || 'Curation')}</p>
-                </div>
-                <span class="pill">${escapeHtml((profile.licenses || []).join(', ') || profile.skills || 'License pending')}</span>
+            <div class="oversight-row oversight-row--stacked">
+              <div class="dashboard-card-topline">
+                <strong>Civics & Chronicles</strong>
+                <span class="pill">Edited recently</span>
               </div>
-            `).join('')}
+              <p>Add context or foundational reading notes for students entering this node.</p>
+              <div class="inline-actions" style="margin-top: 8px;">
+                <button class="btn-ghost-small" style="font-size:0.75rem;">Edit Notes →</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -4464,20 +4484,20 @@ function renderArbiterDashboard(root) {
             `).join('')}
           </div>
         </div>
-        <div class="card" id="arbiter-guilds">
-          <p class="section-label">Guilds</p>
-          <h2>Guild and craft registry</h2>
+        <div class="card" id="arbiter-scores">
+          <p class="section-label">Score Management</p>
+          <h2>Student Neoscores</h2>
           <div class="plain-list">
-            ${reviewGuilds.map((guild) => `
-              <div class="oversight-row oversight-row--stacked">
-                <div class="dashboard-card-topline">
-                  <strong>${escapeHtml(guild.name)}</strong>
-                  <span class="pill">${(guild.members || []).length} members</span>
-                </div>
-                <p>${escapeHtml(guild.description || 'No guild summary available.')}</p>
-                <p>${(guild.invited || []).length} pending invites</p>
+            <div class="oversight-row oversight-row--stacked">
+              <div class="dashboard-card-topline">
+                <strong>Pending Score Approvals</strong>
+                <span class="pill">7 pending</span>
               </div>
-            `).join('')}
+              <p>Review student portfolios and assign validated Neoscores based on observed capability.</p>
+              <div class="inline-actions" style="margin-top: 8px;">
+                <button class="btn-ghost-small" style="font-size:0.75rem;">Review Portfolios →</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -4560,124 +4580,45 @@ function renderAppNav() {
 
   const sectionsByRole = {
     seeker: [
-      {
-        title: 'SEEKER',
-        links: [
-          { href: dashHref, label: 'Dashboard', isDash: true },
-          { href: 'subjects.html', label: 'Domains' },
-          { href: 'pathways.html', label: 'Pathways' },
-          { href: 'guild.html', label: 'Guilds' },
-          { href: 'portfolio.html', label: 'Portfolio' },
-          { href: 'nodes.html', label: 'Nodes' },
-        ]
-      },
-      {
-        title: 'KNOWLEDGE',
-        links: [
-          { href: 'library.html', label: 'Library' },
-          { href: 'guide.html', label: 'Guide' },
-          { href: 'autoedu.html', label: 'AutoEdu' },
-          { href: 'vision.html', label: 'Vision' },
-        ]
-      },
-      {
-        title: 'ACCOUNT',
-        links: [
-          { href: 'profile.html', label: 'Profile' },
-          { href: 'account-settings.html', label: 'Settings' },
-        ]
-      }
-    ],
-    curator: [
-      {
-        title: 'CURATION',
-        links: [
-          { href: 'curator-dashboard.html', label: 'Dashboard', isDash: true },
-          { href: 'curator-dashboard.html?panel=curator-add-module', label: 'Add Module' },
-          { href: 'modules.html', label: 'Module Library' },
-          { href: 'teaching-log.html', label: 'Teaching Log' },
-          { href: 'attendance.html', label: 'Attendance' },
-          { href: 'portfolio.html', label: 'Dossier' },
-        ]
-      },
-      {
-        title: 'REFERENCE',
-        links: [
-          { href: 'library.html', label: 'Library' },
-          { href: 'subjects.html', label: 'Domains' },
-          { href: 'autoedu.html', label: 'AutoEdu' },
-          { href: 'guide.html', label: 'Guide' },
-        ]
-      },
-      {
-        title: 'ACCOUNT',
-        links: [
-          { href: 'profile.html', label: 'Profile' },
-          { href: 'account-settings.html', label: 'Settings' },
-        ]
-      }
+      { href: dashHref, label: 'Dashboard', isDash: true },
+      { href: 'guide.html', label: 'Guide' },
+      { href: 'library.html', label: 'Library' },
+      { href: 'pilot.html', label: 'Pilot (Punchmahala)' },
+      { href: 'syllabus.html', label: 'Syllabus' },
+      { href: 'workshop.html', label: 'Workshops' },
+      { href: 'subjects.html', label: 'Domains' },
+      { href: 'portfolio.html', label: 'Portfolio' },
+      { href: 'profile.html', label: 'Profile' }
     ],
     arbiter: [
-      {
-        title: 'OVERSIGHT',
-        links: [
-          { href: 'arbiter-dashboard.html', label: 'Dashboard', isDash: true },
-          { href: 'arbiter-dashboard.html?panel=arbiter-students', label: 'Students' },
-          { href: 'arbiter-dashboard.html?panel=arbiter-curators', label: 'Curators' },
-          { href: 'arbiter-dashboard.html?panel=arbiter-interviews', label: 'Interviews' },
-          { href: 'arbiter-dashboard.html?panel=arbiter-guilds', label: 'Guilds' },
-        ]
-      },
-      {
-        title: 'PLATFORM',
-        links: [
-          { href: 'library.html', label: 'Library' },
-          { href: 'subjects.html', label: 'Domains' },
-          { href: 'vision.html', label: 'Charter' },
-          { href: 'help.html', label: 'Protocol' },
-        ]
-      },
-      {
-        title: 'ACCOUNT',
-        links: [
-          { href: 'profile.html', label: 'Profile' },
-          { href: 'account-settings.html', label: 'Settings' },
-        ]
-      }
+      { href: 'arbiter-dashboard.html', label: 'Dashboard', isDash: true },
+      { href: 'arbiter-dashboard.html?panel=arbiter-students', label: 'Students' },
+      { href: 'guide.html', label: 'Guide' },
+      { href: 'library.html', label: 'Library' },
+      { href: 'syllabus.html', label: 'Syllabus' },
+      { href: 'workshop.html', label: 'Workshops' },
+      { href: 'subjects.html', label: 'Domains' },
+      { href: 'profile.html', label: 'Profile' }
     ],
     operator: [
-      {
-        title: 'OPERATOR',
-        links: [
-          { href: 'operator-dashboard.html', label: 'Console', isDash: true },
-          { href: 'library.html', label: 'Library' },
-          { href: 'subjects.html', label: 'Domains' },
-          { href: 'help.html', label: 'Help' },
-        ]
-      }
+      { href: 'operator-dashboard.html', label: 'Console', isDash: true },
+      { href: 'library.html', label: 'Library' },
+      { href: 'subjects.html', label: 'Domains' },
+      { href: 'help.html', label: 'Help' },
     ]
   };
 
-  const sections = sectionsByRole[role] || sectionsByRole.seeker;
+  const links = sectionsByRole[role] || sectionsByRole.seeker;
 
-  nav.innerHTML = sections
-    .map(section => `
-      <div class="nav-section-group">
-        <div class="nav-section-header">
-          ${section.title}
-        </div>
-        ${section.links
-          .map(link => {
-            const active = link.isDash ? isDashboardPage : here === link.href;
-            const cls = active ? 'sidebar-link is-active' : 'sidebar-link';
-            if (link.onClick) {
-              return `<a class="${cls}" href="${link.href}" onclick="${link.onClick}; return false;">${link.label}</a>`;
-            }
-            return `<a class="${cls}" href="${link.href}">${link.label}</a>`;
-          })
-          .join('')}
-      </div>
-    `)
+  nav.innerHTML = links
+    .map(link => {
+      const active = link.isDash ? isDashboardPage : here === link.href;
+      const cls = active ? 'topbar-link is-active' : 'topbar-link';
+      if (link.onClick) {
+        return `<a class="${cls}" href="${link.href}" onclick="${link.onClick}; return false;" style="padding: 8px 12px; font-weight: 600; color: #5d4037; text-decoration: none;">${link.label}</a>`;
+      }
+      return `<a class="${cls}" href="${link.href}" style="padding: 8px 12px; font-weight: 600; color: #5d4037; text-decoration: none;">${link.label}</a>`;
+    })
     .join('');
 
   let chip = document.getElementById("neoscore-chip");
@@ -6606,7 +6547,7 @@ function renderPageContent() {
         <div class="card" style="margin-bottom:20px;">
           <h3 style="margin-top:0; margin-bottom:16px;">Identity Summary</h3>
           <div class="mini-stat-grid">
-            <div class="mini-stat"><strong>${escapeHtml(currentRole)}</strong><span>Current Role</span></div>
+            <div class="mini-stat"><strong style="font-family: var(--sans); font-size: 1.4rem; text-transform: uppercase;">${escapeHtml(currentRole)}</strong><span>Current Role</span></div>
             <div class="mini-stat"><strong>${storedModuleCount}</strong><span>Modules</span></div>
             <div class="mini-stat"><strong>${storedBatchCount}</strong><span>Batches</span></div>
             <div class="mini-stat"><strong>${storedGuildCount}</strong><span>Guilds</span></div>

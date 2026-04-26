@@ -24,10 +24,41 @@
       display: none;
     }
 
+    /* Convert sidebar to top navbar for public home */
+    .public-home .neo-sidebar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      width: 100%;
+      height: 64px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(139, 90, 43, 0.15);
+      padding: 0 24px;
+      background: #f4f9f4; /* pastel green */
+      box-sizing: border-box;
+    }
+    
+    .public-home .neo-sidebar .brand-area h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      color: #3e2723;
+    }
+    
+    .public-home .neo-sidebar #app-nav {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      margin: 0;
+      padding: 0;
+    }
+
     /* Manifesto section hover effects */
     .manifesto-section a:hover {
-      background: rgba(185, 155, 124, 0.25);
-      border-color: rgba(185, 155, 124, 0.5);
+      background: rgba(139, 90, 43, 0.1);
+      border-color: rgba(139, 90, 43, 0.3);
     }
 
     /* Smooth scroll behavior */
@@ -52,12 +83,15 @@
 
   <div class="neo-layout" id="neoLayout">
 
+    <!-- Sidebar navigation (styled as top navbar) -->
     <aside class="neo-sidebar sidebar" id="sidebar">
       <div class="brand-area">
-        <h2>Neofolk</h2>
+        <h2 style="font-family: 'Cormorant Garamond', serif; margin: 0; font-size: 1.4rem; color: #3e2723;">iNHET</h2>
       </div>
       <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
-      <div class="sidebar-content"></div>
+      <div class="topbar-actions" style="margin-left: auto;">
+        <a href="#login" onclick="document.getElementById('loginSection').scrollIntoView({behavior:'smooth'}); return false;" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem; background: #8b5a2b; color: white; border: none; border-radius: 4px;">Log in</a>
+      </div>
     </aside>
 
     <main class="neo-main">
@@ -86,101 +120,117 @@
 
                 <!-- 1. IDENTITY -->
                 <section class="manifesto-section" style="text-align: center; margin-bottom: 60px;">
-                  <p style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #8b7f6e; margin-bottom: 16px;">
-                    Indian Neofolk Humanitarian Education Trust
+                  <p style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #6d4c41; margin-bottom: 16px;">
+                    Indian Neofolk Humanitarian Education Trust (iNHET)
                   </p>
-                  <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 500; color: #e8dcc9; margin: 0 0 12px; line-height: 1.2;">
-                    Neofolk Atlas
+                  <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 500; color: #3e2723; margin: 0 0 12px; line-height: 1.2;">
+                    Knowledge Civilization Platform
                   </h1>
-                  <p style="font-size: 1rem; color: #a89880; font-style: italic; margin: 0;">
-                    Decentralized learning framework.
+                  <p style="font-size: 1rem; color: #5d4037; font-style: italic; margin: 0;">
+                    A regulated intellectual network for meaningful learning.
                   </p>
                 </section>
 
-                <!-- 2. ONE SENTENCE EXPLANATION -->
+                <!-- 2. EDUCATION FORMAT & GOAL -->
                 <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <p style="font-size: 1.25rem; line-height: 1.7; color: #c4b5a4; text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; margin: 0;">
-                    "A learning system that recognizes multiple forms of intelligence beyond exams."
-                  </p>
-                </section>
-
-                <!-- 3. PROBLEM STATEMENT -->
-                <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: #b99b7c; margin: 0 0 20px; letter-spacing: 1px; text-transform: uppercase;">
-                    Why this exists
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #4caf50; margin: 0 0 20px;">
+                    Our Goal
                   </h2>
-                  <p style="font-size: 0.95rem; line-height: 1.8; color: #a89880; margin: 0 0 16px;">
-                    Many students feel incapable because education measures only memorization.
+                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 16px;">
+                    Our goal is to build a knowledge network that goes beyond traditional exams. We focus on real capability, recognizing diverse forms of intelligence such as writing, design, problem-solving, and collaboration.
                   </p>
-                  <p style="font-size: 0.95rem; line-height: 1.8; color: #a89880; margin: 0 0 16px;">
-                    But real ability includes:
+                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 16px;">
+                    Through our Library, structured Pilot programs, and dynamic Profile tracking, students engage deeply with curated knowledge domains while Arbiters (Teachers) guide and assess their progress.
                   </p>
-                  <ul style="list-style: none; padding: 0; margin: 0 0 16px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                    <li style="font-size: 0.9rem; color: #c4b5a4; padding: 8px 0; border-bottom: 1px solid rgba(185,155,124,0.1);">Writing</li>
-                    <li style="font-size: 0.9rem; color: #c4b5a4; padding: 8px 0; border-bottom: 1px solid rgba(185,155,124,0.1);">Design</li>
-                    <li style="font-size: 0.9rem; color: #c4b5a4; padding: 8px 0; border-bottom: 1px solid rgba(185,155,124,0.1);">Problem solving</li>
-                    <li style="font-size: 0.9rem; color: #c4b5a4; padding: 8px 0; border-bottom: 1px solid rgba(185,155,124,0.1);">Craft</li>
-                    <li style="font-size: 0.9rem; color: #c4b5a4; padding: 8px 0; border-bottom: 1px solid rgba(185,155,124,0.1);">Movement</li>
-                    <li style="font-size: 0.9rem; color: #c4b5a4; padding: 8px 0; border-bottom: 1px solid rgba(185,155,124,0.1);">Collaboration</li>
-                  </ul>
-                  <p style="font-size: 0.95rem; line-height: 1.8; color: #a89880; margin: 0;">
-                    <strong style="color: #c4b5a4;">Neofolk Atlas recognizes diverse forms of intelligence.</strong>
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #4caf50; margin: 40px 0 20px;">
+                    Location & Contact
+                  </h2>
+                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 8px;">
+                    <strong>Phone:</strong> 9667115543
+                  </p>
+                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 16px;">
+                    <strong>Email:</strong> inhetedu@zohomail.in
                   </p>
                 </section>
 
-                <!-- 4. SIMPLE SYSTEM EXPLANATION -->
+                <!-- 3. TEAM ROLE ALLOCATION -->
                 <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: #b99b7c; margin: 0 0 20px; letter-spacing: 1px; text-transform: uppercase;">
-                    How learning works
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #4caf50; margin: 0 0 20px;">
+                    Core Team — iNHET
                   </h2>
-                  <p style="font-size: 0.95rem; line-height: 1.8; color: #a89880; margin: 0 0 20px;">
-                    Students build portfolios showing real capability.
-                  </p>
-                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;">
-                    <div style="padding: 16px; border: 1px solid rgba(185,155,124,0.15); border-radius: 8px;">
-                      <p style="font-size: 0.8rem; color: #8b7f6e; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">Domains</p>
-                      <p style="font-size: 0.9rem; color: #c4b5a4; margin: 0;">10 areas of knowledge</p>
+                  
+                  <div style="display: grid; grid-template-columns: 1fr; gap: 24px; color: #3e2723;">
+                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
+                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Founder & Vision Lead</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600;">Yashveer Vats Gaurav</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                        <li>Institutional design</li>
+                        <li>Strategic direction</li>
+                        <li>Infrastructure planning</li>
+                        <li>Partnerships</li>
+                        <li>Final decision-making</li>
+                      </ul>
                     </div>
-                    <div style="padding: 16px; border: 1px solid rgba(185,155,124,0.15); border-radius: 8px;">
-                      <p style="font-size: 0.8rem; color: #8b7f6e; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">Modules</p>
-                      <p style="font-size: 0.9rem; color: #c4b5a4; margin: 0;">Guided learning paths</p>
+
+                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
+                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Marketing & Website Development</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600;">Lagan (@pvt_.106) & Vin (@shadow_kakashi_)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                        <li>Brand communication</li>
+                        <li>Social media strategy</li>
+                        <li>Website development and updates</li>
+                        <li>Public-facing content</li>
+                      </ul>
                     </div>
-                    <div style="padding: 16px; border: 1px solid rgba(185,155,124,0.15); border-radius: 8px;">
-                      <p style="font-size: 0.8rem; color: #8b7f6e; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">Projects</p>
-                      <p style="font-size: 0.9rem; color: #c4b5a4; margin: 0;">Real evidence of ability</p>
+
+                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
+                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Project Management & Outreach</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600;">Shreya BL (@ft.shrxyaaa) & Sukoon (@sukoon._.sings)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                        <li>Partnership outreach</li>
+                        <li>Networking</li>
+                        <li>Institutional communication</li>
+                        <li>Managing timelines and execution flow</li>
+                      </ul>
                     </div>
-                    <div style="padding: 16px; border: 1px solid rgba(185,155,124,0.15); border-radius: 8px;">
-                      <p style="font-size: 0.8rem; color: #8b7f6e; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px;">Portfolio</p>
-                      <p style="font-size: 0.9rem; color: #c4b5a4; margin: 0;">Your learning record</p>
+
+                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
+                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Curriculum Design</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600;">Dhruvan Rai (@wabi.e.sabi) & Shreya BL (@ft.shrxyaaa)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                        <li>Educational framework development</li>
+                        <li>Course structure</li>
+                        <li>Research on learning models</li>
+                        <li>Skill integration</li>
+                      </ul>
+                    </div>
+
+                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
+                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Legal & Compliance</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600;">Sukoon (@sukoon._.sings)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                        <li>Trust documentation support</li>
+                        <li>Legal research</li>
+                        <li>Registration processes</li>
+                        <li>Compliance assistance</li>
+                      </ul>
                     </div>
                   </div>
                 </section>
 
-                <!-- 5. TRUST LAYER (FOUNDERS) -->
-                <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 600; color: #b99b7c; margin: 0 0 20px; letter-spacing: 1px; text-transform: uppercase;">
-                    Founders
+                <!-- CSR FUNDING AREA -->
+                <section class="manifesto-section" style="margin-bottom: 50px; background: rgba(76, 175, 80, 0.1); padding: 30px; border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.3);">
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #2e7d32; margin: 0 0 16px;">
+                    CSR & Philanthropy Funding
                   </h2>
-                  <div style="display: flex; gap: 24px; flex-wrap: wrap;">
-                    <div style="flex: 1; min-width: 200px;">
-                      <p style="font-size: 1rem; color: #e8dcc9; margin: 0 0 4px; font-weight: 500;">Yashveer Vats Gaurav</p>
-                      <p style="font-size: 0.8rem; color: #8b7f6e; margin: 0;">Research and education design</p>
-                    </div>
-                    <div style="flex: 1; min-width: 200px;">
-                      <p style="font-size: 1rem; color: #e8dcc9; margin: 0 0 4px; font-weight: 500;">Sandhya Vats</p>
-                      <p style="font-size: 0.8rem; color: #8b7f6e; margin: 0;">Research and education design</p>
-                    </div>
-                  </div>
+                  <p style="font-size: 1rem; line-height: 1.8; color: #1b5e20; margin: 0;">
+                    We are building a scalable, humanitarian educational infrastructure. As a non-profit trust, we welcome CSR funding and philanthropic partnerships to expand our operations, reach more students, and build open-access learning platforms. Reach out to discuss collaboration.
+                  </p>
                 </section>
 
-                <!-- 6. ENTRY CHOICE -->
-                <section class="manifesto-section" style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(185,155,124,0.2);">
-                  <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px;">
-                    <a href="guide.html" style="padding: 12px 28px; border: 1px solid rgba(185,155,124,0.3); border-radius: 6px; color: #c4b5a4; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;">Read Guide</a>
-                    <a href="library.html" style="padding: 12px 28px; border: 1px solid rgba(185,155,124,0.3); border-radius: 6px; color: #c4b5a4; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;">The Library</a>
-                    <a href="#login" onclick="document.getElementById('loginSection').scrollIntoView({behavior:'smooth'}); return false;" style="padding: 12px 28px; background: rgba(185,155,124,0.15); border: 1px solid rgba(185,155,124,0.3); border-radius: 6px; color: #e8dcc9; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;">Login</a>
-                  </div>
-                  <p style="font-size: 0.75rem; color: #6a5f4f; margin: 16px 0 0;">Beta 1.3 • Founded under INHET</p>
+                <!-- ENTRY CHOICE -->
+                <section class="manifesto-section" style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(139, 90, 43, 0.2);">
+                  <p style="font-size: 0.75rem; color: #6d4c41; margin: 16px 0 0;">Founded under iNHET</p>
                 </section>
 
                 <!-- LOGIN SECTION (Hidden until scrolled) -->
@@ -210,9 +260,8 @@
                         <label class="field-label">
                           <span>Role</span>
                           <select id="signup-role" name="role">
-                            <option value="seeker">Seeker — Learner</option>
-                            <option value="curator">Curator — Teacher</option>
-                            <option value="arbiter">Arbiter — Reviewer</option>
+                            <option value="seeker">Seeker — Student</option>
+                            <option value="arbiter">Arbiter — Teacher</option>
                           </select>
                         </label>
                         <button class="btn btn-primary" style="width:100%" type="submit">Create Account</button>

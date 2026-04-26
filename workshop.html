@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workshops | Neofolk Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="internal-styles.css">
+<link rel="icon" type="image/jpeg" href="iNHET-logo.png" />
+<style>
+  .workshop-card {
+    background: #f4f9f4;
+    border: 1px solid rgba(139, 90, 43, 0.15);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .poll-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+  }
+</style>
+</head>
+<body class="internal-page neo-theme" data-page="workshop">
+<div class="neo-layout">
+<aside class="neo-sidebar sidebar">
+  <div class="brand-area"><h2>iNHET</h2></div>
+  <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
+  <div class="sidebar-content"></div>
+</aside>
+<main class="neo-main">
+  <section class="neo-board"><div class="neo-board-layer"></div><div class="neo-board-grid"></div></section>
+  <section class="page-shell">
+    <div class="page-stack">
+      <div class="dashboard-shell">
+        <section class="dashboard-welcome" style="margin-bottom: 32px;">
+          <div>
+            <p class="section-label">Live Sessions</p>
+            <h1>Workshops</h1>
+            <p class="dashboard-meta">Access every active workshop, join live sessions, and request specific topics through community polling.</p>
+          </div>
+        </section>
+        
+        <div class="oversight-grid">
+          <div class="card">
+            <p class="section-label">Upcoming Sessions</p>
+            <h2>Join a Workshop</h2>
+            
+            <div class="workshop-card">
+              <div class="dashboard-card-topline">
+                <strong>Cyberonics 101</strong>
+                <span class="pill" style="background:#8b5a2b;color:#fff;">Tomorrow, 10:00 AM</span>
+              </div>
+              <p style="margin-top: 12px; color: #5d4037;">An introduction to systems thinking and cybernetic models for governance.</p>
+              <button class="btn btn-primary" style="margin-top: 16px; background: #3e2723; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Register to Join</button>
+            </div>
+            
+            <div class="workshop-card">
+              <div class="dashboard-card-topline">
+                <strong>Technologia & Law</strong>
+                <span class="pill" style="background:#e8dcc8;color:#3e2723;">Friday, 2:00 PM</span>
+              </div>
+              <p style="margin-top: 12px; color: #5d4037;">Understanding the intersection of digital rights and jurisprudence.</p>
+              <button class="btn btn-primary" style="margin-top: 16px; background: #3e2723; color: white; border: none; padding: 8px 16px; border-radius: 4px;">Register to Join</button>
+            </div>
+          </div>
+          
+          <div class="card">
+            <p class="section-label">Community Polling</p>
+            <h2>Request a Topic</h2>
+            <p style="color: #5d4037; margin-top: 8px;">Don't see what you want to learn? Request a specific topic and we'll organize a workshop if there's enough interest.</p>
+            
+            <form class="poll-form" onsubmit="event.preventDefault(); alert('Request submitted! Check back to see if it gets scheduled.');">
+              <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #3e2723; margin-bottom: 8px;">Topic Domain</label>
+                <select style="width: 100%; padding: 10px; border: 1px solid rgba(139, 90, 43, 0.2); border-radius: 4px; background: #fff;">
+                  <option>Civics & Chronicles</option>
+                  <option>Cyberonics</option>
+                  <option>Jurisprudence</option>
+                  <option>Medicina</option>
+                  <option>Technologia</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #3e2723; margin-bottom: 8px;">Specific Request</label>
+                <input type="text" placeholder="What exactly do you want to learn?" style="width: 100%; padding: 10px; border: 1px solid rgba(139, 90, 43, 0.2); border-radius: 4px; background: #fff;">
+              </div>
+              <button type="submit" class="btn btn-primary" style="background: #8b5a2b; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: 600;">Submit Request</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>

@@ -3,14 +3,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
 
 :root {
-  --ink: #1b1410;
-  --deep-brown: #2c1f1a;
-  --parchment: #e8dcc8;
-  --gold: #c6a96b;
-  --olive: #6f7b5c;
-  --terracotta: #8c4b2f;
-  --muted-text: #a69b8d;
-  --border-color: rgba(232, 220, 200, 0.15);
+  --ink: #f4f9f4; /* pastel green background */
+  --deep-brown: #eaf2ea; /* slightly darker green for cards */
+  --parchment: #3e2723; /* wooden brown text */
+  --gold: #4caf50; /* green highlight */
+  --olive: #8d6e63; /* muted brown */
+  --terracotta: #66bb6a;
+  --muted-text: #5d4037; /* lighter brown */
+  --border-color: rgba(139, 90, 43, 0.2);
   
   --radius: 4px;
   --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -63,7 +63,7 @@
   .card h3 { font-size: 1.2rem; }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .stats-grid { grid-template-columns: 1fr !important; }
   .mini-stat-grid { grid-template-columns: 1fr !important; }
   
@@ -521,24 +521,31 @@ body.internal-page {
 /* Neo master layout (shared shell) */
 .internal-page.neo-theme .neo-layout {
   display: flex;
+  flex-direction: column;
   align-items: stretch;
   min-height: 100dvh;
 }
 
 .internal-page.neo-theme .neo-sidebar #app-nav.sidebar-nav {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0 0 16px;
+  flex-direction: row;
+  gap: 16px;
+  margin: 0;
   padding: 0;
 }
 
 .internal-page.neo-theme .neo-sidebar {
-  width: min(280px, 32vw);
-  flex-shrink: 0;
-  border-right: 1px solid var(--border-color);
-  padding: 24px 16px;
-  background: var(--deep-brown);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 24px;
+  background: var(--ink);
   box-sizing: border-box;
 }
 
@@ -589,28 +596,11 @@ body.internal-page {
 }
 
 @media (max-width: 1100px) {
-  .internal-page.neo-theme .neo-layout {
-    flex-direction: column;
+  .internal-page.neo-theme .neo-sidebar {
+    padding: 0 16px;
   }
-
-  .internal-page.neo-theme .neo-sidebar.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100dvh;
-    width: min(280px, 88vw);
-    z-index: 45;
-    transform: translateX(-100%);
-    transition: transform 0.22s ease;
-    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.45);
-  }
-
-  .internal-page.neo-theme .neo-sidebar.sidebar.open {
-    transform: translateX(0);
-  }
-
-  .internal-page.neo-theme .neo-main {
-    width: 100%;
+  .internal-page.neo-theme .neo-sidebar #app-nav.sidebar-nav {
+    display: none; /* Hide nav links on mobile for now, or implement hamburger */
   }
 }
 

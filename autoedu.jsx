@@ -11,12 +11,15 @@ const DOMAINS = [
   { id: "arithmetics", label: "Arithmetics", token: "Shakuntis", color: "#92400e", bg: "#fef3c7", sub: "Mathematics" },
   { id: "cosmology",   label: "Cosmology",   token: "Bhattas",   color: "#075985", bg: "#e0f2fe", sub: "Astronomy & Physics" },
   { id: "biosphere",   label: "Biosphere",   token: "Janakis",   color: "#166534", bg: "#dcfce7", sub: "Biology & Botany" },
-  { id: "chronicles",  label: "Chronicles",  token: "Thapars",   color: "#7c2d12", bg: "#fff7ed", sub: "History" },
-  { id: "civitas",     label: "Civitas",     token: "Phulis",    color: "#9f1239", bg: "#ffe4e6", sub: "Political Theory & Social" },
+  { id: "civitas_chronicles", label: "Civics & Chronicles", token: "Savi-Thapars", color: "#7c2d12", bg: "#fff7ed", sub: "History & Political Theory" },
   { id: "tokenomics",  label: "Tokenomics",  token: "Bhanus",    color: "#1e3a5f", bg: "#dbeafe", sub: "Economics & Commons" },
   { id: "artifex",     label: "Artifex",     token: "Sarabhs",   color: "#134e4a", bg: "#f0fdf4", sub: "Design & Craft" },
   { id: "praxis",      label: "Praxis",      token: "Arunas",    color: "#4c1d95", bg: "#f5f3ff", sub: "Action & Reform" },
   { id: "bioepisteme", label: "Bioepisteme", token: "Gagas",     color: "#155e75", bg: "#ecfeff", sub: "Life Sciences" },
+  { id: "cyberonics",  label: "Cyberonics",  token: "Nyayas",    color: "#0f766e", bg: "#ccfbf1", sub: "Systems & Cybernetics" },
+  { id: "jurisprudence", label: "Jurisprudence", token: "Vidhans", color: "#b45309", bg: "#fef3c7", sub: "Law & Ethics" },
+  { id: "technologia", label: "Technologia", token: "Vishwas",   color: "#4338ca", bg: "#e0e7ff", sub: "Applied Technology" },
+  { id: "medicina",    label: "Medicina",    token: "Charakas",  color: "#be123c", bg: "#ffe4e6", sub: "Medicine & Healing" },
 ];
 
 const COURSES = [
