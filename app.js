@@ -4569,8 +4569,16 @@ function renderAppNav() {
   const role = getCurrentRole();
   applyRoleTheme(role);
 
-  // Keep the public home brand minimal.
   const brandArea = document.querySelector('.brand-area');
+  if (brandArea && !brandArea.querySelector('.nav-brand-logo')) {
+    const logo = document.createElement('img');
+    logo.className = 'nav-brand-logo';
+    logo.src = 'iNHET-logo.png';
+    logo.alt = 'iNHET logo';
+    brandArea.insertBefore(logo, brandArea.firstChild);
+  }
+
+  // Keep the public home brand minimal.
   const existingBetaLabel = brandArea?.querySelector('.beta-label');
   if (isPublicHome && existingBetaLabel) {
     existingBetaLabel.remove();

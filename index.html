@@ -26,19 +26,18 @@
 
     body.public-home {
       padding-top: 88px;
+      background: #f7f4ee;
+      color: #2f2a24;
     }
 
     body.public-home[data-theme="dark"] {
-      background:
-        radial-gradient(circle at 12% 0%, rgba(100, 166, 118, 0.16), transparent 45%),
-        radial-gradient(circle at 100% 100%, rgba(223, 185, 120, 0.1), transparent 45%),
-        #16211b;
+      background: #1d241f;
       color: #ebefe7;
     }
 
-    body.public-home[data-theme="dark"] .neo-board-layer,
-    body.public-home[data-theme="dark"] .neo-board-grid {
-      opacity: 0.08;
+    .public-home .neo-board-layer,
+    .public-home .neo-board-grid {
+      display: none;
     }
 
     /* Convert sidebar to top navbar for public home */
@@ -49,29 +48,29 @@
       right: 0;
       z-index: 1000;
       width: 100%;
-      min-height: 76px;
+      min-height: 74px;
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       border-bottom: 1px solid var(--border, rgba(139, 90, 43, 0.12));
-      padding: 16px 32px;
-      background: rgba(248, 250, 244, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 1px 3px rgba(62, 39, 35, 0.05), 0 4px 20px rgba(62, 39, 35, 0.08);
+      padding: 14px 28px;
+      background: rgba(247, 244, 238, 0.96);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 1px 0 rgba(62, 39, 35, 0.06);
       box-sizing: border-box;
-      transition: all 0.3s ease;
+      transition: background 0.2s ease, box-shadow 0.2s ease;
     }
 
     .public-home[data-theme="dark"] .neo-sidebar {
-      background: rgba(17, 27, 22, 0.92);
-      border-bottom-color: rgba(214, 191, 148, 0.18);
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.22);
+      background: rgba(29, 36, 31, 0.96);
+      border-bottom-color: rgba(214, 191, 148, 0.14);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
     }
     
     .public-home .neo-sidebar.scrolled {
-      box-shadow: 0 2px 8px rgba(62, 39, 35, 0.1), 0 8px 30px rgba(62, 39, 35, 0.12);
+      box-shadow: 0 1px 0 rgba(62, 39, 35, 0.08);
       border-bottom-color: var(--border-strong, rgba(139, 90, 43, 0.2));
     }
     
@@ -80,7 +79,14 @@
       align-items: center;
       gap: 14px;
     }
-    
+
+    .public-home .nav-brand-logo {
+      width: 40px;
+      height: 40px;
+      border-color: rgba(139, 90, 43, 0.12);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
     .public-home .neo-sidebar .brand-area h2 {
       margin: 0;
       font-size: 1.45rem;
@@ -99,6 +105,11 @@
     .public-home[data-theme="dark"] .login-shell h2,
     .public-home[data-theme="dark"] .contact-list strong {
       color: #f2eadf;
+    }
+
+    .public-home[data-theme="dark"] .nav-brand-logo {
+      border-color: rgba(214, 191, 148, 0.18);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .public-home .brand-copy {
@@ -142,8 +153,8 @@
     .public-home .neo-sidebar #app-nav {
       display: flex;
       flex-direction: row;
-      gap: 8px;
-      margin: 0;
+      gap: 4px;
+      margin: 0 0 0 28px;
       padding: 0;
       align-items: center;
     }
@@ -151,17 +162,17 @@
     .public-home .neo-sidebar #app-nav a {
       display: flex;
       align-items: center;
-      padding: 8px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
       color: var(--text-secondary, #5d4037);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 500;
       text-decoration: none;
       transition: all 0.2s ease;
     }
     
     .public-home .neo-sidebar #app-nav a:hover {
-      background: var(--bg-hover, rgba(139, 90, 43, 0.06));
+      background: rgba(139, 90, 43, 0.05);
       color: var(--text-primary, #3e2723);
     }
     
@@ -169,6 +180,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      margin-left: auto;
     }
 
     .public-home .neo-main {
@@ -180,34 +192,34 @@
     }
 
     .public-home .page-shell {
-      width: min(1120px, calc(100vw - 40px));
-      padding-top: 12px;
+      width: min(1060px, calc(100vw - 48px));
+      padding-top: 0;
     }
 
     .public-home .content.home-content {
-      max-width: 1120px;
+      max-width: 1060px;
       margin: 0 auto;
-      padding: 24px 0 72px;
-      gap: 56px;
+      padding: 28px 0 64px;
+      gap: 40px;
     }
 
     .public-home-intro,
     .home-section,
     .home-card,
     .home-notice {
-      animation: fadeIn 0.6s ease-out;
+      animation: none;
     }
 
     .home-hero {
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
-      gap: 28px;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.85fr);
+      gap: 22px;
       align-items: start;
-      margin-bottom: 12px;
+      margin-bottom: 4px;
     }
 
     .public-home-intro {
-      padding: 8px 0;
+      padding: 10px 0 0;
     }
 
     .public-home-intro .eyebrow {
@@ -219,34 +231,34 @@
     .public-home-intro h1 {
       margin: 0 0 18px;
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.8rem, 5vw, 4.6rem);
-      line-height: 1.04;
+      font-size: clamp(2.4rem, 4.2vw, 4rem);
+      line-height: 1.08;
       font-weight: 500;
       color: var(--text-primary, #3e2723);
     }
 
     .public-home-intro p {
-      max-width: 640px;
-      font-size: 1.06rem;
-      line-height: 1.9;
+      max-width: 620px;
+      font-size: 1rem;
+      line-height: 1.82;
       color: var(--text-secondary, #5d4037);
     }
 
     .hero-actions {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
-      margin-top: 28px;
+      margin-top: 22px;
     }
 
     .btn-secondary {
-      background: transparent;
+      background: #ffffff;
       border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
       color: var(--text-primary, #3e2723);
     }
 
     .btn-secondary:hover {
-      background: var(--bg-hover, rgba(139, 90, 43, 0.06));
+      background: #fcfaf6;
     }
 
     .public-home[data-theme="dark"] .btn-secondary {
@@ -256,25 +268,24 @@
 
     .home-notice,
     .home-card {
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 16px 40px rgba(62, 39, 35, 0.08);
+      background: #fcfaf6;
+      border: 1px solid rgba(139, 90, 43, 0.12);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: none;
     }
 
     .public-home[data-theme="dark"] .home-notice,
     .public-home[data-theme="dark"] .home-card,
     .public-home[data-theme="dark"] .team-card,
     .public-home[data-theme="dark"] .login-shell {
-      background: rgba(26, 37, 31, 0.82);
-      border-color: rgba(214, 191, 148, 0.16);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+      background: #232b25;
+      border-color: rgba(214, 191, 148, 0.14);
+      box-shadow: none;
     }
 
     .home-notice {
-      position: sticky;
-      top: 108px;
+      position: static;
     }
 
     .home-notice .section-label,
@@ -306,16 +317,16 @@
     .notice-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin: 18px 0 24px;
+      gap: 8px;
+      margin: 16px 0 20px;
     }
 
     .notice-pill {
       border-radius: 999px;
-      padding: 8px 12px;
-      background: rgba(139, 90, 43, 0.08);
+      padding: 6px 10px;
+      background: rgba(139, 90, 43, 0.06);
       color: var(--accent, #8b5a2b);
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
     }
 
@@ -326,15 +337,15 @@
 
     .home-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.8fr);
-      gap: 28px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(260px, 0.78fr);
+      gap: 22px;
       align-items: start;
     }
 
     .home-stack {
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 18px;
     }
 
     .home-section {
@@ -344,16 +355,16 @@
     .home-section h2 {
       margin: 0 0 16px;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
+      font-size: 1.9rem;
       font-weight: 600;
       color: var(--text-primary, #3e2723);
     }
 
     .home-section p {
-      font-size: 1rem;
-      line-height: 1.9;
+      font-size: 0.98rem;
+      line-height: 1.82;
       color: var(--text-secondary, #5d4037);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     .support-grid,
@@ -364,16 +375,16 @@
     }
 
     .team-card {
-      background: var(--bg-card, #ffffff);
-      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
-      border-radius: 20px;
+      background: #ffffff;
+      border: 1px solid rgba(139, 90, 43, 0.12);
+      border-radius: 18px;
       padding: 20px;
       transition: all 0.2s ease;
     }
     
     .team-card:hover {
-      border-color: var(--accent, #8b5a2b);
-      box-shadow: var(--shadow, 0 4px 20px rgba(62, 39, 35, 0.12));
+      border-color: rgba(139, 90, 43, 0.18);
+      box-shadow: none;
     }
 
     .team-card h3 {
@@ -408,11 +419,11 @@
 
     .login-shell {
       margin-top: 12px;
-      padding: 32px;
-      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.82);
-      box-shadow: 0 16px 40px rgba(62, 39, 35, 0.08);
+      padding: 28px;
+      border: 1px solid rgba(139, 90, 43, 0.12);
+      border-radius: 18px;
+      background: #fcfaf6;
+      box-shadow: none;
     }
 
     .login-shell h2 {
@@ -437,7 +448,7 @@
       padding: 0 14px;
       border-radius: 999px;
       border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
-      background: rgba(255, 255, 255, 0.64);
+      background: transparent;
       color: var(--text-primary, #3e2723);
       font-size: 0.9rem;
       font-weight: 600;
@@ -445,7 +456,7 @@
     }
 
     .theme-toggle:hover {
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(139, 90, 43, 0.05);
     }
 
     .public-home[data-theme="dark"] .theme-toggle {
@@ -459,11 +470,6 @@
       scroll-behavior: smooth;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     /* Mobile responsive navbar */
     @media (max-width: 768px) {
       body.public-home {
@@ -488,7 +494,7 @@
       }
 
       .public-home .content.home-content {
-        padding: 12px 0 48px;
+        padding: 18px 0 48px;
       }
 
       .home-hero,
@@ -503,7 +509,7 @@
       }
 
       .public-home-intro h1 {
-        font-size: 2.3rem;
+        font-size: 2.1rem;
       }
 
       .home-notice,
@@ -585,12 +591,12 @@
                 <section class="home-hero" id="top">
                   <div class="public-home-intro">
                     <p class="eyebrow">Indian Neofolk Humanitarian Education Trust</p>
-                    <h1>A calm, public-facing learning platform built like a social mission.</h1>
+                    <h1>Learning work rooted in community, care, and real educational access.</h1>
                     <p>
-                      Neofolk Atlas is being shaped as a clean, open educational space where meaningful learning, community guidance, and visible growth matter more than rigid exam culture.
+                      Neofolk Atlas is being developed as a public-facing learning initiative where thoughtful education, mentorship, and long-term growth matter more than rigid exam culture.
                     </p>
                     <p>
-                      We are building slowly and deliberately: pilot by pilot, library by library, and profile by profile, so that the main work remains easy to understand for students, educators, and partners.
+                      We want the website to feel straightforward and honest. People visiting the page should immediately understand what we are building, who it is for, and what we are working on right now.
                     </p>
                     <div class="hero-actions">
                       <a class="btn btn-primary" href="pilot.html">Open Panchmahala Pilot</a>
@@ -602,7 +608,7 @@
                     <span class="section-label">Current Focus</span>
                     <h2>Panchmahala Pilot</h2>
                     <p>
-                      The homepage now leads with the work that matters most right now: a pilot designed to make our educational model visible, testable, and easier to support.
+                      Our main area of work at the moment is the Panchmahala pilot. It is the clearest expression of our present effort, and this homepage now places it first so visitors can immediately see what is active.
                     </p>
                     <div class="notice-meta">
                       <span class="notice-pill">Pilot-first rollout</span>
@@ -618,10 +624,10 @@
                     <section class="home-section" id="approach">
                       <h2>What we are building</h2>
                       <p>
-                        Our goal is to create a knowledge network that values writing, design, problem-solving, collaboration, and long-term intellectual growth. Instead of forcing learning into one rigid format, we are developing a structure that can recognise different forms of capability with clarity and care.
+                        Our goal is to support a learning environment that values writing, design, problem-solving, collaboration, and steady intellectual growth. We are trying to build something that recognises different forms of ability without forcing everyone into one narrow model.
                       </p>
                       <p>
-                        The public page should feel like a living note from the organisation, so this version keeps the language lighter, the hierarchy calmer, and the most important update at the center of attention.
+                        This public page is meant to read more like a clear organisational note than a product landing page. It keeps the structure simple, the tone more human, and the attention on the work itself.
                       </p>
                     </section>
 
@@ -651,9 +657,9 @@
                   <aside class="home-stack">
                     <section class="home-card">
                       <span class="section-label">NeoScore</span>
-                      <h3>Reintegrated as part of the story</h3>
+                      <h3>Kept visible, but not overwhelming</h3>
                       <p>
-                        NeoScore is part of how we describe growth and contribution across the platform. It belongs in the public narrative, but quietly and clearly, without taking over the page.
+                        NeoScore remains part of how the platform understands growth and contribution. Here, it stays in the background as supporting context rather than becoming the main message of the homepage.
                       </p>
                       <div class="hero-actions" style="margin-top: 20px;">
                         <a class="btn btn-secondary" href="neoscore.html">View NeoScore</a>
@@ -662,7 +668,7 @@
 
                     <section class="home-card" id="contact">
                       <span class="section-label">Contact</span>
-                      <h3>For collaborations and partnerships</h3>
+                      <h3>For partnerships and collaboration</h3>
                       <ul class="contact-list">
                         <li><strong>Phone:</strong> 9667115543</li>
                         <li><strong>Email:</strong> inhetedu@zohomail.in</li>
