@@ -40,9 +40,9 @@
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -56,14 +56,13 @@
 }
 
 .gallery-item.large {
-  grid-column: span 2;
-  grid-row: span 2;
+  min-height: 640px;
   aspect-ratio: auto;
 }
 
 .gallery-item.wide {
-  grid-column: span 2;
-  aspect-ratio: 2 / 1;
+  min-height: 640px;
+  aspect-ratio: auto;
 }
 
 .gallery-item:hover {
@@ -268,6 +267,22 @@
 
 .capacity-total strong {
   color: var(--color-text);
+}
+
+.quote-grid .capacity-item {
+  padding: 24px;
+}
+
+.quote-grid .capacity-num {
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quote-grid .capacity-label {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
 }
 
 /* ── CLIMATE SECTION ── */
@@ -592,6 +607,32 @@
   border-color: var(--color-primary);
 }
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.form-status {
+  min-height: 1.5rem;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.form-status.is-success {
+  color: var(--color-primary);
+}
+
+.form-status.is-error {
+  color: #b44a2d;
+}
+
 .submit-btn {
   padding: 16px 32px;
   background: var(--color-primary);
@@ -678,10 +719,6 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1200px) {
-  .gallery-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  
   .details-grid {
     grid-template-columns: 1fr 1fr;
   }
@@ -696,14 +733,12 @@
 }
 
 @media (max-width: 1024px) {
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
   .gallery-item.large {
-    grid-column: span 2;
-    grid-row: span 1;
-    aspect-ratio: 2 / 1;
+    min-height: 440px;
+  }
+
+  .gallery-item.wide {
+    min-height: 440px;
   }
   
   .approach-grid {
@@ -747,8 +782,8 @@
   
   .gallery-item.large,
   .gallery-item.wide {
-    grid-column: span 1;
-    aspect-ratio: 1;
+    min-height: 320px;
+    aspect-ratio: auto;
   }
   
   .details-grid {

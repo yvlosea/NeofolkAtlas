@@ -187,6 +187,49 @@ function initForms() {
   });
 }
 
+function initContactForm() {
+  const form = document.getElementById('contactForm');
+  const status = document.getElementById('contactFormStatus');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const btn = form.querySelector('.submit-btn');
+    const originalText = btn?.textContent || 'Send Message';
+    const formData = new FormData(form);
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.textContent = '';
+    status.className = 'form-status';
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+
+      form.reset();
+      status.textContent = 'Message sent. It will be delivered to inhetedu@zohomail.in.';
+      status.classList.add('is-success');
+    } catch (error) {
+      status.textContent = 'We could not send the form right now. Please email inhetedu@zohomail.in directly.';
+      status.classList.add('is-error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+}
+
 // Image gallery lightbox (for Current Work page)
 function initLightbox() {
   const galleryImages = document.querySelectorAll('.gallery-image');
@@ -246,6 +289,7 @@ function init() {
   initSmoothScroll();
   initParallax();
   initForms();
+  initContactForm();
   initLightbox();
   
   // Theme toggle

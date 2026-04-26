@@ -11,6 +11,7 @@
   --color-bg-alt: #e8efe3;
   --color-surface: #ffffff;
   --color-surface-elevated: #fafbf8;
+  --color-surface-rgb: 255, 255, 255;
   
   --color-primary: #2d4a33;
   --color-primary-light: #4a7c59;
@@ -48,6 +49,7 @@
   --color-bg-alt: #1a261e;
   --color-surface: #1e2b22;
   --color-surface-elevated: #243329;
+  --color-surface-rgb: 30, 43, 34;
   
   --color-primary: #7cb87c;
   --color-primary-light: #9dd49d;
@@ -83,6 +85,7 @@ body {
   font-family: var(--font-sans);
   background: var(--color-bg);
   color: var(--color-text);
+  color-scheme: light;
   line-height: 1.6;
   min-height: 100vh;
   transition: background var(--transition-normal), color var(--transition-normal);
@@ -286,7 +289,8 @@ a {
   top: 72px;
   left: 0;
   right: 0;
-  background: var(--color-surface);
+  background: rgba(var(--color-surface-rgb), 0.96);
+  backdrop-filter: blur(20px);
   padding: 24px;
   flex-direction: column;
   gap: 16px;
@@ -471,7 +475,7 @@ a {
 .overlay-badge {
   display: inline-block;
   padding: 8px 16px;
-  background: rgba(255,255,255,0.95);
+  background: rgba(var(--color-surface-rgb), 0.95);
   color: var(--color-text);
   font-size: 0.8rem;
   font-weight: 600;
@@ -1092,6 +1096,11 @@ a {
   border-color: var(--color-primary);
 }
 
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--text-muted);
+}
+
 .form-group select {
   cursor: pointer;
 }
@@ -1285,4 +1294,7 @@ a {
 .hover-lift:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-md);
+}
+body[data-theme="dark"] {
+  color-scheme: dark;
 }
