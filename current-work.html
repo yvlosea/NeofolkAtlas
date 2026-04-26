@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Current Work | Panchmela</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="panchmela.css" />
+  <link rel="stylesheet" href="panchmela-pages.css" />
+  <link rel="icon" type="image/png" href="iNHET%20logo.png" />
+</head>
+<body data-theme="light">
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="nav-brand">
+      <img src="iNHET%20logo.png" alt="iNHET Logo" class="nav-logo" />
+      <div class="brand-text">
+        <span class="brand-title">Panchmela</span>
+        <span class="brand-subtitle">Indian Neofolk Humanitarian Education Trust</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="current-work.html" class="nav-link active">Current Work</a>
+      <a href="approach.html" class="nav-link">Approach</a>
+      <a href="team.html" class="nav-link">Team</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+      <button class="icon-btn account-btn" id="accountBtn" aria-label="Account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <button class="login-btn" id="loginBtn">Login</button>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="mobile-link">Home</a>
+    <a href="current-work.html" class="mobile-link">Current Work</a>
+    <a href="approach.html" class="mobile-link">Approach</a>
+    <a href="team.html" class="mobile-link">Team</a>
+    <a href="contact.html" class="mobile-link">Contact</a>
+    <div class="mobile-actions">
+      <button class="mobile-login-btn" id="mobileLoginBtn">Login</button>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="page-header-content">
+      <span class="section-tag">Current Work</span>
+      <h1 class="page-title">Panchmela Learning Tower</h1>
+      <p class="page-subtitle">
+        A comprehensive visual documentation of the educational campus being built in rural India. 
+        Every element is designed for learning, sustainability, and community.
+      </p>
+    </div>
+  </section>
+
+  <!-- Gallery Grid -->
+  <section class="gallery-section">
+    <div class="gallery-grid">
+      <!-- Image 1 - Main Tower -->
+      <div class="gallery-item large">
+        <img src="current-work-tower.png" alt="Neofolk Learning Tower - Main Visualization" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Featured</span>
+          <h3 class="gallery-title">The Learning Tower</h3>
+          <p class="gallery-desc">Circular library and learning hub, G+2 + Roof Learning Pavilion</p>
+        </div>
+      </div>
+
+      <!-- Image 2 - Site Plan -->
+      <div class="gallery-item wide">
+        <img src="current-work-plan.png" alt="Panchmela Site Plan" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Master Plan</span>
+          <h3 class="gallery-title">Site Context</h3>
+          <p class="gallery-desc">18 Katha / ~24,500 sq.ft. comprehensive campus layout</p>
+        </div>
+      </div>
+
+      <!-- Image 3 - Logo/Branding -->
+      <div class="gallery-item">
+        <img src="iNHET%20logo.png" alt="iNHET Organization Logo" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Identity</span>
+          <h3 class="gallery-title">Trust Identity</h3>
+          <p class="gallery-desc">Indian Neofolk Humanitarian Education Trust seal</p>
+        </div>
+      </div>
+
+      <!-- Image 4 - Children Learning -->
+      <div class="gallery-item">
+        <img src="Children1.jpg" alt="Children at Learning Center" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Community</span>
+          <h3 class="gallery-title">Future Learners</h3>
+          <p class="gallery-desc">The children who will benefit from this educational initiative</p>
+        </div>
+      </div>
+
+      <!-- Image 5 - Additional Image 1 -->
+      <div class="gallery-item">
+        <img src="14753.png" alt="Architectural Detail" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Detail</span>
+          <h3 class="gallery-title">Design Element</h3>
+          <p class="gallery-desc">Architectural detail and material study</p>
+        </div>
+      </div>
+
+      <!-- Image 6 - Additional Image 2 -->
+      <div class="gallery-item">
+        <img src="14969.jpg" alt="Campus Visualization" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Visualization</span>
+          <h3 class="gallery-title">Campus View</h3>
+          <p class="gallery-desc">Surrounding landscape and building integration</p>
+        </div>
+      </div>
+
+      <!-- Image 7 - Additional Image 3 -->
+      <div class="gallery-item">
+        <img src="14971.png" alt="Interior Space Design" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Interior</span>
+          <h3 class="gallery-title">Learning Space</h3>
+          <p class="gallery-desc">Interior design for study and collaboration</p>
+        </div>
+      </div>
+
+      <!-- Image 8 - Additional Image 4 -->
+      <div class="gallery-item">
+        <img src="15289.png" alt="Sustainability Feature" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Sustainability</span>
+          <h3 class="gallery-title">Green Systems</h3>
+          <p class="gallery-desc">Environmental design integration</p>
+        </div>
+      </div>
+
+      <!-- Image 9 - Preview -->
+      <div class="gallery-item wide">
+        <img src="Preview.png" alt="Project Preview" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Overview</span>
+          <h3 class="gallery-title">Project Overview</h3>
+          <p class="gallery-desc">Complete vision of the Panchmela educational campus</p>
+        </div>
+      </div>
+
+      <!-- Image 10 - Neofolk Logo -->
+      <div class="gallery-item">
+        <img src="Neofolk%20Logo.jpg" alt="Neofolk Brand Identity" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Branding</span>
+          <h3 class="gallery-title">Neofolk Identity</h3>
+          <p class="gallery-desc">Educational initiative brand mark</p>
+        </div>
+      </div>
+
+      <!-- Image 11 - NeoScore -->
+      <div class="gallery-item">
+        <img src="neoscore.png" alt="NeoScore Framework" class="gallery-image" />
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Framework</span>
+          <h3 class="gallery-title">NeoScore</h3>
+          <p class="gallery-desc">Assessment and progress tracking system</p>
+        </div>
+      </div>
+
+      <!-- Image 12 - Building Detail 1 -->
+      <div class="gallery-item">
+        <div class="placeholder-image" style="background: linear-gradient(135deg, #4a7c59 0%, #2d4a33 100%);">
+          <span class="placeholder-icon">🏛️</span>
+          <span class="placeholder-text">Foundation Detail</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Construction</span>
+          <h3 class="gallery-title">Foundation</h3>
+          <p class="gallery-desc">Stone footing and RCC slab construction</p>
+        </div>
+      </div>
+
+      <!-- Image 13 - Building Detail 2 -->
+      <div class="gallery-item">
+        <div class="placeholder-image" style="background: linear-gradient(135deg, #8b6914 0%, #5a4a0f 100%);">
+          <span class="placeholder-icon">🪟</span>
+          <span class="placeholder-text">Window Detail</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Material</span>
+          <h3 class="gallery-title">Windows</h3>
+          <p class="gallery-desc">Wooden windows with terracotta jaali</p>
+        </div>
+      </div>
+
+      <!-- Image 14 - Roof Detail -->
+      <div class="gallery-item">
+        <div class="placeholder-image" style="background: linear-gradient(135deg, #6b8e6b 0%, #4a6350 100%);">
+          <span class="placeholder-icon">🏠</span>
+          <span class="placeholder-text">Roof Pergola</span>
+        </div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Roof</span>
+          <h3 class="gallery-title">Pergola Detail</h3>
+          <p class="gallery-desc">Polycarbonate panels with wooden beams</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Project Details -->
+  <section class="project-details">
+    <div class="details-grid">
+      <div class="detail-card">
+        <span class="section-tag">Building Parameters</span>
+        <div class="detail-stats">
+          <div class="stat-row">
+            <span class="stat-label">Diameter (External)</span>
+            <span class="stat-value">12.0 m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Radius</span>
+            <span class="stat-value">6.0 m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">No. of Floors</span>
+            <span class="stat-value">G + 2 + Roof</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Floor Height</span>
+            <span class="stat-value">3.4 m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Parapet Height (Roof)</span>
+            <span class="stat-value">1.1 m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Pergola Height</span>
+            <span class="stat-value">3.0 m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Total Height</span>
+            <span class="stat-value">~10.5 m</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Total Usable Area</span>
+            <span class="stat-value">~452 sq.m</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <span class="section-tag">Material Palette</span>
+        <ul class="material-list">
+          <li><span class="material-color" style="background: #d4c5b5;"></span> Lime Plaster</li>
+          <li><span class="material-color" style="background: #8b4513;"></span> Brick / Earth Block</li>
+          <li><span class="material-color" style="background: #c17f59;"></span> Terracotta Jaali</li>
+          <li><span class="material-color" style="background: #654321;"></span> Wood - Country Teak</li>
+          <li><span class="material-color" style="background: #5f9ea0;"></span> IPS Flooring</li>
+          <li><span class="material-color" style="background: #8fbc8f;"></span> Natural Stone / Tile</li>
+        </ul>
+      </div>
+
+      <div class="detail-card wide">
+        <span class="section-tag">Capacity Summary</span>
+        <div class="capacity-grid">
+          <div class="capacity-item">
+            <span class="capacity-num">25-30</span>
+            <span class="capacity-label">Ground Floor</span>
+          </div>
+          <div class="capacity-item">
+            <span class="capacity-num">18-22</span>
+            <span class="capacity-label">First Floor</span>
+          </div>
+          <div class="capacity-item">
+            <span class="capacity-num">20-25</span>
+            <span class="capacity-label">Second Floor</span>
+          </div>
+          <div class="capacity-item">
+            <span class="capacity-num">30-40</span>
+            <span class="capacity-label">Roof Pavilion</span>
+          </div>
+        </div>
+        <p class="capacity-total">Total Simultaneous Capacity: <strong>90-120 people</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Climate Strategies -->
+  <section class="climate-section">
+    <span class="section-tag centered">Climate Strategies</span>
+    <h2 class="section-title">Designed for the Environment</h2>
+    <div class="climate-grid">
+      <div class="climate-card">
+        <div class="climate-icon">💨</div>
+        <h3>Cross Ventilation</h3>
+        <p>Through opposite openings for natural airflow</p>
+      </div>
+      <div class="climate-card">
+        <div class="climate-icon">🏛️</div>
+        <h3>Thermal Mass</h3>
+        <p>Thick walls for heat absorption and release</p>
+      </div>
+      <div class="climate-card">
+        <div class="climate-icon">☀️</div>
+        <h3>Shade Reduction</h3>
+        <p>Pergola reduces heat gain on roof</p>
+      </div>
+      <div class="climate-card">
+        <div class="climate-icon">🌡️</div>
+        <h3>Stack Ventilation</h3>
+        <p>Hot air rises through central void</p>
+      </div>
+      <div class="climate-card">
+        <div class="climate-icon">🌿</div>
+        <h3>Micro-climate</h3>
+        <p>Vegetation cools micro-climate and walls</p>
+      </div>
+      <div class="climate-card">
+        <div class="climate-icon">💧</div>
+        <h3>Rainwater Harvesting</h3>
+        <p>Integrated collection systems</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="iNHET%20logo.png" alt="iNHET" class="footer-logo" />
+        <p class="footer-tagline">Rooted in Earth. Open in Mind.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <a href="current-work.html">Current Work</a>
+          <a href="approach.html">Approach</a>
+          <a href="team.html">Team</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="contact.html">Contact</a>
+          <span>Phone: 9667115543</span>
+          <span>Email: inhetedu@zohomail.in</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Indian Neofolk Humanitarian Education Trust. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Login Modal -->
+  <div class="login-modal" id="loginModal">
+    <div class="login-modal-backdrop"></div>
+    <div class="login-modal-content">
+      <button class="modal-close" id="closeModal">&times;</button>
+      <div class="modal-header">
+        <img src="iNHET%20logo.png" alt="iNHET" class="modal-logo" />
+        <h2>Welcome Back</h2>
+        <p>Enter your credentials to access the platform</p>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="login">Login</button>
+        <button class="tab-btn" data-tab="signup">Create Account</button>
+      </div>
+      <div class="tab-content active" id="loginTab">
+        <form class="login-form">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter your password" required />
+          </div>
+          <button type="submit" class="submit-btn">Login</button>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </form>
+      </div>
+      <div class="tab-content" id="signupTab">
+        <form class="login-form">
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" placeholder="Create a password" required />
+          </div>
+          <div class="form-group">
+            <label for="signupRole">Role</label>
+            <select id="signupRole">
+              <option value="seeker">Seeker — Student</option>
+              <option value="arbiter">Arbiter — Teacher</option>
+            </select>
+          </div>
+          <button type="submit" class="submit-btn">Create Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="panchmela.js"></script>
+</body>
+</html>
