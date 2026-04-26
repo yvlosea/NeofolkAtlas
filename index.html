@@ -13,8 +13,8 @@
   <link rel="stylesheet" href="internal-styles.css" />
   <link rel="icon" type="image/jpeg" href="iNHET-logo.png" />
   <style>
-    /* Hide sidebar until logged in */
-    .neo-layout:not(.logged-in) .neo-sidebar {
+    /* Hide non-public sidebar until logged in */
+    .neo-layout:not(.logged-in) .neo-sidebar:not(.public-header) {
       display: none;
     }
     .neo-layout:not(.logged-in) .neo-main {
@@ -24,25 +24,50 @@
       display: none;
     }
 
-    /* Convert sidebar to top navbar for public home - AESTHETIC STICKY NAVBAR */
+    body.public-home {
+      padding-top: 88px;
+    }
+
+    body.public-home[data-theme="dark"] {
+      background:
+        radial-gradient(circle at 12% 0%, rgba(100, 166, 118, 0.16), transparent 45%),
+        radial-gradient(circle at 100% 100%, rgba(223, 185, 120, 0.1), transparent 45%),
+        #16211b;
+      color: #ebefe7;
+    }
+
+    body.public-home[data-theme="dark"] .neo-board-layer,
+    body.public-home[data-theme="dark"] .neo-board-grid {
+      opacity: 0.08;
+    }
+
+    /* Convert sidebar to top navbar for public home */
     .public-home .neo-sidebar {
-      position: sticky;
+      position: fixed;
       top: 0;
+      left: 0;
+      right: 0;
       z-index: 1000;
       width: 100%;
-      height: 70px;
+      min-height: 76px;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border, rgba(139, 90, 43, 0.12));
-      padding: 0 32px;
-      background: rgba(240, 247, 240, 0.95);
+      padding: 16px 32px;
+      background: rgba(248, 250, 244, 0.94);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       box-shadow: 0 1px 3px rgba(62, 39, 35, 0.05), 0 4px 20px rgba(62, 39, 35, 0.08);
       box-sizing: border-box;
       transition: all 0.3s ease;
+    }
+
+    .public-home[data-theme="dark"] .neo-sidebar {
+      background: rgba(17, 27, 22, 0.92);
+      border-bottom-color: rgba(214, 191, 148, 0.18);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.22);
     }
     
     .public-home .neo-sidebar.scrolled {
@@ -53,16 +78,61 @@
     .public-home .neo-sidebar .brand-area {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
     
     .public-home .neo-sidebar .brand-area h2 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 600;
       color: var(--text-primary, #3e2723);
       letter-spacing: -0.02em;
       transition: color 0.2s ease;
+    }
+
+    .public-home[data-theme="dark"] .neo-sidebar .brand-area h2,
+    .public-home[data-theme="dark"] .public-home-intro h1,
+    .public-home[data-theme="dark"] .home-notice h2,
+    .public-home[data-theme="dark"] .home-section h2,
+    .public-home[data-theme="dark"] .home-card h3,
+    .public-home[data-theme="dark"] .team-card h3,
+    .public-home[data-theme="dark"] .login-shell h2,
+    .public-home[data-theme="dark"] .contact-list strong {
+      color: #f2eadf;
+    }
+
+    .public-home .brand-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .public-home .brand-copy p {
+      margin: 0;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted, #8d6e63);
+    }
+
+    .public-home[data-theme="dark"] .public-home-intro p,
+    .public-home[data-theme="dark"] .home-notice p,
+    .public-home[data-theme="dark"] .home-section p,
+    .public-home[data-theme="dark"] .home-card p,
+    .public-home[data-theme="dark"] .team-card p,
+    .public-home[data-theme="dark"] .login-shell > p,
+    .public-home[data-theme="dark"] .contact-list li,
+    .public-home[data-theme="dark"] .brand-copy p {
+      color: #c7cfc2;
+    }
+
+    .public-home[data-theme="dark"] .neo-sidebar #app-nav a {
+      color: #d7dece;
+    }
+
+    .public-home[data-theme="dark"] .neo-sidebar #app-nav a:hover {
+      color: #fff7e8;
+      background: rgba(214, 191, 148, 0.08);
     }
     
     .public-home .neo-sidebar .brand-area:hover h2 {
@@ -101,24 +171,202 @@
       gap: 12px;
     }
 
-    /* Manifesto section styles */
-    .manifesto-section {
+    .public-home .neo-main {
+      position: relative;
+    }
+
+    .public-home .mobile-topbar {
+      display: none !important;
+    }
+
+    .public-home .page-shell {
+      width: min(1120px, calc(100vw - 40px));
+      padding-top: 12px;
+    }
+
+    .public-home .content.home-content {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 0 72px;
+      gap: 56px;
+    }
+
+    .public-home-intro,
+    .home-section,
+    .home-card,
+    .home-notice {
       animation: fadeIn 0.6s ease-out;
     }
-    
-    .manifesto-section h1,
-    .manifesto-section h2 {
+
+    .home-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.9fr);
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+
+    .public-home-intro {
+      padding: 8px 0;
+    }
+
+    .public-home-intro .eyebrow {
+      font-size: 0.76rem;
+      letter-spacing: 0.18em;
+      margin-bottom: 16px;
+    }
+
+    .public-home-intro h1 {
+      margin: 0 0 18px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.8rem, 5vw, 4.6rem);
+      line-height: 1.04;
+      font-weight: 500;
       color: var(--text-primary, #3e2723);
     }
-    
-    .manifesto-section p {
+
+    .public-home-intro p {
+      max-width: 640px;
+      font-size: 1.06rem;
+      line-height: 1.9;
       color: var(--text-secondary, #5d4037);
     }
-    
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
+      color: var(--text-primary, #3e2723);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-hover, rgba(139, 90, 43, 0.06));
+    }
+
+    .public-home[data-theme="dark"] .btn-secondary {
+      color: #f2eadf;
+      border-color: rgba(214, 191, 148, 0.22);
+    }
+
+    .home-notice,
+    .home-card {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 16px 40px rgba(62, 39, 35, 0.08);
+    }
+
+    .public-home[data-theme="dark"] .home-notice,
+    .public-home[data-theme="dark"] .home-card,
+    .public-home[data-theme="dark"] .team-card,
+    .public-home[data-theme="dark"] .login-shell {
+      background: rgba(26, 37, 31, 0.82);
+      border-color: rgba(214, 191, 148, 0.16);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.22);
+    }
+
+    .home-notice {
+      position: sticky;
+      top: 108px;
+    }
+
+    .home-notice .section-label,
+    .home-card .section-label {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--accent, #8b5a2b);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    .home-notice h2,
+    .home-card h3 {
+      margin: 0 0 12px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      line-height: 1.15;
+      color: var(--text-primary, #3e2723);
+    }
+
+    .home-notice p,
+    .home-card p {
+      color: var(--text-secondary, #5d4037);
+      line-height: 1.8;
+    }
+
+    .notice-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0 24px;
+    }
+
+    .notice-pill {
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: rgba(139, 90, 43, 0.08);
+      color: var(--accent, #8b5a2b);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .public-home[data-theme="dark"] .notice-pill {
+      background: rgba(214, 191, 148, 0.08);
+      color: #e6c88f;
+    }
+
+    .home-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.8fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .home-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .home-section {
+      padding-top: 8px;
+    }
+
+    .home-section h2 {
+      margin: 0 0 16px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text-primary, #3e2723);
+    }
+
+    .home-section p {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--text-secondary, #5d4037);
+      margin-bottom: 16px;
+    }
+
+    .support-grid,
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
     .team-card {
       background: var(--bg-card, #ffffff);
       border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
-      border-radius: var(--r-md, 16px);
+      border-radius: 20px;
       padding: 20px;
       transition: all 0.2s ease;
     }
@@ -127,12 +375,83 @@
       border-color: var(--accent, #8b5a2b);
       box-shadow: var(--shadow, 0 4px 20px rgba(62, 39, 35, 0.12));
     }
-    
-    .csr-section {
-      background: rgba(102, 187, 106, 0.1);
-      border: 1.5px solid rgba(102, 187, 106, 0.3);
-      border-radius: var(--r-md, 16px);
-      padding: 30px;
+
+    .team-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--text-primary, #3e2723);
+    }
+
+    .team-card p {
+      margin: 0;
+      color: var(--text-secondary, #5d4037);
+      line-height: 1.7;
+    }
+
+    .contact-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .contact-list li {
+      color: var(--text-secondary, #5d4037);
+    }
+
+    .contact-list strong {
+      color: var(--text-primary, #3e2723);
+    }
+
+    .login-shell {
+      margin-top: 12px;
+      padding: 32px;
+      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.82);
+      box-shadow: 0 16px 40px rgba(62, 39, 35, 0.08);
+    }
+
+    .login-shell h2 {
+      margin: 0 0 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      text-align: center;
+      color: var(--text-primary, #3e2723);
+    }
+
+    .login-shell > p {
+      margin: 0 0 24px;
+      text-align: center;
+      color: var(--text-secondary, #5d4037);
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
+      background: rgba(255, 255, 255, 0.64);
+      color: var(--text-primary, #3e2723);
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .public-home[data-theme="dark"] .theme-toggle {
+      background: rgba(28, 40, 33, 0.9);
+      border-color: rgba(214, 191, 148, 0.18);
+      color: #f2eadf;
     }
 
     /* Smooth scroll behavior */
@@ -147,8 +466,12 @@
 
     /* Mobile responsive navbar */
     @media (max-width: 768px) {
+      body.public-home {
+        padding-top: 78px;
+      }
+
       .public-home .neo-sidebar {
-        height: 60px;
+        min-height: 62px;
         padding: 0 16px;
       }
       
@@ -159,29 +482,59 @@
       .public-home .neo-sidebar #app-nav {
         display: none; /* Hidden on mobile - use hamburger menu */
       }
-      
-      .manifesto-section h1 {
-        font-size: 1.9rem !important;
+
+      .public-home .brand-copy p {
+        display: none;
       }
-      .manifesto-section h2 {
-        font-size: 1.3rem !important;
+
+      .public-home .content.home-content {
+        padding: 12px 0 48px;
       }
-      .team-card {
-        padding: 16px;
+
+      .home-hero,
+      .home-layout,
+      .support-grid,
+      .team-grid {
+        grid-template-columns: 1fr;
       }
-      .csr-section {
-        padding: 20px;
+
+      .home-notice {
+        position: static;
+      }
+
+      .public-home-intro h1 {
+        font-size: 2.3rem;
+      }
+
+      .home-notice,
+      .home-card,
+      .team-card,
+      .login-shell {
+        padding: 22px;
       }
     }
     
     @media (max-width: 480px) {
+      body.public-home {
+        padding-top: 72px;
+      }
+
       .public-home .neo-sidebar {
-        height: 56px;
+        min-height: 56px;
         padding: 0 12px;
       }
       
       .public-home .neo-sidebar .brand-area h2 {
         font-size: 1.15rem;
+      }
+
+      .public-home .page-shell {
+        width: min(100vw - 24px, 1120px);
+      }
+
+      .hero-actions,
+      .topbar-actions {
+        gap: 10px;
       }
     }
   </style>
@@ -191,13 +544,17 @@
   <div class="neo-layout" id="neoLayout">
 
     <!-- Sidebar navigation (styled as top navbar) -->
-    <aside class="neo-sidebar sidebar" id="sidebar">
+    <aside class="neo-sidebar sidebar public-header" id="sidebar">
       <div class="brand-area">
-        <h2 style="font-family: 'Cormorant Garamond', serif; margin: 0; font-size: 1.4rem; color: var(--text-primary, #3e2723);">iNHET</h2>
+        <div class="brand-copy">
+          <h2 style="font-family: 'Cormorant Garamond', serif; margin: 0; font-size: 1.4rem; color: var(--text-primary, #3e2723);">iNHET</h2>
+          <p>Indian Neofolk Humanitarian Education Trust</p>
+        </div>
       </div>
       <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
       <div class="topbar-actions" style="margin-left: auto;">
-        <a href="#login" onclick="document.getElementById('loginSection').scrollIntoView({behavior:'smooth'}); return false;" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Log in</a>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-pressed="false">Dark mode</button>
+        <a href="#login" id="primaryHeaderAction" onclick="document.getElementById('loginSection').scrollIntoView({behavior:'smooth'}); return false;" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Log in</a>
       </div>
     </aside>
 
@@ -223,126 +580,101 @@
                 <span class="mobile-brand">Neofolk Atlas</span>
               </header>
 
-              <div class="content" style="max-width: 680px; margin: 0 auto; padding: 60px 24px;">
+              <div class="content home-content">
 
-                <!-- 1. IDENTITY -->
-                <section class="manifesto-section" style="text-align: center; margin-bottom: 60px;">
-                  <p class="eyebrow" style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent, #8b5a2b); margin-bottom: 16px;">
-                    Indian Neofolk Humanitarian Education Trust (iNHET)
-                  </p>
-                  <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 500; color: var(--text-primary, #3e2723); margin: 0 0 12px; line-height: 1.2;">
-                    Knowledge Civilization Platform
-                  </h1>
-                  <p style="font-size: 1.1rem; color: var(--text-secondary, #5d4037); font-style: italic; margin: 0;">
-                    A regulated intellectual network for meaningful learning.
-                  </p>
-                </section>
-
-                <!-- 2. EDUCATION FORMAT & GOAL -->
-                <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--accent, #8b5a2b); margin: 0 0 20px;">
-                    Our Goal
-                  </h2>
-                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 16px;">
-                    Our goal is to build a knowledge network that goes beyond traditional exams. We focus on real capability, recognizing diverse forms of intelligence such as writing, design, problem-solving, and collaboration.
-                  </p>
-                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 16px;">
-                    Through our Library, structured Pilot programs, and dynamic Profile tracking, students engage deeply with curated knowledge domains while Arbiters (Teachers) guide and assess their progress.
-                  </p>
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--accent, #8b5a2b); margin: 40px 0 20px;">
-                    Location & Contact
-                  </h2>
-                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 8px;">
-                    <strong style="color: var(--text-primary, #3e2723);">Phone:</strong> 9667115543
-                  </p>
-                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 16px;">
-                    <strong style="color: var(--text-primary, #3e2723);">Email:</strong> inhetedu@zohomail.in
-                  </p>
-                </section>
-
-                <!-- 3. TEAM ROLE ALLOCATION -->
-                <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--accent, #8b5a2b); margin: 0 0 24px;">
-                    Core Team — iNHET
-                  </h2>
-                  
-                  <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-                    <div class="team-card">
-                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Founder & Vision Lead</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Yashveer Vats Gaurav</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
-                        <li>Institutional design</li>
-                        <li>Strategic direction</li>
-                        <li>Infrastructure planning</li>
-                        <li>Partnerships</li>
-                        <li>Final decision-making</li>
-                      </ul>
-                    </div>
-
-                    <div class="team-card">
-                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Marketing & Website Development</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Lagan (@pvt_.106) & Vin (@shadow_kakashi_)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
-                        <li>Brand communication</li>
-                        <li>Social media strategy</li>
-                        <li>Website development and updates</li>
-                        <li>Public-facing content</li>
-                      </ul>
-                    </div>
-
-                    <div class="team-card">
-                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Project Management & Outreach</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Shreya BL (@ft.shrxyaaa) & Sukoon (@sukoon._.sings)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
-                        <li>Partnership outreach</li>
-                        <li>Networking</li>
-                        <li>Institutional communication</li>
-                        <li>Managing timelines and execution flow</li>
-                      </ul>
-                    </div>
-
-                    <div class="team-card">
-                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Curriculum Design</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Dhruvan Rai (@wabi.e.sabi) & Shreya BL (@ft.shrxyaaa)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
-                        <li>Educational framework development</li>
-                        <li>Course structure</li>
-                        <li>Research on learning models</li>
-                        <li>Skill integration</li>
-                      </ul>
-                    </div>
-
-                    <div class="team-card">
-                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Legal & Compliance</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Sukoon (@sukoon._.sings)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
-                        <li>Trust documentation support</li>
-                        <li>Legal research</li>
-                        <li>Registration processes</li>
-                        <li>Compliance assistance</li>
-                      </ul>
+                <section class="home-hero" id="top">
+                  <div class="public-home-intro">
+                    <p class="eyebrow">Indian Neofolk Humanitarian Education Trust</p>
+                    <h1>A calm, public-facing learning platform built like a social mission.</h1>
+                    <p>
+                      Neofolk Atlas is being shaped as a clean, open educational space where meaningful learning, community guidance, and visible growth matter more than rigid exam culture.
+                    </p>
+                    <p>
+                      We are building slowly and deliberately: pilot by pilot, library by library, and profile by profile, so that the main work remains easy to understand for students, educators, and partners.
+                    </p>
+                    <div class="hero-actions">
+                      <a class="btn btn-primary" href="pilot.html">Open Panchmahala Pilot</a>
+                      <a class="btn btn-secondary" href="#contact">Contact the team</a>
                     </div>
                   </div>
+
+                  <aside class="home-notice" id="focus">
+                    <span class="section-label">Current Focus</span>
+                    <h2>Panchmahala Pilot</h2>
+                    <p>
+                      The homepage now leads with the work that matters most right now: a pilot designed to make our educational model visible, testable, and easier to support.
+                    </p>
+                    <div class="notice-meta">
+                      <span class="notice-pill">Pilot-first rollout</span>
+                      <span class="notice-pill">Community learning</span>
+                      <span class="notice-pill">Simple public access</span>
+                    </div>
+                    <a class="btn btn-primary" href="pilot.html">Go directly to Panchmahala Pilot</a>
+                  </aside>
                 </section>
 
-                <!-- CSR FUNDING AREA -->
-                <section class="manifesto-section csr-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: #2e7d32; margin: 0 0 16px;">
-                    CSR & Philanthropy Funding
-                  </h2>
-                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0;">
-                    We are building a scalable, humanitarian educational infrastructure. As a non-profit trust, we welcome CSR funding and philanthropic partnerships to expand our operations, reach more students, and build open-access learning platforms. Reach out to discuss collaboration.
-                  </p>
-                </section>
+                <div class="home-layout">
+                  <div class="home-stack">
+                    <section class="home-section" id="approach">
+                      <h2>What we are building</h2>
+                      <p>
+                        Our goal is to create a knowledge network that values writing, design, problem-solving, collaboration, and long-term intellectual growth. Instead of forcing learning into one rigid format, we are developing a structure that can recognise different forms of capability with clarity and care.
+                      </p>
+                      <p>
+                        The public page should feel like a living note from the organisation, so this version keeps the language lighter, the hierarchy calmer, and the most important update at the center of attention.
+                      </p>
+                    </section>
 
-                <!-- ENTRY CHOICE -->
-                <section class="manifesto-section" style="text-align: center; padding-top: 20px; border-top: 1px solid var(--border, rgba(139, 90, 43, 0.2));">
-                  <p style="font-size: 0.8rem; color: var(--text-muted, #8d6e63); margin: 16px 0 0; letter-spacing: 0.05em;">Founded under iNHET</p>
-                </section>
+                    <section class="home-section" id="team">
+                      <h2>Core team</h2>
+                      <div class="team-grid">
+                        <article class="team-card">
+                          <h3>Founder and Vision Lead</h3>
+                          <p>Yashveer Vats Gaurav leads institutional design, strategic direction, infrastructure planning, partnerships, and final decision-making.</p>
+                        </article>
+                        <article class="team-card">
+                          <h3>Marketing and Website Development</h3>
+                          <p>Lagan and Vin shape public communication, brand presentation, and ongoing website work.</p>
+                        </article>
+                        <article class="team-card">
+                          <h3>Project Management and Outreach</h3>
+                          <p>Shreya BL and Sukoon support outreach, communication, partnerships, and day-to-day execution flow.</p>
+                        </article>
+                        <article class="team-card">
+                          <h3>Curriculum, Legal, and Compliance Support</h3>
+                          <p>Dhruvan Rai, Shreya BL, and Sukoon contribute to curriculum development, legal research, and trust documentation support.</p>
+                        </article>
+                      </div>
+                    </section>
+                  </div>
 
-                <!-- LOGIN SECTION (Hidden until scrolled) -->
-                <section id="loginSection" style="margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border, rgba(139, 90, 43, 0.15));">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--text-primary, #3e2723); margin: 0 0 24px; text-align: center;">Enter</h2>
+                  <aside class="home-stack">
+                    <section class="home-card">
+                      <span class="section-label">NeoScore</span>
+                      <h3>Reintegrated as part of the story</h3>
+                      <p>
+                        NeoScore is part of how we describe growth and contribution across the platform. It belongs in the public narrative, but quietly and clearly, without taking over the page.
+                      </p>
+                      <div class="hero-actions" style="margin-top: 20px;">
+                        <a class="btn btn-secondary" href="neoscore.html">View NeoScore</a>
+                      </div>
+                    </section>
+
+                    <section class="home-card" id="contact">
+                      <span class="section-label">Contact</span>
+                      <h3>For collaborations and partnerships</h3>
+                      <ul class="contact-list">
+                        <li><strong>Phone:</strong> 9667115543</li>
+                        <li><strong>Email:</strong> inhetedu@zohomail.in</li>
+                        <li><strong>Partnerships:</strong> CSR, philanthropy, and education collaborations are welcome.</li>
+                      </ul>
+                    </section>
+                  </aside>
+                </div>
+
+                <section id="loginSection" class="login-shell">
+                  <h2>Enter the platform</h2>
+                  <p>Create an account or log in when you want to continue into the working platform.</p>
 
                   <div class="auth-card" style="max-width: 400px; margin: 0 auto;">
                     <div class="auth-tabs">
@@ -417,18 +749,61 @@
     const overlay = document.getElementById('sidebarOverlay');
     const hamburger = document.getElementById('hamburgerBtn');
     const layout = document.querySelector('.neo-layout');
+    const primaryHeaderAction = document.getElementById('primaryHeaderAction');
+    const themeToggle = document.getElementById('themeToggle');
+    const THEME_KEY = 'neofolk.publicTheme';
 
     // Auth state management for sidebar visibility
     function updateLayoutForAuth() {
-      const isLoggedIn = localStorage.getItem('neofolk_current_user') !== null;
+      const rawUser = localStorage.getItem('neofolk_current_user');
+      const isLoggedIn = rawUser !== null;
+      let dashboardHref = 'seeker-dashboard.html';
+      if (rawUser) {
+        try {
+          const parsed = JSON.parse(rawUser);
+          const role = String(parsed?.role || 'seeker').toLowerCase();
+          dashboardHref = {
+            seeker: 'seeker-dashboard.html',
+            curator: 'curator-dashboard.html',
+            arbiter: 'arbiter-dashboard.html',
+            operator: 'operator-dashboard.html'
+          }[role] || 'seeker-dashboard.html';
+        } catch (_) {}
+      }
+
       if (isLoggedIn) {
         layout.classList.add('logged-in');
         sidebar.style.display = '';
+        if (primaryHeaderAction) {
+          primaryHeaderAction.textContent = 'Dashboard';
+          primaryHeaderAction.href = dashboardHref;
+          primaryHeaderAction.onclick = null;
+        }
       } else {
         layout.classList.remove('logged-in');
-        sidebar.style.display = 'none';
+        sidebar.style.display = '';
+        if (primaryHeaderAction) {
+          primaryHeaderAction.textContent = 'Log in';
+          primaryHeaderAction.href = '#login';
+          primaryHeaderAction.onclick = function() {
+            document.getElementById('loginSection').scrollIntoView({ behavior: 'smooth' });
+            return false;
+          };
+        }
       }
     }
+
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      if (themeToggle) {
+        const isDark = theme === 'dark';
+        themeToggle.textContent = isDark ? 'Light mode' : 'Dark mode';
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+      }
+    }
+
+    const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
+    applyTheme(savedTheme);
 
     // Check auth state on load
     updateLayoutForAuth();
@@ -449,6 +824,14 @@
         } else {
           navbar.classList.remove('scrolled');
         }
+      });
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const nextTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(THEME_KEY, nextTheme);
+        applyTheme(nextTheme);
       });
     }
 

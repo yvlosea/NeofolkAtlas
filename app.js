@@ -4560,6 +4560,7 @@ function renderAppNav() {
   if (!nav) return;
 
   const here = currentPageFile();
+  const isPublicHome = here === 'index.html' && document.body.classList.contains('public-home');
   const fallbackRole = getRoleFromPage(here) || 'seeker';
   const dashHref = currentUser
     ? getDashboardPath({ ...currentUser, user_metadata: { ...(currentUser.user_metadata || {}), role: resolveUserRole(currentUser, fallbackRole) } })
@@ -4568,9 +4569,12 @@ function renderAppNav() {
   const role = getCurrentRole();
   applyRoleTheme(role);
 
-  // Add Beta label to brand area
+  // Keep the public home brand minimal.
   const brandArea = document.querySelector('.brand-area');
-  if (brandArea && !brandArea.querySelector('.beta-label')) {
+  const existingBetaLabel = brandArea?.querySelector('.beta-label');
+  if (isPublicHome && existingBetaLabel) {
+    existingBetaLabel.remove();
+  } else if (!isPublicHome && brandArea && !existingBetaLabel) {
     const betaLabel = document.createElement('span');
     betaLabel.className = 'beta-label';
     betaLabel.style.cssText = 'font-size: 0.65rem; background: var(--gold); color: #000; padding: 2px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-left: 8px;';
@@ -4583,7 +4587,7 @@ function renderAppNav() {
       { href: dashHref, label: 'Dashboard', isDash: true },
       { href: 'guide.html', label: 'Guide' },
       { href: 'library.html', label: 'Library' },
-      { href: 'pilot.html', label: 'Pilot (Punchmahala)' },
+      { href: 'pilot.html', label: 'Pilot (Panchmahala)' },
       { href: 'syllabus.html', label: 'Syllabus' },
       { href: 'workshop.html', label: 'Workshops' },
       { href: 'subjects.html', label: 'Domains' },
@@ -4608,11 +4612,18 @@ function renderAppNav() {
     ]
   };
 
-  const links = sectionsByRole[role] || sectionsByRole.seeker;
+  const publicHomeLinks = [
+    { href: '#focus', label: 'Current Work' },
+    { href: '#approach', label: 'Approach' },
+    { href: '#team', label: 'Team' },
+    { href: '#contact', label: 'Contact' }
+  ];
+
+  const links = isPublicHome ? publicHomeLinks : (sectionsByRole[role] || sectionsByRole.seeker);
 
   nav.innerHTML = links
     .map(link => {
-      const active = link.isDash ? isDashboardPage : here === link.href;
+      const active = !isPublicHome && (link.isDash ? isDashboardPage : here === link.href);
       const cls = active ? 'topbar-link is-active' : 'topbar-link';
       if (link.onClick) {
         return `<a class="${cls}" href="${link.href}" onclick="${link.onClick}; return false;" style="padding: 8px 12px; font-weight: 600; color: #5d4037; text-decoration: none;">${link.label}</a>`;
@@ -4622,7 +4633,7 @@ function renderAppNav() {
     .join('');
 
   let chip = document.getElementById("neoscore-chip");
-  if (role !== 'seeker') {
+  if (isPublicHome || role !== 'seeker') {
     if (chip) chip.remove();
     chip = null;
   } else if (!chip) {
@@ -4669,7 +4680,7 @@ function renderAppNav() {
   }
 
   // logout button
-  if (currentUser) {
+  if (currentUser && !isPublicHome) {
     const logoutBtn = document.createElement('button');
     logoutBtn.className = 'sidebar-link sidebar-logout';
     logoutBtn.type = 'button';
