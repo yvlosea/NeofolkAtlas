@@ -3,20 +3,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;500;600;700&display=swap');
 
 :root {
-  --ink: #f4f9f4; /* pastel green background */
-  --deep-brown: #eaf2ea; /* slightly darker green for cards */
-  --parchment: #3e2723; /* wooden brown text */
-  --gold: #4caf50; /* green highlight */
-  --olive: #8d6e63; /* muted brown */
-  --terracotta: #66bb6a;
-  --muted-text: #5d4037; /* lighter brown */
-  --border-color: rgba(139, 90, 43, 0.2);
+  /* ── Neofolk Atlas: Pastel Green & Brown Light Theme ── */
+  --ink: #f0f7f0; /* pastel green background */
+  --deep-brown: #ffffff; /* white cards */
+  --parchment: #3e2723; /* dark brown text */
+  --gold: #8b5a2b; /* warm brown accent */
+  --olive: #5d4037; /* medium brown */
+  --terracotta: #6d4c41;
+  --muted-text: #6d4c41; /* readable brown */
+  --border-color: rgba(139, 90, 43, 0.15);
   
-  --radius: 4px;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --radius: 8px;
+  --shadow: 0 2px 12px rgba(62, 39, 35, 0.1);
+  --shadow-lg: 0 4px 20px rgba(62, 39, 35, 0.15);
   
-  --serif: "Cormorant", Georgia, serif;
-  --sans: "Inter", "Helvetica Neue", sans-serif;
+  --serif: "Cormorant Garamond", Georgia, serif;
+  --sans: "Manrope", "Inter", "Helvetica Neue", sans-serif;
 }
 
 /* Mobile Responsiveness */
@@ -173,7 +175,10 @@
 body.internal-page {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--ink);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(102, 187, 106, 0.15), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(139, 90, 43, 0.08), transparent 50%),
+    var(--ink);
   color: var(--parchment);
   font-family: var(--sans);
   font-weight: 400;
@@ -193,9 +198,9 @@ body.internal-page {
   color: var(--parchment);
 }
 
-.internal-page h1 { font-size: 2.8rem; font-weight: 600; line-height: 1.1; margin-bottom: 24px; }
-.internal-page h2 { font-size: 2.2rem; margin-bottom: 20px; }
-.internal-page h3 { font-size: 1.6rem; margin-bottom: 12px; }
+.internal-page h1 { font-size: 2.6rem; font-weight: 600; line-height: 1.15; margin-bottom: 20px; }
+.internal-page h2 { font-size: 2rem; margin-bottom: 16px; }
+.internal-page h3 { font-size: 1.4rem; margin-bottom: 12px; }
 
 .internal-page p {
   margin: 0 0 16px 0;
@@ -337,8 +342,14 @@ body.internal-page {
   background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 40px;
+  padding: 32px;
   box-shadow: var(--shadow);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.internal-page .card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(139, 90, 43, 0.25);
 }
 
 .internal-page .record-list {
@@ -348,12 +359,18 @@ body.internal-page {
 }
 
 .internal-page .record-card {
-  background: rgba(44, 31, 26, 0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.internal-page .record-card:hover {
+  border-color: rgba(139, 90, 43, 0.3);
+  box-shadow: var(--shadow);
 }
 
 .internal-page .record-card h3 {
@@ -371,54 +388,59 @@ body.internal-page {
 
 .internal-page .pill {
   display: inline-block;
-  padding: 4px 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+  padding: 4px 12px;
+  border: 1.5px solid var(--gold);
+  border-radius: 20px;
   font-size: 0.75rem;
   color: var(--gold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 12px;
+  background: rgba(139, 90, 43, 0.08);
 }
 
 .internal-page .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 24px;
-  background: transparent;
-  border: 1px solid var(--gold);
+  padding: 12px 24px;
+  background: var(--deep-brown);
+  border: 1.5px solid var(--gold);
   color: var(--gold);
   border-radius: var(--radius);
   font-family: var(--sans);
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   text-decoration: none;
+  box-shadow: 0 2px 6px rgba(62, 39, 35, 0.08);
 }
 
 .internal-page .btn:hover {
   background: var(--gold);
-  color: var(--ink);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(139, 90, 43, 0.2);
 }
 
 .internal-page .btn-primary {
   background: var(--gold);
-  color: var(--ink);
+  color: #ffffff;
 }
 
 .internal-page .btn-primary:hover {
-  background: transparent;
-  color: var(--gold);
+  background: var(--parchment);
+  border-color: var(--parchment);
+  color: var(--deep-brown);
 }
 
 .internal-page .empty-state {
   text-align: center;
-  padding: 60px 24px;
-  border: 1px dashed var(--border-color);
+  padding: 48px 24px;
+  border: 2px dashed var(--border-color);
   border-radius: var(--radius);
   color: var(--muted-text);
+  background: rgba(139, 90, 43, 0.03);
 }
 
 .internal-page .empty-state p {
@@ -539,19 +561,58 @@ body.internal-page {
   top: 0;
   z-index: 1000;
   width: 100%;
-  height: 64px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--border-color);
-  padding: 0 24px;
-  background: var(--ink);
+  padding: 0 32px;
+  background: rgba(240, 247, 240, 0.98);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(62, 39, 35, 0.05), 0 4px 20px rgba(62, 39, 35, 0.08);
   box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.internal-page.neo-theme .neo-sidebar.scrolled {
+  box-shadow: 0 2px 8px rgba(62, 39, 35, 0.1), 0 8px 30px rgba(62, 39, 35, 0.12);
+  border-bottom-color: rgba(139, 90, 43, 0.2);
+}
+
+.internal-page.neo-theme .brand-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .internal-page.neo-theme .brand-area h2 {
   font-size: 1.5rem;
-  margin: 0 0 16px;
+  margin: 0;
+  color: var(--parchment);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  transition: color 0.2s ease;
+}
+
+.internal-page.neo-theme .brand-area:hover h2 {
+  color: var(--gold);
+}
+
+.internal-page.neo-theme .neo-sidebar #app-nav.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--muted-text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.internal-page.neo-theme .neo-sidebar #app-nav.sidebar-nav a:hover {
+  background: rgba(139, 90, 43, 0.06);
   color: var(--parchment);
 }
 
@@ -597,10 +658,24 @@ body.internal-page {
 
 @media (max-width: 1100px) {
   .internal-page.neo-theme .neo-sidebar {
-    padding: 0 16px;
+    padding: 0 20px;
+    height: 64px;
   }
   .internal-page.neo-theme .neo-sidebar #app-nav.sidebar-nav {
     display: none; /* Hide nav links on mobile for now, or implement hamburger */
+  }
+  .internal-page.neo-theme .brand-area h2 {
+    font-size: 1.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .internal-page.neo-theme .neo-sidebar {
+    padding: 0 16px;
+    height: 60px;
+  }
+  .internal-page.neo-theme .brand-area h2 {
+    font-size: 1.2rem;
   }
 }
 
@@ -794,19 +869,27 @@ html[dir="rtl"] body.internal-page {
    DASHBOARD STAT CARDS (enhanced)
    ============================================================ */
 .stat-card {
-  background: rgba(44,31,26,0.5);
-  border: 1px solid var(--border-color);
+  background: var(--deep-brown);
+  border: 1.5px solid var(--border-color);
   border-radius: var(--radius);
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
 }
+
+.stat-card:hover {
+  border-color: var(--gold);
+  box-shadow: var(--shadow-lg);
+}
+
 .stat-card strong {
   font-family: var(--serif);
   font-size: 2.2rem;
   font-weight: 600;
-  color: var(--parchment);
+  color: var(--gold);
   line-height: 1;
 }
 .dashboard-header {
@@ -824,7 +907,7 @@ html[dir="rtl"] body.internal-page {
   gap: 16px;
 }
 .dashboard-meta {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   color: var(--muted-text);
   margin: 4px 0 0;
 }
@@ -1164,11 +1247,12 @@ html[dir="rtl"] body.internal-page {
    ACCOUNT SETTINGS
    ============================================================ */
 .settings-section {
-  background: rgba(44,31,26,0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 24px;
   margin-bottom: 18px;
+  box-shadow: var(--shadow);
 }
 .settings-section-title {
   font-family: var(--serif);
@@ -1278,10 +1362,11 @@ html[dir="rtl"] body.internal-page {
   gap: 20px;
 }
 .curator-step {
-  background: rgba(44,31,26,0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 22px;
+  box-shadow: var(--shadow);
 }
 .curator-step-number {
   font-size: 0.68rem;
@@ -1327,17 +1412,19 @@ html[dir="rtl"] body.internal-page {
    MODULE, BATCH, ATTENDANCE, TEACHING LOG
    ============================================================ */
 .module-card {
-  background: rgba(44,31,26,0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: border-color 0.18s;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
 }
 .module-card:hover {
-  border-color: rgba(198,169,107,0.3);
+  border-color: var(--gold);
+  box-shadow: var(--shadow-lg);
 }
 .module-card-domain {
   font-size: 0.68rem;
@@ -1405,11 +1492,12 @@ html[dir="rtl"] body.internal-page {
   color: #c87a5a;
 }
 .log-entry {
-  background: rgba(44,31,26,0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 16px 18px;
   margin-bottom: 10px;
+  box-shadow: var(--shadow);
 }
 .log-entry-date {
   font-size: 0.72rem;
@@ -1434,13 +1522,14 @@ html[dir="rtl"] body.internal-page {
    PEER DISCOVERY CARDS
    ============================================================ */
 .peer-card {
-  background: rgba(44,31,26,0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  box-shadow: var(--shadow);
 }
 .peer-card-username {
   font-family: var(--serif);
@@ -1547,17 +1636,19 @@ html[dir="rtl"] body.internal-page {
   gap: 18px;
 }
 .discover-card {
-  background: rgba(44,31,26,0.4);
+  background: var(--deep-brown);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: border-color 0.18s;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
 }
 .discover-card:hover {
-  border-color: rgba(198,169,107,0.3);
+  border-color: var(--gold);
+  box-shadow: var(--shadow-lg);
 }
 .discover-card-type {
   font-size: 0.65rem;

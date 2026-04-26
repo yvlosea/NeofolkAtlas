@@ -24,57 +24,164 @@
       display: none;
     }
 
-    /* Convert sidebar to top navbar for public home */
+    /* Convert sidebar to top navbar for public home - AESTHETIC STICKY NAVBAR */
     .public-home .neo-sidebar {
       position: sticky;
       top: 0;
       z-index: 1000;
       width: 100%;
-      height: 64px;
+      height: 70px;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid rgba(139, 90, 43, 0.15);
-      padding: 0 24px;
-      background: #f4f9f4; /* pastel green */
+      border-bottom: 1px solid var(--border, rgba(139, 90, 43, 0.12));
+      padding: 0 32px;
+      background: rgba(240, 247, 240, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 1px 3px rgba(62, 39, 35, 0.05), 0 4px 20px rgba(62, 39, 35, 0.08);
       box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    
+    .public-home .neo-sidebar.scrolled {
+      box-shadow: 0 2px 8px rgba(62, 39, 35, 0.1), 0 8px 30px rgba(62, 39, 35, 0.12);
+      border-bottom-color: var(--border-strong, rgba(139, 90, 43, 0.2));
+    }
+    
+    .public-home .neo-sidebar .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     
     .public-home .neo-sidebar .brand-area h2 {
       margin: 0;
-      font-size: 1.4rem;
-      color: #3e2723;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary, #3e2723);
+      letter-spacing: -0.02em;
+      transition: color 0.2s ease;
+    }
+    
+    .public-home .neo-sidebar .brand-area:hover h2 {
+      color: var(--accent, #8b5a2b);
     }
     
     .public-home .neo-sidebar #app-nav {
       display: flex;
       flex-direction: row;
-      gap: 16px;
+      gap: 8px;
       margin: 0;
       padding: 0;
+      align-items: center;
+    }
+    
+    .public-home .neo-sidebar #app-nav a {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      border-radius: 8px;
+      color: var(--text-secondary, #5d4037);
+      font-size: 0.95rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .public-home .neo-sidebar #app-nav a:hover {
+      background: var(--bg-hover, rgba(139, 90, 43, 0.06));
+      color: var(--text-primary, #3e2723);
+    }
+    
+    .public-home .neo-sidebar .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
-    /* Manifesto section hover effects */
-    .manifesto-section a:hover {
-      background: rgba(139, 90, 43, 0.1);
-      border-color: rgba(139, 90, 43, 0.3);
+    /* Manifesto section styles */
+    .manifesto-section {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    .manifesto-section h1,
+    .manifesto-section h2 {
+      color: var(--text-primary, #3e2723);
+    }
+    
+    .manifesto-section p {
+      color: var(--text-secondary, #5d4037);
+    }
+    
+    .team-card {
+      background: var(--bg-card, #ffffff);
+      border: 1px solid var(--border, rgba(139, 90, 43, 0.15));
+      border-radius: var(--r-md, 16px);
+      padding: 20px;
+      transition: all 0.2s ease;
+    }
+    
+    .team-card:hover {
+      border-color: var(--accent, #8b5a2b);
+      box-shadow: var(--shadow, 0 4px 20px rgba(62, 39, 35, 0.12));
+    }
+    
+    .csr-section {
+      background: rgba(102, 187, 106, 0.1);
+      border: 1.5px solid rgba(102, 187, 106, 0.3);
+      border-radius: var(--r-md, 16px);
+      padding: 30px;
     }
 
     /* Smooth scroll behavior */
     html {
       scroll-behavior: smooth;
     }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
+    /* Mobile responsive navbar */
     @media (max-width: 768px) {
+      .public-home .neo-sidebar {
+        height: 60px;
+        padding: 0 16px;
+      }
+      
+      .public-home .neo-sidebar .brand-area h2 {
+        font-size: 1.25rem;
+      }
+      
+      .public-home .neo-sidebar #app-nav {
+        display: none; /* Hidden on mobile - use hamburger menu */
+      }
+      
       .manifesto-section h1 {
-        font-size: 2.2rem !important;
+        font-size: 1.9rem !important;
       }
-      .manifesto-section ul {
-        grid-template-columns: 1fr !important;
+      .manifesto-section h2 {
+        font-size: 1.3rem !important;
       }
-      .manifesto-section > div[style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
+      .team-card {
+        padding: 16px;
+      }
+      .csr-section {
+        padding: 20px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .public-home .neo-sidebar {
+        height: 56px;
+        padding: 0 12px;
+      }
+      
+      .public-home .neo-sidebar .brand-area h2 {
+        font-size: 1.15rem;
       }
     }
   </style>
@@ -86,11 +193,11 @@
     <!-- Sidebar navigation (styled as top navbar) -->
     <aside class="neo-sidebar sidebar" id="sidebar">
       <div class="brand-area">
-        <h2 style="font-family: 'Cormorant Garamond', serif; margin: 0; font-size: 1.4rem; color: #3e2723;">iNHET</h2>
+        <h2 style="font-family: 'Cormorant Garamond', serif; margin: 0; font-size: 1.4rem; color: var(--text-primary, #3e2723);">iNHET</h2>
       </div>
       <nav id="app-nav" class="sidebar-nav" aria-label="Primary"></nav>
       <div class="topbar-actions" style="margin-left: auto;">
-        <a href="#login" onclick="document.getElementById('loginSection').scrollIntoView({behavior:'smooth'}); return false;" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem; background: #8b5a2b; color: white; border: none; border-radius: 4px;">Log in</a>
+        <a href="#login" onclick="document.getElementById('loginSection').scrollIntoView({behavior:'smooth'}); return false;" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">Log in</a>
       </div>
     </aside>
 
@@ -120,50 +227,50 @@
 
                 <!-- 1. IDENTITY -->
                 <section class="manifesto-section" style="text-align: center; margin-bottom: 60px;">
-                  <p style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: #6d4c41; margin-bottom: 16px;">
+                  <p class="eyebrow" style="font-size: 0.75rem; letter-spacing: 3px; text-transform: uppercase; color: var(--accent, #8b5a2b); margin-bottom: 16px;">
                     Indian Neofolk Humanitarian Education Trust (iNHET)
                   </p>
-                  <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 500; color: #3e2723; margin: 0 0 12px; line-height: 1.2;">
+                  <h1 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 500; color: var(--text-primary, #3e2723); margin: 0 0 12px; line-height: 1.2;">
                     Knowledge Civilization Platform
                   </h1>
-                  <p style="font-size: 1rem; color: #5d4037; font-style: italic; margin: 0;">
+                  <p style="font-size: 1.1rem; color: var(--text-secondary, #5d4037); font-style: italic; margin: 0;">
                     A regulated intellectual network for meaningful learning.
                   </p>
                 </section>
 
                 <!-- 2. EDUCATION FORMAT & GOAL -->
                 <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #4caf50; margin: 0 0 20px;">
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--accent, #8b5a2b); margin: 0 0 20px;">
                     Our Goal
                   </h2>
-                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 16px;">
+                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 16px;">
                     Our goal is to build a knowledge network that goes beyond traditional exams. We focus on real capability, recognizing diverse forms of intelligence such as writing, design, problem-solving, and collaboration.
                   </p>
-                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 16px;">
+                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 16px;">
                     Through our Library, structured Pilot programs, and dynamic Profile tracking, students engage deeply with curated knowledge domains while Arbiters (Teachers) guide and assess their progress.
                   </p>
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #4caf50; margin: 40px 0 20px;">
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--accent, #8b5a2b); margin: 40px 0 20px;">
                     Location & Contact
                   </h2>
-                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 8px;">
-                    <strong>Phone:</strong> 9667115543
+                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 8px;">
+                    <strong style="color: var(--text-primary, #3e2723);">Phone:</strong> 9667115543
                   </p>
-                  <p style="font-size: 1rem; line-height: 1.8; color: #5d4037; margin: 0 0 16px;">
-                    <strong>Email:</strong> inhetedu@zohomail.in
+                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0 0 16px;">
+                    <strong style="color: var(--text-primary, #3e2723);">Email:</strong> inhetedu@zohomail.in
                   </p>
                 </section>
 
                 <!-- 3. TEAM ROLE ALLOCATION -->
                 <section class="manifesto-section" style="margin-bottom: 50px;">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #4caf50; margin: 0 0 20px;">
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: var(--accent, #8b5a2b); margin: 0 0 24px;">
                     Core Team — iNHET
                   </h2>
                   
-                  <div style="display: grid; grid-template-columns: 1fr; gap: 24px; color: #3e2723;">
-                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
-                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Founder & Vision Lead</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600;">Yashveer Vats Gaurav</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                  <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                    <div class="team-card">
+                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Founder & Vision Lead</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Yashveer Vats Gaurav</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
                         <li>Institutional design</li>
                         <li>Strategic direction</li>
                         <li>Infrastructure planning</li>
@@ -172,10 +279,10 @@
                       </ul>
                     </div>
 
-                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
-                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Marketing & Website Development</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600;">Lagan (@pvt_.106) & Vin (@shadow_kakashi_)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                    <div class="team-card">
+                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Marketing & Website Development</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Lagan (@pvt_.106) & Vin (@shadow_kakashi_)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
                         <li>Brand communication</li>
                         <li>Social media strategy</li>
                         <li>Website development and updates</li>
@@ -183,10 +290,10 @@
                       </ul>
                     </div>
 
-                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
-                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Project Management & Outreach</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600;">Shreya BL (@ft.shrxyaaa) & Sukoon (@sukoon._.sings)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                    <div class="team-card">
+                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Project Management & Outreach</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Shreya BL (@ft.shrxyaaa) & Sukoon (@sukoon._.sings)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
                         <li>Partnership outreach</li>
                         <li>Networking</li>
                         <li>Institutional communication</li>
@@ -194,10 +301,10 @@
                       </ul>
                     </div>
 
-                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
-                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Curriculum Design</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600;">Dhruvan Rai (@wabi.e.sabi) & Shreya BL (@ft.shrxyaaa)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                    <div class="team-card">
+                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Curriculum Design</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Dhruvan Rai (@wabi.e.sabi) & Shreya BL (@ft.shrxyaaa)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
                         <li>Educational framework development</li>
                         <li>Course structure</li>
                         <li>Research on learning models</li>
@@ -205,10 +312,10 @@
                       </ul>
                     </div>
 
-                    <div style="background: rgba(139, 90, 43, 0.05); border: 1px solid rgba(139, 90, 43, 0.2); padding: 20px; border-radius: 8px;">
-                      <h3 style="font-size: 1.1rem; color: #8b5a2b; margin: 0 0 8px;">Legal & Compliance</h3>
-                      <p style="margin: 0 0 12px; font-weight: 600;">Sukoon (@sukoon._.sings)</p>
-                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: #5d4037;">
+                    <div class="team-card">
+                      <h3 style="font-size: 1.1rem; color: var(--accent, #8b5a2b); margin: 0 0 8px; font-weight: 600;">Legal & Compliance</h3>
+                      <p style="margin: 0 0 12px; font-weight: 600; color: var(--text-primary, #3e2723);">Sukoon (@sukoon._.sings)</p>
+                      <ul style="font-size: 0.9rem; margin: 0; padding-left: 20px; color: var(--text-secondary, #5d4037); line-height: 1.6;">
                         <li>Trust documentation support</li>
                         <li>Legal research</li>
                         <li>Registration processes</li>
@@ -219,23 +326,23 @@
                 </section>
 
                 <!-- CSR FUNDING AREA -->
-                <section class="manifesto-section" style="margin-bottom: 50px; background: rgba(76, 175, 80, 0.1); padding: 30px; border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.3);">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: #2e7d32; margin: 0 0 16px;">
+                <section class="manifesto-section csr-section" style="margin-bottom: 50px;">
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 600; color: #2e7d32; margin: 0 0 16px;">
                     CSR & Philanthropy Funding
                   </h2>
-                  <p style="font-size: 1rem; line-height: 1.8; color: #1b5e20; margin: 0;">
+                  <p style="font-size: 1rem; line-height: 1.8; color: var(--text-secondary, #5d4037); margin: 0;">
                     We are building a scalable, humanitarian educational infrastructure. As a non-profit trust, we welcome CSR funding and philanthropic partnerships to expand our operations, reach more students, and build open-access learning platforms. Reach out to discuss collaboration.
                   </p>
                 </section>
 
                 <!-- ENTRY CHOICE -->
-                <section class="manifesto-section" style="text-align: center; padding-top: 20px; border-top: 1px solid rgba(139, 90, 43, 0.2);">
-                  <p style="font-size: 0.75rem; color: #6d4c41; margin: 16px 0 0;">Founded under iNHET</p>
+                <section class="manifesto-section" style="text-align: center; padding-top: 20px; border-top: 1px solid var(--border, rgba(139, 90, 43, 0.2));">
+                  <p style="font-size: 0.8rem; color: var(--text-muted, #8d6e63); margin: 16px 0 0; letter-spacing: 0.05em;">Founded under iNHET</p>
                 </section>
 
                 <!-- LOGIN SECTION (Hidden until scrolled) -->
-                <section id="loginSection" style="margin-top: 60px; padding-top: 40px; border-top: 1px solid rgba(185,155,124,0.15);">
-                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 500; color: #e8dcc9; margin: 0 0 24px; text-align: center;">Enter</h2>
+                <section id="loginSection" style="margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border, rgba(139, 90, 43, 0.15));">
+                  <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--text-primary, #3e2723); margin: 0 0 24px; text-align: center;">Enter</h2>
 
                   <div class="auth-card" style="max-width: 400px; margin: 0 auto;">
                     <div class="auth-tabs">
@@ -332,6 +439,18 @@
         updateLayoutForAuth();
       }
     });
+    
+    // Navbar scroll effect - add shadow when scrolled
+    const navbar = document.querySelector('.public-home .neo-sidebar');
+    if (navbar) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 10) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+    }
 
     function openSidebar() {
       if (!layout.classList.contains('logged-in')) return;
