@@ -4789,6 +4789,22 @@ function renderSidebarLangPicker() {
   if (!container || container.querySelector('.lang-select')) return;
 
   const currentLang = localStorage.getItem(LANG_STORAGE) || 'en';
+  const isCompactTopbar = document.body.classList.contains('neo-theme') || document.body.classList.contains('library-page');
+
+  if (isCompactTopbar) {
+    container.innerHTML =
+      '<div class="language-row compact-language-row">' +
+        '<select class="lang-select" aria-label="Select language">' +
+          '<option value="en">EN</option>' +
+          '<option value="hi">\u0939\u093F</option>' +
+          '<option value="ur">UR</option>' +
+        '</select>' +
+      '</div>';
+
+    const compactSel = container.querySelector('.lang-select');
+    if (compactSel) compactSel.value = currentLang;
+    return;
+  }
   
   // Quotes carousel data
   const quotes = [
