@@ -2787,6 +2787,299 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   MASTERPLAN SECTION STYLES (Current Work Page)
+═══════════════════════════════════════════════════════════ */
+
+.masterplan-section {
+  padding: 80px 24px;
+  background: var(--color-bg);
+}
+
+.masterplan-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.masterplan-header h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin: 16px 0 12px;
+  color: var(--color-text);
+}
+
+.masterplan-header p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* SVG Map Container */
+.masterplan-map {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+
+.map-svg-wrap {
+  position: relative;
+}
+
+.map-svg-wrap svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Phase Legend */
+.phase-legend {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.legend-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.legend-swatch.p1 {
+  background: rgba(74, 124, 89, 0.25);
+  border: 2px solid var(--color-primary);
+}
+
+.legend-swatch.p2 {
+  background: rgba(192, 57, 43, 0.15);
+  border: 2px dashed var(--color-accent);
+}
+
+/* Map Zones */
+.map-zone {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.map-zone:hover {
+  filter: brightness(1.15);
+}
+
+/* Map Tooltip */
+.map-tooltip {
+  position: absolute;
+  background: var(--color-dark);
+  color: var(--color-surface);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--color-primary);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 100;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+}
+
+.map-tooltip.visible {
+  opacity: 1;
+}
+
+/* Facility Cards */
+.facility-cards {
+  max-width: 900px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.facility-card {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.facility-card:hover {
+  border-color: var(--color-primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.facility-card.active {
+  border-color: var(--color-primary);
+  background: rgba(74, 124, 89, 0.05);
+}
+
+.fc-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fc-name {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.fc-num {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: var(--color-bg-alt);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.fc-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.fc-functions {
+  display: none;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+.facility-card.active .fc-functions {
+  display: block;
+}
+
+.fc-functions h5 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fc-functions ul {
+  list-style: none;
+}
+
+.fc-functions li {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  padding: 4px 0;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.fc-functions li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+}
+
+/* Masterplan CTA */
+.masterplan-cta {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.masterplan-note {
+  text-align: center;
+  max-width: 700px;
+  margin: 24px auto 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Featured Tower Section */
+.featured-tower {
+  padding: 80px 24px;
+  background: var(--color-bg-alt);
+}
+
+.featured-tower-content {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.featured-tower-content h2 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: var(--color-text);
+}
+
+.tower-image-container {
+  margin: 32px 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.tower-image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.tower-caption {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .masterplan-map {
+    padding: 20px;
+  }
+  
+  .phase-legend {
+    gap: 16px;
+  }
+  
+  .facility-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .featured-tower {
+    padding: 60px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .phase-legend {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
    ADDITIONAL UTILITY STYLES
 ═══════════════════════════════════════════════════════════ */
 
