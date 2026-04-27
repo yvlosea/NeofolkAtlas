@@ -53,7 +53,13 @@
         </div>
       </div>
       <a href="partnerships.html" class="nav-link">Partner</a>
-      <a href="contact.html" class="nav-link nav-link-highlight">Contact</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn donate-btn-nav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Donate
+      </a>
     </div>
     <div class="nav-actions">
       <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
@@ -103,7 +109,13 @@
     <div class="mobile-menu-section">
       <h4 class="mobile-section-title">Connect</h4>
       <a href="partnerships.html" class="mobile-link">Partner With Us</a>
-      <a href="contact.html" class="mobile-link mobile-link-highlight">Contact</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="mobile-link donate-btn" style="margin-top:8px;display:inline-flex;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Donate Now
+      </a>
     </div>
     <div class="mobile-actions">
       <button class="mobile-login-btn" id="mobileLoginBtn">Login</button>
@@ -113,26 +125,37 @@
   <!-- Page Header -->
   <section class="page-header">
     <div class="page-header-content">
-      <span class="section-tag">Live Updates</span>
+      <span class="section-tag">Construction Updates</span>
       <h1 class="page-title">Build Journal</h1>
       <p class="page-subtitle">
-        Documenting the journey from land to learning. Land visits, construction progress, meetings, and design updates.
+        This journal will document the construction journey once funding is secured and ground breaks.
       </p>
     </div>
   </section>
 
-  <!-- Filter Tags -->
-  <section class="journal-filters">
-    <button class="filter-btn active" data-filter="all">All Updates</button>
-    <button class="filter-btn" data-filter="construction">Construction</button>
-    <button class="filter-btn" data-filter="design">Design</button>
-    <button class="filter-btn" data-filter="community">Community</button>
-    <button class="filter-btn" data-filter="land">Land</button>
-    <button class="filter-btn" data-filter="milestone">Milestones</button>
+  <!-- Empty State -->
+  <section class="journal-empty" style="padding: 60px 24px;">
+    <div class="empty-state">
+      <div class="empty-icon">🏗️</div>
+      <h3>No Build Entries Yet</h3>
+      <p style="color: var(--text-secondary); margin: 12px 0;">
+        Construction has not begun. This journal will document the building process once funding is secured and ground breaks.
+      </p>
+      <div class="funding-banner" style="margin: 24px auto; max-width: 600px;">
+        <strong>Status:</strong> Land acquired in 2024. All designs complete. Construction pending funding. 
+        Estimated start: 2026-2027 upon successful fundraising.
+      </div>
+      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn large" style="padding: 14px 28px; font-size: 1rem;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px; margin-right: 8px;">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Support the Build
+      </a>
+    </div>
   </section>
 
-  <!-- Journal Grid -->
-  <section class="journal-grid">
+  <!-- Journal Grid - Hidden for now -->
+  <section class="journal-grid" style="display: none;">
     <!-- Entry 1 -->
     <article class="journal-entry" data-category="land">
       <div class="entry-image">
@@ -342,6 +365,5 @@
   </div>
 
   <script src="panchmela.js"></script>
-  <script src="journal.js"></script>
 </body>
 </html>
