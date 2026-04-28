@@ -24,16 +24,16 @@ document.addEventListener('DOMContentLoaded', function() {
       description: 'The circular Library Tower is the centerpiece of the Panchmahala campus. Designed for climate-responsive learning, it provides study spaces across four levels with the iconic roof learning pavilion offering panoramic views.',
       image: 'Images/Final tower design.png',
       stats: {
-        height: 'G + 2 + Roof',
-        capacity: '90-120 people',
-        area: '~452 sq.m',
-        status: 'Construction 2026-27'
+        location: 'Panchmahala',
+        role: 'Learning anchor',
+        focus: 'Climate-responsive study',
+        status: 'Design complete'
       },
       features: [
-        'Ground floor: Book stacks, reading alcoves, reception',
-        'First floor: Silent study, writing & research spaces',
-        'Second floor: Seminar studio, workshops, movable furniture',
-        'Roof: Learning pavilion, 30-40 capacity, polycarbonate roof'
+        'Reading, writing, and seminar spaces arranged for flexible learning',
+        'Climate-responsive design language rooted in Panchmahala',
+        'A visual anchor for the long-term campus vision',
+        'Current image shown is a concept view for the tower area'
       ],
       coords: [25.4, 85.9]
     },

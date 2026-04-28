@@ -234,7 +234,11 @@ function initHiddenFounderSection() {
   overlayBackdrop?.addEventListener('click', closeOverlay);
 
   if (overlay) {
-    window.addEventListener('load', openOverlay, { once: true });
+    if (document.readyState === 'complete') {
+      openOverlay();
+    } else {
+      window.addEventListener('load', openOverlay, { once: true });
+    }
   }
 }
 
