@@ -845,6 +845,57 @@ a {
   box-shadow: var(--shadow-md);
 }
 
+.vision-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 24px;
+}
+
+.vision-overlay.active {
+  display: flex;
+}
+
+.vision-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 16, 12, 0.7);
+  backdrop-filter: blur(6px);
+}
+
+.vision-overlay-card {
+  position: relative;
+  z-index: 1;
+  width: min(960px, 100%);
+  border-radius: var(--radius-xl);
+  overflow: auto;
+  max-height: calc(100vh - 48px);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  background: var(--color-surface);
+}
+
+.vision-overlay-copy {
+  padding: 20px 24px 24px;
+}
+
+.vision-overlay-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(13, 20, 15, 0.72);
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
 .hidden-founder-signoff {
   font-family: var(--font-serif);
   font-size: 1.25rem;

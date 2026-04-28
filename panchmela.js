@@ -188,32 +188,39 @@ function initForms() {
 }
 
 function initHiddenFounderSection() {
-  const hiddenSection = document.getElementById('hiddenFounderSection');
-  const planTrigger = document.getElementById('longTermPlanTrigger');
-  const planButton = document.getElementById('secretPlanBtn');
+  const popup = document.getElementById('hiddenFounderPopup');
+  const popupClose = document.getElementById('hiddenFounderPopupClose');
+  const popupBackdrop = document.getElementById('hiddenFounderPopupBackdrop');
   const hopeButton = document.getElementById('secretHopeTrigger');
 
-  function revealHiddenSection() {
-    if (!hiddenSection) return;
-    hiddenSection.hidden = false;
-    hiddenSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    planTrigger?.setAttribute('aria-expanded', 'true');
+  function openPopup() {
+    if (!popup) return;
+    popup.classList.add('active');
+    popup.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
     hopeButton?.setAttribute('aria-expanded', 'true');
   }
 
-  planTrigger?.addEventListener('click', revealHiddenSection);
-  planTrigger?.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      revealHiddenSection();
-    }
-  });
-  planButton?.addEventListener('click', revealHiddenSection);
-  hopeButton?.addEventListener('click', revealHiddenSection);
+  function closePopup() {
+    if (!popup) return;
+    popup.classList.remove('active');
+    popup.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    hopeButton?.setAttribute('aria-expanded', 'false');
+  }
+
+  hopeButton?.addEventListener('click', openPopup);
   hopeButton?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      revealHiddenSection();
+      openPopup();
+    }
+  });
+  popupClose?.addEventListener('click', closePopup);
+  popupBackdrop?.addEventListener('click', closePopup);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && popup?.classList.contains('active')) {
+      closePopup();
     }
   });
 }
