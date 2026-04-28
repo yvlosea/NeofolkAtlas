@@ -187,6 +187,57 @@ function initForms() {
   });
 }
 
+function initHiddenFounderSection() {
+  const hiddenSection = document.getElementById('hiddenFounderSection');
+  const planTrigger = document.getElementById('longTermPlanTrigger');
+  const planButton = document.getElementById('secretPlanBtn');
+  const hopeButton = document.getElementById('secretHopeTrigger');
+  const overlay = document.getElementById('visionOverlay');
+  const overlayClose = document.getElementById('visionOverlayClose');
+  const overlaySecret = document.getElementById('visionOverlaySecret');
+  const overlayBackdrop = overlay?.querySelector('.vision-overlay-backdrop');
+
+  function revealHiddenSection() {
+    if (!hiddenSection) return;
+    hiddenSection.hidden = false;
+    hiddenSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    planTrigger?.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeOverlay() {
+    overlay?.classList.remove('active');
+    document.body.style.overflow = '';
+    overlay?.setAttribute('aria-hidden', 'true');
+  }
+
+  function openOverlay() {
+    if (!overlay) return;
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  planTrigger?.addEventListener('click', revealHiddenSection);
+  planTrigger?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      revealHiddenSection();
+    }
+  });
+  planButton?.addEventListener('click', revealHiddenSection);
+  hopeButton?.addEventListener('click', revealHiddenSection);
+  overlaySecret?.addEventListener('click', () => {
+    closeOverlay();
+    revealHiddenSection();
+  });
+  overlayClose?.addEventListener('click', closeOverlay);
+  overlayBackdrop?.addEventListener('click', closeOverlay);
+
+  if (overlay) {
+    window.addEventListener('load', openOverlay, { once: true });
+  }
+}
+
 function initContactForm() {
   const form = document.getElementById('contactForm');
   const status = document.getElementById('contactFormStatus');
@@ -291,6 +342,7 @@ function init() {
   initForms();
   initContactForm();
   initLightbox();
+  initHiddenFounderSection();
   
   // Theme toggle
   document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);

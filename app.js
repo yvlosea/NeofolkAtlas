@@ -5275,7 +5275,7 @@ function renderPageContent() {
             <p class="section-label">iNHET Integrated Network</p>
             <h1>Knowledge Domains</h1>
             <p class="lede" style="max-width:800px; margin-bottom:24px;">
-              Below are the 10 Domains of <strong>iNHET</strong> (Indian Neofolk Humanitarian Education Trust) with precise definitions aligned to the Neofolk Atlas epistemic structure.
+              Below are the 10 Domains of <strong>iNHET</strong> (Indian Navyuvak Humanitarian Education Trust) with precise definitions aligned to the Neofolk Atlas epistemic structure.
             </p>
             <p style="color:var(--muted-text); font-size:0.9rem; max-width:800px;">
               These domains represent fundamental lenses of knowledge, not school subjects. Every module, guild, pathway, and portfolio artifact maps to one or more domains.
