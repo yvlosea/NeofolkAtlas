@@ -192,29 +192,13 @@ function initHiddenFounderSection() {
   const planTrigger = document.getElementById('longTermPlanTrigger');
   const planButton = document.getElementById('secretPlanBtn');
   const hopeButton = document.getElementById('secretHopeTrigger');
-  const overlay = document.getElementById('visionOverlay');
-  const overlayClose = document.getElementById('visionOverlayClose');
-  const overlaySecret = document.getElementById('visionOverlaySecret');
-  const overlayBackdrop = overlay?.querySelector('.vision-overlay-backdrop');
 
   function revealHiddenSection() {
     if (!hiddenSection) return;
     hiddenSection.hidden = false;
     hiddenSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     planTrigger?.setAttribute('aria-expanded', 'true');
-  }
-
-  function closeOverlay() {
-    overlay?.classList.remove('active');
-    document.body.style.overflow = '';
-    overlay?.setAttribute('aria-hidden', 'true');
-  }
-
-  function openOverlay() {
-    if (!overlay) return;
-    overlay.classList.add('active');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    hopeButton?.setAttribute('aria-expanded', 'true');
   }
 
   planTrigger?.addEventListener('click', revealHiddenSection);
@@ -226,20 +210,12 @@ function initHiddenFounderSection() {
   });
   planButton?.addEventListener('click', revealHiddenSection);
   hopeButton?.addEventListener('click', revealHiddenSection);
-  overlaySecret?.addEventListener('click', () => {
-    closeOverlay();
-    revealHiddenSection();
-  });
-  overlayClose?.addEventListener('click', closeOverlay);
-  overlayBackdrop?.addEventListener('click', closeOverlay);
-
-  if (overlay) {
-    if (document.readyState === 'complete') {
-      openOverlay();
-    } else {
-      window.addEventListener('load', openOverlay, { once: true });
+  hopeButton?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      revealHiddenSection();
     }
-  }
+  });
 }
 
 function initContactForm() {

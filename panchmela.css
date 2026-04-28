@@ -778,18 +778,6 @@ a {
 
 .hero-image-wrap {
   position: relative;
-}
-
-.secret-signal-btn {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.55);
-  background: rgba(20, 20, 20, 0.35);
-  color: white;
   cursor: pointer;
 }
 
@@ -829,8 +817,7 @@ a {
   color: var(--text-secondary);
 }
 
-.concept-narrative-visual,
-.vision-overlay-card {
+.concept-narrative-visual {
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
@@ -838,8 +825,7 @@ a {
   background: var(--color-surface);
 }
 
-.concept-narrative-image,
-.vision-overlay-image {
+.concept-narrative-image {
   width: 100%;
   height: auto;
   display: block;
@@ -863,61 +849,6 @@ a {
   font-family: var(--font-serif);
   font-size: 1.25rem;
   color: var(--color-text);
-}
-
-.vision-overlay {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 1200;
-  padding: 24px;
-}
-
-.vision-overlay.active {
-  display: flex;
-}
-
-.vision-overlay-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(10, 16, 12, 0.7);
-  backdrop-filter: blur(6px);
-}
-
-.vision-overlay-card {
-  position: relative;
-  z-index: 1;
-  width: min(900px, 100%);
-}
-
-.vision-overlay-copy {
-  padding: 20px 24px 24px;
-}
-
-.vision-overlay-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(13, 20, 15, 0.72);
-  color: white;
-  font-size: 1.4rem;
-  cursor: pointer;
-}
-
-.vision-overlay-secret {
-  margin-top: 12px;
-  border: 0;
-  background: var(--color-primary);
-  color: white;
-  padding: 12px 16px;
-  border-radius: 999px;
-  cursor: pointer;
 }
 
 /* ── SUSTAINABILITY SECTION ── */
@@ -2169,9 +2100,5 @@ li {
 
   .hidden-founder-card {
     padding: 24px;
-  }
-
-  .vision-overlay {
-    padding: 16px;
   }
 }
