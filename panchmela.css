@@ -14,12 +14,15 @@
   --color-surface-rgb: 244, 238, 226;
   
   --color-primary: #1d5a43;
+  --color-primary-rgb: 29, 90, 67;
   --color-primary-light: #2f775b;
   --color-primary-dark: #123d2f;
   --color-primary-pale: #e2ede4;
   
-  --color-accent: #5c8f78;
-  --color-accent-light: #8fb8a5;
+  --color-accent: #9a7547;
+  --color-accent-rgb: 154, 117, 71;
+  --color-accent-light: #c1a178;
+  --color-on-primary: #f7f1e5;
   
   --color-text: #112019;
   --text-secondary: #355246;
@@ -38,8 +41,8 @@
   --radius-lg: 32px;
   --radius-xl: 48px;
   
-  --font-serif: 'Outfit', sans-serif;
-  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Manrope', 'Plus Jakarta Sans', system-ui, sans-serif;
   
   --transition-fast: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,24 +51,27 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
-  --color-bg: #071811;
-  --color-bg-alt: #0d241b;
-  --color-surface: #10291f;
-  --color-surface-elevated: #17372b;
-  --color-surface-rgb: 16, 41, 31;
+  --color-bg: #102118;
+  --color-bg-alt: #162c21;
+  --color-surface: #1b3327;
+  --color-surface-elevated: #214033;
+  --color-surface-rgb: 27, 51, 39;
   
-  --color-primary: #7fb095;
-  --color-primary-light: #9bc4ad;
-  --color-primary-dark: #4d7c65;
-  --color-primary-pale: rgba(127, 176, 149, 0.12);
+  --color-primary: #315340;
+  --color-primary-rgb: 49, 83, 64;
+  --color-primary-light: #4f775f;
+  --color-primary-dark: #21392d;
+  --color-primary-pale: rgba(79, 119, 95, 0.16);
   
-  --color-accent: #5a8d74;
-  --color-accent-light: #7bac95;
+  --color-accent: #b08b57;
+  --color-accent-rgb: 176, 139, 87;
+  --color-accent-light: #d0b182;
+  --color-on-primary: #f4e8d5;
   
-  --color-text: #f4fbf6;
-  --text-secondary: #d3e3d9;
-  --text-muted: #a5beb1;
-  --text-light: #6f8d7f;
+  --color-text: #f2eadb;
+  --text-secondary: #ddcfb8;
+  --text-muted: #bcae96;
+  --text-light: #8e866f;
   
   --border-color: rgba(255, 255, 255, 0.08);
   --border-strong: rgba(255, 255, 255, 0.15);
@@ -146,10 +152,10 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(var(--color-surface-rgb), 0.78);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border-color);
   border-radius: 99px;
   box-shadow: var(--shadow-sm);
   z-index: 1000;
@@ -177,8 +183,9 @@ a {
 
 .brand-title {
   font-family: var(--font-serif);
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   color: var(--color-text);
   line-height: 1.2;
 }
@@ -206,7 +213,7 @@ a {
 }
 
 .nav-link:hover {
-  background: rgba(74, 124, 89, 0.1);
+  background: var(--color-primary-pale);
   color: var(--color-primary);
 }
 
@@ -237,7 +244,7 @@ a {
 
 .icon-btn:hover {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   border-color: var(--color-primary);
   transform: scale(1.05);
 }
@@ -262,20 +269,20 @@ a {
 .login-btn {
   padding: 10px 24px;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   border: none;
   border-radius: 999px;
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-normal);
-  box-shadow: 0 4px 12px rgba(18, 183, 106, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.22);
 }
 
 .login-btn:hover {
   background: var(--color-primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(18, 183, 106, 0.3);
+  box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.28);
 }
 
 .mobile-menu-btn {
@@ -322,7 +329,7 @@ a {
 .mobile-login-btn {
   padding: 14px 24px;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   border: none;
   border-radius: 999px;
   font-size: 1rem;
@@ -359,10 +366,10 @@ a {
   font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-primary-light);
+  color: var(--color-accent);
   font-weight: 700;
   padding: 6px 12px;
-  background: rgba(74, 124, 89, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.10);
   border-radius: 4px;
   width: fit-content;
 }
@@ -425,16 +432,16 @@ a {
 }
 
 .cta-primary {
-  background: var(--color-text);
-  color: white;
+  background: var(--color-primary-dark);
+  color: var(--color-on-primary);
   border: none;
-  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.15);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.2);
 }
 
 .cta-primary:hover {
-  background: var(--text-secondary);
+  background: var(--color-primary);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(16, 24, 40, 0.2);
+  box-shadow: 0 8px 24px rgba(var(--color-primary-rgb), 0.28);
 }
 
 .cta-secondary {
@@ -444,8 +451,8 @@ a {
 }
 
 .cta-secondary:hover {
-  background: var(--color-bg-alt);
-  border-color: var(--color-text);
+  background: var(--color-surface-elevated);
+  border-color: var(--color-accent);
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
@@ -552,7 +559,7 @@ a {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(74, 124, 89, 0.1);
+  background: var(--color-primary-pale);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -635,7 +642,7 @@ a {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: rgba(74, 124, 89, 0.15);
+  background: var(--color-primary-pale);
   color: var(--color-primary);
   font-size: 0.75rem;
   font-weight: 700;
@@ -703,17 +710,17 @@ a {
 
 .plan-card.highlight {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   border-color: var(--color-primary);
 }
 
 .plan-card.highlight .plan-level,
 .plan-card.highlight .plan-name {
-  color: white;
+  color: var(--color-on-primary);
 }
 
 .plan-card.highlight .plan-features li {
-  color: rgba(255,255,255,0.85);
+  color: rgba(var(--color-surface-rgb), 0.9);
 }
 
 .plan-circle {
@@ -891,8 +898,8 @@ a {
   height: 40px;
   border: 0;
   border-radius: 50%;
-  background: rgba(13, 20, 15, 0.72);
-  color: white;
+  background: rgba(var(--color-primary-rgb), 0.82);
+  color: var(--color-on-primary);
   font-size: 1.4rem;
   cursor: pointer;
 }
@@ -1159,7 +1166,7 @@ a {
 }
 
 .modal-close:hover {
-  background: rgba(74, 124, 89, 0.1);
+  background: var(--color-primary-pale);
   color: var(--color-text);
 }
 
@@ -1272,7 +1279,7 @@ a {
 .submit-btn {
   padding: 14px 24px;
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   border: none;
   border-radius: var(--radius-sm);
   font-size: 1rem;
@@ -1589,7 +1596,7 @@ body[data-theme="dark"] {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1634,7 +1641,7 @@ body[data-theme="dark"] {
 
 /* ── Stats Bar ── */
 .stats-bar {
-  background: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 55%, var(--color-accent) 100%);
   padding: 32px 0;
 }
 
@@ -1723,7 +1730,7 @@ body[data-theme="dark"] {
   width: 48px;
   height: 48px;
   margin-bottom: 20px;
-  color: var(--color-primary-light);
+  color: var(--color-accent);
 }
 
 .strategy-icon svg {
@@ -1991,7 +1998,7 @@ li {
 /* Donate Button Styles */
 .donate-btn {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-on-primary);
   padding: 10px 20px;
   border-radius: 999px;
   font-weight: 600;
@@ -2003,14 +2010,14 @@ li {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(18, 183, 106, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.22);
 }
 
 .donate-btn:hover {
   background: var(--color-primary-dark);
   transform: translateY(-2px);
-  color: white;
-  box-shadow: 0 8px 20px rgba(18, 183, 106, 0.3);
+  color: var(--color-on-primary);
+  box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.3);
 }
 
 .donate-btn svg {
@@ -2034,8 +2041,8 @@ li {
 
 /* Funding Disclaimer Banner */
 .funding-banner {
-  background: rgba(192, 57, 43, 0.08);
-  border-left: 3px solid #C0392B;
+  background: rgba(var(--color-accent-rgb), 0.12);
+  border-left: 3px solid var(--color-accent);
   padding: 14px 18px;
   margin: 16px 0;
   font-size: 0.9rem;
@@ -2045,7 +2052,7 @@ li {
 }
 
 .funding-banner strong {
-  color: #C0392B;
+  color: var(--color-accent);
 }
 
 /* Navigation equal spacing */
