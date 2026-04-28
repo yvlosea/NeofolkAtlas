@@ -7,16 +7,16 @@
 /* ── CSS VARIABLES ── */
 :root {
   /* Light Theme - Sacramento x Evergreen */
-  --color-bg: #f4f8f4;
-  --color-bg-alt: #fbfdfb;
-  --color-surface: #ffffff;
-  --color-surface-elevated: #f8fcf8;
-  --color-surface-rgb: 255, 255, 255;
+  --color-bg: #f3efe5;
+  --color-bg-alt: #f7f2e9;
+  --color-surface: #f4eee2;
+  --color-surface-elevated: #efe6d8;
+  --color-surface-rgb: 244, 238, 226;
   
   --color-primary: #1d5a43;
   --color-primary-light: #2f775b;
   --color-primary-dark: #123d2f;
-  --color-primary-pale: #e6f1eb;
+  --color-primary-pale: #e2ede4;
   
   --color-accent: #5c8f78;
   --color-accent-light: #8fb8a5;
@@ -26,12 +26,12 @@
   --text-muted: #5e766d;
   --text-light: #8ba097;
   
-  --border-color: rgba(17, 32, 25, 0.08);
-  --border-strong: rgba(17, 32, 25, 0.16);
+  --border-color: rgba(47, 41, 31, 0.10);
+  --border-strong: rgba(47, 41, 31, 0.18);
   
-  --shadow-sm: 0 4px 12px rgba(17, 32, 25, 0.05);
-  --shadow-md: 0 12px 24px rgba(17, 32, 25, 0.07);
-  --shadow-lg: 0 24px 48px rgba(17, 32, 25, 0.09);
+  --shadow-sm: 0 4px 12px rgba(47, 41, 31, 0.06);
+  --shadow-md: 0 12px 24px rgba(47, 41, 31, 0.08);
+  --shadow-lg: 0 24px 48px rgba(47, 41, 31, 0.10);
   
   --radius-sm: 12px;
   --radius-md: 20px;
@@ -105,8 +105,8 @@ body::before {
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(47, 119, 91, 0.08), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(92, 143, 120, 0.06), transparent);
+    radial-gradient(ellipse 80% 50% at 20% 40%, rgba(47, 119, 91, 0.07), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(188, 170, 138, 0.14), transparent);
   pointer-events: none;
   z-index: -1;
   animation: gradientShift 20s ease-in-out infinite;
