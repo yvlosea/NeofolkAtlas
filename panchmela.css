@@ -2463,6 +2463,27 @@ li {
   color: var(--color-accent);
 }
 
+@media (max-width: 768px) {
+  .funding-banner {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+    padding: 16px;
+  }
+  
+  .funding-banner .donate-btn {
+    margin-left: 0;
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .funding-banner {
+    font-size: 0.9rem;
+    padding: 14px;
+  }
+}
+
 /* Navigation equal spacing */
 .nav-link, .dropdown-trigger {
   line-height: 1.4;
@@ -2664,5 +2685,171 @@ li {
     left: 8px;
     right: 8px;
     padding: 18px;
+  }
+}
+
+/* ── RESPONSIVE: Founding Pledge Section ── */
+@media (max-width: 1024px) {
+  .pledge-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .pledge-section {
+    padding: 48px 20px;
+  }
+  
+  .pledge-shell {
+    gap: 24px;
+  }
+  
+  .pledge-header {
+    max-width: 100%;
+  }
+  
+  .pledge-header .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .pledge-subtext {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  
+  .pledge-dashboard {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .pledge-stat-card,
+  .pledge-progress-card {
+    padding: 20px;
+  }
+  
+  .pledge-stat-amount {
+    font-size: 2rem;
+  }
+  
+  .pledge-amount-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  .pledge-amount-card {
+    padding: 14px 10px;
+    font-size: 0.9rem;
+    border-radius: 16px;
+  }
+  
+  .pledge-wall-card {
+    padding: 20px;
+  }
+  
+  .pledge-wall-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .pledge-wall-header h3 {
+    font-size: 1.4rem;
+  }
+  
+  .pledge-wall {
+    max-height: 240px;
+  }
+  
+  .pledge-disclaimer {
+    font-size: 0.85rem;
+    max-width: 100%;
+    text-align: center;
+  }
+  
+  .pledge-modal-content {
+    max-width: calc(100% - 32px);
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+  }
+  
+  .pledge-modal-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .pledge-success-state h3 {
+    font-size: 1.4rem;
+  }
+  
+  .pledge-success-mark {
+    width: 56px;
+    height: 56px;
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pledge-section {
+    padding: 36px 16px;
+  }
+  
+  .pledge-header .section-title {
+    font-size: 1.6rem;
+  }
+  
+  .pledge-subtext {
+    font-size: 0.95rem;
+  }
+  
+  .pledge-amount-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .pledge-amount-card {
+    padding: 12px 8px;
+    font-size: 0.85rem;
+    border-radius: 14px;
+  }
+  
+  .pledge-stat-amount {
+    font-size: 1.6rem;
+  }
+  
+  .pledge-progress-topline {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .pledge-progress-topline strong {
+    font-size: 1rem;
+  }
+  
+  .pledge-stat-card,
+  .pledge-progress-card {
+    padding: 16px;
+  }
+  
+  .pledge-wall-card {
+    padding: 16px;
+  }
+  
+  .pledge-wall-header h3 {
+    font-size: 1.2rem;
+  }
+  
+  .pledge-wall-item {
+    padding: 12px 14px;
+  }
+  
+  .pledge-modal-content {
+    padding: 20px;
+  }
+  
+  .pledge-modal-header h2 {
+    font-size: 1.3rem;
+  }
+  
+  .pledge-checkbox {
+    font-size: 0.9rem;
   }
 }
