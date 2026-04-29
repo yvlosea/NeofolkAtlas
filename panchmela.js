@@ -4,6 +4,48 @@
 
 // Theme Management
 const THEME_KEY = 'panchmela-theme';
+const FOUNDING_PLEDGE_GOAL = 50000;
+const FOUNDING_PLEDGE_POLL_MS = 30000;
+
+function getSupabasePublicConfig() {
+  const url = document.querySelector('meta[name="supabase-url"]')?.content?.trim();
+  const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
+  return url && anonKey ? { url, anonKey } : null;
+}
+
+function formatINR(amount) {
+  const value = Number(amount) || 0;
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+async function foundingPledgeFetch(path, options = {}) {
+  const config = getSupabasePublicConfig();
+  if (!config) {
+    throw new Error('Supabase config missing');
+  }
+
+  const response = await fetch(`${config.url}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: config.anonKey,
+      Authorization: `Bearer ${config.anonKey}`,
+      'Content-Type': 'application/json',
+      ...options.headers
+    }
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || 'Request failed');
+  }
+
+  if (response.status === 204) return null;
+  return response.json();
+}
 
 function initTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
@@ -268,6 +310,208 @@ function initContactForm() {
   });
 }
 
+function initFoundingPledges() {
+  const section = document.getElementById('foundingPledgeSection');
+  if (!section) return;
+
+  const amountButtons = Array.from(document.querySelectorAll('.pledge-amount-card'));
+  const modal = document.getElementById('pledgeModal');
+  const modalBackdrop = document.getElementById('pledgeModalBackdrop');
+  const modalClose = document.getElementById('pledgeModalClose');
+  const form = document.getElementById('pledgeForm');
+  const formStatus = document.getElementById('pledgeFormStatus');
+  const successState = document.getElementById('pledgeSuccessState');
+  const selectedAmountText = document.getElementById('pledgeModalSelectedAmount');
+  const amountInput = document.getElementById('pledgeAmountInput');
+  const customAmountGroup = document.getElementById('pledgeCustomAmountGroup');
+  const customAmountInput = document.getElementById('pledgeCustomAmount');
+  const totalNode = document.getElementById('pledgeTotal');
+  const supportersNode = document.getElementById('pledgeSupporters');
+  const goalStatusNode = document.getElementById('pledgeGoalStatus');
+  const progressFill = document.getElementById('pledgeProgressFill');
+  const progressNote = document.getElementById('pledgeProgressNote');
+  const wall = document.getElementById('pledgeWall');
+  const emptyState = document.getElementById('pledgeEmptyState');
+  const submitBtn = document.getElementById('pledgeSubmitBtn');
+
+  let selectedAmount = null;
+
+  function openModal(amountValue) {
+    selectedAmount = amountValue;
+    form.reset();
+    document.getElementById('pledgePublicName').checked = true;
+    amountInput.value = amountValue === 'custom' ? '' : String(amountValue);
+    customAmountGroup.hidden = amountValue !== 'custom';
+    if (amountValue === 'custom') {
+      customAmountInput.value = '';
+    }
+    selectedAmountText.textContent = `Selected amount: ${amountValue === 'custom' ? 'Custom amount' : formatINR(amountValue)}`;
+    successState.hidden = true;
+    form.hidden = false;
+    formStatus.textContent = '';
+    formStatus.className = 'form-status';
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function renderWall(rows) {
+    wall.querySelectorAll('.pledge-wall-item').forEach(node => node.remove());
+    if (!rows.length) {
+      emptyState.hidden = false;
+      return;
+    }
+
+    emptyState.hidden = true;
+    const fragment = document.createDocumentFragment();
+    rows.forEach(row => {
+      const item = document.createElement('div');
+      item.className = 'pledge-wall-item';
+      const publicName = row.display_publicly ? row.full_name : 'Anonymous';
+      item.innerHTML = `
+        <span class="pledge-wall-name">${publicName}</span>
+        <span class="pledge-wall-amount">${formatINR(row.amount)}</span>
+      `;
+      fragment.appendChild(item);
+    });
+    wall.appendChild(fragment);
+  }
+
+  function renderSummary(rows) {
+    const total = rows.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+    const count = rows.length;
+    totalNode.textContent = `${formatINR(total)} Pledged`;
+    supportersNode.textContent = `${count} Founding Supporter${count === 1 ? '' : 's'}`;
+    const progress = Math.min((total / FOUNDING_PLEDGE_GOAL) * 100, 100);
+    progressFill.style.width = `${progress}%`;
+
+    if (total > FOUNDING_PLEDGE_GOAL) {
+      goalStatusNode.textContent = 'Registration milestone surpassed';
+      progressNote.textContent = `The public pledge total is now ${formatINR(total)} while the legal registration goal remains ${formatINR(FOUNDING_PLEDGE_GOAL)}.`;
+    } else if (total > 0) {
+      goalStatusNode.textContent = `${formatINR(FOUNDING_PLEDGE_GOAL)} Goal`;
+      progressNote.textContent = `${formatINR(total)} pledged toward the legal establishment target.`;
+    } else {
+      goalStatusNode.textContent = `${formatINR(FOUNDING_PLEDGE_GOAL)} Goal`;
+      progressNote.textContent = 'Pledges will begin populating this milestone once founding supporters register.';
+    }
+  }
+
+  async function loadPledges() {
+    try {
+      const rows = await foundingPledgeFetch('rpc/get_public_founding_pledges', {
+        method: 'POST',
+        body: JSON.stringify({})
+      });
+      renderSummary(rows || []);
+      renderWall(rows || []);
+    } catch (error) {
+      console.error('Founding pledges failed to load', error);
+      progressNote.textContent = 'We could not load live pledges right now. Please try again shortly.';
+    }
+  }
+
+  async function sendPledgeNotification(record) {
+    const formData = new FormData();
+    formData.append('_subject', `Founding Pledge: ${record.full_name} pledged ${formatINR(record.amount)}`);
+    formData.append('_captcha', 'false');
+    formData.append('_template', 'table');
+    formData.append('_replyto', record.email);
+    formData.append('_cc', record.email);
+    formData.append('name', record.full_name);
+    formData.append('email', record.email);
+    formData.append('phone', record.phone || '');
+    formData.append('pledge_amount', formatINR(record.amount));
+    formData.append('display_publicly', record.display_publicly ? 'Yes' : 'No');
+    formData.append('message', record.message || '');
+    formData.append('pledge_type', 'Future pledge only — no funds collected');
+
+    await fetch('https://formsubmit.co/ajax/inhetedu@zohomail.in', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Accept: 'application/json'
+      }
+    });
+  }
+
+  amountButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      amountButtons.forEach(node => node.classList.remove('is-active'));
+      button.classList.add('is-active');
+      openModal(button.dataset.amount);
+    });
+  });
+
+  modalClose?.addEventListener('click', closeModal);
+  modalBackdrop?.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const resolvedAmount = selectedAmount === 'custom' ? Number(customAmountInput.value) : Number(amountInput.value);
+    if (!resolvedAmount || resolvedAmount <= 0) {
+      formStatus.textContent = 'Please enter a valid pledge amount.';
+      formStatus.className = 'form-status is-error';
+      return;
+    }
+
+    const payload = {
+      full_name: document.getElementById('pledgeName').value.trim(),
+      email: document.getElementById('pledgeEmail').value.trim(),
+      phone: document.getElementById('pledgePhone').value.trim() || null,
+      message: document.getElementById('pledgeMessage').value.trim() || null,
+      amount: resolvedAmount,
+      display_publicly: document.getElementById('pledgePublicName').checked
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Recording Pledge...';
+    formStatus.textContent = '';
+    formStatus.className = 'form-status';
+
+    try {
+      await foundingPledgeFetch('founding_pledges', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+          Prefer: 'return=minimal'
+        }
+      });
+
+      try {
+        await sendPledgeNotification(payload);
+      } catch (mailError) {
+        console.warn('Pledge email notification failed', mailError);
+      }
+
+      await loadPledges();
+      form.hidden = true;
+      successState.hidden = false;
+    } catch (error) {
+      console.error('Founding pledge submit failed', error);
+      formStatus.textContent = 'We could not record your pledge right now. Please try again in a moment.';
+      formStatus.className = 'form-status is-error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Make My Pledge';
+    }
+  });
+
+  loadPledges();
+  window.setInterval(loadPledges, FOUNDING_PLEDGE_POLL_MS);
+}
+
 // Image gallery lightbox (for Current Work page)
 function initLightbox() {
   const galleryImages = document.querySelectorAll('.gallery-image');
@@ -330,6 +574,7 @@ function init() {
   initContactForm();
   initLightbox();
   initHiddenFounderSection();
+  initFoundingPledges();
   
   // Theme toggle
   document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
