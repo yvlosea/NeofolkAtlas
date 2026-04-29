@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="supabase-url" content="https://mopxfemfkrnthaadjxoi.supabase.co" />
+  <meta name="supabase-anon-key" content="sb_publishable_Xf1_yxMNpNuSkBLpYfXQpw_wF1DogRa" />
+  <title>Founding Pledge Admin | iNHET</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="panchmela.css" />
+  <style>
+    .admin-section {
+      padding: 120px 48px 48px;
+      min-height: 100vh;
+      background: var(--color-bg);
+    }
+    
+    .admin-header {
+      max-width: 1400px;
+      margin: 0 auto 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    
+    .admin-title {
+      font-family: var(--font-serif);
+      font-size: 2.4rem;
+      color: var(--color-text);
+    }
+    
+    .admin-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .admin-btn {
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .admin-btn:hover {
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      border-color: var(--color-primary);
+    }
+    
+    .admin-btn.secondary {
+      background: transparent;
+    }
+    
+    .admin-stats {
+      max-width: 1400px;
+      margin: 0 auto 32px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    
+    .stat-box {
+      background: var(--color-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+    
+    .stat-box-value {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    
+    .stat-box-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    
+    .admin-table-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--color-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    
+    .admin-table-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    
+    .admin-table-title {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--color-text);
+    }
+    
+    .admin-filter {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .admin-search {
+      padding: 10px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      min-width: 240px;
+    }
+    
+    .admin-search:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+    
+    .admin-table-wrapper {
+      overflow-x: auto;
+    }
+    
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    
+    .admin-table th {
+      text-align: left;
+      padding: 16px 24px;
+      background: rgba(var(--color-accent-rgb), 0.08);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    
+    .admin-table td {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--color-text);
+    }
+    
+    .admin-table tr:hover td {
+      background: rgba(var(--color-accent-rgb), 0.04);
+    }
+    
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .amount-cell {
+      font-family: var(--font-serif);
+      font-weight: 600;
+      color: var(--color-accent);
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    
+    .status-public {
+      background: rgba(29, 90, 67, 0.12);
+      color: var(--color-primary);
+    }
+    
+    .status-anonymous {
+      background: rgba(154, 117, 71, 0.12);
+      color: var(--color-accent);
+    }
+    
+    .admin-actions-cell {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .action-btn {
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .action-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+    
+    .admin-loading,
+    .admin-error,
+    .admin-empty {
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    
+    .admin-error {
+      color: #ef4444;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 24px;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+    }
+    
+    .confirm-modal {
+      background: var(--color-surface);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .confirm-modal h3 {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+    }
+    
+    .confirm-modal p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+    
+    .confirm-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-section {
+        padding: 100px 20px 32px;
+      }
+      
+      .admin-header {
+        flex-direction: column;
+      }
+      
+      .admin-table th,
+      .admin-table td {
+        padding: 12px 16px;
+      }
+    }
+    
+    .login-prompt {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 48px 24px;
+      text-align: center;
+    }
+    
+    .login-prompt h2 {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+    }
+    
+    .login-prompt p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <nav class="main-nav">
+    <div class="nav-brand">
+      <a href="index.html">
+        <img src="iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
+      </a>
+      <div class="brand-text">
+        <a href="index.html" class="brand-link">
+          <span class="brand-title">Panchmahala</span>
+          <span class="brand-subtitle">Admin Dashboard</span>
+        </a>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Back to Site</a>
+    </div>
+  </nav>
+
+  <section class="admin-section">
+    <div class="admin-header">
+      <div>
+        <span class="section-tag">Administration</span>
+        <h1 class="admin-title">Founding Pledge Management</h1>
+      </div>
+      <div class="admin-actions">
+        <button class="admin-btn" onclick="exportToCSV()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+          </svg>
+          Export CSV
+        </button>
+        <button class="admin-btn secondary" onclick="refreshData()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="admin-stats" id="adminStats">
+      <div class="stat-box">
+        <div class="stat-box-value" id="statTotal">₹0</div>
+        <div class="stat-box-label">Total Pledged</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-value" id="statCount">0</div>
+        <div class="stat-box-label">Total Supporters</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-value" id="statPublic">0</div>
+        <div class="stat-box-label">Public Names</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-value" id="statAverage">₹0</div>
+        <div class="stat-box-label">Average Pledge</div>
+      </div>
+    </div>
+
+    <div class="admin-table-container">
+      <div class="admin-table-header">
+        <h2 class="admin-table-title">All Pledges</h2>
+        <div class="admin-filter">
+          <input type="text" class="admin-search" id="searchInput" placeholder="Search by name or email..." oninput="filterPledges()">
+        </div>
+      </div>
+      <div class="admin-table-wrapper">
+        <table class="admin-table" id="pledgesTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Amount</th>
+              <th>Visibility</th>
+              <th>Message</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pledgesTableBody">
+            <tr><td colspan="8" class="admin-loading">Loading pledges...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="confirmModal">
+    <div class="confirm-modal">
+      <h3>Delete Pledge?</h3>
+      <p>This action cannot be undone. The pledge will be permanently removed.</p>
+      <div class="confirm-actions">
+        <button class="admin-btn secondary" onclick="closeModal()">Cancel</button>
+        <button class="admin-btn" onclick="confirmDelete()" style="background: #ef4444; border-color: #ef4444; color: white;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allPledges = [];
+    let deleteTargetId = null;
+
+    function getSupabaseConfig() {
+      const url = document.querySelector('meta[name="supabase-url"]')?.content?.trim();
+      const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
+      return { url, anonKey };
+    }
+
+    async function fetchPledges() {
+      const { url, anonKey } = getSupabaseConfig();
+      if (!url || !anonKey) {
+        throw new Error('Supabase configuration missing');
+      }
+
+      const response = await fetch(`${url}/rest/v1/founding_pledges?select=*&order=created_at.desc`, {
+        headers: {
+          'apikey': anonKey,
+          'Authorization': `Bearer ${anonKey}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch pledges');
+      }
+
+      return response.json();
+    }
+
+    function formatINR(amount) {
+      return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function updateStats(pledges) {
+      const total = pledges.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const count = pledges.length;
+      const public = pledges.filter(p => p.display_publicly).length;
+      const average = count > 0 ? Math.round(total / count) : 0;
+
+      document.getElementById('statTotal').textContent = formatINR(total);
+      document.getElementById('statCount').textContent = count;
+      document.getElementById('statPublic').textContent = public;
+      document.getElementById('statAverage').textContent = formatINR(average);
+    }
+
+    function renderTable(pledges) {
+      const tbody = document.getElementById('pledgesTableBody');
+      
+      if (pledges.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="admin-empty">No pledges found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = pledges.map(pledge => `
+        <tr data-id="${pledge.id}">
+          <td>${pledge.full_name || 'Anonymous'}</td>
+          <td>${pledge.email || '-'}</td>
+          <td>${pledge.phone || '-'}</td>
+          <td class="amount-cell">${formatINR(pledge.amount)}</td>
+          <td>
+            <span class="status-badge ${pledge.display_publicly ? 'status-public' : 'status-anonymous'}">
+              ${pledge.display_publicly ? 'Public' : 'Anonymous'}
+            </span>
+          </td>
+          <td>${pledge.message ? pledge.message.substring(0, 50) + (pledge.message.length > 50 ? '...' : '') : '-'}</td>
+          <td>${formatDate(pledge.created_at)}</td>
+          <td>
+            <div class="admin-actions-cell">
+              <button class="action-btn" onclick="showDeleteModal('${pledge.id}')">Remove</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function loadData() {
+      const tbody = document.getElementById('pledgesTableBody');
+      tbody.innerHTML = '<tr><td colspan="8" class="admin-loading">Loading pledges...</td></tr>';
+
+      try {
+        allPledges = await fetchPledges();
+        updateStats(allPledges);
+        renderTable(allPledges);
+      } catch (error) {
+        console.error('Error loading pledges:', error);
+        tbody.innerHTML = '<tr><td colspan="8" class="admin-error">Error loading pledges. Please check your connection and try again.</td></tr>';
+      }
+    }
+
+    function filterPledges() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = allPledges.filter(p => 
+        (p.full_name || '').toLowerCase().includes(search) ||
+        (p.email || '').toLowerCase().includes(search) ||
+        (p.phone || '').toLowerCase().includes(search)
+      );
+      renderTable(filtered);
+    }
+
+    function exportToCSV() {
+      if (allPledges.length === 0) {
+        alert('No pledges to export');
+        return;
+      }
+
+      const headers = ['Name', 'Email', 'Phone', 'Amount', 'Display Publicly', 'Message', 'Created At'];
+      const rows = allPledges.map(p => [
+        p.full_name || 'Anonymous',
+        p.email || '',
+        p.phone || '',
+        p.amount,
+        p.display_publicly ? 'Yes' : 'No',
+        p.message || '',
+        new Date(p.created_at).toISOString()
+      ]);
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `founding-pledges-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+    }
+
+    function refreshData() {
+      loadData();
+    }
+
+    function showDeleteModal(id) {
+      deleteTargetId = id;
+      document.getElementById('confirmModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('confirmModal').classList.remove('active');
+      deleteTargetId = null;
+    }
+
+    async function confirmDelete() {
+      if (!deleteTargetId) return;
+
+      const { url, anonKey } = getSupabaseConfig();
+      
+      try {
+        const response = await fetch(`${url}/rest/v1/founding_pledges?id=eq.${deleteTargetId}`, {
+          method: 'DELETE',
+          headers: {
+            'apikey': anonKey,
+            'Authorization': `Bearer ${anonKey}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete pledge');
+        }
+
+        allPledges = allPledges.filter(p => p.id !== deleteTargetId);
+        updateStats(allPledges);
+        filterPledges();
+        closeModal();
+      } catch (error) {
+        console.error('Error deleting pledge:', error);
+        alert('Failed to delete pledge. Please try again.');
+      }
+    }
+
+    // Load data on page load
+    loadData();
+
+    // Refresh every 30 seconds
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>
