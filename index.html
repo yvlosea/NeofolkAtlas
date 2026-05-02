@@ -15,20 +15,9 @@
 <body data-theme="light">
   <!-- Navigation -->
   <nav class="main-nav">
-    <div class="nav-brand">
-      <a href="index.html">
-        <img src="iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
-      </a>
-      <div class="brand-text">
-        <a href="index.html" class="brand-link">
-          <span class="brand-title">Panchmahala</span>
-          <span class="brand-subtitle">Indian Navyuvak Humanitarian Education Trust</span>
-        </a>
-      </div>
-    </div>
-    <div class="nav-links">
+    <div class="nav-links-left">
       <div class="nav-dropdown">
-        <a href="#" class="nav-link dropdown-trigger">About <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <a href="#" class="nav-link dropdown-trigger">About</a>
         <div class="dropdown-menu">
           <a href="approach.html" class="dropdown-item">Our Approach</a>
           <a href="roadmap.html" class="dropdown-item">Roadmap</a>
@@ -38,15 +27,28 @@
         </div>
       </div>
       <div class="nav-dropdown">
-        <a href="#" class="nav-link dropdown-trigger">The Campus <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <a href="#" class="nav-link dropdown-trigger">Campus</a>
         <div class="dropdown-menu">
           <a href="masterplan.html" class="dropdown-item">Masterplan</a>
           <a href="journal.html" class="dropdown-item">Build Journal</a>
           <a href="current-work.html" class="dropdown-item">Current Work</a>
         </div>
       </div>
+    </div>
+
+    <div class="nav-brand-center">
+      <a href="index.html" class="brand-link-center">
+        <img src="iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
+        <div class="brand-text-center">
+          <span class="brand-title">Panchmahala</span>
+          <span class="brand-subtitle">Indian Navyuvak Humanitarian Education Trust</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="nav-links-right">
       <div class="nav-dropdown">
-        <a href="#" class="nav-link dropdown-trigger">Education <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <a href="#" class="nav-link dropdown-trigger">Education</a>
         <div class="dropdown-menu">
           <a href="education.html" class="dropdown-item">Learning Model</a>
           <a href="women-education.html" class="dropdown-item">Women's Initiative</a>
@@ -54,25 +56,18 @@
         </div>
       </div>
       <a href="partnerships.html" class="nav-link">Partner</a>
-      <a href="contact.html" class="nav-link">Contact</a>
-      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn donate-btn-nav">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-        Donate
-      </a>
-    </div>
-    <div class="nav-actions">
-      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="5"/>
-          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>
-        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-        </svg>
-      </button>
-      <button class="login-btn" id="loginBtn">Login</button>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+        <button class="login-btn" id="loginBtn">Login</button>
+      </div>
     </div>
     <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
       <span></span><span></span><span></span>
@@ -120,10 +115,13 @@
   <!-- Hero Section - Mission First -->
   <section class="hero-section hero-minimal">
     <div class="hero-content">
-      <span class="hero-label">Indian Navyuvak Humanitarian Education Trust</span>
-      <h1 class="hero-title-large">Building India's First Sustainable Student Town in <span class="text-gradient">Rural Bihar</span></h1>
+      <div class="hero-tag-row">
+        <span class="hero-label">Indian Navyuvak Humanitarian Education Trust</span>
+        <span class="section-tag solarpunk-badge">Solarpunk Mission</span>
+      </div>
+      <h1 class="hero-title-large">Centers of Excellence in <span class="text-gradient">Rural Bihar</span></h1>
       <p class="hero-subtext">
-        We begin with the pilot campus called The Beno-Uno, a living educational ecosystem in Panchmahala, Mokama combining libraries, residential learning, cultural preservation, sustainable mobility, food systems, and skill development.
+        Building India's first sustainable "Student Town" — The Beno-Uno. A living educational ecosystem in Panchmahala, Mokama where academic rigor meets practical skills and cultural identity.
       </p>
       <div class="hero-cta-row">
         <a href="masterplan.html" class="cta-primary large explore-campus-btn">Explore Campus</a>
@@ -342,10 +340,10 @@
       <p class="section-subtitle">Complete human beings: curious, physical, creative, capable of building their communities.</p>
     </div>
     <div class="model-grid">
-      <div class="model-card academic">
+      <div class="model-card academic solarpunk-glow">
         <div class="model-number">01</div>
         <h3>Academic Rigor</h3>
-        <p>NIOS-accredited formal academics. Writing, inquiry, and intellectual discipline.</p>
+        <p>Formal academics through NIOS. Writing, inquiry, and intellectual discipline for rural excellence.</p>
         <ul>
           <li>NIOS formal academics</li>
           <li>Writing & research</li>
@@ -355,19 +353,19 @@
       <div class="model-card practical">
         <div class="model-number">02</div>
         <h3>Practical Skills</h3>
-        <p>Vocational learning integrated into daily life. Agriculture, craft, technology.</p>
+        <p>Vocational learning integrated into daily life. From sustainable agriculture to digital craft.</p>
         <ul>
+          <li>Sustainable Agriculture</li>
           <li>Vocational training</li>
-          <li>Agriculture & food</li>
           <li>Digital literacy</li>
         </ul>
       </div>
       <div class="model-card cultural">
         <div class="model-number">03</div>
         <h3>Cultural Rootedness</h3>
-        <p>Kaithi script, Magahi language, local arts. Honoring what exists while building anew.</p>
+        <p>Kaithi script revival and Magahi documentation. Honoring what exists while building anew.</p>
         <ul>
-          <li>Kaithi preservation</li>
+          <li>Kaithi script revival</li>
           <li>Magahi documentation</li>
           <li>Oral history archive</li>
         </ul>
@@ -548,7 +546,7 @@
         <a href="contact.html" class="cta-secondary large">Support the Trust</a>
       </div>
       <div class="cta-download">
-        <a href="Panchmahala-Vision-Document.pdf" class="download-link" download>
+        <a href="Panchmahala.pdf" class="download-link" download>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Download Vision Document (PDF)
         </a>
