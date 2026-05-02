@@ -142,24 +142,34 @@ a {
 /* ── NAVIGATION ── */
 .main-nav {
   position: fixed;
-  top: 24px;
+  top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 48px);
-  max-width: 1200px;
-  height: 64px;
+  width: calc(100% - 40px);
+  max-width: 1280px;
+  min-height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  background: rgba(var(--color-surface-rgb), 0.78);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--border-color);
+  padding: 8px 12px 8px 20px;
+  background: rgba(var(--color-surface-rgb), 0.85);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid var(--border-strong);
   border-radius: 99px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 
+    0 4px 20px rgba(47, 41, 31, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.05) inset;
   z-index: 1000;
   transition: all var(--transition-normal);
+}
+
+.main-nav:hover {
+  background: rgba(var(--color-surface-rgb), 0.92);
+  box-shadow: 
+    0 8px 32px rgba(47, 41, 31, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.15) inset;
 }
 
 .nav-brand {
@@ -200,19 +210,88 @@ a {
 
 .nav-links {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(var(--color-surface-rgb), 0.5);
+  border-radius: 99px;
+  border: 1px solid var(--border-color);
 }
 
 .nav-link {
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
   color: var(--text-secondary);
   border-radius: 999px;
   transition: all var(--transition-fast);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.25);
+}
+
+/* Nav dropdown styling */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown .dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dropdown-arrow {
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-fast);
+}
+
+.nav-dropdown:hover .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  min-width: 200px;
+  background: rgba(var(--color-surface-rgb), 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-fast);
+  z-index: 1001;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dropdown-item {
+  display: block;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.dropdown-item:hover {
   background: var(--color-primary-pale);
   color: var(--color-primary);
 }
@@ -220,12 +299,16 @@ a {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  padding: 4px;
+  background: rgba(var(--color-surface-rgb), 0.5);
+  border-radius: 99px;
+  border: 1px solid var(--border-color);
 }
 
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border-color);
   background: var(--color-surface);
@@ -247,6 +330,31 @@ a {
   color: var(--color-on-primary);
   border-color: var(--color-primary);
   transform: scale(1.05);
+}
+
+/* Donate button in nav */
+.donate-btn-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--color-on-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.donate-btn-nav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.donate-btn-nav:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.4);
 }
 
 /* Theme Toggle - Sun/Moon */
