@@ -7,16 +7,16 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/panchmela.css" />
-  <link rel="stylesheet" href="css/panchmela-pages.css" />
-  <link rel="icon" type="image/png" href="Images/iNHET logo.png" />
+  <link rel="stylesheet" href="panchmela.css" />
+  <link rel="stylesheet" href="panchmela-pages.css" />
+  <link rel="icon" type="image/png" href="iNHET logo.png" />
 </head>
 <body data-theme="light">
   <!-- Navigation -->
   <nav class="main-nav">
     <div class="nav-brand">
       <a href="index.html">
-        <img src="Images/iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
+        <img src="iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
       </a>
       <div class="brand-text">
         <a href="index.html" class="brand-link">
@@ -30,7 +30,7 @@
         <a href="#" class="nav-link dropdown-trigger">About <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
         <div class="dropdown-menu">
           <a href="approach.html" class="dropdown-item">Our Approach</a>
-          <a href="roadmap.html" class="dropdown-item active">Roadmap</a>
+          <a href="roadmap.html" class="dropdown-item">Roadmap</a>
           <a href="team.html" class="dropdown-item">Team</a>
           <a href="transparency.html" class="dropdown-item">Transparency</a>
           <a href="faq.html" class="dropdown-item">FAQ</a>
@@ -69,6 +69,12 @@
         </svg>
         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+      <button class="icon-btn account-btn" id="accountBtn" aria-label="Account">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
         </svg>
       </button>
       <button class="login-btn" id="loginBtn">Login</button>
@@ -119,7 +125,7 @@
   <!-- Page Header -->
   <section class="page-header">
     <div class="page-header-content">
-      <span class="section-tag centered">Execution Plan</span>
+      <span class="section-tag">Execution Plan</span>
       <h1 class="page-title">Roadmap</h1>
       <p class="page-subtitle">
         A phased approach to building India's first sustainable student town. From pilot to full ecosystem.
@@ -192,9 +198,9 @@
             <li>Completion: 2026</li>
           </ul>
         </div>
-        <div class="phase-card" style="background: var(--color-primary); color: var(--color-on-primary);">
+        <div class="phase-card highlight">
           <div class="phase-icon">📚</div>
-          <h4 style="color: var(--color-on-primary);">NIOS Accreditation</h4>
+          <h4>NIOS Accreditation</h4>
           <ul>
             <li>Formal registration complete</li>
             <li>Curriculum framework finalized</li>
@@ -318,9 +324,9 @@
             <li>Local language revival</li>
           </ul>
         </div>
-        <div class="phase-card" style="background: var(--color-primary); color: var(--color-on-primary);">
+        <div class="phase-card highlight">
           <div class="phase-icon">🌐</div>
-          <h4 style="color: var(--color-on-primary);">Regional Training Hub</h4>
+          <h4>Regional Training Hub</h4>
           <ul>
             <li>Teacher training programs</li>
             <li>Replication playbook</li>
@@ -393,7 +399,7 @@
   <footer class="main-footer">
     <div class="footer-grid">
       <div class="footer-brand">
-        <img src="Images/iNHET logo.png" alt="iNHET" class="footer-logo" />
+        <img src="iNHET logo.png" alt="iNHET" class="footer-logo" />
         <p class="footer-tagline">Rooted in Earth. Open in Mind.</p>
         <div class="footer-address">
           <span>Panchmahala, Mokama, Bihar</span>
@@ -401,36 +407,38 @@
           <span>Email: inhetedu@zohomail.in</span>
         </div>
       </div>
-      <div class="footer-col">
-        <h4>About</h4>
-        <a href="approach.html">Our Approach</a>
-        <a href="roadmap.html">Roadmap</a>
-        <a href="team.html">Team</a>
-        <a href="transparency.html">Transparency</a>
-      </div>
-      <div class="footer-col">
-        <h4>The Campus</h4>
-        <a href="masterplan.html">Masterplan</a>
-        <a href="journal.html">Build Journal</a>
-        <a href="current-work.html">Current Work</a>
-      </div>
-      <div class="footer-col">
-        <h4>Education</h4>
-        <a href="education.html">Learning Model</a>
-        <a href="women-education.html">Women's Initiative</a>
-        <a href="culture.html">Cultural Preservation</a>
-      </div>
-      <div class="footer-col">
-        <h4>Connect</h4>
-        <a href="partnerships.html">Partnerships</a>
-        <a href="faq.html">FAQ</a>
-        <a href="contact.html">Contact</a>
-        <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn" style="margin-top: 12px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          Donate Now
-        </a>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>About</h4>
+          <a href="approach.html">Our Approach</a>
+          <a href="roadmap.html">Roadmap</a>
+          <a href="team.html">Team</a>
+          <a href="transparency.html">Transparency</a>
+        </div>
+        <div class="footer-col">
+          <h4>The Campus</h4>
+          <a href="masterplan.html">Masterplan</a>
+          <a href="journal.html">Build Journal</a>
+          <a href="current-work.html">Current Work</a>
+        </div>
+        <div class="footer-col">
+          <h4>Education</h4>
+          <a href="education.html">Learning Model</a>
+          <a href="women-education.html">Women's Initiative</a>
+          <a href="culture.html">Cultural Preservation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="partnerships.html">Partnerships</a>
+          <a href="faq.html">FAQ</a>
+          <a href="contact.html">Contact</a>
+          <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn" style="margin-top: 12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Donate Now
+          </a>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -445,7 +453,7 @@
     <div class="login-modal-content">
       <button class="modal-close" id="closeModal">&times;</button>
       <div class="modal-header">
-        <img src="Images/iNHET logo.png" alt="iNHET" class="modal-logo" />
+        <img src="iNHET logo.png" alt="iNHET" class="modal-logo" />
         <h2>Welcome Back</h2>
         <p>Enter your credentials to access the platform</p>
       </div>
@@ -490,6 +498,6 @@
     </div>
   </div>
 
-  <script src="js/panchmela.js"></script>
+  <script src="panchmela.js"></script>
 </body>
 </html>
