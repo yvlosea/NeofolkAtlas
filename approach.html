@@ -7,24 +7,52 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="panchmela.css" />
-  <link rel="stylesheet" href="panchmela-pages.css" />
+  <link rel="stylesheet" href="css/panchmela.css" />
+  <link rel="stylesheet" href="css/panchmela-pages.css" />
   <link rel="icon" type="image/png" href="iNHET%20logo.png" />
 </head>
 <body data-theme="light">
   <!-- Navigation -->
   <nav class="main-nav">
     <div class="nav-brand">
-      <img src="iNHET%20logo.png" alt="iNHET Logo" class="nav-logo" />
+      <a href="index.html">
+        <img src="iNHET%20logo.png" alt="iNHET Logo" class="nav-logo" />
+      </a>
       <div class="brand-text">
-        <span class="brand-title">Panchmahala</span>
-        <span class="brand-subtitle">Indian Navyuvak Humanitarian Education Trust</span>
+        <a href="index.html" class="brand-link">
+          <span class="brand-title">Panchmahala</span>
+          <span class="brand-subtitle">Indian Navyuvak Humanitarian Education Trust</span>
+        </a>
       </div>
     </div>
     <div class="nav-links">
-      <a href="current-work.html" class="nav-link">Current Work</a>
-      <a href="approach.html" class="nav-link active">Approach</a>
-      <a href="team.html" class="nav-link">Team</a>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">About <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="approach.html" class="dropdown-item active">Our Approach</a>
+          <a href="roadmap.html" class="dropdown-item">Roadmap</a>
+          <a href="team.html" class="dropdown-item">Team</a>
+          <a href="transparency.html" class="dropdown-item">Transparency</a>
+          <a href="faq.html" class="dropdown-item">FAQ</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">The Campus <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="masterplan.html" class="dropdown-item">Masterplan</a>
+          <a href="journal.html" class="dropdown-item">Build Journal</a>
+          <a href="current-work.html" class="dropdown-item">Current Work</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">Education <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="education.html" class="dropdown-item">Learning Model</a>
+          <a href="women-education.html" class="dropdown-item">Women's Initiative</a>
+          <a href="culture.html" class="dropdown-item">Cultural Preservation</a>
+        </div>
+      </div>
+      <a href="partnerships.html" class="nav-link">Partner</a>
       <a href="contact.html" class="nav-link">Contact</a>
       <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn donate-btn-nav">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -41,12 +69,6 @@
         </svg>
         <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-        </svg>
-      </button>
-      <button class="icon-btn account-btn" id="accountBtn" aria-label="Account">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
         </svg>
       </button>
       <button class="login-btn" id="loginBtn">Login</button>
@@ -110,7 +132,7 @@
     <div class="approach-card">
       <div class="approach-icon">📚</div>
       <h3>Educational Clarity</h3>
-      <p>
+      <p style="text-align: justify;">
         Students are not fragments to be optimized. They are complete human beings: curious, physical, creative, and capable of building the communities they come from.
       </p>
     </div>
@@ -118,52 +140,15 @@
     <div class="approach-card">
       <div class="approach-icon">🌱</div>
       <h3>Sustainable Identity</h3>
-      <p>
+      <p style="text-align: justify;">
         The campus has to feel rooted, civic, and alive. Local materials, climate-responsive design, and durable construction are part of the pedagogy, not decoration.
       </p>
-    </div>
-
-    <div class="approach-card full-width">
-      <span class="section-tag">Core Values</span>
-      <h3>What We Stand For</h3>
-      <div class="values-list">
-        <div class="value-item">
-          <span class="value-icon">🌍</span>
-          <h4>Rooted in Place</h4>
-          <p>Starting in Panchmahala, Mokama, Bihar, and building from the ground up</p>
-        </div>
-        <div class="value-item">
-          <span class="value-icon">🤝</span>
-          <h4>Community First</h4>
-          <p>Genuine community engagement has to shape the institution</p>
-        </div>
-        <div class="value-item">
-          <span class="value-icon">🧠</span>
-          <h4>Intellectual Growth</h4>
-          <p>Writing, design, inquiry, and rigor belong in one ecosystem</p>
-        </div>
-        <div class="value-item">
-          <span class="value-icon">♻️</span>
-          <h4>Regenerative Design</h4>
-          <p>The building must teach restraint, maintenance, and stewardship</p>
-        </div>
-        <div class="value-item">
-          <span class="value-icon">🌿</span>
-          <h4>Climate Responsive</h4>
-          <p>Technology, agriculture, and climate intelligence stay in one frame</p>
-        </div>
-        <div class="value-item">
-          <span class="value-icon">📖</span>
-          <h4>Lifelong Learning</h4>
-          <p>The goal is not a one-off campus but a model replicable across rural India</p>
-        </div>
-      </div>
     </div>
 
     <div class="approach-card">
       <div class="approach-icon">🏗️</div>
       <h3>Design Philosophy</h3>
-      <p>
+      <p style="text-align: justify;">
         Our architecture responds to climate, uses local materials, and insists that the learning environment carry moral weight. The tower is not a mascot. It is infrastructure for study, gathering, and collective ambition.
       </p>
     </div>
@@ -171,9 +156,46 @@
     <div class="approach-card">
       <div class="approach-icon">👥</div>
       <h3>Collaborative Learning</h3>
-      <p>
+      <p style="text-align: justify;">
         We believe in peer learning, mentorship, disciplined self-study, and public discussion. The institution has to hold solitude, collaboration, and accountability at the same time.
       </p>
+    </div>
+
+    <div class="approach-card full-width">
+      <span class="section-tag">Core Values</span>
+      <h3 style="font-size: 2rem; margin: 16px 0 24px;">What We Stand For</h3>
+      <div class="values-list">
+        <div class="value-item">
+          <span class="value-icon">🌍</span>
+          <h4>Rooted in Place</h4>
+          <p style="text-align: justify;">Starting in Panchmahala, Mokama, Bihar, and building from the ground up</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🤝</span>
+          <h4>Community First</h4>
+          <p style="text-align: justify;">Genuine community engagement has to shape the institution</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🧠</span>
+          <h4>Intellectual Growth</h4>
+          <p style="text-align: justify;">Writing, design, inquiry, and rigor belong in one ecosystem</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">♻️</span>
+          <h4>Regenerative Design</h4>
+          <p style="text-align: justify;">The building must teach restraint, maintenance, and stewardship</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🌿</span>
+          <h4>Climate Responsive</h4>
+          <p style="text-align: justify;">Technology, agriculture, and climate intelligence stay in one frame</p>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">📖</span>
+          <h4>Lifelong Learning</h4>
+          <p style="text-align: justify;">The goal is not a one-off campus but a model replicable across rural India</p>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -224,36 +246,47 @@
       <div class="footer-brand">
         <img src="iNHET%20logo.png" alt="iNHET" class="footer-logo" />
         <p class="footer-tagline">Rooted in Earth. Open in Mind.</p>
-      </div>
-      <div class="footer-links">
-        <div class="footer-col">
-          <h4>Explore</h4>
-          <a href="current-work.html">Current Work</a>
-          <a href="approach.html">Approach</a>
-          <a href="team.html">Team</a>
-        </div>
-        <div class="footer-col">
-          <h4>Connect</h4>
-          <a href="partnerships.html">Partnerships</a>
-          <a href="faq.html">FAQ</a>
-          <a href="contact.html">Contact</a>
-          <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn" style="margin-top: 12px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-            Donate Now
-          </a>
-        </div>
-        <div class="footer-col">
-          <h4>Connect</h4>
-          <a href="contact.html">Contact</a>
+        <div class="footer-address">
+          <span>Panchmahala, Mokama, Bihar</span>
           <span>Phone: 9667115543</span>
           <span>Email: inhetedu@zohomail.in</span>
         </div>
       </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <a href="approach.html">Our Approach</a>
+        <a href="roadmap.html">Roadmap</a>
+        <a href="team.html">Team</a>
+        <a href="transparency.html">Transparency</a>
+      </div>
+      <div class="footer-col">
+        <h4>The Campus</h4>
+        <a href="masterplan.html">Masterplan</a>
+        <a href="journal.html">Build Journal</a>
+        <a href="current-work.html">Current Work</a>
+      </div>
+      <div class="footer-col">
+        <h4>Education</h4>
+        <a href="education.html">Learning Model</a>
+        <a href="women-education.html">Women's Initiative</a>
+        <a href="culture.html">Cultural Preservation</a>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <a href="partnerships.html">Partnerships</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+        <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn" style="margin-top: 12px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px;">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          Donate Now
+        </a>
+      </div>
     </div>
     <div class="footer-bottom">
       <p>&copy; 2026 Indian Navyuvak Humanitarian Education Trust. All rights reserved.</p>
+      <p class="footer-note">Registered non-profit • 12A/80G eligibility in process</p>
     </div>
   </footer>
 
@@ -308,6 +341,6 @@
     </div>
   </div>
 
-  <script src="panchmela.js"></script>
+  <script src="js/panchmela.js"></script>
 </body>
 </html>

@@ -41,7 +41,7 @@ window.Router = {
  */
 function debounce(func, wait) {
   let timeout;
-  return function(...args) {
+  return function (...args) {
     const context = this;
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(context, args), wait);
@@ -50,7 +50,7 @@ function debounce(func, wait) {
 
 // Domain-based scoring system - Base 10 structure
 const domainKeys = [
-  'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'civitas_chronicles', 
+  'lingosophy', 'arithmetics', 'cosmology', 'biosphere', 'civitas_chronicles',
   'tokenomics', 'artifex', 'praxis', 'bioepisteme', 'cyberonics', 'jurisprudence', 'technologia', 'medicina'
 ];
 
@@ -59,53 +59,53 @@ const defaultNeoSpecialization = { "General": 0 };
 
 // LINEAGE_TOKENS mapping for Knowledge Topology - Indian Lineage Tokens
 const LINEAGE_TOKENS = {
-    lingosophy: "Spivaks", 
-    arithmetics: "Shakuntis", 
-    cosmology: "Bhattas",
-    biosphere: "Janakis", 
-    civitas_chronicles: "Savi-Thapars", 
-    tokenomics: "Bhanus", 
-    artifex: "Sarabhs", 
-    praxis: "Arunas", 
-    bioepisteme: "Gagas",
-    cyberonics: "Nyayas",
-    jurisprudence: "Vidhans",
-    technologia: "Vishwas",
-    medicina: "Charakas"
+  lingosophy: "Spivaks",
+  arithmetics: "Shakuntis",
+  cosmology: "Bhattas",
+  biosphere: "Janakis",
+  civitas_chronicles: "Savi-Thapars",
+  tokenomics: "Bhanus",
+  artifex: "Sarabhs",
+  praxis: "Arunas",
+  bioepisteme: "Gagas",
+  cyberonics: "Nyayas",
+  jurisprudence: "Vidhans",
+  technologia: "Vishwas",
+  medicina: "Charakas"
 };
 
 // DOMAIN_NAMES mapping for radar chart and UI display
 const DOMAIN_NAMES = {
-    lingosophy: "LINGOSOPHY",
-    arithmetics: "ARTHMETICS", 
-    cosmology: "COSMOLOGY",
-    biosphere: "BIOSPHERE", 
-    civitas_chronicles: "CIVICS & CHRONICLES", 
-    tokenomics: "TOKENOMICS", 
-    artifex: "ARTIFEX", 
-    praxis: "PRAXIS", 
-    bioepisteme: "BIOESTIPEME",
-    cyberonics: "CYBERONICS",
-    jurisprudence: "JURISPRUDENCE",
-    technologia: "TECHNOLOGIA",
-    medicina: "MEDICINA"
+  lingosophy: "LINGOSOPHY",
+  arithmetics: "ARTHMETICS",
+  cosmology: "COSMOLOGY",
+  biosphere: "BIOSPHERE",
+  civitas_chronicles: "CIVICS & CHRONICLES",
+  tokenomics: "TOKENOMICS",
+  artifex: "ARTIFEX",
+  praxis: "PRAXIS",
+  bioepisteme: "BIOESTIPEME",
+  cyberonics: "CYBERONICS",
+  jurisprudence: "JURISPRUDENCE",
+  technologia: "TECHNOLOGIA",
+  medicina: "MEDICINA"
 };
 
 // AutoEdu Domain Data with subjects
 const AUTOEDU_DOMAINS = [
-  { id: "lingosophy",  label: "Lingosophy",  token: "Spivaks",   color: "#5b21b6", sub: "Linguistics & Philosophy" },
+  { id: "lingosophy", label: "Lingosophy", token: "Spivaks", color: "#5b21b6", sub: "Linguistics & Philosophy" },
   { id: "arithmetics", label: "Arithmetics", token: "Shakuntis", color: "#92400e", sub: "Mathematics" },
-  { id: "cosmology",   label: "Cosmology",   token: "Bhattas",   color: "#075985", sub: "Astronomy & Physics" },
-  { id: "biosphere",   label: "Biosphere",   token: "Janakis",   color: "#166534", sub: "Biology & Botany" },
+  { id: "cosmology", label: "Cosmology", token: "Bhattas", color: "#075985", sub: "Astronomy & Physics" },
+  { id: "biosphere", label: "Biosphere", token: "Janakis", color: "#166534", sub: "Biology & Botany" },
   { id: "civitas_chronicles", label: "Civics & Chronicles", token: "Savi-Thapars", color: "#7c2d12", sub: "History & Political Theory" },
-  { id: "tokenomics",  label: "Tokenomics",  token: "Bhanus",    color: "#1e3a5f", sub: "Economics & Commons" },
-  { id: "artifex",     label: "Artifex",     token: "Sarabhs",   color: "#134e4a", sub: "Design & Craft" },
-  { id: "praxis",      label: "Praxis",      token: "Arunas",    color: "#4c1d95", sub: "Action & Reform" },
-  { id: "bioepisteme", label: "Bioepisteme", token: "Gagas",     color: "#155e75", sub: "Life Sciences" },
-  { id: "cyberonics",  label: "Cyberonics",  token: "Nyayas",    color: "#0f766e", sub: "Systems & Cybernetics" },
+  { id: "tokenomics", label: "Tokenomics", token: "Bhanus", color: "#1e3a5f", sub: "Economics & Commons" },
+  { id: "artifex", label: "Artifex", token: "Sarabhs", color: "#134e4a", sub: "Design & Craft" },
+  { id: "praxis", label: "Praxis", token: "Arunas", color: "#4c1d95", sub: "Action & Reform" },
+  { id: "bioepisteme", label: "Bioepisteme", token: "Gagas", color: "#155e75", sub: "Life Sciences" },
+  { id: "cyberonics", label: "Cyberonics", token: "Nyayas", color: "#0f766e", sub: "Systems & Cybernetics" },
   { id: "jurisprudence", label: "Jurisprudence", token: "Vidhans", color: "#b45309", sub: "Law & Ethics" },
-  { id: "technologia", label: "Technologia", token: "Vishwas",   color: "#4338ca", sub: "Applied Technology" },
-  { id: "medicina",    label: "Medicina",    token: "Charakas",  color: "#be123c", sub: "Medicine & Healing" }
+  { id: "technologia", label: "Technologia", token: "Vishwas", color: "#4338ca", sub: "Applied Technology" },
+  { id: "medicina", label: "Medicina", token: "Charakas", color: "#be123c", sub: "Medicine & Healing" }
 ];
 
 // AutoEdu Courses Data
@@ -281,10 +281,10 @@ function renderAutoeduHome() {
   const userId = currentUser?.id || 'guest';
   const stats = getSubmissionStats(userId);
   const portfolio = getPortfolioByCategory(userId);
-  
+
   const root = document.getElementById('autoedu-root');
   if (!root) return;
-  
+
   root.innerHTML = `
     <div class="dashboard-shell">
       <!-- Header with Neoscore -->
@@ -319,12 +319,12 @@ function renderAutoeduHome() {
           </div>
           <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 16px;">
             ${[
-              ['Learning Activity', stats.neoscoreBreakdown?.learningActivity || 0, '30%', '#5b21b6'],
-              ['Portfolio Quality', stats.neoscoreBreakdown?.portfolioQuality || 0, '25%', '#c8a84b'],
-              ['Impact', stats.neoscoreBreakdown?.impactContribution || 0, '20%', '#166534'],
-              ['Domain Balance', stats.neoscoreBreakdown?.domainBalance || 0, '15%', '#075985'],
-              ['Peer Validation', stats.neoscoreBreakdown?.peerValidation || 0, '10%', '#9f1239']
-            ].map(([label, value, max, color]) => `
+      ['Learning Activity', stats.neoscoreBreakdown?.learningActivity || 0, '30%', '#5b21b6'],
+      ['Portfolio Quality', stats.neoscoreBreakdown?.portfolioQuality || 0, '25%', '#c8a84b'],
+      ['Impact', stats.neoscoreBreakdown?.impactContribution || 0, '20%', '#166534'],
+      ['Domain Balance', stats.neoscoreBreakdown?.domainBalance || 0, '15%', '#075985'],
+      ['Peer Validation', stats.neoscoreBreakdown?.peerValidation || 0, '10%', '#9f1239']
+    ].map(([label, value, max, color]) => `
               <div style="text-align: center;">
                 <div style="font-size: 24px; font-weight: 600; color: ${color};">${value}</div>
                 <div style="font-size: 10px; color: var(--muted-text); text-transform: uppercase; letter-spacing: 0.5px;">${label}</div>
@@ -337,10 +337,10 @@ function renderAutoeduHome() {
         <!-- Portfolio Categories -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
           ${Object.entries(AUTOEDU_CATEGORIES).map(([key, cat]) => {
-            const works = portfolio[cat.id] || [];
-            const monthlyCount = stats.monthlyCaps?.[cat.id] || 0;
-            const monthlyCap = AUTOEDU_MONTHLY_CAPS[cat.id];
-            return `
+      const works = portfolio[cat.id] || [];
+      const monthlyCount = stats.monthlyCaps?.[cat.id] || 0;
+      const monthlyCap = AUTOEDU_MONTHLY_CAPS[cat.id];
+      return `
               <div class="card" style="border-left: 4px solid ${cat.color};">
                 <div class="dashboard-card-topline">
                   <div style="display: flex; align-items: center; gap: 8px;">
@@ -370,7 +370,7 @@ function renderAutoeduHome() {
                 </div>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
 
@@ -378,8 +378,8 @@ function renderAutoeduHome() {
       <div id="home-galleries" style="display: ${autoeduHomeTab === 'galleries' ? 'block' : 'none'};">
         <div style="display: grid; gap: 24px;">
           ${AUTOEDU_GALLERIES.map(gallery => {
-            const works = getGalleryWorks(gallery.id, 5);
-            return `
+      const works = getGalleryWorks(gallery.id, 5);
+      return `
               <div class="card">
                 <div class="dashboard-card-topline">
                   <h3 style="margin: 0; font-weight: 400; font-style: italic;">${gallery.label}</h3>
@@ -398,7 +398,7 @@ function renderAutoeduHome() {
                 </div>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
 
@@ -447,7 +447,7 @@ function renderAutoeduHome() {
 // AutoEdu Home Tab State
 let autoeduHomeTab = 'portfolio';
 
-window.autoeduSetHomeTab = function(tab) {
+window.autoeduSetHomeTab = function (tab) {
   autoeduHomeTab = tab;
   renderAutoeduHome();
 };
@@ -456,7 +456,7 @@ window.autoeduSetHomeTab = function(tab) {
 function renderAutoeduCoursesSection() {
   const earned = Object.keys(autoeduTokens).length;
   const total = AUTOEDU_DOMAINS.length;
-  
+
   return `
     <div>
       <div style="display: flex; gap: 12px; margin-bottom: 24px;">
@@ -470,8 +470,8 @@ function renderAutoeduCoursesSection() {
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-top: 20px;">
           ${AUTOEDU_DOMAINS.map(d => {
-            const has = autoeduTokens[d.id];
-            return `
+    const has = autoeduTokens[d.id];
+    return `
               <div class="record-card" style="
                 padding: 16px;
                 background: ${has ? d.color + '18' : 'rgba(0,0,0,0.2)'};
@@ -484,17 +484,17 @@ function renderAutoeduCoursesSection() {
                 </div>
               </div>
             `;
-          }).join('')}
+  }).join('')}
         </div>
       </div>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
         ${[
-          ["01", "Read", "Community-written courses. Dense, honest, no fluff."],
-          ["02", "Explore", "Follow rabbit holes from any course into connected topics."],
-          ["03", "Assess", "Quiz or essay. Human-written questions."],
-          ["04", "Earn", "Pass the assessment → earn the domain's Lineage Token."],
-        ].map(([n, title, desc]) => `
+      ["01", "Read", "Community-written courses. Dense, honest, no fluff."],
+      ["02", "Explore", "Follow rabbit holes from any course into connected topics."],
+      ["03", "Assess", "Quiz or essay. Human-written questions."],
+      ["04", "Earn", "Pass the assessment → earn the domain's Lineage Token."],
+    ].map(([n, title, desc]) => `
           <div style="padding: 24px; background: var(--ink);">
             <div style="font-size: 10px; color: var(--gold); letter-spacing: 0.15em; margin-bottom: 8px;">${n}</div>
             <div style="font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--parchment);">${title}</div>
@@ -510,16 +510,16 @@ function renderAutoeduCoursesSection() {
 function renderAutoeduSubmitForm() {
   const userId = currentUser?.id || 'guest';
   const stats = getSubmissionStats(userId);
-  
+
   return `
     <div>
       <!-- Monthly Caps Warning -->
       <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px;">
         ${Object.entries(AUTOEDU_CATEGORIES).map(([key, cat]) => {
-          const count = stats.monthlyCaps?.[cat.id] || 0;
-          const cap = AUTOEDU_MONTHLY_CAPS[cat.id];
-          const isNearCap = count >= cap * 0.8;
-          return `
+    const count = stats.monthlyCaps?.[cat.id] || 0;
+    const cap = AUTOEDU_MONTHLY_CAPS[cat.id];
+    const isNearCap = count >= cap * 0.8;
+    return `
             <div style="
               padding: 12px; 
               background: ${isNearCap ? 'rgba(255,68,68,0.1)' : 'rgba(0,0,0,0.2)'}; 
@@ -533,7 +533,7 @@ function renderAutoeduSubmitForm() {
               <div style="font-size: 9px; color: var(--muted-text);">this month</div>
             </div>
           `;
-        }).join('')}
+  }).join('')}
       </div>
 
       <!-- Submission Forms by Category -->
@@ -549,10 +549,10 @@ function renderAutoeduSubmitForm() {
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
               ${cat.types.map(type => {
-                const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
-                const monthlyCount = stats.monthlyCaps?.[cat.id] || 0;
-                const isAtCap = monthlyCount >= AUTOEDU_MONTHLY_CAPS[cat.id];
-                return `
+    const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
+    const monthlyCount = stats.monthlyCaps?.[cat.id] || 0;
+    const isAtCap = monthlyCount >= AUTOEDU_MONTHLY_CAPS[cat.id];
+    return `
                   <button 
                     onclick="window.autoeduShowSubmitModal('${type}')" 
                     class="btn" 
@@ -565,7 +565,7 @@ function renderAutoeduSubmitForm() {
                     </div>
                   </button>
                 `;
-              }).join('')}
+  }).join('')}
             </div>
           </div>
         `).join('')}
@@ -575,17 +575,17 @@ function renderAutoeduSubmitForm() {
 }
 
 // Show Submit Modal
-window.autoeduShowSubmitModal = function(type) {
+window.autoeduShowSubmitModal = function (type) {
   const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
   if (!typeConfig) return;
-  
+
   const userId = currentUser?.id || 'guest';
   const capCheck = checkMonthlyCap(userId, type);
   if (!capCheck.allowed) {
     alert(capCheck.reason);
     return;
   }
-  
+
   const modal = document.createElement('div');
   modal.id = 'autoedu-submit-modal';
   modal.innerHTML = `
@@ -659,13 +659,13 @@ window.autoeduShowSubmitModal = function(type) {
       </div>
     </div>
   `;
-  
+
   document.body.appendChild(modal);
-  
+
   // Handle form submission
   document.getElementById('autoedu-submit-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    
+
     const submission = {
       type: type,
       title: document.getElementById('submit-title').value,
@@ -676,7 +676,7 @@ window.autoeduShowSubmitModal = function(type) {
       externalLink: document.getElementById('submit-link').value,
       tags: document.getElementById('submit-tags').value.split(',').map(t => t.trim()).filter(t => t)
     };
-    
+
     const result = addAutoEduSubmission(userId, submission);
     if (result.success) {
       alert(`Work submitted! Initial score: ${Math.round(result.submission.score)} points. Pending community review.`);
@@ -688,21 +688,21 @@ window.autoeduShowSubmitModal = function(type) {
   });
 };
 
-window.autoeduCloseSubmitModal = function() {
+window.autoeduCloseSubmitModal = function () {
   const modal = document.getElementById('autoedu-submit-modal');
   if (modal) modal.remove();
 };
 
 // View Single Submission
-window.autoeduViewSubmission = function(submissionId) {
+window.autoeduViewSubmission = function (submissionId) {
   const submission = autoeduPortfolio.find(p => p.id === submissionId);
   if (!submission) return;
-  
+
   const typeConfig = AUTOEDU_SUBMISSION_TYPES[submission.type];
   const catConfig = Object.values(AUTOEDU_CATEGORIES).find(c => c.id === typeConfig?.category);
   const userId = currentUser?.id || 'guest';
   const hasRated = submission.raters?.includes(userId);
-  
+
   const modal = document.createElement('div');
   modal.id = 'autoedu-view-modal';
   modal.innerHTML = `
@@ -816,20 +816,20 @@ window.autoeduViewSubmission = function(submissionId) {
       </div>
     </div>
   `;
-  
+
   document.body.appendChild(modal);
 };
 
-window.autoeduCloseViewModal = function() {
+window.autoeduCloseViewModal = function () {
   const modal = document.getElementById('autoedu-view-modal');
   if (modal) modal.remove();
 };
 
 // Rate Work
-window.autoeduRateWork = function(submissionId, rating) {
+window.autoeduRateWork = function (submissionId, rating) {
   const userId = currentUser?.id || 'guest';
   const comment = document.getElementById(`rating-comment-${submissionId}`)?.value;
-  
+
   const result = rateSubmission(submissionId, userId, rating, comment);
   if (result.success) {
     alert(`Rated ${rating} stars! Thank you for contributing to quality assessment.`);
@@ -840,7 +840,7 @@ window.autoeduRateWork = function(submissionId, rating) {
 };
 
 // Engage with Work
-window.autoeduEngage = function(submissionId, action) {
+window.autoeduEngage = function (submissionId, action) {
   const userId = currentUser?.id || 'guest';
   const result = engageWithSubmission(submissionId, userId, action);
   if (result.success) {
@@ -852,12 +852,12 @@ window.autoeduEngage = function(submissionId, action) {
 };
 
 // View Gallery
-window.autoeduViewGallery = function(galleryId) {
+window.autoeduViewGallery = function (galleryId) {
   const gallery = AUTOEDU_GALLERIES.find(g => g.id === galleryId);
   if (!gallery) return;
-  
+
   const works = getGalleryWorks(galleryId, 20);
-  
+
   const modal = document.createElement('div');
   modal.id = 'autoedu-gallery-modal';
   modal.innerHTML = `
@@ -890,11 +890,11 @@ window.autoeduViewGallery = function(galleryId) {
       </div>
     </div>
   `;
-  
+
   document.body.appendChild(modal);
 };
 
-window.autoeduCloseGalleryModal = function() {
+window.autoeduCloseGalleryModal = function () {
   const modal = document.getElementById('autoedu-gallery-modal');
   if (modal) modal.remove();
 };
@@ -903,9 +903,9 @@ window.autoeduCloseGalleryModal = function() {
 function renderAutoeduLibrary() {
   const root = document.getElementById('autoedu-root');
   if (!root) return;
-  
+
   const filtered = autoeduFilter === 'all' ? AUTOEDU_COURSES : AUTOEDU_COURSES.filter(c => c.domain === autoeduFilter);
-  
+
   root.innerHTML = `
     <div class="dashboard-shell">
       <div class="dashboard-header">
@@ -927,9 +927,9 @@ function renderAutoeduLibrary() {
       <!-- Course Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
         ${filtered.map((c, i) => {
-          const d = getAutoeduDomain(c.domain);
-          const done = autoeduTokens[c.domain];
-          return `
+    const d = getAutoeduDomain(c.domain);
+    const done = autoeduTokens[c.domain];
+    return `
             <div onclick="window.autoeduSelectCourse('${c.id}')" class="record-card" style="
               padding: 24px;
               background: rgba(0,0,0,0.2);
@@ -948,7 +948,7 @@ function renderAutoeduLibrary() {
               </div>
             </div>
           `;
-        }).join('')}
+  }).join('')}
       </div>
 
       ${filtered.length === 0 ? `
@@ -964,12 +964,12 @@ function renderAutoeduLibrary() {
 function renderAutoeduCourse() {
   const root = document.getElementById('autoedu-root');
   if (!root || !autoeduActiveCourse) return;
-  
+
   const course = autoeduActiveCourse;
   const d = getAutoeduDomain(course.domain);
   const sec = course.sections[autoeduSection];
   const linked = AUTOEDU_COURSES.filter(c => course.rabbitHoles?.includes(c.id));
-  
+
   root.innerHTML = `
     <div class="dashboard-shell">
       <div class="dashboard-header">
@@ -1007,8 +1007,8 @@ function renderAutoeduCourse() {
           ${linked.length > 0 ? `
             <p class="section-label" style="margin-top: 24px; margin-bottom: 12px;">Rabbit holes</p>
             ${linked.map(l => {
-              const ld = getAutoeduDomain(l.domain);
-              return `
+    const ld = getAutoeduDomain(l.domain);
+    return `
                 <button onclick="window.autoeduSelectCourse('${l.id}')" class="btn" style="
                   display: block;
                   width: 100%;
@@ -1027,7 +1027,7 @@ function renderAutoeduCourse() {
                   <div style="margin-top: 6px; font-size: 12px; color: var(--muted-text);">${l.title}</div>
                 </button>
               `;
-            }).join('')}
+  }).join('')}
           ` : ''}
         </div>
 
@@ -1076,12 +1076,12 @@ function renderAutoeduCourse() {
 function renderAutoeduAssessment() {
   const root = document.getElementById('autoedu-root');
   if (!root || !autoeduActiveCourse) return;
-  
+
   const course = autoeduActiveCourse;
   const d = getAutoeduDomain(course.domain);
   const mcqs = course.questions.filter(q => q.type === 'mcq');
   const essays = course.questions.filter(q => q.type === 'essay');
-  
+
   if (!autoeduAssessmentMode) {
     root.innerHTML = `
       <div class="dashboard-shell" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
@@ -1121,7 +1121,7 @@ function renderAutoeduAssessment() {
     `;
     return;
   }
-  
+
   if (autoeduAssessmentMode === 'quiz') {
     root.innerHTML = `
       <div class="dashboard-shell">
@@ -1140,9 +1140,9 @@ function renderAutoeduAssessment() {
               </div>
               <div style="display: flex; flex-direction: column; gap: 8px;">
                 ${q.options.map(opt => {
-                  const letter = opt.charAt(0);
-                  const sel = autoeduAnswers[q.id] === letter;
-                  return `
+      const letter = opt.charAt(0);
+      const sel = autoeduAnswers[q.id] === letter;
+      return `
                     <button onclick="window.autoeduSetAnswer('${q.id}', '${letter}')" class="btn" style="
                       padding: 11px 16px;
                       border-radius: 5px;
@@ -1157,7 +1157,7 @@ function renderAutoeduAssessment() {
                       ${opt}
                     </button>
                   `;
-                }).join('')}
+    }).join('')}
               </div>
             </div>
           `).join('')}
@@ -1169,7 +1169,7 @@ function renderAutoeduAssessment() {
     `;
     return;
   }
-  
+
   if (autoeduAssessmentMode === 'essay') {
     const ep = essays[0];
     const words = autoeduEssayText.trim() ? autoeduEssayText.trim().split(/\s+/).length : 0;
@@ -1215,10 +1215,10 @@ function renderAutoeduAssessment() {
 function renderAutoeduResult() {
   const root = document.getElementById('autoedu-root');
   if (!root || !autoeduResult) return;
-  
+
   const d = getAutoeduDomain(autoeduResult.domain);
   const { passed, score, mode, details, pending } = autoeduResult;
-  
+
   root.innerHTML = `
     <div class="dashboard-shell" style="display: flex; align-items: center; justify-content: center; min-height: 80vh;">
       <div style="max-width: 620px; width: 100%; text-align: center;">
@@ -1233,8 +1233,8 @@ function renderAutoeduResult() {
         ${mode === 'quiz' && details ? `
           <div style="margin-bottom: 40px; text-align: left;">
             ${details.map((q, i) => {
-              const correct = q.yours === q.correct;
-              return `
+    const correct = q.yours === q.correct;
+    return `
                 <div style="margin-bottom: 12px; padding: 14px 16px; border-radius: 7px; background: ${correct ? 'rgba(255,255,255,0.03)' : 'rgba(255,0,0,0.03)'}; border: 1px solid ${correct ? 'rgba(255,255,255,0.08)' : 'rgba(255,0,0,0.1)'}; animation: fadeUp 0.3s ${i * 0.05}s ease both;">
                   <div style="font-size: 13px; color: var(--muted-text); margin-bottom: 6px; line-height: 1.4;">${q.q}</div>
                   <div style="font-size: 11px; color: ${correct ? '#4ade80' : '#f87171'};">
@@ -1243,7 +1243,7 @@ function renderAutoeduResult() {
                   ${!correct && q.explanation ? `<div style="font-size: 12px; color: var(--muted-text); margin-top: 6px; line-height: 1.5; font-style: italic;">${q.explanation}</div>` : ''}
                 </div>
               `;
-            }).join('')}
+  }).join('')}
           </div>
         ` : ''}
         
@@ -1259,7 +1259,7 @@ function renderAutoeduResult() {
 }
 
 // AutoEdu Navigation Functions
-window.autoeduNavigate = function(view) {
+window.autoeduNavigate = function (view) {
   autoeduView = view;
   if (view === 'home') renderAutoeduHome();
   else if (view === 'library') renderAutoeduLibrary();
@@ -1272,40 +1272,40 @@ window.autoeduNavigate = function(view) {
   }
 };
 
-window.autoeduSetFilter = function(filter) {
+window.autoeduSetFilter = function (filter) {
   autoeduFilter = filter;
   renderAutoeduLibrary();
 };
 
-window.autoeduSelectCourse = function(courseId) {
+window.autoeduSelectCourse = function (courseId) {
   autoeduActiveCourse = AUTOEDU_COURSES.find(c => c.id === courseId);
   autoeduSection = 0;
   autoeduView = 'course';
   renderAutoeduCourse();
 };
 
-window.autoeduSetSection = function(sectionIndex) {
+window.autoeduSetSection = function (sectionIndex) {
   autoeduSection = sectionIndex;
   renderAutoeduCourse();
 };
 
-window.autoeduSetAssessmentMode = function(mode) {
+window.autoeduSetAssessmentMode = function (mode) {
   autoeduAssessmentMode = mode;
   autoeduAnswers = {};
   autoeduEssayText = '';
   renderAutoeduAssessment();
 };
 
-window.autoeduSetAnswer = function(questionId, answer) {
+window.autoeduSetAnswer = function (questionId, answer) {
   autoeduAnswers[questionId] = answer;
   renderAutoeduAssessment();
 };
 
-window.autoeduSetEssay = function(text) {
+window.autoeduSetEssay = function (text) {
   autoeduEssayText = text;
 };
 
-window.autoeduSubmitQuiz = function() {
+window.autoeduSubmitQuiz = function () {
   const course = autoeduActiveCourse;
   const mcqs = course.questions.filter(q => q.type === 'mcq');
   const correct = mcqs.filter(q => autoeduAnswers[q.id] === q.correct).length;
@@ -1316,7 +1316,7 @@ window.autoeduSubmitQuiz = function() {
   renderAutoeduResult();
 };
 
-window.autoeduSubmitEssay = function() {
+window.autoeduSubmitEssay = function () {
   const words = autoeduEssayText.trim().split(/\s+/).length;
   if (words < 80) return;
   autoeduResult = { passed: true, score: null, mode: 'essay', domain: autoeduActiveCourse.domain, pending: true };
@@ -1341,7 +1341,7 @@ function initAutoEdu() {
 
 // Auto-save tokens
 const originalAutoeduNavigate = window.autoeduNavigate;
-window.autoeduNavigate = function(view) {
+window.autoeduNavigate = function (view) {
   localStorage.setItem('neofolk.autoeduTokens', JSON.stringify(autoeduTokens));
   localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
   localStorage.setItem('neofolk.autoeduReputation', JSON.stringify(autoeduReputation));
@@ -1402,22 +1402,22 @@ const AUTOEDU_SUBMISSION_TYPES = {
   article: { category: 'work', baseScore: 2, maxPerMonth: 5, weight: 1.0, label: 'Article' },
   essay: { category: 'work', baseScore: 2, maxPerMonth: 5, weight: 1.0, label: 'Essay' },
   research: { category: 'work', baseScore: 3, maxPerMonth: 3, weight: 1.5, label: 'Research' },
-  
+
   // BUILD
   project: { category: 'build', baseScore: 5, maxPerMonth: 2, weight: 2.0, label: 'Project' },
   prototype: { category: 'build', baseScore: 5, maxPerMonth: 2, weight: 2.0, label: 'Prototype' },
   experiment: { category: 'build', baseScore: 4, maxPerMonth: 3, weight: 1.8, label: 'Experiment' },
-  
+
   // IMPACT
   artifact: { category: 'impact', baseScore: 8, maxPerMonth: 2, weight: 3.0, label: 'Artifact' },
   community_work: { category: 'impact', baseScore: 6, maxPerMonth: 3, weight: 2.5, label: 'Community Work' },
   social_contribution: { category: 'impact', baseScore: 7, maxPerMonth: 2, weight: 2.8, label: 'Social Contribution' },
-  
+
   // ACADEMIC
   certification: { category: 'academic', baseScore: 1, maxPerMonth: 10, weight: 0.5, label: 'Certification' },
   pathway: { category: 'academic', baseScore: 2, maxPerMonth: 5, weight: 0.8, label: 'Pathway' },
   module: { category: 'academic', baseScore: 1, maxPerMonth: 10, weight: 0.5, label: 'Module' },
-  
+
   // PUBLICATION
   internal_pub: { category: 'publication', baseScore: 15, maxPerMonth: 2, weight: 4.0, label: 'Internal Publication' },
   external_pub: { category: 'publication', baseScore: 12, maxPerMonth: 2, weight: 3.5, label: 'External Publication' },
@@ -1471,7 +1471,7 @@ const AUTOEDU_MONTHLY_CAPS = {
 function initAutoEduPortfolio() {
   const savedPortfolio = localStorage.getItem('neofolk.autoeduPortfolio');
   const savedReputation = localStorage.getItem('neofolk.autoeduReputation');
-  
+
   if (savedPortfolio) {
     autoeduPortfolio = JSON.parse(savedPortfolio);
   }
@@ -1484,9 +1484,9 @@ function initAutoEduPortfolio() {
 function calculateSubmissionScore(submission) {
   const type = AUTOEDU_SUBMISSION_TYPES[submission.type];
   if (!type) return 0;
-  
+
   let score = type.baseScore * type.weight;
-  
+
   // Layer 2: Community feedback multipliers
   if (submission.communityRating >= 4) {
     score *= AUTOEDU_EVALUATION_MULTIPLIERS.community_high;
@@ -1495,21 +1495,21 @@ function calculateSubmissionScore(submission) {
   } else if (submission.communityRating <= 2) {
     score *= AUTOEDU_EVALUATION_MULTIPLIERS.community_low;
   }
-  
+
   // Citations bonus
   score += (submission.citations || 0) * AUTOEDU_EVALUATION_MULTIPLIERS.citation;
-  
+
   // Bookmarks bonus
   score += (submission.bookmarks || 0) * AUTOEDU_EVALUATION_MULTIPLIERS.bookmark;
-  
+
   // References bonus
   score += (submission.references || 0) * AUTOEDU_EVALUATION_MULTIPLIERS.reference;
-  
+
   // Layer 3: Arbiter approval
   if (submission.arbiterApproved) {
     score *= AUTOEDU_EVALUATION_MULTIPLIERS.arbiter_approve;
   }
-  
+
   // Cap per submission
   const maxScore = type.baseScore * type.weight * 4; // Max 4x multiplier
   return Math.min(score, maxScore);
@@ -1519,13 +1519,13 @@ function calculateSubmissionScore(submission) {
 function getMonthlySubmissionCount(userId, category) {
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  
+
   return autoeduPortfolio.filter(p => {
     const type = AUTOEDU_SUBMISSION_TYPES[p.type];
-    return p.userId === userId && 
-           type && 
-           type.category === category &&
-           new Date(p.timestamp) >= monthStart;
+    return p.userId === userId &&
+      type &&
+      type.category === category &&
+      new Date(p.timestamp) >= monthStart;
   }).length;
 }
 
@@ -1533,28 +1533,28 @@ function getMonthlySubmissionCount(userId, category) {
 function checkMonthlyCap(userId, type) {
   const typeConfig = AUTOEDU_SUBMISSION_TYPES[type];
   if (!typeConfig) return { allowed: false, reason: 'Invalid submission type' };
-  
+
   const monthlyCount = getMonthlySubmissionCount(userId, typeConfig.category);
   const cap = AUTOEDU_SUBMISSION_TYPES[type].maxPerMonth;
-  
+
   if (monthlyCount >= cap) {
-    return { 
-      allowed: false, 
-      reason: `Monthly cap reached: ${cap} ${typeConfig.label}s per month. Focus on quality.` 
+    return {
+      allowed: false,
+      reason: `Monthly cap reached: ${cap} ${typeConfig.label}s per month. Focus on quality.`
     };
   }
-  
+
   // Check category cap
   const categoryMonthly = getMonthlySubmissionCount(userId, typeConfig.category);
   const categoryCap = AUTOEDU_MONTHLY_CAPS[typeConfig.category];
-  
+
   if (categoryMonthly >= categoryCap) {
     return {
       allowed: false,
       reason: `${typeConfig.category} category cap reached: ${categoryCap} submissions per month. Focus on other categories.`
     };
   }
-  
+
   return { allowed: true };
 }
 
@@ -1565,7 +1565,7 @@ function addAutoEduSubmission(userId, submission) {
   if (!capCheck.allowed) {
     return { success: false, error: capCheck.reason };
   }
-  
+
   // Create submission
   const newSubmission = {
     id: `aedu_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -1574,7 +1574,7 @@ function addAutoEduSubmission(userId, submission) {
     timestamp: new Date().toISOString(),
     score: 0, // Will be calculated
     status: 'pending', // pending, approved, rejected
-    
+
     // Evaluation layers (initially empty)
     selfScore: AUTOEDU_SUBMISSION_TYPES[submission.type]?.baseScore || 0,
     communityRating: 0,
@@ -1584,66 +1584,66 @@ function addAutoEduSubmission(userId, submission) {
     references: 0,
     arbiterApproved: false,
     arbiterNotes: null,
-    
+
     // Engagement
     views: 0,
     comments: [],
-    
+
     // Quality signals
     readTime: submission.wordCount ? Math.ceil(submission.wordCount / 200) : 0,
     originalityScore: null, // Set by arbiter
-    
+
     // Metadata
     domain: submission.domain || 'general',
     tags: submission.tags || [],
     featured: false
   };
-  
+
   // Calculate initial score
   newSubmission.score = calculateSubmissionScore(newSubmission);
-  
+
   // Add to portfolio
   autoeduPortfolio.push(newSubmission);
-  
+
   // Update reputation
   autoeduReputation.totalWorks++;
   updateCredibilityScore(userId);
-  
+
   // Save
   localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
   localStorage.setItem('neofolk.autoeduReputation', JSON.stringify(autoeduReputation));
-  
+
   return { success: true, submission: newSubmission };
 }
 
 // Update Credibility Score
 function updateCredibilityScore(userId) {
   const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
-  
+
   // Base credibility
   let credibility = 10;
-  
+
   // + for total quality works
   credibility += userWorks.filter(w => w.score > 5).length * 2;
-  
+
   // + for arbiter endorsements
   credibility += userWorks.filter(w => w.arbiterApproved).length * 5;
-  
+
   // + for citations received
   const citationsReceived = userWorks.reduce((sum, w) => sum + (w.citations || 0), 0);
   credibility += citationsReceived * 3;
-  
+
   // + for references
   const referencesReceived = userWorks.reduce((sum, w) => sum + (w.references || 0), 0);
   credibility += referencesReceived * 2;
-  
+
   // + for bookmarks
   const bookmarksReceived = userWorks.reduce((sum, w) => sum + (w.bookmarks || 0), 0);
   credibility += bookmarksReceived * 0.5;
-  
+
   // Cap at 100 for early version
   autoeduReputation.credibility = Math.min(credibility, 100);
-  
+
   // Store user-specific reputation
   localStorage.setItem(`neofolk.autoeduReputation.${userId}`, JSON.stringify(autoeduReputation));
 }
@@ -1652,18 +1652,18 @@ function updateCredibilityScore(userId) {
 function rateSubmission(submissionId, raterId, rating, comment = null) {
   const submission = autoeduPortfolio.find(p => p.id === submissionId);
   if (!submission) return { success: false, error: 'Submission not found' };
-  
+
   // Check if already rated
   if (submission.raters?.includes(raterId)) {
     return { success: false, error: 'Already rated this work' };
   }
-  
+
   // Update rating
   const currentTotal = submission.communityRating * submission.communityRatingsCount;
   submission.communityRatingsCount++;
   submission.communityRating = (currentTotal + rating) / submission.communityRatingsCount;
   submission.raters = [...(submission.raters || []), raterId];
-  
+
   if (comment) {
     submission.comments.push({
       id: `comment_${Date.now()}`,
@@ -1672,17 +1672,17 @@ function rateSubmission(submissionId, raterId, rating, comment = null) {
       timestamp: new Date().toISOString()
     });
   }
-  
+
   // Recalculate score
   submission.score = calculateSubmissionScore(submission);
-  
+
   // Update reputation of submitter
   const raterReputation = JSON.parse(localStorage.getItem(`neofolk.autoeduReputation.${raterId}`) || '{"credibility":10}');
   const ratingWeight = raterReputation.credibility / 100; // Higher credibility = more weight
-  
+
   // Save
   localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
-  
+
   return { success: true, submission };
 }
 
@@ -1690,28 +1690,28 @@ function rateSubmission(submissionId, raterId, rating, comment = null) {
 function arbiterReview(submissionId, arbiterId, decision, notes = null, originalityScore = null) {
   const submission = autoeduPortfolio.find(p => p.id === submissionId);
   if (!submission) return { success: false, error: 'Submission not found' };
-  
+
   submission.arbiterApproved = decision === 'approve';
   submission.arbiterId = arbiterId;
   submission.arbiterNotes = notes;
   submission.status = decision === 'approve' ? 'approved' : 'rejected';
   submission.originalityScore = originalityScore;
   submission.reviewedAt = new Date().toISOString();
-  
+
   if (decision === 'approve') {
     submission.featured = originalityScore >= 8; // Auto-feature high quality
-    
+
     // Update submitter reputation
     autoeduReputation.arbiterEndorsements++;
     updateCredibilityScore(submission.userId);
   }
-  
+
   // Recalculate score
   submission.score = calculateSubmissionScore(submission);
-  
+
   // Save
   localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
-  
+
   return { success: true, submission };
 }
 
@@ -1719,7 +1719,7 @@ function arbiterReview(submissionId, arbiterId, decision, notes = null, original
 function engageWithSubmission(submissionId, userId, action) {
   const submission = autoeduPortfolio.find(p => p.id === submissionId);
   if (!submission) return { success: false, error: 'Submission not found' };
-  
+
   if (action === 'cite') {
     submission.citations = (submission.citations || 0) + 1;
   } else if (action === 'bookmark') {
@@ -1727,23 +1727,23 @@ function engageWithSubmission(submissionId, userId, action) {
   } else if (action === 'reference') {
     submission.references = (submission.references || 0) + 1;
   }
-  
+
   // Recalculate score
   submission.score = calculateSubmissionScore(submission);
-  
+
   // Update submitter credibility
   updateCredibilityScore(submission.userId);
-  
+
   // Save
   localStorage.setItem('neofolk.autoeduPortfolio', JSON.stringify(autoeduPortfolio));
-  
+
   return { success: true, submission };
 }
 
 // Calculate Composite Neoscore
 function calculateAutoEduNeoscore(userId) {
   const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
-  
+
   if (userWorks.length === 0) {
     return {
       total: 0,
@@ -1756,22 +1756,22 @@ function calculateAutoEduNeoscore(userId) {
       }
     };
   }
-  
+
   // Component 1: Learning Activity (30%) - breadth of engagement
   const uniqueDomains = new Set(userWorks.map(w => w.domain)).size;
   const learningActivityScore = Math.min(uniqueDomains * 3, 30);
-  
+
   // Component 2: Portfolio Quality (25%) - average score of works
   const avgScore = userWorks.reduce((sum, w) => sum + (w.score || 0), 0) / userWorks.length;
   const portfolioQualityScore = Math.min(avgScore * 2, 25);
-  
+
   // Component 3: Impact Contribution (20%) - impact category works
   const impactWorks = userWorks.filter(w => {
     const type = AUTOEDU_SUBMISSION_TYPES[w.type];
     return type && type.category === 'impact';
   });
   const impactScore = Math.min(impactWorks.length * 5, 20);
-  
+
   // Component 4: Domain Balance (15%) - diversity across categories
   const categories = {};
   userWorks.forEach(w => {
@@ -1782,15 +1782,15 @@ function calculateAutoEduNeoscore(userId) {
   });
   const categoryCount = Object.keys(categories).length;
   const domainBalanceScore = categoryCount * 3; // Max 15 with 5 categories
-  
+
   // Component 5: Peer Validation (10%) - community engagement
-  const totalEngagement = userWorks.reduce((sum, w) => 
+  const totalEngagement = userWorks.reduce((sum, w) =>
     sum + (w.citations || 0) + (w.bookmarks || 0) + (w.references || 0), 0
   );
   const peerValidationScore = Math.min(totalEngagement * 2, 10);
-  
+
   const totalNeoscore = learningActivityScore + portfolioQualityScore + impactScore + domainBalanceScore + peerValidationScore;
-  
+
   return {
     total: Math.round(totalNeoscore),
     breakdown: {
@@ -1806,29 +1806,29 @@ function calculateAutoEduNeoscore(userId) {
 // Calculate Specscore (Specialization Depth)
 function calculateAutoEduSpecscore(userId, domainId) {
   const userWorks = autoeduPortfolio.filter(p => p.userId === userId && p.domain === domainId);
-  
+
   if (userWorks.length === 0) return 0;
-  
+
   // Base: number of works in domain
   let specscore = userWorks.length * 2;
-  
+
   // Bonus for quality
   const qualityWorks = userWorks.filter(w => w.score > 10).length;
   specscore += qualityWorks * 3;
-  
+
   // Bonus for arbiter approval
   const approvedWorks = userWorks.filter(w => w.arbiterApproved).length;
   specscore += approvedWorks * 5;
-  
+
   // Bonus for citations within domain
   const citations = userWorks.reduce((sum, w) => sum + (w.citations || 0), 0);
   specscore += citations * 2;
-  
+
   // Diminishing returns after 20 works
   if (userWorks.length > 20) {
     specscore = 50 + (userWorks.length - 20) * 0.5;
   }
-  
+
   return Math.round(specscore);
 }
 
@@ -1836,9 +1836,9 @@ function calculateAutoEduSpecscore(userId, domainId) {
 function getGalleryWorks(galleryId, limit = 10) {
   const gallery = AUTOEDU_GALLERIES.find(g => g.id === galleryId);
   if (!gallery) return [];
-  
+
   let works = [...autoeduPortfolio];
-  
+
   // Filter by type if specified
   if (gallery.filter && gallery.filter !== 'all') {
     const typeConfig = AUTOEDU_SUBMISSION_TYPES[gallery.filter];
@@ -1849,7 +1849,7 @@ function getGalleryWorks(galleryId, limit = 10) {
       });
     }
   }
-  
+
   // Filter by max reputation for emerging
   if (gallery.maxReputation) {
     works = works.filter(w => {
@@ -1857,7 +1857,7 @@ function getGalleryWorks(galleryId, limit = 10) {
       return rep.credibility <= gallery.maxReputation;
     });
   }
-  
+
   // Sort
   switch (gallery.sort) {
     case 'arbiterApproved':
@@ -1879,42 +1879,42 @@ function getGalleryWorks(galleryId, limit = 10) {
     default:
       works.sort((a, b) => b.score - a.score);
   }
-  
+
   return works.slice(0, limit);
 }
 
 // Get Feed Content (Structured, not addictive)
 function getAutoEduFeed(userId, limit = 20) {
   const feed = [];
-  
+
   // 1. New publications (high priority)
   const newPublications = autoeduPortfolio
     .filter(p => AUTOEDU_SUBMISSION_TYPES[p.type]?.category === 'publication')
     .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     .slice(0, 5);
   feed.push(...newPublications.map(p => ({ ...p, feedType: 'publication' })));
-  
+
   // 2. Research questions from community
   const researchQuestions = autoeduPortfolio
     .filter(p => p.type === 'research' && p.arbiterApproved)
     .sort((a, b) => b.communityRating - a.communityRating)
     .slice(0, 5);
   feed.push(...researchQuestions.map(p => ({ ...p, feedType: 'research_question' })));
-  
+
   // 3. Community debates (high engagement)
   const debates = autoeduPortfolio
     .filter(p => p.comments.length > 3)
     .sort((a, b) => b.comments.length - a.comments.length)
     .slice(0, 5);
   feed.push(...debates.map(p => ({ ...p, feedType: 'debate' })));
-  
+
   // 4. Field observations (impact category)
   const observations = autoeduPortfolio
     .filter(p => AUTOEDU_SUBMISSION_TYPES[p.type]?.category === 'impact')
     .sort((a, b) => b.score - a.score)
     .slice(0, 5);
   feed.push(...observations.map(p => ({ ...p, feedType: 'field_observation' })));
-  
+
   // Shuffle slightly to avoid pure recency bias
   return feed.sort(() => Math.random() - 0.5).slice(0, limit);
 }
@@ -1922,7 +1922,7 @@ function getAutoEduFeed(userId, limit = 20) {
 // Get Portfolio by Category for Display
 function getPortfolioByCategory(userId) {
   const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
-  
+
   const categorized = {
     work: [],
     build: [],
@@ -1930,19 +1930,19 @@ function getPortfolioByCategory(userId) {
     academic: [],
     publication: []
   };
-  
+
   userWorks.forEach(work => {
     const type = AUTOEDU_SUBMISSION_TYPES[work.type];
     if (type && categorized[type.category]) {
       categorized[type.category].push(work);
     }
   });
-  
+
   // Sort each category by score (descending)
   Object.keys(categorized).forEach(cat => {
     categorized[cat].sort((a, b) => b.score - a.score);
   });
-  
+
   return categorized;
 }
 
@@ -1950,17 +1950,17 @@ function getPortfolioByCategory(userId) {
 function getSubmissionStats(userId) {
   const userWorks = autoeduPortfolio.filter(p => p.userId === userId);
   const neoscore = calculateAutoEduNeoscore(userId);
-  
+
   // Calculate specscores for all domains
   const specscores = {};
   AUTOEDU_DOMAINS.forEach(d => {
     specscores[d.id] = calculateAutoEduSpecscore(userId, d.id);
   });
-  
+
   // Primary specialization (highest specscore)
   const primarySpec = Object.entries(specscores)
-    .sort(([,a], [,b]) => b - a)[0];
-  
+    .sort(([, a], [, b]) => b - a)[0];
+
   return {
     totalWorks: userWorks.length,
     neoscore: neoscore.total,
@@ -1969,7 +1969,7 @@ function getSubmissionStats(userId) {
     primarySpecialization: primarySpec ? { domain: primarySpec[0], score: primarySpec[1] } : null,
     arbiterApprovedCount: userWorks.filter(w => w.arbiterApproved).length,
     totalCitations: userWorks.reduce((sum, w) => sum + (w.citations || 0), 0),
-    avgCommunityRating: userWorks.length > 0 
+    avgCommunityRating: userWorks.length > 0
       ? (userWorks.reduce((sum, w) => sum + (w.communityRating || 0), 0) / userWorks.length).toFixed(1)
       : 0,
     monthlyCaps: {
@@ -2194,14 +2194,14 @@ function getGuestStorageId() {
 /**
  * Toggle Demand Mode - allowing users to drop new signals
  */
-window.toggleDemandMode = function() {
+window.toggleDemandMode = function () {
   demandModeActive = !demandModeActive;
   const mapOverlay = document.getElementById('map');
   if (mapOverlay) {
     if (demandModeActive) mapOverlay.classList.add('demand-mode-active');
     else mapOverlay.classList.remove('demand-mode-active');
   }
-  
+
   if (demandModeActive) {
     let indicator = document.querySelector('.demand-mode-indicator');
     if (!indicator) {
@@ -2231,9 +2231,9 @@ function createNodeNeed(lat, lng, domain, subject, tags = []) {
     console.error(`Invalid domain: ${domain}. Must be one of: ${VALID_DOMAINS.join(', ')}`);
     return null;
   }
-  
+
   const tokenType = DOMAIN_TO_TOKEN[domain];
-  
+
   const need = {
     id: `need_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     coordinates: [lat, lng],
@@ -2247,7 +2247,7 @@ function createNodeNeed(lat, lng, domain, subject, tags = []) {
     updatedAt: new Date().toISOString(),
     boostedBy: [] // Track users who boosted
   };
-  
+
   nodeNeeds.push(need);
   saveGlobalNodeNeeds();
   return need;
@@ -2280,24 +2280,24 @@ function supportNodeNeed(needId) {
     console.error(`NodeNeed not found: ${needId}`);
     return null;
   }
-  
+
   // Urgency loop: 1-5, reset to 1 when at 5
   if (need.clickCount >= 5) {
     need.clickCount = 1;
   } else {
     need.clickCount += 1;
   }
-  
+
   need.updatedAt = new Date().toISOString();
-  
+
   // Track who boosted (for analytics)
   const userId = currentUser?.id || getGuestStorageId();
   if (!need.boostedBy.includes(userId)) {
     need.boostedBy.push(userId);
   }
-  
+
   saveGlobalNodeNeeds();
-  
+
   // Update marker display
   updateNodeNeedMarker(need);
   console.log(`NodeNeed ${needId} boosted. Level: ${need.clickCount}/5`);
@@ -2314,13 +2314,13 @@ function updateNodeNeedStatus(needId, newStatus) {
     console.error(`Invalid status: ${newStatus}. Must be one of: ${VALID_STATUSES.join(', ')}`);
     return null;
   }
-  
+
   const need = nodeNeeds.find(n => n.id === needId);
   if (!need) {
     console.error(`NodeNeed not found: ${needId}`);
     return null;
   }
-  
+
   need.status = newStatus;
   need.updatedAt = new Date().toISOString();
   saveGlobalNodeNeeds();
@@ -2358,7 +2358,7 @@ function loadGlobalNodeNeeds() {
     nodeNeeds.length = 0;
     nodeNeeds.push(...loaded);
   }
-  
+
   // Ensure guest ID exists for tracking
   if (!localStorage.getItem('neofolk.guestId')) {
     getGuestStorageId();
@@ -2392,17 +2392,17 @@ function getTokenColor(tokenType) {
  */
 function renderNodeNeedMarker(need) {
   if (!window.nodeNeedMarkers) window.nodeNeedMarkers = {};
-  
+
   // Remove existing marker if any
   if (window.nodeNeedMarkers[need.id]) {
     window.mapInstance.removeLayer(window.nodeNeedMarkers[need.id]);
   }
-  
+
   // Check if should show based on filter
   if (nodeNeedFilter === 'active') return; // Only show active nodes
-  
+
   const color = getTokenColor(need.tokenType);
-  
+
   // Custom Icon with Pulsing Effect (5-Stage CSS Classes)
   const markerIcon = L.divIcon({
     className: 'node-need-marker',
@@ -2419,13 +2419,13 @@ function renderNodeNeedMarker(need) {
     icon: markerIcon,
     riseOnHover: true
   }).addTo(window.mapInstance);
-  
+
   // Click handler to boost - always interactive
   marker.on('click', (e) => {
     L.DomEvent.stopPropagation(e);
     supportNodeNeed(need.id);
   });
-  
+
   // Tooltip with specific formatting: [Domain] > [Subject] | Tags: #tag1, #tag2 | Urgency: X/5
   const tagsStr = need.tags.length > 0 ? ` | Tags: ${need.tags.map(t => '#' + t).join(', ')}` : '';
   const tooltipContent = `
@@ -2436,9 +2436,9 @@ function renderNodeNeedMarker(need) {
       </span>
     </div>
   `;
-  
+
   marker.bindTooltip(tooltipContent, { sticky: true, opacity: 0.95 });
-  
+
   window.nodeNeedMarkers[need.id] = marker;
 }
 
@@ -2451,7 +2451,7 @@ function showRadialMenu(lat, lng) {
   // Remove any existing menu
   const existing = document.getElementById('radial-menu-overlay');
   if (existing) existing.remove();
-  
+
   const overlay = document.createElement('div');
   overlay.id = 'radial-menu-overlay';
   overlay.innerHTML = `
@@ -2461,26 +2461,26 @@ function showRadialMenu(lat, lng) {
         <strong>NEED</strong>
       </div>
       ${VALID_DOMAINS.map((domain, i) => {
-        const angle = (i / VALID_DOMAINS.length) * (2 * Math.PI) - (Math.PI / 2);
-        const radius = 110;
-        const x = Math.cos(angle) * radius;
-        const y = Math.sin(angle) * radius;
-        const color = getTokenColor(DOMAIN_TO_TOKEN[domain]);
-        return `
+    const angle = (i / VALID_DOMAINS.length) * (2 * Math.PI) - (Math.PI / 2);
+    const radius = 110;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    const color = getTokenColor(DOMAIN_TO_TOKEN[domain]);
+    return `
           <div class="radial-item" 
                style="transform: translate(${x}px, ${y}px); --token-color: ${color};"
                onclick="window.showNeedForm(${lat}, ${lng}, '${domain}', '${color}');">
             <span>${domain}</span>
           </div>
         `;
-      }).join('')}
+  }).join('')}
     </div>
   `;
-  
+
   overlay.onclick = (e) => {
     if (e.target === overlay) overlay.remove();
   };
-  
+
   document.body.appendChild(overlay);
 }
 
@@ -2491,11 +2491,11 @@ function showRadialMenu(lat, lng) {
  * @param {string} domain 
  * @param {string} color 
  */
-window.showNeedForm = function(lat, lng, domain, color) {
+window.showNeedForm = function (lat, lng, domain, color) {
   // Remove radial menu
   const radial = document.getElementById('radial-menu-overlay');
   if (radial) radial.remove();
-  
+
   const overlay = document.createElement('div');
   overlay.id = 'need-form-overlay';
   overlay.style.cssText = `
@@ -2511,7 +2511,7 @@ window.showNeedForm = function(lat, lng, domain, color) {
     justify-content: center;
     backdrop-filter: blur(4px);
   `;
-  
+
   overlay.innerHTML = `
     <div style="background: var(--ink, #1a1614); border: 1px solid ${color}; padding: 30px; width: 350px; max-width: 90%; border-radius: 4px;">
       <h3 style="color: ${color}; margin: 0 0 20px 0; font-family: var(--serif, 'Cormorant Garamond'); font-size: 1.5rem;">
@@ -2546,13 +2546,13 @@ window.showNeedForm = function(lat, lng, domain, color) {
       </div>
     </div>
   `;
-  
+
   overlay.onclick = (e) => {
     if (e.target === overlay) overlay.remove();
   };
-  
+
   document.body.appendChild(overlay);
-  
+
   // Focus subject input
   setTimeout(() => document.getElementById('need-subject')?.focus(), 100);
 };
@@ -2560,21 +2560,21 @@ window.showNeedForm = function(lat, lng, domain, color) {
 /**
  * Submit a new need from the form
  */
-window.submitNeed = function(lat, lng, domain) {
+window.submitNeed = function (lat, lng, domain) {
   const subjectInput = document.getElementById('need-subject');
   const tagsInput = document.getElementById('need-tags');
-  
+
   const subject = subjectInput?.value.trim();
   if (!subject) {
     subjectInput.style.borderColor = '#e74c3c';
     return;
   }
-  
+
   const tagsStr = tagsInput?.value.trim() || '';
   const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
-  
+
   dropNeedSignal(lat, lng, domain, subject, tags);
-  
+
   // Close form
   document.getElementById('need-form-overlay')?.remove();
 };
@@ -2591,7 +2591,7 @@ function updateNodeNeedMarker(need) {
  */
 function renderNodeNeedsOnMap() {
   if (!window.mapInstance) return;
-  
+
   // Clear existing markers
   if (window.nodeNeedMarkers) {
     Object.values(window.nodeNeedMarkers).forEach(marker => {
@@ -2599,12 +2599,12 @@ function renderNodeNeedsOnMap() {
     });
   }
   window.nodeNeedMarkers = {};
-  
+
   // Render based on filter
   if (nodeNeedFilter === 'all' || nodeNeedFilter === 'needs') {
     nodeNeeds.forEach(need => renderNodeNeedMarker(need));
   }
-  
+
   // TODO: Render active nodes (Studios) when filter is 'all' or 'active'
 }
 
@@ -2627,7 +2627,7 @@ const LICENSE_LEVELS = ['Level 1', 'Level 2', 'Level 3'];
  */
 function createCuratorCard(fullName, age, activeLicenses = []) {
   const userId = currentUser?.id || getGuestStorageId();
-  
+
   const card = {
     id: `card_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     userId: userId,
@@ -2638,7 +2638,7 @@ function createCuratorCard(fullName, age, activeLicenses = []) {
     updatedAt: new Date().toISOString(),
     status: 'active' // 'active', 'suspended', 'expired'
   };
-  
+
   curatorCards.push(card);
   saveCuratorCards();
   return card;
@@ -2664,7 +2664,7 @@ function addLicenseToCard(cardId, license) {
     console.error(`CuratorCard not found: ${cardId}`);
     return null;
   }
-  
+
   if (!card.activeLicenses.includes(license)) {
     card.activeLicenses.push(license);
     card.updatedAt = new Date().toISOString();
@@ -2719,13 +2719,13 @@ function createModule(title, description, domain, curatorCardID) {
     console.error(`Cannot create module: Invalid curatorCardID ${curatorCardID}`);
     return null;
   }
-  
+
   // Validate domain
   if (!VALID_DOMAINS.includes(domain)) {
     console.error(`Invalid domain: ${domain}`);
     return null;
   }
-  
+
   const module = {
     id: `mod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     title: title,
@@ -2738,7 +2738,7 @@ function createModule(title, description, domain, curatorCardID) {
     updatedAt: new Date().toISOString(),
     status: 'active' // 'active', 'archived', 'draft'
   };
-  
+
   modules.push(module);
   saveModules();
   return module;
@@ -2800,7 +2800,7 @@ function createBatch(moduleId, batchName, studentIds = []) {
     console.error(`Cannot create batch: Module not found ${moduleId}`);
     return null;
   }
-  
+
   const batch = {
     id: `batch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     moduleId: moduleId,
@@ -2811,16 +2811,16 @@ function createBatch(moduleId, batchName, studentIds = []) {
     createdAt: new Date().toISOString(),
     status: 'active'
   };
-  
+
   // Add batch to module
   module.batches.push(batch.id);
   saveModules();
-  
+
   // Store batch separately
   const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
   batches.push(batch);
   localStorage.setItem('neofolk.batches', JSON.stringify(batches));
-  
+
   return batch;
 }
 
@@ -2834,12 +2834,12 @@ function createBatch(moduleId, batchName, studentIds = []) {
 function toggleAttendance(batchId, date, studentId) {
   const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
   const batch = batches.find(b => b.id === batchId);
-  
+
   if (!batch) {
     console.error(`Batch not found: ${batchId}`);
     return null;
   }
-  
+
   // Find or create log for this date
   let log = batch.attendanceLogs.find(l => l.date === date);
   if (!log) {
@@ -2853,17 +2853,17 @@ function toggleAttendance(batchId, date, studentId) {
     };
     batch.attendanceLogs.push(log);
   }
-  
+
   // Toggle status
   const currentStatus = log.records[studentId];
   const newStatus = currentStatus === 'present' ? 'absent' : 'present';
   log.records[studentId] = newStatus;
-  
+
   localStorage.setItem('neofolk.batches', JSON.stringify(batches));
-  
+
   // Sync to student dashboard
   syncAttendanceToStudents(batch, log);
-  
+
   return newStatus;
 }
 
@@ -2876,7 +2876,7 @@ function syncAttendanceToStudents(batch, logEntry) {
   Object.keys(logEntry.records).forEach(studentId => {
     const key = `neofolk.attendance.${studentId}`;
     const history = JSON.parse(localStorage.getItem(key) || '[]');
-    
+
     const record = {
       batchId: batch.id,
       batchName: batch.name,
@@ -2886,14 +2886,14 @@ function syncAttendanceToStudents(batch, logEntry) {
       status: logEntry.records[studentId],
       recordedAt: logEntry.recordedAt
     };
-    
+
     const existingIndex = history.findIndex(h => h.batchId === batch.id && h.date === logEntry.date);
     if (existingIndex >= 0) {
       history[existingIndex] = record;
     } else {
       history.push(record);
     }
-    
+
     localStorage.setItem(key, JSON.stringify(history));
   });
 }
@@ -2936,13 +2936,13 @@ function createGuild(name, description, ownerId) {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
-  
+
   guilds.push(guild);
   saveGuilds();
   return guild;
 }
 
-window.showInstantCraft = function() {
+window.showInstantCraft = function () {
   const ownerId = currentUser?.id || getGuestStorageId();
   const name = window.prompt('Name this guild or craft circle.');
   if (!name || !name.trim()) return;
@@ -2968,27 +2968,27 @@ function inviteProfile(guildId, targetId) {
     console.error(`Guild not found: ${guildId}`);
     return null;
   }
-  
+
   if (guild.members.includes(targetId)) {
     console.log(`User ${targetId} is already a member`);
     return null;
   }
-  
+
   const existingInvite = guild.invited.find(i => i.targetId === targetId);
   if (existingInvite) {
     console.log(`User ${targetId} already has a pending invite`);
     return existingInvite;
   }
-  
+
   const invite = {
     targetId: targetId,
     invitedAt: new Date().toISOString(),
     invitedBy: currentUser?.id || 'guest'
   };
-  
+
   guild.invited.push(invite);
   saveGuilds();
-  
+
   // Add to target's pending invites
   const pendingKey = `neofolk.pendingInvites.${targetId}`;
   const pending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
@@ -2999,7 +2999,7 @@ function inviteProfile(guildId, targetId) {
     invitedBy: invite.invitedBy
   });
   localStorage.setItem(pendingKey, JSON.stringify(pending));
-  
+
   return invite;
 }
 
@@ -3011,21 +3011,21 @@ function inviteProfile(guildId, targetId) {
 function acceptGuildInvite(userId, guildId) {
   const guild = guilds.find(g => g.id === guildId);
   if (!guild) return null;
-  
+
   // Remove from pending invites
   const pendingKey = `neofolk.pendingInvites.${userId}`;
   const pending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
   const filtered = pending.filter(p => p.guildId !== guildId);
   localStorage.setItem(pendingKey, JSON.stringify(filtered));
-  
+
   // Remove from guild's invited list
   guild.invited = guild.invited.filter(i => i.targetId !== userId);
-  
+
   // Add to members
   if (!guild.members.includes(userId)) {
     guild.members.push(userId);
   }
-  
+
   saveGuilds();
   return guild;
 }
@@ -3041,19 +3041,19 @@ function declineGuildInvite(userId, guildId) {
     guild.invited = guild.invited.filter(i => i.targetId !== userId);
     saveGuilds();
   }
-  
+
   const pendingKey = `neofolk.pendingInvites.${userId}`;
   const pending = JSON.parse(localStorage.getItem(pendingKey) || '[]');
   const filtered = pending.filter(p => p.guildId !== guildId);
   localStorage.setItem(pendingKey, JSON.stringify(filtered));
-  
+
   return true;
 }
 
 /**
  * Handle Syllabus Item Addition
  */
-window.addSyllabusItem = function(title = '', details = '') {
+window.addSyllabusItem = function (title = '', details = '') {
   const container = document.getElementById('syllabus-items');
   if (!container) return;
   const div = document.createElement('div');
@@ -3071,7 +3071,7 @@ window.addSyllabusItem = function(title = '', details = '') {
 /**
  * Save Module with Advanced Schema
  */
-window.saveModuleAdvanced = async function() {
+window.saveModuleAdvanced = async function () {
   const editId = document.getElementById('mod-edit-id')?.value;
   const title = document.getElementById('mod-title')?.value;
   const desc = document.getElementById('mod-desc')?.value;
@@ -3100,10 +3100,10 @@ window.saveModuleAdvanced = async function() {
   if (editId) {
     module = getModule(editId);
     if (!module) return alert('Module to edit not found');
-    
+
     // Check ownership
     if (module.curatorCardID !== myCard.id) return alert('You do not have permission to edit this module');
-    
+
     module.title = title;
     module.description = desc;
     module.domain = domain;
@@ -3237,9 +3237,9 @@ async function renderPublicProfile(container, username) {
 /**
  * Near Me - Surfacing local learning
  */
-window.renderNearbyModules = function() {
+window.renderNearbyModules = function () {
   const container = document.getElementById('near-me-root') || document.body; // Fallback
-  
+
   if (!navigator.geolocation) {
     alert(t('messages.locationUnavailableBody'));
     return;
@@ -3248,13 +3248,13 @@ window.renderNearbyModules = function() {
   navigator.geolocation.getCurrentPosition(async (pos) => {
     const { latitude, longitude } = pos.coords;
     const supabase = getSupabaseClient();
-    
+
     if (supabase) {
       // In a real app with PostGIS:
       // const { data } = await supabase.rpc('get_nearby_modules', { lat: latitude, lng: longitude, radius_m: 10000 });
       // For now, let's just query modules with locations
       const { data } = await supabase.from('modules').select('*').not('location_name', 'is', null);
-      
+
       const resultsHTML = data?.map(m => `
         <div class="record-card">
           <h3>${escapeHtml(m.title)}</h3>
@@ -3282,7 +3282,7 @@ window.renderNearbyModules = function() {
  * Handle Search Centering on Map
  * @param {string} query 
  */
-window.handleMapSearch = function(query) {
+window.handleMapSearch = function (query) {
   if (!query) return;
   // Mock geocoding: In a real app, this would use a Geocoding API
   const cities = {
@@ -3293,12 +3293,12 @@ window.handleMapSearch = function(query) {
     'kolkata': [22.5726, 88.3639],
     'pune': [18.5204, 73.8567]
   };
-  
-  const target = cities[query.toLowerCase()] || [20.5937 + (Math.random()-0.5)*5, 78.9629 + (Math.random()-0.5)*5];
-  
+
+  const target = cities[query.toLowerCase()] || [20.5937 + (Math.random() - 0.5) * 5, 78.9629 + (Math.random() - 0.5) * 5];
+
   if (window.mapInstance) {
     window.mapInstance.setView(target, 13);
-    
+
     // If in demand mode, drop radial menu automatically
     if (demandModeActive) {
       showRadialMenu(target[0], target[1]);
@@ -3325,12 +3325,12 @@ function shareModuleWithGuild(guildId, moduleId) {
     console.error(`Guild not found: ${guildId}`);
     return null;
   }
-  
+
   if (!guild.sharedModules.includes(moduleId)) {
     guild.sharedModules.push(moduleId);
     saveGuilds();
   }
-  
+
   return guild;
 }
 
@@ -3372,20 +3372,20 @@ window.getUserGuilds = getUserGuilds;
 
 function calculateNeoscore(userId) {
   if (!userId) return 0;
-  
+
   // 1. Attendance count (+1 each)
   const attendanceHistory = JSON.parse(localStorage.getItem(`neofolk.attendance.${userId}`) || '[]');
   const attendanceCount = attendanceHistory.filter(h => h.status === 'present').length;
-  
+
   // 2. Completed modules count (*2 each)
   // We check for modules that exist in enrollment with a completed status
   const modules = JSON.parse(localStorage.getItem('neofolk.modules') || '[]');
   const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
-  
+
   // In our local system, completion is often tracked at the student level in the batch or a separate log
   // For now, let's look for evidence in neofolk.attendance as "completed" or just the module multiplier
   const completedModules = new Set(attendanceHistory.map(h => h.moduleId)).size; // Simple heuristic for now
-  
+
   return attendanceCount + (completedModules * 2);
 }
 
@@ -3427,11 +3427,11 @@ function getMessages(userId) {
 function sendMessage(senderId, receiverId, message) {
   const messages = getMessages(receiverId);
   const now = new Date();
-  
+
   // Weekly restriction (check last week)
   const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const recentMsg = messages.find(m => m.senderId === senderId && new Date(m.timestamp) > oneWeekAgo);
-  
+
   if (recentMsg && getCurrentRole() !== 'operator') {
     throw new Error('You can only send one message per week to this seeker.');
   }
@@ -3453,15 +3453,15 @@ function getSpecscore(userId) {
 }
 
 function getLiveTopology(userData) {
-    const domains = userData.domains || { ...defaultNeoDomains };
-    const specs = userData.specializations || { ...defaultNeoSpecialization };
-    
-    const domainValues = Object.values(domains);
-    const neoscore = domainValues.length > 0 ? (domainValues.reduce((a, b) => a + b, 0) / 10) * 10 : 0;
-    
-    const specscore = Object.values(specs).length > 0 ? Math.max(...Object.values(specs)) : 0;
-    
-    return { neoscore, specscore, domains, specs };
+  const domains = userData.domains || { ...defaultNeoDomains };
+  const specs = userData.specializations || { ...defaultNeoSpecialization };
+
+  const domainValues = Object.values(domains);
+  const neoscore = domainValues.length > 0 ? (domainValues.reduce((a, b) => a + b, 0) / 10) * 10 : 0;
+
+  const specscore = Object.values(specs).length > 0 ? Math.max(...Object.values(specs)) : 0;
+
+  return { neoscore, specscore, domains, specs };
 }
 
 function toggleNeoscore() {
@@ -3469,73 +3469,73 @@ function toggleNeoscore() {
   if (el) el.classList.toggle("hidden");
 }
 
-window.forceNavigateToTopology = async function(userData) {
-    if (userData) {
-        renderTopologyPage(userData);
-        return;
+window.forceNavigateToTopology = async function (userData) {
+  if (userData) {
+    renderTopologyPage(userData);
+    return;
+  }
+
+  const userId = currentUser?.id || 'guest';
+  const supabase = getSupabaseClient();
+
+  const liveDomains = { ...defaultNeoDomains };
+  const liveSpecs = {};
+
+  if (supabase && currentUser) {
+    try {
+      // 1. Fetch completed modules and map to domains
+      const { data: enrolled } = await supabase
+        .from('enrolled_modules')
+        .select('module_id')
+        .eq('user_id', currentUser.id)
+        .eq('status', 'completed');
+
+      if (enrolled?.length) {
+        const modIds = enrolled.map(e => e.module_id);
+        const { data: mods } = await supabase
+          .from('modules')
+          .select('domain')
+          .in('id', modIds);
+
+        mods?.forEach(m => {
+          const d = m.domain?.toLowerCase();
+          if (liveDomains.hasOwnProperty(d)) liveDomains[d] += 1;
+          else if (d === 'arthmetics') liveDomains.arithmetics += 1; // Fix legacy spelling
+        });
+      }
+
+      // 2. Fetch specializations from breakdown
+      const { data: scoreRec } = await supabase
+        .from('neo_scores')
+        .select('breakdown')
+        .eq('user_id', currentUser.id)
+        .eq('role', 'seeker')
+        .single();
+
+      if (scoreRec?.breakdown?.specializations) {
+        Object.assign(liveSpecs, scoreRec.breakdown.specializations);
+      }
+    } catch (e) {
+      console.error("Topology fetch failed:", e);
     }
+  } else {
+    // Fallback to local storage if no user
+    const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
+    const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
+    if (storedDomains) Object.assign(liveDomains, storedDomains);
+    if (storedSpec) Object.assign(liveSpecs, storedSpec);
+  }
 
-    const userId = currentUser?.id || 'guest';
-    const supabase = getSupabaseClient();
-    
-    const liveDomains = { ...defaultNeoDomains };
-    const liveSpecs = {};
-
-    if (supabase && currentUser) {
-        try {
-            // 1. Fetch completed modules and map to domains
-            const { data: enrolled } = await supabase
-                .from('enrolled_modules')
-                .select('module_id')
-                .eq('user_id', currentUser.id)
-                .eq('status', 'completed');
-
-            if (enrolled?.length) {
-                const modIds = enrolled.map(e => e.module_id);
-                const { data: mods } = await supabase
-                    .from('modules')
-                    .select('domain')
-                    .in('id', modIds);
-
-                mods?.forEach(m => {
-                    const d = m.domain?.toLowerCase();
-                    if (liveDomains.hasOwnProperty(d)) liveDomains[d] += 1;
-                    else if (d === 'arthmetics') liveDomains.arithmetics += 1; // Fix legacy spelling
-                });
-            }
-
-            // 2. Fetch specializations from breakdown
-            const { data: scoreRec } = await supabase
-                .from('neo_scores')
-                .select('breakdown')
-                .eq('user_id', currentUser.id)
-                .eq('role', 'seeker')
-                .single();
-
-            if (scoreRec?.breakdown?.specializations) {
-                Object.assign(liveSpecs, scoreRec.breakdown.specializations);
-            }
-        } catch (e) {
-            console.error("Topology fetch failed:", e);
-        }
-    } else {
-        // Fallback to local storage if no user
-        const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
-        const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
-        if (storedDomains) Object.assign(liveDomains, storedDomains);
-        if (storedSpec) Object.assign(liveSpecs, storedSpec);
-    }
-
-    renderTopologyPage({ domains: liveDomains, specializations: liveSpecs });
+  renderTopologyPage({ domains: liveDomains, specializations: liveSpecs });
 };
 
 // Knowledge Topology Immersive Page with High-Fidelity Dashboard
 function renderTopologyPage(userData) {
-    const { neoscore, specscore, domains, specs } = getLiveTopology(userData);
-    const mainArea = document.querySelector('.neo-main') || document.getElementById('content');
-    if (!mainArea) return;
+  const { neoscore, specscore, domains, specs } = getLiveTopology(userData);
+  const mainArea = document.querySelector('.neo-main') || document.getElementById('content');
+  if (!mainArea) return;
 
-    mainArea.innerHTML = `
+  mainArea.innerHTML = `
     <div class="topology-immersion" style="background:#0f0d0c; min-height:100vh; padding:40px; font-family:monospace; color:#d4a373; animation: fadeIn 0.4s ease; position: relative; z-index: 1000;">
         <div style="max-width:1200px; margin:0 auto;">
             <header class="topology-header" style="margin-bottom:40px; display:flex; justify-content:space-between; align-items:flex-end;">
@@ -3598,8 +3598,8 @@ function renderTopologyPage(userData) {
                     
                     <div id="spec-list" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:35px; max-height:400px; overflow-y:auto; padding-right:10px;">
                         ${domainKeys.map(k => {
-                            const color = getTokenColor(DOMAIN_TO_TOKEN[k] || k);
-                            return `
+    const color = getTokenColor(DOMAIN_TO_TOKEN[k] || k);
+    return `
                                 <label style="display:flex; align-items:center; gap:12px; cursor:pointer; color:#c6a96b; font-size:13px; padding:16px; background:rgba(0,0,0,0.3); border:1px solid rgba(198,169,107,0.1); border-radius:8px; transition:all 0.3s ease; position:relative; overflow:hidden;">
                                     <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:${color}; opacity:0;"></div>
                                     <input type="checkbox" name="spec-item" value="${k}" style="accent-color:${color}; width:18px; height:18px; position:relative; z-index:2;">
@@ -3609,7 +3609,7 @@ function renderTopologyPage(userData) {
                                     </div>
                                 </label>
                             `;
-                        }).join('')}
+  }).join('')}
                     </div>
                     
                     <div style="display:flex; gap:12px;">
@@ -3652,112 +3652,112 @@ function renderTopologyPage(userData) {
         </div>
     </div>
     `;
-    
-    setTimeout(() => initLiveCharts(domains, specs), 50);
+
+  setTimeout(() => initLiveCharts(domains, specs), 50);
 }
 
 function initLiveCharts(domains, specs) {
-    // 1. Radar Chart (Intellectual Shape)
-    const radarCanvas = document.getElementById('radarChart');
-    if (radarCanvas && window.Chart) {
-        new Chart(radarCanvas, {
-            type: 'radar',
-            data: {
-                labels: Object.keys(domains).map(k => DOMAIN_NAMES[k]),
-                datasets: [{
-                    data: Object.values(domains),
-                    backgroundColor: 'rgba(212, 163, 115, 0.1)',
-                    borderColor: '#d4a373',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#fff',
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { 
-                    r: { 
-                        grid: { color: '#2a2420' }, 
-                        angleLines: { color: '#2a2420' }, 
-                        pointLabels: { color: '#8b8276', font: { size: 10, family: 'monospace' } },
-                        ticks: { display: false, max: 10 } 
-                    } 
-                },
-                plugins: { legend: { display: false } }
-            }
-        });
-    }
+  // 1. Radar Chart (Intellectual Shape)
+  const radarCanvas = document.getElementById('radarChart');
+  if (radarCanvas && window.Chart) {
+    new Chart(radarCanvas, {
+      type: 'radar',
+      data: {
+        labels: Object.keys(domains).map(k => DOMAIN_NAMES[k]),
+        datasets: [{
+          data: Object.values(domains),
+          backgroundColor: 'rgba(212, 163, 115, 0.1)',
+          borderColor: '#d4a373',
+          borderWidth: 2,
+          pointBackgroundColor: '#fff',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          r: {
+            grid: { color: '#2a2420' },
+            angleLines: { color: '#2a2420' },
+            pointLabels: { color: '#8b8276', font: { size: 10, family: 'monospace' } },
+            ticks: { display: false, max: 10 }
+          }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
 
-    // 2. Donut Chart (Specialization Focus)
-    const donutCanvas = document.getElementById('donutChart');
-    if (donutCanvas && window.Chart) {
-        new Chart(donutCanvas, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(specs),
-                datasets: [{
-                    data: Object.values(specs),
-                    backgroundColor: ['#4e463f', '#7c6f64', '#a89984', '#928374', '#504945'],
-                    borderWidth: 0,
-                    hoverOffset: 15
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { color: '#8b8276', font: { size: 10 }, padding: 20 } }
-                }
-            }
-        });
-    }
+  // 2. Donut Chart (Specialization Focus)
+  const donutCanvas = document.getElementById('donutChart');
+  if (donutCanvas && window.Chart) {
+    new Chart(donutCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(specs),
+        datasets: [{
+          data: Object.values(specs),
+          backgroundColor: ['#4e463f', '#7c6f64', '#a89984', '#928374', '#504945'],
+          borderWidth: 0,
+          hoverOffset: 15
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '70%',
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#8b8276', font: { size: 10 }, padding: 20 } }
+        }
+      }
+    });
+  }
 
-    // 3. Custom Bar Chart (Domain Intensity - mimicking renderDashboardCharts canvas logic)
-    const barCanvas = document.getElementById('intensityBarChart');
-    if (barCanvas && barCanvas.getContext) {
-        const ctx = barCanvas.getContext('2d');
-        const values = Object.values(domains);
-        const names = Object.keys(domains).map(k => DOMAIN_NAMES[k]);
-        
-        // Set canvas size
-        barCanvas.width = barCanvas.offsetWidth;
-        barCanvas.height = 150;
-        
-        const width = barCanvas.width;
-        const height = barCanvas.height;
-        const barWidth = (width / values.length) * 0.6;
-        const gap = (width / values.length) * 0.4;
-        const max = 10; // Domain max is 10
-        
-        ctx.clearRect(0, 0, width, height);
-        
-        values.forEach((val, i) => {
-            const x = (i * (barWidth + gap)) + (gap / 2);
-            const barHeight = (val / max) * (height - 40);
-            const y = height - barHeight - 25;
-            
-            // Background track
-            ctx.fillStyle = '#2a2420';
-            ctx.fillRect(x, 25, barWidth, height - 40);
-            
-            // Actual value bar
-            ctx.fillStyle = '#d4a373';
-            ctx.fillRect(x, y, barWidth, barHeight);
-            
-            // Label
-            ctx.fillStyle = '#8b8276';
-            ctx.font = '10px monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(names[i].substring(0, 6), x + barWidth/2, height - 8);
-            
-            // Value
-            ctx.fillStyle = '#fff';
-            ctx.font = '11px monospace';
-            ctx.fillText(val, x + barWidth/2, y - 5);
-        });
-    }
+  // 3. Custom Bar Chart (Domain Intensity - mimicking renderDashboardCharts canvas logic)
+  const barCanvas = document.getElementById('intensityBarChart');
+  if (barCanvas && barCanvas.getContext) {
+    const ctx = barCanvas.getContext('2d');
+    const values = Object.values(domains);
+    const names = Object.keys(domains).map(k => DOMAIN_NAMES[k]);
+
+    // Set canvas size
+    barCanvas.width = barCanvas.offsetWidth;
+    barCanvas.height = 150;
+
+    const width = barCanvas.width;
+    const height = barCanvas.height;
+    const barWidth = (width / values.length) * 0.6;
+    const gap = (width / values.length) * 0.4;
+    const max = 10; // Domain max is 10
+
+    ctx.clearRect(0, 0, width, height);
+
+    values.forEach((val, i) => {
+      const x = (i * (barWidth + gap)) + (gap / 2);
+      const barHeight = (val / max) * (height - 40);
+      const y = height - barHeight - 25;
+
+      // Background track
+      ctx.fillStyle = '#2a2420';
+      ctx.fillRect(x, 25, barWidth, height - 40);
+
+      // Actual value bar
+      ctx.fillStyle = '#d4a373';
+      ctx.fillRect(x, y, barWidth, barHeight);
+
+      // Label
+      ctx.fillStyle = '#8b8276';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(names[i].substring(0, 6), x + barWidth / 2, height - 8);
+
+      // Value
+      ctx.fillStyle = '#fff';
+      ctx.font = '11px monospace';
+      ctx.fillText(val, x + barWidth / 2, y - 5);
+    });
+  }
 }
 
 function renderDashboardCharts(modules, notes, guilds, neoscore) {
@@ -3772,50 +3772,50 @@ function renderDashboardCharts(modules, notes, guilds, neoscore) {
     const max = Math.max(...data, 10);
     const barWidth = 60;
     const gap = (width - (barWidth * 3)) / 4;
-    
+
     ctx.clearRect(0, 0, width, height);
-    
+
     // Draw bars
     data.forEach((val, i) => {
       const barHeight = (val / max) * (height - 40);
       const x = gap + i * (barWidth + gap);
       const y = height - barHeight - 25;
-      
+
       // Bar
       ctx.fillStyle = 'rgba(139, 115, 85, 0.7)';
       ctx.fillRect(x, y, barWidth, barHeight);
-      
+
       // Label
       ctx.fillStyle = 'var(--text-secondary, #6b6b6b)';
       ctx.font = '12px Manrope, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(labels[i], x + barWidth/2, height - 10);
-      
+      ctx.fillText(labels[i], x + barWidth / 2, height - 10);
+
       // Value
       ctx.fillStyle = 'var(--text-primary, #2a2a2a)';
       ctx.font = '14px Manrope, sans-serif';
-      ctx.fillText(val.toString(), x + barWidth/2, y - 5);
+      ctx.fillText(val.toString(), x + barWidth / 2, y - 5);
     });
   }
-  
+
   // Neoscore Chart - Line chart showing growth
   const scoreCanvas = document.getElementById('scoreChart');
   if (scoreCanvas && scoreCanvas.getContext) {
     const ctx = scoreCanvas.getContext('2d');
     const width = scoreCanvas.width;
     const height = scoreCanvas.height;
-    
+
     // Mock historical data points
     const points = [0, Math.floor(neoscore * 0.3), Math.floor(neoscore * 0.6), neoscore];
     const max = Math.max(...points, 100);
-    
+
     ctx.clearRect(0, 0, width, height);
-    
+
     // Draw line
     ctx.beginPath();
     ctx.strokeStyle = 'rgba(139, 115, 85, 0.9)';
     ctx.lineWidth = 2;
-    
+
     points.forEach((val, i) => {
       const x = 30 + (i * (width - 60) / (points.length - 1));
       const y = height - 30 - ((val / max) * (height - 50));
@@ -3823,17 +3823,17 @@ function renderDashboardCharts(modules, notes, guilds, neoscore) {
       else ctx.lineTo(x, y);
     });
     ctx.stroke();
-    
+
     // Draw points
     points.forEach((val, i) => {
       const x = 30 + (i * (width - 60) / (points.length - 1));
       const y = height - 30 - ((val / max) * (height - 50));
-      
+
       ctx.beginPath();
       ctx.fillStyle = 'rgba(139, 115, 85, 1)';
       ctx.arc(x, y, 4, 0, Math.PI * 2);
       ctx.fill();
-      
+
       // Value label
       ctx.fillStyle = 'var(--text-primary, #2a2a2a)';
       ctx.font = '11px Manrope, sans-serif';
@@ -4075,7 +4075,7 @@ function resolveUserRole(user, fallbackRole = null) {
     user?.app_metadata?.role ||
     ''
   ).toLowerCase();
-  
+
   // 1. TRUST EXPLICIT ROLE FIRST
   if (explicitRole) return explicitRole;
 
@@ -4162,10 +4162,10 @@ function getArbiterInterviewList(studentProfiles) {
   const fallbackProfiles = studentProfiles.length
     ? studentProfiles
     : [
-        { userId: 'sample-student-1', name: 'Aarav Sharma', domain: 'Chronicles' },
-        { userId: 'sample-student-2', name: 'Isha Patel', domain: 'Biosphere' },
-        { userId: 'sample-student-3', name: 'Kabir Das', domain: 'Praxis' },
-      ];
+      { userId: 'sample-student-1', name: 'Aarav Sharma', domain: 'Chronicles' },
+      { userId: 'sample-student-2', name: 'Isha Patel', domain: 'Biosphere' },
+      { userId: 'sample-student-3', name: 'Kabir Das', domain: 'Praxis' },
+    ];
 
   const states = ['Queued', 'Scheduled', 'Needs follow-up'];
   return fallbackProfiles.slice(0, 5).map((profile, index) => ({
@@ -4207,24 +4207,24 @@ function getArbiterDashboardData() {
   const fallbackStudents = studentProfiles.length
     ? studentProfiles
     : [
-        { userId: 'student-a', name: 'Aarav Sharma', domain: 'Chronicles', skills: 'Essay Drafting, Inquiry' },
-        { userId: 'student-b', name: 'Isha Patel', domain: 'Biosphere', skills: 'Field Notes, Mapping' },
-        { userId: 'student-c', name: 'Kabir Das', domain: 'Praxis', skills: 'Workshop Practice, Reflection' },
-      ];
+      { userId: 'student-a', name: 'Aarav Sharma', domain: 'Chronicles', skills: 'Essay Drafting, Inquiry' },
+      { userId: 'student-b', name: 'Isha Patel', domain: 'Biosphere', skills: 'Field Notes, Mapping' },
+      { userId: 'student-c', name: 'Kabir Das', domain: 'Praxis', skills: 'Workshop Practice, Reflection' },
+    ];
 
   const reviewGuilds = guilds.length
     ? guilds
     : [
-        { id: 'guild_seed_1', name: 'Solar Architecture Guild', members: ['student-a', 'student-b'], invited: [], description: 'Built environment and climate adaptation.' },
-        { id: 'guild_seed_2', name: 'Food Culture Guild', members: ['student-c'], invited: ['student-d'], description: 'Regional food systems and memory.' },
-      ];
+      { id: 'guild_seed_1', name: 'Solar Architecture Guild', members: ['student-a', 'student-b'], invited: [], description: 'Built environment and climate adaptation.' },
+      { id: 'guild_seed_2', name: 'Food Culture Guild', members: ['student-c'], invited: ['student-d'], description: 'Regional food systems and memory.' },
+    ];
 
   const reviewModules = modules.length
     ? modules.slice(0, 6)
     : [
-        { id: 'mod_seed_1', title: 'History of Water Commons', domain: 'chronicles', curatorName: 'Aditi Rao', status: 'submitted' },
-        { id: 'mod_seed_2', title: 'Ecology of Monsoon Cities', domain: 'biosphere', curatorName: 'Dev Mehta', status: 'needs review' },
-      ];
+      { id: 'mod_seed_1', title: 'History of Water Commons', domain: 'chronicles', curatorName: 'Aditi Rao', status: 'submitted' },
+      { id: 'mod_seed_2', title: 'Ecology of Monsoon Cities', domain: 'biosphere', curatorName: 'Dev Mehta', status: 'needs review' },
+    ];
 
   return {
     studentProfiles: fallbackStudents,
@@ -4246,50 +4246,50 @@ function focusDashboardPanelFromQuery() {
 function renderSeekerDashboard(root) {
   root.innerHTML =
     '<div class="dashboard-shell role-dashboard role-dashboard--seeker">' +
-      '<section class="dashboard-welcome">' +
-        '<div>' +
-          '<p class="section-label">Welcome Seeker</p>' +
-          '<h1>Chart your next step with clarity.</h1>' +
-          '<p id="dash-signed-in" class="dashboard-meta">Your learner dashboard keeps study, notes, and visible progress in one place.</p>' +
-        '</div>' +
-        '<div class="role-badge">Learner Track</div>' +
-      '</section>' +
-      '<div class="stats-grid">' +
-        '<div class="stat-card"><p class="section-label">Active Modules</p><strong id="stat-modules">' + JSON.parse(localStorage.getItem(`neofolk.attendance.${currentUser?.id || 'guest'}`) || '[]').filter(a => a.status === 'present').length + '</strong><p>Sessions recorded in your attendance log.</p></div>' +
-        '<div class="stat-card"><p class="section-label">Evidence</p><strong id="stat-notes">' + getPortfolio(currentUser?.id || 'guest').length + '</strong><p>Artifacts documented in your dossier.</p></div>' +
-        '<div class="stat-card"><p class="section-label">Neoscore</p><strong id="stat-score">' + calculateNeoscore(currentUser?.id || 'guest') + '</strong><p>Breadth of verifiable learning across domains.</p></div>' +
-        '<div class="stat-card"><p class="section-label">Guilds</p><strong id="stat-groups">' + getUserGuilds(currentUser?.id || 'guest').length + '</strong><p>Craft circles and knowledge guilds joined.</p></div>' +
-      '</div>' +
-      '<div class="dashboard-charts">' +
-        '<div class="chart-card">' +
-          '<h3>Learning Activity</h3>' +
-          '<canvas id="activityChart" width="400" height="200"></canvas>' +
-        '</div>' +
-        '<div class="chart-card">' +
-          '<h3>Neoscore Growth</h3>' +
-          '<canvas id="scoreChart" width="400" height="200"></canvas>' +
-        '</div>' +
-      '</div>' +
-      '<div class="dashboard-sections">' +
-        '<div class="card">' +
-          '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
-          '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
-          '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
-          '<div class="inline-actions flow-top-32">' +
-            '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
-            '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
-          '</div>' +
-        '</div>' +
-        '<div class="card">' +
-          '<p class="section-label">Profile</p>' +
-          '<h2>Keep your learning identity current.</h2>' +
-          '<p>Update your profile, track your notes, and document the work you want peers and arbiters to see.</p>' +
-          '<div class="inline-actions flow-top-32">' +
-            '<a class="btn btn-primary" href="profile.html">Open Profile</a>' +
-            '<a class="btn" href="portfolio.html">Open Portfolio</a>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+    '<section class="dashboard-welcome">' +
+    '<div>' +
+    '<p class="section-label">Welcome Seeker</p>' +
+    '<h1>Chart your next step with clarity.</h1>' +
+    '<p id="dash-signed-in" class="dashboard-meta">Your learner dashboard keeps study, notes, and visible progress in one place.</p>' +
+    '</div>' +
+    '<div class="role-badge">Learner Track</div>' +
+    '</section>' +
+    '<div class="stats-grid">' +
+    '<div class="stat-card"><p class="section-label">Active Modules</p><strong id="stat-modules">' + JSON.parse(localStorage.getItem(`neofolk.attendance.${currentUser?.id || 'guest'}`) || '[]').filter(a => a.status === 'present').length + '</strong><p>Sessions recorded in your attendance log.</p></div>' +
+    '<div class="stat-card"><p class="section-label">Evidence</p><strong id="stat-notes">' + getPortfolio(currentUser?.id || 'guest').length + '</strong><p>Artifacts documented in your dossier.</p></div>' +
+    '<div class="stat-card"><p class="section-label">Neoscore</p><strong id="stat-score">' + calculateNeoscore(currentUser?.id || 'guest') + '</strong><p>Breadth of verifiable learning across domains.</p></div>' +
+    '<div class="stat-card"><p class="section-label">Guilds</p><strong id="stat-groups">' + getUserGuilds(currentUser?.id || 'guest').length + '</strong><p>Craft circles and knowledge guilds joined.</p></div>' +
+    '</div>' +
+    '<div class="dashboard-charts">' +
+    '<div class="chart-card">' +
+    '<h3>Learning Activity</h3>' +
+    '<canvas id="activityChart" width="400" height="200"></canvas>' +
+    '</div>' +
+    '<div class="chart-card">' +
+    '<h3>Neoscore Growth</h3>' +
+    '<canvas id="scoreChart" width="400" height="200"></canvas>' +
+    '</div>' +
+    '</div>' +
+    '<div class="dashboard-sections">' +
+    '<div class="card">' +
+    '<p class="section-label">' + escapeHtml(t('dashboard.nextStepKicker')) + '</p>' +
+    '<h2>' + escapeHtml(t('dashboard.pickCourseTitle')) + '</h2>' +
+    '<p>' + escapeHtml(t('dashboard.pickCourseBody')) + '</p>' +
+    '<div class="inline-actions flow-top-32">' +
+    '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+    '<a class="btn" href="discovery.html">' + escapeHtml(t('nav.explore')) + '</a>' +
+    '</div>' +
+    '</div>' +
+    '<div class="card">' +
+    '<p class="section-label">Profile</p>' +
+    '<h2>Keep your learning identity current.</h2>' +
+    '<p>Update your profile, track your notes, and document the work you want peers and arbiters to see.</p>' +
+    '<div class="inline-actions flow-top-32">' +
+    '<a class="btn btn-primary" href="profile.html">Open Profile</a>' +
+    '<a class="btn" href="portfolio.html">Open Portfolio</a>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
     '</div>';
 }
 
@@ -4298,25 +4298,25 @@ function renderCuratorDashboard(root) {
 
   root.innerHTML =
     '<div class="dashboard-shell role-dashboard role-dashboard--curator">' +
-      '<section class="dashboard-welcome">' +
-        '<div>' +
-          '<p class="section-label">Welcome Curator</p>' +
-          '<h1>Run the curation floor.</h1>' +
-          '<p id="dash-signed-in" class="dashboard-meta">Build modules, track your cohorts, and maintain a serious teaching dossier.</p>' +
-        '</div>' +
-        '<div class="role-badge">Curation Studio</div>' +
-      '</section>' +
-      '<div class="stats-grid">' +
-        '<div class="stat-card"><p class="section-label">Modules Authored</p><strong>' + myModules.length + '</strong><p>Structured learning sequences under your name.</p></div>' +
-        '<div class="stat-card"><p class="section-label">Live Batches</p><strong>' + myBatches.length + '</strong><p>Cohorts currently attached to your modules.</p></div>' +
-        '<div class="stat-card"><p class="section-label">Learners Reached</p><strong>' + totalStudents + '</strong><p>Total distinct students across your batches.</p></div>' +
-        '<div class="stat-card"><p class="section-label">Active Licenses</p><strong>' + activeLicenses + '</strong><p>Domain permissions currently attached to your curator card.</p></div>' +
-      '</div>' +
-      '<div class="dashboard-sections two-column">' +
-        '<div class="card" id="curator-license">' +
-          '<p class="section-label">Curation License</p>' +
-          '<h2>Teaching authority and domain scope.</h2>' +
-          (myCard ? `
+    '<section class="dashboard-welcome">' +
+    '<div>' +
+    '<p class="section-label">Welcome Curator</p>' +
+    '<h1>Run the curation floor.</h1>' +
+    '<p id="dash-signed-in" class="dashboard-meta">Build modules, track your cohorts, and maintain a serious teaching dossier.</p>' +
+    '</div>' +
+    '<div class="role-badge">Curation Studio</div>' +
+    '</section>' +
+    '<div class="stats-grid">' +
+    '<div class="stat-card"><p class="section-label">Modules Authored</p><strong>' + myModules.length + '</strong><p>Structured learning sequences under your name.</p></div>' +
+    '<div class="stat-card"><p class="section-label">Live Batches</p><strong>' + myBatches.length + '</strong><p>Cohorts currently attached to your modules.</p></div>' +
+    '<div class="stat-card"><p class="section-label">Learners Reached</p><strong>' + totalStudents + '</strong><p>Total distinct students across your batches.</p></div>' +
+    '<div class="stat-card"><p class="section-label">Active Licenses</p><strong>' + activeLicenses + '</strong><p>Domain permissions currently attached to your curator card.</p></div>' +
+    '</div>' +
+    '<div class="dashboard-sections two-column">' +
+    '<div class="card" id="curator-license">' +
+    '<p class="section-label">Curation License</p>' +
+    '<h2>Teaching authority and domain scope.</h2>' +
+    (myCard ? `
             <div class="curator-card-id">
               <div class="chip"></div>
               <div class="card-header">
@@ -4343,59 +4343,59 @@ function renderCuratorDashboard(root) {
               <button onclick="window.applyForCurator()" class="btn btn-primary" style="margin-top:12px;">Apply Now</button>
             </div>
           `) +
-        '</div>' +
-        '<div class="card" id="curator-dossier">' +
-          '<p class="section-label">Dossier</p>' +
-          '<h2>Your curation record.</h2>' +
-          '<p>Keep a serious record of what you have authored, who you have taught, and which domains you are licensed to curate.</p>' +
-          '<div class="mini-stat-grid">' +
-            '<div class="mini-stat"><strong>' + myModules.length + '</strong><span>Modules</span></div>' +
-            '<div class="mini-stat"><strong>' + myBatches.length + '</strong><span>Batches</span></div>' +
-            '<div class="mini-stat"><strong>' + totalStudents + '</strong><span>Learners</span></div>' +
-            '<div class="mini-stat"><strong>' + activeLicenses + '</strong><span>Licenses</span></div>' +
-          '</div>' +
-          '<div class="inline-actions flow-top-32">' +
-            '<a class="btn btn-primary" href="portfolio.html">Open Dossier</a>' +
-            '<a class="btn" href="teaching-log.html">Open Teaching Log</a>' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="card module-builder-card" id="curator-add-module">' +
-        '<div class="dashboard-card-topline">' +
-          '<div>' +
-            '<p class="section-label">Add Module</p>' +
-            '<h2>Launch a new module from the curation area.</h2>' +
-          '</div>' +
-          '<a class="btn" href="module-editor.html">Open Advanced Editor</a>' +
-        '</div>' +
-        '<p>Keep creation close to the dashboard. Draft the core structure and publish the first version right here.</p>' +
-        '<div class="module-creation-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">' +
-          '<input id="quick-mod-title" class="neo-input" placeholder="Module title" style="grid-column: span 2;">' +
-          '<select id="quick-mod-domain" class="neo-input">' +
-            Object.keys(DOMAIN_NAMES).map((key) => `<option value="${key}">${DOMAIN_NAMES[key]}</option>`).join('') +
-          '</select>' +
-          '<div style="display:flex; gap:8px;">' +
-            '<input id="quick-mod-weeks" type="number" class="neo-input" value="4" placeholder="Weeks" style="width:70px;">' +
-            '<input id="quick-mod-capacity" type="number" class="neo-input" value="20" placeholder="Cap" style="width:70px;">' +
-          '</div>' +
-          '<input id="quick-mod-loc" class="neo-input" placeholder="Location" style="grid-column: span 2;">' +
-          '<textarea id="quick-mod-desc" class="neo-input module-creation-textarea" rows="3" placeholder="Description/Outcomes" style="grid-column: span 2;"></textarea>' +
-        '</div>' +
-        '<div class="inline-actions flow-top-32">' +
-          '<button onclick="window.quickCreateModule()" class="btn btn-primary">Create Module</button>' +
-          '<a class="btn" href="teaching-log.html">Open Teaching Log</a>' +
-        '</div>' +
-      '</div>' +
-      '<div class="card" id="curator-modules">' +
-        '<div class="dashboard-card-topline">' +
-          '<div>' +
-            '<p class="section-label">Module Floor</p>' +
-            '<h2>Everything you are currently curating.</h2>' +
-          '</div>' +
-          '<a class="btn" href="modules.html">Open Library</a>' +
-        '</div>' +
-        '<div class="record-list">' +
-          (myModules.length ? myModules.map((module) => `
+    '</div>' +
+    '<div class="card" id="curator-dossier">' +
+    '<p class="section-label">Dossier</p>' +
+    '<h2>Your curation record.</h2>' +
+    '<p>Keep a serious record of what you have authored, who you have taught, and which domains you are licensed to curate.</p>' +
+    '<div class="mini-stat-grid">' +
+    '<div class="mini-stat"><strong>' + myModules.length + '</strong><span>Modules</span></div>' +
+    '<div class="mini-stat"><strong>' + myBatches.length + '</strong><span>Batches</span></div>' +
+    '<div class="mini-stat"><strong>' + totalStudents + '</strong><span>Learners</span></div>' +
+    '<div class="mini-stat"><strong>' + activeLicenses + '</strong><span>Licenses</span></div>' +
+    '</div>' +
+    '<div class="inline-actions flow-top-32">' +
+    '<a class="btn btn-primary" href="portfolio.html">Open Dossier</a>' +
+    '<a class="btn" href="teaching-log.html">Open Teaching Log</a>' +
+    '</div>' +
+    '</div>' +
+    '</div>' +
+    '<div class="card module-builder-card" id="curator-add-module">' +
+    '<div class="dashboard-card-topline">' +
+    '<div>' +
+    '<p class="section-label">Add Module</p>' +
+    '<h2>Launch a new module from the curation area.</h2>' +
+    '</div>' +
+    '<a class="btn" href="module-editor.html">Open Advanced Editor</a>' +
+    '</div>' +
+    '<p>Keep creation close to the dashboard. Draft the core structure and publish the first version right here.</p>' +
+    '<div class="module-creation-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">' +
+    '<input id="quick-mod-title" class="neo-input" placeholder="Module title" style="grid-column: span 2;">' +
+    '<select id="quick-mod-domain" class="neo-input">' +
+    Object.keys(DOMAIN_NAMES).map((key) => `<option value="${key}">${DOMAIN_NAMES[key]}</option>`).join('') +
+    '</select>' +
+    '<div style="display:flex; gap:8px;">' +
+    '<input id="quick-mod-weeks" type="number" class="neo-input" value="4" placeholder="Weeks" style="width:70px;">' +
+    '<input id="quick-mod-capacity" type="number" class="neo-input" value="20" placeholder="Cap" style="width:70px;">' +
+    '</div>' +
+    '<input id="quick-mod-loc" class="neo-input" placeholder="Location" style="grid-column: span 2;">' +
+    '<textarea id="quick-mod-desc" class="neo-input module-creation-textarea" rows="3" placeholder="Description/Outcomes" style="grid-column: span 2;"></textarea>' +
+    '</div>' +
+    '<div class="inline-actions flow-top-32">' +
+    '<button onclick="window.quickCreateModule()" class="btn btn-primary">Create Module</button>' +
+    '<a class="btn" href="teaching-log.html">Open Teaching Log</a>' +
+    '</div>' +
+    '</div>' +
+    '<div class="card" id="curator-modules">' +
+    '<div class="dashboard-card-topline">' +
+    '<div>' +
+    '<p class="section-label">Module Floor</p>' +
+    '<h2>Everything you are currently curating.</h2>' +
+    '</div>' +
+    '<a class="btn" href="modules.html">Open Library</a>' +
+    '</div>' +
+    '<div class="record-list">' +
+    (myModules.length ? myModules.map((module) => `
             <div class="record-card">
               <div class="dashboard-card-topline">
                 <span class="pill">${escapeHtml(DOMAIN_NAMES[module.domain] || module.domain)}</span>
@@ -4409,8 +4409,8 @@ function renderCuratorDashboard(root) {
               </div>
             </div>
           `).join('') : '<div class="empty-state"><p>No modules yet. Use the add module section above to create your first one.</p></div>') +
-        '</div>' +
-      '</div>' +
+    '</div>' +
+    '</div>' +
     '</div>';
 }
 
@@ -4525,7 +4525,7 @@ function hydrateSignedInMeta(supabase) {
     const el = document.getElementById('dash-signed-in');
     if (!el || !data?.user?.email) return;
     el.textContent = t('dashboard.signedIn').replace('{email}', data.user.email);
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 function hydrateSeekerDashboard(supabase) {
@@ -4552,7 +4552,7 @@ function hydrateSeekerDashboard(supabase) {
     });
 
     renderDashboardCharts(modCount || 0, noteCount || 0, 2, neoScore);
-  }).catch(() => {});
+  }).catch(() => { });
 }
 
 function renderAppNav() {
@@ -4651,7 +4651,7 @@ function renderAppNav() {
       chip.id = "neoscore-chip";
       chip.className = "neoscore-chip";
       chip.title = "View Knowledge Topology";
-      
+
       chip.innerHTML = `
         <img src="neoscore.png" class="neoscore-logo" />
         <span id="neoscore-value">--</span>
@@ -4714,15 +4714,15 @@ function updateHomeForSession() {
     const email = currentUser.email || '';
     authCard.innerHTML =
       '<div class="auth-panel-inner">' +
-        '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
-        '<h2 style="margin:8px 0 4px;">' + escapeHtml(t('home.loginLabel')) + '</h2>' +
-        '<p class="auth-intro">' + escapeHtml(t('dashboard.signedIn').replace('{email}', email)) + '</p>' +
-        '<a class="btn btn-primary" style="width:100%;margin-top:8px;" href="' + escapeHtml(dashHref) + '">' +
-          escapeHtml(t('nav.dashboard')) +
-        '</a>' +
-        '<a class="btn" style="width:100%;margin-top:8px;" href="subjects.html">' +
-          escapeHtml(t('dashboard.browseTopics')) +
-        '</a>' +
+      '<p class="section-label">' + escapeHtml(t('dashboard.kicker')) + '</p>' +
+      '<h2 style="margin:8px 0 4px;">' + escapeHtml(t('home.loginLabel')) + '</h2>' +
+      '<p class="auth-intro">' + escapeHtml(t('dashboard.signedIn').replace('{email}', email)) + '</p>' +
+      '<a class="btn btn-primary" style="width:100%;margin-top:8px;" href="' + escapeHtml(dashHref) + '">' +
+      escapeHtml(t('nav.dashboard')) +
+      '</a>' +
+      '<a class="btn" style="width:100%;margin-top:8px;" href="subjects.html">' +
+      escapeHtml(t('dashboard.browseTopics')) +
+      '</a>' +
       '</div>';
   }
 }
@@ -4748,15 +4748,15 @@ function wireMobileNav() {
   topbar.className = 'mobile-topbar';
   topbar.innerHTML =
     '<button class="hamburger" id="hamburgerBtn" aria-label="Open menu">' +
-      '<span></span><span></span><span></span>' +
+    '<span></span><span></span><span></span>' +
     '</button>' +
     '<span class="mobile-brand">Neofolk Atlas</span>' +
     '<div class="mobile-lang-wrap">' +
-      '<select class="lang-select" aria-label="Select language">' +
-        '<option value="en">EN</option>' +
-        '<option value="hi">\u0939\u093F</option>' +
-        '<option value="ur">UR</option>' +
-      '</select>' +
+    '<select class="lang-select" aria-label="Select language">' +
+    '<option value="en">EN</option>' +
+    '<option value="hi">\u0939\u093F</option>' +
+    '<option value="ur">UR</option>' +
+    '</select>' +
     '</div>';
   main.insertBefore(topbar, main.firstChild);
 
@@ -4794,18 +4794,18 @@ function renderSidebarLangPicker() {
   if (isCompactTopbar) {
     container.innerHTML =
       '<div class="language-row compact-language-row">' +
-        '<select class="lang-select" aria-label="Select language">' +
-          '<option value="en">EN</option>' +
-          '<option value="hi">\u0939\u093F</option>' +
-          '<option value="ur">UR</option>' +
-        '</select>' +
+      '<select class="lang-select" aria-label="Select language">' +
+      '<option value="en">EN</option>' +
+      '<option value="hi">\u0939\u093F</option>' +
+      '<option value="ur">UR</option>' +
+      '</select>' +
       '</div>';
 
     const compactSel = container.querySelector('.lang-select');
     if (compactSel) compactSel.value = currentLang;
     return;
   }
-  
+
   // Quotes carousel data
   const quotes = [
     { quote: "You cannot use the master's tools to dismantle the master's house.", author: "Audre Lorde", domain: "Lingosophy" },
@@ -4817,37 +4817,37 @@ function renderSidebarLangPicker() {
     { quote: "The right to information is the right to live with dignity.", author: "Aruna Roy", domain: "Praxis" },
     { quote: "Science is not a boy's game; it's not a girl's game. It's everyone's game.", author: "Nichelle Nichols", domain: "Bioepisteme" }
   ];
-  
+
   let currentQuoteIndex = 0;
-  
+
   container.innerHTML =
     '<div class="quotes-carousel">' +
-      '<div class="quote-label">Quote of the Moment</div>' +
-      '<div class="quote-content" id="sidebar-quote">' +
-        '<p class="quote-text">"' + escapeHtml(quotes[0].quote) + '"</p>' +
-        '<div class="quote-meta">' +
-          '<span class="quote-author">' + escapeHtml(quotes[0].author) + '</span>' +
-          '<span class="quote-domain">' + escapeHtml(quotes[0].domain) + '</span>' +
-        '</div>' +
-      '</div>' +
-      '<div class="quote-nav">' +
-        '<button class="quote-nav-btn prev" onclick="window.prevQuote()">←</button>' +
-        '<button class="quote-nav-btn next" onclick="window.nextQuote()">→</button>' +
-      '</div>' +
-      '<a href="quotes.html" class="quote-archive-link">View All Quotes →</a>' +
+    '<div class="quote-label">Quote of the Moment</div>' +
+    '<div class="quote-content" id="sidebar-quote">' +
+    '<p class="quote-text">"' + escapeHtml(quotes[0].quote) + '"</p>' +
+    '<div class="quote-meta">' +
+    '<span class="quote-author">' + escapeHtml(quotes[0].author) + '</span>' +
+    '<span class="quote-domain">' + escapeHtml(quotes[0].domain) + '</span>' +
+    '</div>' +
+    '</div>' +
+    '<div class="quote-nav">' +
+    '<button class="quote-nav-btn prev" onclick="window.prevQuote()">←</button>' +
+    '<button class="quote-nav-btn next" onclick="window.nextQuote()">→</button>' +
+    '</div>' +
+    '<a href="quotes.html" class="quote-archive-link">View All Quotes →</a>' +
     '</div>' +
     '<div class="language-row">' +
-      '<span class="sidebar-lang-label">' + escapeHtml(t('toolbar.language')) + '</span>' +
-      '<select class="lang-select" aria-label="Select language">' +
-        '<option value="en">English</option>' +
-        '<option value="hi">\u0939\u093F\u0928\u094D\u0926\u0940</option>' +
-        '<option value="ur">\u0627\u0631\u062F\u0648</option>' +
-      '</select>' +
+    '<span class="sidebar-lang-label">' + escapeHtml(t('toolbar.language')) + '</span>' +
+    '<select class="lang-select" aria-label="Select language">' +
+    '<option value="en">English</option>' +
+    '<option value="hi">\u0939\u093F\u0928\u094D\u0926\u0940</option>' +
+    '<option value="ur">\u0627\u0631\u062F\u0648</option>' +
+    '</select>' +
     '</div>';
 
   const sel = container.querySelector('.lang-select');
   if (sel) sel.value = currentLang;
-  
+
   // Auto-rotate quotes every 8 seconds
   setInterval(() => {
     currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
@@ -4858,22 +4858,22 @@ function renderSidebarLangPicker() {
 function updateQuoteCarousel(quotes, index) {
   const quoteEl = document.getElementById('sidebar-quote');
   if (!quoteEl) return;
-  
+
   const quote = quotes[index];
   quoteEl.style.opacity = '0';
-  
+
   setTimeout(() => {
-    quoteEl.innerHTML = 
+    quoteEl.innerHTML =
       '<p class="quote-text">"' + escapeHtml(quote.quote) + '"</p>' +
       '<div class="quote-meta">' +
-        '<span class="quote-author">' + escapeHtml(quote.author) + '</span>' +
-        '<span class="quote-domain">' + escapeHtml(quote.domain) + '</span>' +
+      '<span class="quote-author">' + escapeHtml(quote.author) + '</span>' +
+      '<span class="quote-domain">' + escapeHtml(quote.domain) + '</span>' +
       '</div>';
     quoteEl.style.opacity = '1';
   }, 300);
 }
 
-window.prevQuote = function() {
+window.prevQuote = function () {
   const quotes = [
     { quote: "You cannot use the master's tools to dismantle the master's house.", author: "Audre Lorde", domain: "Lingosophy" },
     { quote: "Numbers have life; they're not just symbols on paper.", author: "Shakuntala Devi", domain: "Arithmetics" },
@@ -4890,7 +4890,7 @@ window.prevQuote = function() {
   updateQuoteCarousel(quotes, currentQuoteIndex);
 };
 
-window.nextQuote = function() {
+window.nextQuote = function () {
   const quotes = [
     { quote: "You cannot use the master's tools to dismantle the master's house.", author: "Audre Lorde", domain: "Lingosophy" },
     { quote: "Numbers have life; they're not just symbols on paper.", author: "Shakuntala Devi", domain: "Arithmetics" },
@@ -5122,25 +5122,25 @@ function renderPageContent() {
       const term = dictionary.terms[key];
       return (
         '<div class="card dictionary-entry" data-term="' + escapeHtml(key) + '">' +
-          '<h3>' + escapeHtml(term.label || key) + '</h3>' +
-          '<p><strong>' + escapeHtml(t('dictionary.simpleMeaning')) + '</strong> ' + escapeHtml(term.simple || '') + '</p>' +
-          '<p><strong>' + escapeHtml(t('dictionary.expandedMeaning')) + '</strong> ' + escapeHtml(term.expanded || '') + '</p>' +
-          '<p class="dictionary-example"><em>' + escapeHtml(t('dictionary.exampleUse')) + ':</em> ' + escapeHtml(term.example || '') + '</p>' +
+        '<h3>' + escapeHtml(term.label || key) + '</h3>' +
+        '<p><strong>' + escapeHtml(t('dictionary.simpleMeaning')) + '</strong> ' + escapeHtml(term.simple || '') + '</p>' +
+        '<p><strong>' + escapeHtml(t('dictionary.expandedMeaning')) + '</strong> ' + escapeHtml(term.expanded || '') + '</p>' +
+        '<p class="dictionary-example"><em>' + escapeHtml(t('dictionary.exampleUse')) + ':</em> ' + escapeHtml(term.example || '') + '</p>' +
         '</div>'
       );
     }).join('');
 
     dictRoot.innerHTML =
       '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('dictionary.kicker')) + '</p>' +
-          '<h1>' + escapeHtml(t('dictionary.title')) + '</h1>' +
-          '<p class="lede">' + escapeHtml(t('dictionary.subtitle')) + '</p>' +
-        '</div></div>' +
-        '<div class="filters">' +
-          '<input id="dict-search" type="text" placeholder="' + escapeHtml(t('dictionary.searchPlaceholder')) + '" />' +
-        '</div>' +
-        '<div class="record-list" id="dict-list">' + cards + '</div>' +
+      '<div class="dashboard-header"><div>' +
+      '<p class="section-label">' + escapeHtml(t('dictionary.kicker')) + '</p>' +
+      '<h1>' + escapeHtml(t('dictionary.title')) + '</h1>' +
+      '<p class="lede">' + escapeHtml(t('dictionary.subtitle')) + '</p>' +
+      '</div></div>' +
+      '<div class="filters">' +
+      '<input id="dict-search" type="text" placeholder="' + escapeHtml(t('dictionary.searchPlaceholder')) + '" />' +
+      '</div>' +
+      '<div class="record-list" id="dict-list">' + cards + '</div>' +
       '</div>';
 
     const searchInput = document.getElementById('dict-search');
@@ -5179,14 +5179,14 @@ function renderPageContent() {
   if (opRoot && opRoot.innerHTML.trim() === '') {
     opRoot.innerHTML =
       '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">Operator</p>' +
-          '<h1>Operator Console</h1>' +
-          '<p class="lede">Platform administration and oversight tools.</p>' +
-        '</div></div>' +
-        '<div class="empty-state">' +
-          '<p>Operator tools connect to the Supabase admin layer. This console will populate with data once the backend schema is active.</p>' +
-        '</div>' +
+      '<div class="dashboard-header"><div>' +
+      '<p class="section-label">Operator</p>' +
+      '<h1>Operator Console</h1>' +
+      '<p class="lede">Platform administration and oversight tools.</p>' +
+      '</div></div>' +
+      '<div class="empty-state">' +
+      '<p>Operator tools connect to the Supabase admin layer. This console will populate with data once the backend schema is active.</p>' +
+      '</div>' +
       '</div>';
   }
 
@@ -5195,35 +5195,35 @@ function renderPageContent() {
   if (helpRoot && helpRoot.innerHTML.trim() === '') {
     helpRoot.innerHTML =
       '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('nav.help')) + '</p>' +
-          '<h1>' + escapeHtml(t('onboarding.title')) + '</h1>' +
-        '</div></div>' +
-        '<div class="card"><h2>' + escapeHtml(t('onboarding.step1Title')) + '</h2><p>' + escapeHtml(t('onboarding.step1Note')) + '</p>' +
-          '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
-            '<li>' + escapeHtml(t('onboarding.step1Card1')) + '</li>' +
-            '<li>' + escapeHtml(t('onboarding.step1Card2')) + '</li>' +
-            '<li>' + escapeHtml(t('onboarding.step1Card3')) + '</li>' +
-          '</ul></div>' +
-        '<div class="card"><h2>' + escapeHtml(t('onboarding.step2Title')) + '</h2><p>' + escapeHtml(t('onboarding.step2Note')) + '</p>' +
-          '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
-            '<li><strong>' + escapeHtml(t('onboarding.learn')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card1')) + '</li>' +
-            '<li><strong>' + escapeHtml(t('onboarding.notes')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card2')) + '</li>' +
-            '<li><strong>' + escapeHtml(t('onboarding.projects')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card3')) + '</li>' +
-            '<li><strong>' + escapeHtml(t('onboarding.progress')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card4')) + '</li>' +
-          '</ul></div>' +
-        '<div class="card"><h2>' + escapeHtml(t('onboarding.step3Title')) + '</h2><p>' + escapeHtml(t('onboarding.step3Note')) + '</p>' +
-          '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
-            '<li><strong>' + escapeHtml(t('onboarding.subjects')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card1')) + '</li>' +
-            '<li><strong>' + escapeHtml(t('onboarding.groups')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card2')) + '</li>' +
-            '<li><strong>' + escapeHtml(t('onboarding.dictionary')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card3')) + '</li>' +
-            '<li><strong>' + escapeHtml(t('onboarding.help')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card4')) + '</li>' +
-          '</ul></div>' +
-        '<div class="inline-actions">' +
-          '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('nav.learn')) + '</a>' +
-          '<a class="btn" href="dictionary.html">' + escapeHtml(t('nav.dictionary')) + '</a>' +
-          '<a class="btn" href="vision.html">' + escapeHtml(t('nav.vision')) + '</a>' +
-        '</div>' +
+      '<div class="dashboard-header"><div>' +
+      '<p class="section-label">' + escapeHtml(t('nav.help')) + '</p>' +
+      '<h1>' + escapeHtml(t('onboarding.title')) + '</h1>' +
+      '</div></div>' +
+      '<div class="card"><h2>' + escapeHtml(t('onboarding.step1Title')) + '</h2><p>' + escapeHtml(t('onboarding.step1Note')) + '</p>' +
+      '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
+      '<li>' + escapeHtml(t('onboarding.step1Card1')) + '</li>' +
+      '<li>' + escapeHtml(t('onboarding.step1Card2')) + '</li>' +
+      '<li>' + escapeHtml(t('onboarding.step1Card3')) + '</li>' +
+      '</ul></div>' +
+      '<div class="card"><h2>' + escapeHtml(t('onboarding.step2Title')) + '</h2><p>' + escapeHtml(t('onboarding.step2Note')) + '</p>' +
+      '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
+      '<li><strong>' + escapeHtml(t('onboarding.learn')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card1')) + '</li>' +
+      '<li><strong>' + escapeHtml(t('onboarding.notes')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card2')) + '</li>' +
+      '<li><strong>' + escapeHtml(t('onboarding.projects')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card3')) + '</li>' +
+      '<li><strong>' + escapeHtml(t('onboarding.progress')) + '</strong> — ' + escapeHtml(t('onboarding.step2Card4')) + '</li>' +
+      '</ul></div>' +
+      '<div class="card"><h2>' + escapeHtml(t('onboarding.step3Title')) + '</h2><p>' + escapeHtml(t('onboarding.step3Note')) + '</p>' +
+      '<ul style="margin:12px 0 0 18px;color:var(--text-secondary);display:grid;gap:8px;">' +
+      '<li><strong>' + escapeHtml(t('onboarding.subjects')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card1')) + '</li>' +
+      '<li><strong>' + escapeHtml(t('onboarding.groups')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card2')) + '</li>' +
+      '<li><strong>' + escapeHtml(t('onboarding.dictionary')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card3')) + '</li>' +
+      '<li><strong>' + escapeHtml(t('onboarding.help')) + '</strong> — ' + escapeHtml(t('onboarding.step3Card4')) + '</li>' +
+      '</ul></div>' +
+      '<div class="inline-actions">' +
+      '<a class="btn btn-primary" href="subjects.html">' + escapeHtml(t('nav.learn')) + '</a>' +
+      '<a class="btn" href="dictionary.html">' + escapeHtml(t('nav.dictionary')) + '</a>' +
+      '<a class="btn" href="vision.html">' + escapeHtml(t('nav.vision')) + '</a>' +
+      '</div>' +
       '</div>';
   }
 
@@ -5358,7 +5358,7 @@ function renderPageContent() {
   if (guildRoot && guildRoot.innerHTML.trim() === '') {
     const userGuilds = getUserGuilds(currentUser?.id || 'guest');
     const invites = getPendingInvites(currentUser?.id || 'guest');
-    
+
     guildRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
@@ -5426,14 +5426,14 @@ function renderPageContent() {
   if (discoveryRoot && discoveryRoot.innerHTML.trim() === '') {
     discoveryRoot.innerHTML =
       '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('nav.explore')) + '</p>' +
-          '<h1>' + escapeHtml(t('terms.discovery.label')) + '</h1>' +
-          '<p class="lede">' + escapeHtml(t('terms.discovery.expanded')) + '</p>' +
-        '</div></div>' +
-        '<div class="empty-state">' +
-          '<p>' + escapeHtml(t('dashboard.discoveryAdvancedBody')) + '</p>' +
-        '</div>' +
+      '<div class="dashboard-header"><div>' +
+      '<p class="section-label">' + escapeHtml(t('nav.explore')) + '</p>' +
+      '<h1>' + escapeHtml(t('terms.discovery.label')) + '</h1>' +
+      '<p class="lede">' + escapeHtml(t('terms.discovery.expanded')) + '</p>' +
+      '</div></div>' +
+      '<div class="empty-state">' +
+      '<p>' + escapeHtml(t('dashboard.discoveryAdvancedBody')) + '</p>' +
+      '</div>' +
       '</div>';
   }
 
@@ -5442,14 +5442,14 @@ function renderPageContent() {
   if (researchRoot && researchRoot.innerHTML.trim() === '') {
     researchRoot.innerHTML =
       '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('search.research')) + '</p>' +
-          '<h1>' + escapeHtml(t('search.research')) + '</h1>' +
-          '<p class="lede">Research projects and academic documentation from across the network.</p>' +
-        '</div></div>' +
-        '<div class="empty-state">' +
-          '<p>Research posts will appear here as curators and seekers publish their work.</p>' +
-        '</div>' +
+      '<div class="dashboard-header"><div>' +
+      '<p class="section-label">' + escapeHtml(t('search.research')) + '</p>' +
+      '<h1>' + escapeHtml(t('search.research')) + '</h1>' +
+      '<p class="lede">Research projects and academic documentation from across the network.</p>' +
+      '</div></div>' +
+      '<div class="empty-state">' +
+      '<p>Research posts will appear here as curators and seekers publish their work.</p>' +
+      '</div>' +
       '</div>';
   }
 
@@ -5458,7 +5458,7 @@ function renderPageContent() {
   if (userProfileRoot && userProfileRoot.innerHTML.trim() === '') {
     const urlParams = new URLSearchParams(window.location.search);
     const targetId = urlParams.get('id') || currentUser?.id;
-    
+
     if (!targetId) {
       userProfileRoot.innerHTML = '<div class="dashboard-shell"><div class="empty-state"><p>Please log in or specify a profile ID.</p></div></div>';
       return;
@@ -5545,7 +5545,7 @@ function renderPageContent() {
           <p class="section-label">Evidence Log</p>
           <h3>Portfolio Documentation</h3>
           <div class="record-list" style="margin-top:24px; display:grid; gap:16px;">
-            ${portfolio.length ? portfolio.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(item => `
+            ${portfolio.length ? portfolio.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(item => `
               <div class="record-card" style="background:rgba(255,255,255,0.03);">
                 <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
                   <span class="pill" style="font-size:0.65rem;">${escapeHtml(item.domain || "General")}</span>
@@ -5749,15 +5749,15 @@ function renderPageContent() {
     } else {
       moduleRoot.innerHTML =
         '<div class="dashboard-shell">' +
-          '<div class="dashboard-header"><div>' +
-            '<p class="section-label">' + escapeHtml(t('terms.module.label')) + '</p>' +
-            '<h1>' + escapeHtml(t('terms.module.label')) + '</h1>' +
-            '<p class="lede">' + escapeHtml(t('terms.module.expanded')) + '</p>' +
-          '</div></div>' +
-          '<div class="empty-state">' +
-            '<p>Select a module from the Subjects page to view its content here.</p>' +
-            '<a class="btn" href="subjects.html" style="margin-top:12px;">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
-          '</div>' +
+        '<div class="dashboard-header"><div>' +
+        '<p class="section-label">' + escapeHtml(t('terms.module.label')) + '</p>' +
+        '<h1>' + escapeHtml(t('terms.module.label')) + '</h1>' +
+        '<p class="lede">' + escapeHtml(t('terms.module.expanded')) + '</p>' +
+        '</div></div>' +
+        '<div class="empty-state">' +
+        '<p>Select a module from the Subjects page to view its content here.</p>' +
+        '<a class="btn" href="subjects.html" style="margin-top:12px;">' + escapeHtml(t('dashboard.browseTopics')) + '</a>' +
+        '</div>' +
         '</div>';
     }
   }
@@ -5789,12 +5789,12 @@ function renderPageContent() {
           </p>
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px;">
             ${Object.entries(DOMAIN_NAMES).map(([key, name]) => {
-              const color = getTokenColor(DOMAIN_TO_TOKEN[key] || key);
-              return `<div style="padding:12px; background:rgba(0,0,0,0.2); border:1px solid ${color}30; border-radius:6px;">
+      const color = getTokenColor(DOMAIN_TO_TOKEN[key] || key);
+      return `<div style="padding:12px; background:rgba(0,0,0,0.2); border:1px solid ${color}30; border-radius:6px;">
                 <div style="font-weight:600; color:${color}; font-size:0.85rem; margin-bottom:4px;">${name}</div>
                 <div style="font-size:0.75rem; color:var(--muted-text);">${DOMAIN_TO_TOKEN[key] || key}</div>
               </div>`;
-            }).join('')}
+    }).join('')}
           </div>
           <p style="color:var(--muted-text); font-style:italic; margin:0;">
             Domains create balance between analytical, creative, social, and practical abilities.
@@ -5819,9 +5819,9 @@ function renderPageContent() {
           <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px; margin-bottom:20px;">
             <h4 style="margin:0 0 12px 0; color:var(--gold);">Examples of Pathways</h4>
             <div style="display:flex; flex-wrap:wrap; gap:8px;">
-              ${['Urban Gardening Practice', 'Introduction to Phonetics', 'Storytelling Practice', 'Basic Carpentry', 'Yoga Foundations', 'Folk Music Study', 'Ecology Observation', 'Digital Illustration Basics'].map(p => 
-                `<span style="padding:6px 12px; background:rgba(168,153,132,0.2); border-radius:20px; font-size:0.8rem;">${p}</span>`
-              ).join('')}
+              ${['Urban Gardening Practice', 'Introduction to Phonetics', 'Storytelling Practice', 'Basic Carpentry', 'Yoga Foundations', 'Folk Music Study', 'Ecology Observation', 'Digital Illustration Basics'].map(p =>
+      `<span style="padding:6px 12px; background:rgba(168,153,132,0.2); border-radius:20px; font-size:0.8rem;">${p}</span>`
+    ).join('')}
             </div>
           </div>
           <p style="color:var(--muted-text); font-style:italic; margin:0;">
@@ -5842,19 +5842,19 @@ function renderPageContent() {
             Guilds allow open-ended inquiry beyond structured courses and replicate historical knowledge guild traditions.
           </p>
           <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:12px; margin:20px 0;">
-            ${['initiative', 'research ability', 'collaboration skills', 'intellectual curiosity'].map(skill => 
-              `<div style="text-align:center; padding:16px; background:rgba(124,111,100,0.15); border-radius:8px;">
+            ${['initiative', 'research ability', 'collaboration skills', 'intellectual curiosity'].map(skill =>
+      `<div style="text-align:center; padding:16px; background:rgba(124,111,100,0.15); border-radius:8px;">
                 <div style="font-size:1.5rem; margin-bottom:8px;">✨</div>
                 <div style="font-size:0.85rem; font-weight:600;">${skill}</div>
               </div>`
-            ).join('')}
+    ).join('')}
           </div>
           <div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:8px;">
             <h4 style="margin:0 0 12px 0; color:var(--gold);">Examples of Guilds</h4>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:8px;">
-              ${['Solar Architecture Guild', 'Food Culture Guild', 'Folk Music Preservation Guild', 'Gender Language Guild', 'Local History Guild', 'Traditional Craft Research Guild'].map(g => 
-                `<div style="padding:8px; background:rgba(124,111,100,0.2); border-radius:6px; font-size:0.8rem;">${g}</div>`
-              ).join('')}
+              ${['Solar Architecture Guild', 'Food Culture Guild', 'Folk Music Preservation Guild', 'Gender Language Guild', 'Local History Guild', 'Traditional Craft Research Guild'].map(g =>
+      `<div style="padding:8px; background:rgba(124,111,100,0.2); border-radius:6px; font-size:0.8rem;">${g}</div>`
+    ).join('')}
             </div>
           </div>
           <p style="color:var(--muted-text); font-style:italic; margin-top:20px;">
@@ -5967,12 +5967,12 @@ function renderPageContent() {
           </p>
           <div style="display:flex; flex-direction:column; gap:12px;">
             ${[
-              { icon: '🛤️', text: 'Pathways create structured learning experiences' },
-              { icon: '🏛️', text: 'Guilds allow deeper collaborative research' },
-              { icon: '📁', text: 'Portfolio documents evidence of capability' },
-              { icon: '🗺️', text: 'CartoNodes provide real environments for learning' },
-              { icon: '🎯', text: 'Domains track intellectual development across disciplines' }
-            ].map(item => `
+        { icon: '🛤️', text: 'Pathways create structured learning experiences' },
+        { icon: '🏛️', text: 'Guilds allow deeper collaborative research' },
+        { icon: '📁', text: 'Portfolio documents evidence of capability' },
+        { icon: '🗺️', text: 'CartoNodes provide real environments for learning' },
+        { icon: '🎯', text: 'Domains track intellectual development across disciplines' }
+      ].map(item => `
               <div style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(78,70,63,0.15); border-radius:6px;">
                 <span style="font-size:1.5rem;">${item.icon}</span>
                 <div style="font-size:0.95rem;">${item.text}</div>
@@ -6018,7 +6018,7 @@ function renderPageContent() {
   if (portfolioRoot && portfolioRoot.innerHTML.trim() === '') {
     const userId = currentUser?.id || 'guest';
     const isCurator = getCurrentRole() === 'curator';
-    
+
     if (isCurator) {
       const { myCard, myModules, myBatches, totalStudents, activeLicenses } = getCuratorDashboardData();
       portfolioRoot.innerHTML = `
@@ -6085,7 +6085,7 @@ function renderPageContent() {
             <div class="card">
               <h3 style="margin-bottom:20px;">Module Completions</h3>
               <div class="record-list">
-                ${entries.length ? entries.filter(e => e.type === 'module').sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(e => `
+                ${entries.length ? entries.filter(e => e.type === 'module').sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(e => `
                   <div class="record-card" style="border-left:4px solid ${getTokenColor(DOMAIN_TO_TOKEN[e.domain] || e.domain)};">
                     <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
                       <span class="pill">${escapeHtml(DOMAIN_NAMES[e.domain] || e.domain)}</span>
@@ -6129,7 +6129,7 @@ function renderPageContent() {
             <div class="card">
               <h3 style="margin-bottom:20px;">Media Reviews</h3>
               <div class="record-list">
-                ${mediaReviews.length ? mediaReviews.sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).map(review => `
+                ${mediaReviews.length ? mediaReviews.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(review => `
                   <div class="record-card">
                     <div style="display:flex; gap:16px; margin-bottom:12px;">
                       <div style="width:80px; height:80px; border-radius:8px; background:rgba(0,0,0,0.3); overflow:hidden; flex-shrink:0;">
@@ -6205,7 +6205,7 @@ function renderPageContent() {
   if (teachingRoot && teachingRoot.innerHTML.trim() === '') {
     const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
     const { myCard, myModules } = getCuratorDashboardData();
-    
+
     teachingRoot.innerHTML = `
       <div class="dashboard-shell role-dashboard role-dashboard--curator">
         <div class="dashboard-header">
@@ -6281,7 +6281,7 @@ function renderPageContent() {
     const batchId = urlParams.get('batchId');
     const batches = JSON.parse(localStorage.getItem('neofolk.batches') || '[]');
     const batch = batches.find(b => b.id === batchId);
-    
+
     if (batch) {
       const studentProfiles = [
         ...(batch.studentRoster?.length ? batch.studentRoster : [
@@ -6291,10 +6291,10 @@ function renderPageContent() {
           { id: 's4', name: 'Ananya Rao' }
         ])
       ];
-      
+
       const today = new Date().toISOString().split('T')[0];
       const log = batch.attendanceLogs.find(l => l.date === today) || { records: {} };
-      
+
       attendanceRoot.innerHTML = `
         <div class="dashboard-shell">
           <div class="dashboard-header">
@@ -6350,7 +6350,7 @@ function renderPageContent() {
     }
   }
 
-  window.broadcastAttendance = function() {
+  window.broadcastAttendance = function () {
     const toast = document.getElementById('saved-toast');
     if (toast) {
       toast.classList.add('visible');
@@ -6438,14 +6438,14 @@ function renderPageContent() {
   if (studiosRoot && studiosRoot.innerHTML.trim() === '') {
     studiosRoot.innerHTML =
       '<div class="dashboard-shell">' +
-        '<div class="dashboard-header"><div>' +
-          '<p class="section-label">' + escapeHtml(t('search.studios')) + '</p>' +
-          '<h1>' + escapeHtml(t('search.studios')) + '</h1>' +
-          '<p class="lede">Capability environments unlocked through demonstrated contribution and serious intellectual production.</p>' +
-        '</div></div>' +
-        '<div class="empty-state">' +
-          '<p>Studios become available as your learning record deepens.</p>' +
-        '</div>' +
+      '<div class="dashboard-header"><div>' +
+      '<p class="section-label">' + escapeHtml(t('search.studios')) + '</p>' +
+      '<h1>' + escapeHtml(t('search.studios')) + '</h1>' +
+      '<p class="lede">Capability environments unlocked through demonstrated contribution and serious intellectual production.</p>' +
+      '</div></div>' +
+      '<div class="empty-state">' +
+      '<p>Studios become available as your learning record deepens.</p>' +
+      '</div>' +
       '</div>';
   }
 
@@ -6454,16 +6454,16 @@ function renderPageContent() {
     const userId = currentUser?.id || 'guest';
     const storedDomains = JSON.parse(localStorage.getItem(`neofolk.domains.${userId}`) || 'null');
     const storedSpec = JSON.parse(localStorage.getItem(`neofolk.spec.${userId}`) || 'null');
-    
+
     // Create 'band' object as requested
     const band = {
       neoDomains: storedDomains || defaultNeoDomains,
       neoSpecialization: storedSpec || defaultNeoSpecialization
     };
-    
+
     const score = calculateNeoscore(userId);
     const specscore = getSpecscore(userId);
-    
+
     const domainBars = Object.entries(band.neoDomains).map(([name, val]) => `
       <div class="domain-row">
         <span style="font-size:10px; text-transform:uppercase; color: #888;">${name}</span>
@@ -6538,10 +6538,10 @@ function renderPageContent() {
                 </div>
                 <div class="token-badges">
                   ${getMyCuratorCard().activeLicenses.map(lic => {
-                    const domain = lic.replace('Level 3 ', '').replace('Level 2 ', '').replace('Level 1 ', '');
-                    const color = getTokenColor(DOMAIN_TO_TOKEN[domain] || domain);
-                    return `<span class="badge" style="border-color:${color}; color:${color}; box-shadow: 0 0 10px ${color}44;">${lic}</span>`;
-                  }).join('')}
+      const domain = lic.replace('Level 3 ', '').replace('Level 2 ', '').replace('Level 1 ', '');
+      const color = getTokenColor(DOMAIN_TO_TOKEN[domain] || domain);
+      return `<span class="badge" style="border-color:${color}; color:${color}; box-shadow: 0 0 10px ${color}44;">${lic}</span>`;
+    }).join('')}
                 </div>
               </div>
             ` : `
@@ -6570,7 +6570,7 @@ function renderPageContent() {
     const storedGuildCount = guilds.length;
     const storedBatchCount = getAllBatches().length;
     const profile = getStoredProfile(currentUser?.id || 'guest') || {};
-    
+
     accountRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
@@ -6643,7 +6643,7 @@ function renderPageContent() {
         </div>
       </div>
     `;
-    
+
     // Language selector handler
     const langSelect = document.getElementById('settings-language');
     if (langSelect) {
@@ -6663,7 +6663,7 @@ function renderPageContent() {
         }
       });
     }
-    
+
     // Clear profile data
     const clearProfileBtn = document.getElementById('clear-profile-btn');
     if (clearProfileBtn) {
@@ -6674,7 +6674,7 @@ function renderPageContent() {
         setTimeout(() => location.reload(), 1500);
       });
     }
-    
+
     // Clear all data
     const clearAllBtn = document.getElementById('clear-all-btn');
     if (clearAllBtn) {
@@ -6686,7 +6686,7 @@ function renderPageContent() {
         }
       });
     }
-    
+
     // Logout button
     const logoutBtn = document.getElementById('settings-logout-btn');
     if (logoutBtn) {
@@ -6729,7 +6729,7 @@ function renderPageContent() {
   const nodesRoot = document.getElementById("nodes-root");
   if (nodesRoot && nodesRoot.innerHTML.trim() === '') {
     const nodes = JSON.parse(localStorage.getItem('neofolk.nodeNeeds') || '[]');
-    
+
     // Node types with descriptions
     const nodeTypes = {
       'practice': { label: 'Practice Node', desc: 'Real-world skill environments', icon: '🔨' },
@@ -6738,7 +6738,7 @@ function renderPageContent() {
       'coliseum': { label: 'Coliseum', desc: 'Movement and physical training spaces', icon: '💪' },
       'commons': { label: 'Learning Commons', desc: 'Collaborative study environments', icon: '🏛️' }
     };
-    
+
     nodesRoot.innerHTML = `
       <div class="dashboard-shell">
         <div class="dashboard-header">
@@ -6762,11 +6762,11 @@ function renderPageContent() {
           ${nodes.length ? `
             <div class="record-list" id="nodes-list">
               ${nodes.map(node => {
-                const nodeType = nodeTypes[node.nodeType] || nodeTypes['practice'];
-                const vicinityCount = Math.floor(Math.random() * 50) + 5; // Simulated vicinity count
-                const canAsk = vicinityCount >= 10;
-                
-                return `
+      const nodeType = nodeTypes[node.nodeType] || nodeTypes['practice'];
+      const vicinityCount = Math.floor(Math.random() * 50) + 5; // Simulated vicinity count
+      const canAsk = vicinityCount >= 10;
+
+      return `
                 <div class="record-card" data-node-type="${node.nodeType || 'practice'}">
                   <div class="dashboard-card-topline">
                     <span class="pill" style="background:${getTokenColor(DOMAIN_TO_TOKEN[node.domain] || node.domain)}20; border-color:${getTokenColor(DOMAIN_TO_TOKEN[node.domain] || node.domain)};">${nodeType.icon} ${nodeType.label}</span>
@@ -6787,7 +6787,7 @@ function renderPageContent() {
                   </div>
                 </div>
               `;
-              }).join('')}
+    }).join('')}
             </div>
           ` : `
             <div class="empty-state">
@@ -6802,7 +6802,7 @@ function renderPageContent() {
         </div>
       </div>
     `;
-    
+
     // Map setup
     setTimeout(() => {
       if (typeof L === 'undefined') return;
@@ -6810,7 +6810,7 @@ function renderPageContent() {
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors"
       }).addTo(map);
-      
+
       nodes.forEach(node => {
         if (node.lat && node.lng) {
           L.marker([node.lat, node.lng]).addTo(map)
@@ -6874,7 +6874,7 @@ async function initApp() {
   // Wire up hash routing
   window.addEventListener('hashchange', () => {
     renderPageContent();
-    scrollTo(0,0);
+    scrollTo(0, 0);
   });
 
   // Apply debounce to searches
@@ -6897,226 +6897,226 @@ async function initApp() {
 
 // Force topology navigation - Global function wrapper already defined at the top of the file
 
-window.manageSpecializations = function() {
-    const el = document.getElementById('spec-modal');
-    if (el) el.classList.remove('hidden');
+window.manageSpecializations = function () {
+  const el = document.getElementById('spec-modal');
+  if (el) el.classList.remove('hidden');
 };
 
 // Curator Dashboard Functions
-window.showModuleCreator = function() {
-    const target = document.getElementById('curator-add-module');
-    if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-        window.location.assign('curator-dashboard.html?panel=curator-add-module');
-    }
+window.showModuleCreator = function () {
+  const target = document.getElementById('curator-add-module');
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    window.location.assign('curator-dashboard.html?panel=curator-add-module');
+  }
 };
 
-window.quickCreateModule = function() {
-    const title = document.getElementById('quick-mod-title')?.value;
-    const domain = document.getElementById('quick-mod-domain')?.value;
-    const description = document.getElementById('quick-mod-desc')?.value;
-    const weeks = document.getElementById('quick-mod-weeks')?.value;
-    const capacity = document.getElementById('quick-mod-capacity')?.value;
-    const locationName = document.getElementById('quick-mod-loc')?.value;
-    
-    if (!title || !domain || !description) {
-        alert('Please fill in required fields (Title, Domain, Description)');
-        return;
-    }
-    
-    const myCard = getMyCuratorCard();
-    if (!myCard) {
-        alert('You need a curator license to create modules');
-        return;
-    }
-    
-    const module = createModule(title, description, domain, myCard.id);
-    if (module) {
-        // Add additional quick fields
-        module.durationWeeks = parseInt(weeks || '4');
-        module.maxCapacity = parseInt(capacity || '20');
-        module.locationName = locationName || 'Remote';
-        module.syllabus = [{ title: 'Overview', details: 'Initial module introduction.' }];
-        
-        saveModules();
+window.quickCreateModule = function () {
+  const title = document.getElementById('quick-mod-title')?.value;
+  const domain = document.getElementById('quick-mod-domain')?.value;
+  const description = document.getElementById('quick-mod-desc')?.value;
+  const weeks = document.getElementById('quick-mod-weeks')?.value;
+  const capacity = document.getElementById('quick-mod-capacity')?.value;
+  const locationName = document.getElementById('quick-mod-loc')?.value;
 
-        // Clear form
-        if (document.getElementById('quick-mod-title')) document.getElementById('quick-mod-title').value = '';
-        if (document.getElementById('quick-mod-desc')) document.getElementById('quick-mod-desc').value = '';
-        if (document.getElementById('quick-mod-loc')) document.getElementById('quick-mod-loc').value = '';
-        
-        // Refresh dashboard
-        location.reload();
-    } else {
-        alert('Failed to create module');
-    }
-};
+  if (!title || !domain || !description) {
+    alert('Please fill in required fields (Title, Domain, Description)');
+    return;
+  }
 
-window.createBatchFromModule = function(moduleId) {
-    const module = getModule(moduleId);
-    if (!module) {
-        alert('Module not found');
-        return;
-    }
+  const myCard = getMyCuratorCard();
+  if (!myCard) {
+    alert('You need a curator license to create modules');
+    return;
+  }
 
-    const batchName = window.prompt('Batch name', `${module.title} Cohort`);
-    if (!batchName || !batchName.trim()) return;
+  const module = createModule(title, description, domain, myCard.id);
+  if (module) {
+    // Add additional quick fields
+    module.durationWeeks = parseInt(weeks || '4');
+    module.maxCapacity = parseInt(capacity || '20');
+    module.locationName = locationName || 'Remote';
+    module.syllabus = [{ title: 'Overview', details: 'Initial module introduction.' }];
 
-    const studentNames = window.prompt('Add student names separated by commas (optional)', '') || '';
-    const roster = studentNames
-        .split(',')
-        .map((name) => name.trim())
-        .filter(Boolean)
-        .map((name, index) => ({
-            id: `student_${Date.now()}_${index}`,
-            name
-        }));
+    saveModules();
 
-    const batch = createBatch(moduleId, batchName.trim(), roster.map((student) => student.id));
-    if (!batch) {
-        alert('Failed to create batch');
-        return;
-    }
+    // Clear form
+    if (document.getElementById('quick-mod-title')) document.getElementById('quick-mod-title').value = '';
+    if (document.getElementById('quick-mod-desc')) document.getElementById('quick-mod-desc').value = '';
+    if (document.getElementById('quick-mod-loc')) document.getElementById('quick-mod-loc').value = '';
 
-    const batches = getAllBatches();
-    const storedBatch = batches.find((entry) => entry.id === batch.id);
-    if (storedBatch) {
-        storedBatch.studentRoster = roster;
-        localStorage.setItem('neofolk.batches', JSON.stringify(batches));
-    }
-
+    // Refresh dashboard
     location.reload();
+  } else {
+    alert('Failed to create module');
+  }
 };
 
-window.applyForCurator = function() {
-    alert('Curator application feature coming soon. For now, use the developer console to create a curator card:\n\nwindow.createCuratorCard("Your Name", 25, ["Level 3 Lingosophy"])');
+window.createBatchFromModule = function (moduleId) {
+  const module = getModule(moduleId);
+  if (!module) {
+    alert('Module not found');
+    return;
+  }
+
+  const batchName = window.prompt('Batch name', `${module.title} Cohort`);
+  if (!batchName || !batchName.trim()) return;
+
+  const studentNames = window.prompt('Add student names separated by commas (optional)', '') || '';
+  const roster = studentNames
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean)
+    .map((name, index) => ({
+      id: `student_${Date.now()}_${index}`,
+      name
+    }));
+
+  const batch = createBatch(moduleId, batchName.trim(), roster.map((student) => student.id));
+  if (!batch) {
+    alert('Failed to create batch');
+    return;
+  }
+
+  const batches = getAllBatches();
+  const storedBatch = batches.find((entry) => entry.id === batch.id);
+  if (storedBatch) {
+    storedBatch.studentRoster = roster;
+    localStorage.setItem('neofolk.batches', JSON.stringify(batches));
+  }
+
+  location.reload();
+};
+
+window.applyForCurator = function () {
+  alert('Curator application feature coming soon. For now, use the developer console to create a curator card:\n\nwindow.createCuratorCard("Your Name", 25, ["Level 3 Lingosophy"])');
 };
 
 // CartoNodes Functions
-window.filterNodes = function(nodeType) {
-    const nodes = document.querySelectorAll('#nodes-list .record-card');
-    nodes.forEach(node => {
-        if (nodeType === 'all' || node.dataset.nodeType === nodeType) {
-            node.style.display = 'block';
-        } else {
-            node.style.display = 'none';
-        }
-    });
+window.filterNodes = function (nodeType) {
+  const nodes = document.querySelectorAll('#nodes-list .record-card');
+  nodes.forEach(node => {
+    if (nodeType === 'all' || node.dataset.nodeType === nodeType) {
+      node.style.display = 'block';
+    } else {
+      node.style.display = 'none';
+    }
+  });
 };
 
-window.askForNode = function(nodeId) {
-    const nodes = JSON.parse(localStorage.getItem('neofolk.nodeNeeds') || '[]');
-    const node = nodes.find(n => n.id === nodeId);
-    
-    if (node) {
-        const request = {
-            nodeId: nodeId,
-            nodeName: node.nodeName || node.title,
-            userId: currentUser?.id || 'guest',
-            requestedAt: new Date().toISOString(),
-            status: 'pending'
-        };
-        
-        const requests = JSON.parse(localStorage.getItem('neofolk.nodeRequests') || '[]');
-        requests.push(request);
-        localStorage.setItem('neofolk.nodeRequests', JSON.stringify(requests));
-        
-        alert(`Request sent for "${node.nodeName || node.title}". You will be notified when enough people are interested.`);
-    }
+window.askForNode = function (nodeId) {
+  const nodes = JSON.parse(localStorage.getItem('neofolk.nodeNeeds') || '[]');
+  const node = nodes.find(n => n.id === nodeId);
+
+  if (node) {
+    const request = {
+      nodeId: nodeId,
+      nodeName: node.nodeName || node.title,
+      userId: currentUser?.id || 'guest',
+      requestedAt: new Date().toISOString(),
+      status: 'pending'
+    };
+
+    const requests = JSON.parse(localStorage.getItem('neofolk.nodeRequests') || '[]');
+    requests.push(request);
+    localStorage.setItem('neofolk.nodeRequests', JSON.stringify(requests));
+
+    alert(`Request sent for "${node.nodeName || node.title}". You will be notified when enough people are interested.`);
+  }
 };
 
 // Portfolio Tab Functions
-window.switchPortfolioTab = function(tabName) {
-    document.querySelectorAll('.portfolio-tab-content').forEach(tab => tab.style.display = 'none');
-    document.querySelectorAll('.portfolio-tab').forEach(btn => btn.style.borderBottom = 'none');
-    
-    document.getElementById(`portfolio-${tabName}-tab`).style.display = 'block';
-    document.querySelector(`.portfolio-tab[data-tab="${tabName}"]`).style.borderBottom = '2px solid var(--gold)';
+window.switchPortfolioTab = function (tabName) {
+  document.querySelectorAll('.portfolio-tab-content').forEach(tab => tab.style.display = 'none');
+  document.querySelectorAll('.portfolio-tab').forEach(btn => btn.style.borderBottom = 'none');
+
+  document.getElementById(`portfolio-${tabName}-tab`).style.display = 'block';
+  document.querySelector(`.portfolio-tab[data-tab="${tabName}"]`).style.borderBottom = '2px solid var(--gold)';
 };
 
-window.showAddMediaReview = function() {
-    document.getElementById('media-review-modal').style.display = 'flex';
+window.showAddMediaReview = function () {
+  document.getElementById('media-review-modal').style.display = 'flex';
 };
 
-window.hideMediaReviewModal = function() {
-    document.getElementById('media-review-modal').style.display = 'none';
+window.hideMediaReviewModal = function () {
+  document.getElementById('media-review-modal').style.display = 'none';
 };
 
-window.saveMediaReview = function() {
-    const mediaType = document.getElementById('media-type')?.value;
-    const title = document.getElementById('media-title')?.value;
-    const author = document.getElementById('media-author')?.value;
-    const image = document.getElementById('media-image')?.value;
-    const review = document.getElementById('media-review')?.value;
-    
-    if (!title || !review) {
-        alert('Please fill in title and review');
-        return;
+window.saveMediaReview = function () {
+  const mediaType = document.getElementById('media-type')?.value;
+  const title = document.getElementById('media-title')?.value;
+  const author = document.getElementById('media-author')?.value;
+  const image = document.getElementById('media-image')?.value;
+  const review = document.getElementById('media-review')?.value;
+
+  if (!title || !review) {
+    alert('Please fill in title and review');
+    return;
+  }
+
+  const userId = currentUser?.id || 'guest';
+  const mediaReviews = JSON.parse(localStorage.getItem(`neofolk.mediaReviews.${userId}`) || '[]');
+
+  mediaReviews.push({
+    id: Date.now(),
+    mediaType,
+    title,
+    author,
+    image,
+    review,
+    timestamp: new Date().toISOString()
+  });
+
+  localStorage.setItem(`neofolk.mediaReviews.${userId}`, JSON.stringify(mediaReviews));
+
+  // Clear form
+  document.getElementById('media-title').value = '';
+  document.getElementById('media-author').value = '';
+  document.getElementById('media-image').value = '';
+  document.getElementById('media-review').value = '';
+
+  window.hideMediaReviewModal();
+  location.reload();
+};
+
+window.saveSpecializations = async function () {
+  const checkboxes = document.querySelectorAll('input[name="spec-item"]:checked');
+  const newSpecs = {};
+  checkboxes.forEach(cb => {
+    newSpecs[cb.value] = 85; // Base depth value for specialization
+  });
+
+  if (currentUser) {
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      // Update neo_scores breakdown
+      const { data: current, error } = await supabase
+        .from('neo_scores')
+        .select('breakdown')
+        .eq('user_id', currentUser.id)
+        .eq('role', 'seeker')
+        .maybeSingle();
+      if (error) {
+        console.warn('Could not load existing specialization breakdown:', error.message);
+      }
+      const breakdown = current?.breakdown || {};
+      breakdown.specializations = newSpecs;
+
+      await upsertNeoScoreRecord(supabase, {
+        user_id: currentUser.id,
+        role: 'seeker',
+        breakdown,
+        score: 100 // Placeholder total score
+      });
     }
-    
-    const userId = currentUser?.id || 'guest';
-    const mediaReviews = JSON.parse(localStorage.getItem(`neofolk.mediaReviews.${userId}`) || '[]');
-    
-    mediaReviews.push({
-        id: Date.now(),
-        mediaType,
-        title,
-        author,
-        image,
-        review,
-        timestamp: new Date().toISOString()
-    });
-    
-    localStorage.setItem(`neofolk.mediaReviews.${userId}`, JSON.stringify(mediaReviews));
-    
-    // Clear form
-    document.getElementById('media-title').value = '';
-    document.getElementById('media-author').value = '';
-    document.getElementById('media-image').value = '';
-    document.getElementById('media-review').value = '';
-    
-    window.hideMediaReviewModal();
-    location.reload();
-};
+  } else {
+    localStorage.setItem(`neofolk.spec.guest`, JSON.stringify(newSpecs));
+  }
 
-window.saveSpecializations = async function() {
-    const checkboxes = document.querySelectorAll('input[name="spec-item"]:checked');
-    const newSpecs = {};
-    checkboxes.forEach(cb => {
-        newSpecs[cb.value] = 85; // Base depth value for specialization
-    });
-
-    if (currentUser) {
-        const supabase = getSupabaseClient();
-        if (supabase) {
-            // Update neo_scores breakdown
-            const { data: current, error } = await supabase
-                .from('neo_scores')
-                .select('breakdown')
-                .eq('user_id', currentUser.id)
-                .eq('role', 'seeker')
-                .maybeSingle();
-            if (error) {
-                console.warn('Could not load existing specialization breakdown:', error.message);
-            }
-            const breakdown = current?.breakdown || {};
-            breakdown.specializations = newSpecs;
-
-            await upsertNeoScoreRecord(supabase, {
-                user_id: currentUser.id,
-                role: 'seeker',
-                breakdown,
-                score: 100 // Placeholder total score
-            });
-        }
-    } else {
-        localStorage.setItem(`neofolk.spec.guest`, JSON.stringify(newSpecs));
-    }
-
-    // Refresh view
-    document.getElementById('spec-modal').classList.add('hidden');
-    window.forceNavigateToTopology();
+  // Refresh view
+  document.getElementById('spec-modal').classList.add('hidden');
+  window.forceNavigateToTopology();
 };
 
 

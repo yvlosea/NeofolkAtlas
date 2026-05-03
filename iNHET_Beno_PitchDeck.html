@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iNHET + Beno — Investor Pitch Deck</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold:    #A87941;
+  --gold-l:  #C9A472;
+  --gold-ll: #E8D5B0;
+  --cream:   #F8F4EB;
+  --dark:    #1A1208;
+  --dark2:   #2D2314;
+  --mid:     #6B5A3E;
+  --off:     #FAF7F1;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--dark);
+  color: var(--cream);
+  overflow-x: hidden;
+}
+
+/* ── SLIDE BASE ─────────────────────────────────────────────── */
+.slide {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── SLIDE COUNTER ──────────────────────────────────────────── */
+.slide-num {
+  position: absolute;
+  top: 32px; right: 48px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+/* ── NAVIGATION ─────────────────────────────────────────────── */
+.nav {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(168,121,65,0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+}
+.nav-dot.active { background: var(--gold); transform: scale(1.5); }
+.nav-dot:hover { background: var(--gold-l); }
+
+/* ── DECORATIVE ELEMENTS ────────────────────────────────────── */
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.gold-line-h {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 20px 0;
+}
+.gold-line-v {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, var(--gold), transparent);
+  min-height: 60px;
+}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────────────── */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+.display {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(40px, 7vw, 80px);
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+}
+.display em { font-style: italic; color: var(--gold); }
+.h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.h2 em { font-style: italic; color: var(--gold); }
+.h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-weight: 700;
+  color: var(--gold-l);
+}
+.body-lg { font-size: 16px; font-weight: 300; line-height: 1.7; color: rgba(248,244,235,0.75); }
+.body { font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248,244,235,0.7); }
+.label { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); }
+
+/* ── SLIDE 1: COVER ─────────────────────────────────────────── */
+#s1 { background: var(--dark); }
+#s1 .bg-circle {
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(168,121,65,0.1);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+}
+#s1 .bg-circle:nth-child(2) { width: 800px; height: 800px; opacity: 0.5; }
+#s1 .bg-circle:nth-child(3) { width: 1000px; height: 1000px; opacity: 0.25; }
+#s1 .glow {
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(168,121,65,0.12) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+}
+#s1 .content { position: relative; z-index: 2; max-width: 680px; }
+#s1 .tag-row { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+#s1 .tag {
+  padding: 6px 14px;
+  border: 1px solid rgba(168,121,65,0.4);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.15em;
+  color: var(--gold); border-radius: 2px;
+}
+#s1 .meta { margin-top: 40px; display: flex; gap: 40px; }
+#s1 .meta-item .val { font-size: 13px; font-weight: 500; color: var(--cream); margin-top: 4px; }
+
+/* ── SLIDE 2: PROBLEM ───────────────────────────────────────── */
+#s2 { background: var(--dark2); }
+#s2 .problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 40px;
+}
+#s2 .problem-card {
+  padding: 28px 24px;
+  background: rgba(248,244,235,0.03);
+  border-left: 2px solid rgba(168,121,65,0.3);
+  transition: border-color 0.3s;
+}
+#s2 .problem-card:hover { border-left-color: var(--gold); }
+#s2 .problem-card .num { font-size: 32px; font-family: 'Playfair Display', serif; font-style: italic; color: rgba(168,121,65,0.25); line-height: 1; margin-bottom: 8px; }
+#s2 .result-bar {
+  margin-top: 32px;
+  padding: 20px 28px;
+  background: rgba(168,121,65,0.08);
+  border: 1px solid rgba(168,121,65,0.25);
+  display: flex; align-items: center; gap: 20px;
+}
+
+/* ── SLIDE 3: SOLUTION ──────────────────────────────────────── */
+#s3 { background: var(--dark); }
+#s3 .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; margin-top: 40px; }
+#s3 .solution-list { list-style: none; }
+#s3 .solution-list li {
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(168,121,65,0.1);
+  font-size: 14px; color: rgba(248,244,235,0.8);
+  display: flex; align-items: flex-start; gap: 14px;
+}
+#s3 .solution-list li::before { content: '—'; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+#s3 .principle-box {
+  padding: 32px;
+  border: 1px solid rgba(168,121,65,0.3);
+  background: rgba(168,121,65,0.04);
+}
+#s3 .principle-box .quote {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-style: italic;
+  color: var(--gold-l); line-height: 1.5;
+  margin-bottom: 20px;
+}
+#s3 .embed-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+#s3 .embed-tag {
+  padding: 5px 12px;
+  background: rgba(168,121,65,0.1);
+  border: 1px solid rgba(168,121,65,0.25);
+  font-size: 11px; font-weight: 500; color: var(--gold-l); border-radius: 2px;
+}
+
+/* ── SLIDE 4: EXECUTION ─────────────────────────────────────── */
+#s4 { background: var(--dark2); }
+#s4 .exec-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 36px; }
+#s4 .exec-card {
+  padding: 24px 20px;
+  border-top: 2px solid rgba(168,121,65,0.4);
+  background: rgba(248,244,235,0.02);
+}
+#s4 .exec-card .card-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 14px; }
+#s4 .infra-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+#s4 .infra-pill {
+  padding: 7px 14px;
+  background: rgba(168,121,65,0.08);
+  border: 1px solid rgba(168,121,65,0.2);
+  font-size: 11px; color: var(--cream); border-radius: 2px;
+}
+
+/* ── SLIDE 5: WHY IT WORKS ──────────────────────────────────── */
+#s5 { background: var(--dark); }
+#s5 .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 40px; }
+#s5 .why-card {
+  padding: 32px 28px;
+  background: rgba(248,244,235,0.025);
+  position: relative; overflow: hidden;
+}
+#s5 .why-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--gold); opacity: 0.4;
+}
+#s5 .why-card:hover::before { opacity: 1; }
+#s5 .why-card .icon { font-size: 28px; margin-bottom: 14px; }
+
+/* ── SLIDE 6: LEARNING MODEL ────────────────────────────────── */
+#s6 { background: var(--dark2); }
+#s6 .domains-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 36px; }
+#s6 .domain-col {}
+#s6 .domain-col-title {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.2em;
+  color: var(--gold); text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(168,121,65,0.3);
+  margin-bottom: 14px;
+}
+#s6 .domain-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 13px; color: rgba(248,244,235,0.8);
+  display: flex; align-items: center; gap: 10px;
+}
+#s6 .domain-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+/* ── SLIDE 7: COMMUNITY ─────────────────────────────────────── */
+#s7 { background: var(--dark); }
+#s7 .impact-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: 40px; }
+#s7 .impact-item {
+  padding: 28px 20px;
+  background: rgba(248,244,235,0.025);
+  text-align: center;
+}
+#s7 .impact-item .impact-icon { font-size: 32px; margin-bottom: 16px; }
+#s7 .impact-item p { font-size: 13px; line-height: 1.6; color: rgba(248,244,235,0.7); }
+
+/* ── SLIDE 8: OUTCOMES ──────────────────────────────────────── */
+#s8 { background: var(--dark2); }
+#s8 .outcomes-list { margin-top: 40px; }
+#s8 .outcome-row {
+  display: flex; align-items: flex-start; gap: 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(168,121,65,0.1);
+}
+#s8 .outcome-row:last-child { border-bottom: none; }
+#s8 .outcome-num { font-family: 'Playfair Display', serif; font-size: 36px; font-style: italic; color: rgba(168,121,65,0.2); line-height: 1; min-width: 48px; }
+#s8 .outcome-text { font-size: 16px; font-weight: 400; color: rgba(248,244,235,0.85); line-height: 1.5; padding-top: 6px; }
+
+/* ── SLIDE 9: REVENUE ───────────────────────────────────────── */
+#s9 { background: var(--dark); }
+#s9 .rev-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-top: 40px; }
+#s9 .rev-col { padding: 28px 24px; background: rgba(248,244,235,0.025); }
+#s9 .rev-col.highlight { background: rgba(168,121,65,0.08); border: 1px solid rgba(168,121,65,0.2); }
+#s9 .rev-col-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; color: var(--gold); margin-bottom: 20px; }
+#s9 .rev-item { font-size: 13px; color: rgba(248,244,235,0.75); padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+#s9 .rev-item:last-child { border: none; }
+
+/* ── SLIDE 10: FINANCIALS ───────────────────────────────────── */
+#s10 { background: var(--dark2); }
+#s10 .fin-row { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 40px; }
+#s10 .fin-card { padding: 40px 36px; background: rgba(248,244,235,0.025); }
+#s10 .fin-card.accent { background: rgba(168,121,65,0.06); border: 1px solid rgba(168,121,65,0.2); }
+#s10 .fin-amount { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 900; color: var(--gold); line-height: 1; margin: 12px 0; }
+#s10 .fin-note { font-size: 12px; color: rgba(248,244,235,0.5); margin-top: 12px; }
+#s10 .position-bar { margin-top: 28px; padding: 20px 28px; background: rgba(168,121,65,0.05); border-left: 3px solid var(--gold); }
+
+/* ── SLIDE 11: ROADMAP ──────────────────────────────────────── */
+#s11 { background: var(--dark); }
+#s11 .roadmap { margin-top: 40px; position: relative; }
+#s11 .roadmap-line {
+  position: absolute;
+  left: 31px; top: 20px; bottom: 20px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--gold), rgba(168,121,65,0.1));
+}
+#s11 .phase {
+  display: flex; gap: 32px;
+  margin-bottom: 32px;
+  position: relative;
+}
+#s11 .phase-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid var(--dark);
+  flex-shrink: 0;
+  margin-top: 8px;
+  box-shadow: 0 0 12px rgba(168,121,65,0.4);
+  position: relative; z-index: 1;
+  margin-left: 25px;
+}
+#s11 .phase-content { flex: 1; }
+#s11 .phase-time { font-size: 10px; font-weight: 600; letter-spacing: 0.15em; color: var(--gold); margin-bottom: 6px; }
+#s11 .phase-items { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+#s11 .phase-tag { padding: 4px 12px; background: rgba(168,121,65,0.08); border: 1px solid rgba(168,121,65,0.2); font-size: 11px; color: rgba(248,244,235,0.7); border-radius: 2px; }
+
+/* ── SLIDE 12: CLOSE / ASK ──────────────────────────────────── */
+#s12 { background: var(--dark); }
+#s12 .bg-glow {
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(168,121,65,0.08) 0%, transparent 70%);
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+#s12 .ask-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 36px; }
+#s12 .ask-card { padding: 28px 24px; background: rgba(248,244,235,0.025); }
+#s12 .ask-card.gold { background: rgba(168,121,65,0.08); border: 1px solid rgba(168,121,65,0.25); }
+#s12 .ask-item { font-size: 13px; color: rgba(248,244,235,0.75); padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+#s12 .ask-item:last-child { border: none; }
+#s12 .final-line { margin-top: 40px; padding: 24px 28px; border: 1px solid rgba(168,121,65,0.3); text-align: center; }
+
+/* ── ANIMATIONS ─────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { transform: scaleX(0); } to { transform: scaleX(1); }
+}
+
+.slide .content > * { animation: fadeUp 0.7s ease both; }
+.slide .content > *:nth-child(1) { animation-delay: 0.1s; }
+.slide .content > *:nth-child(2) { animation-delay: 0.2s; }
+.slide .content > *:nth-child(3) { animation-delay: 0.3s; }
+.slide .content > *:nth-child(4) { animation-delay: 0.4s; }
+.slide .content > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .slide { padding: 40px 24px; }
+  #s2 .problem-grid,
+  #s3 .two-col,
+  #s4 .exec-grid,
+  #s5 .why-grid,
+  #s6 .domains-grid,
+  #s7 .impact-grid,
+  #s9 .rev-grid,
+  #s10 .fin-row,
+  #s11 .ask-grid,
+  #s12 .ask-grid { grid-template-columns: 1fr; }
+  .nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV DOTS -->
+<nav class="nav" id="navDots"></nav>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 1: COVER -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s1">
+  <div class="grain"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="bg-circle"></div>
+  <div class="glow"></div>
+  <div class="slide-num">01 / 12</div>
+
+  <div class="content">
+    <div class="tag-row">
+      <div class="tag">iNHET</div>
+      <div class="tag">BENO SCHOOL</div>
+      <div class="tag">INVESTOR BRIEF · 2026</div>
+    </div>
+
+    <div class="display">
+      Education<br>
+      <em>reimagined.</em>
+    </div>
+
+    <div class="gold-line-h" style="max-width:340px;margin-top:28px;margin-bottom:24px;"></div>
+
+    <p class="body-lg" style="max-width:520px;">
+      A scalable education system integrating learning with real-world application, community development, and economic participation. Starting in Panchmahala, Bihar.
+    </p>
+
+    <div class="meta">
+      <div class="meta-item">
+        <div class="label">Stage</div>
+        <div class="val">Early Execution</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Location</div>
+        <div class="val">Panchmahala, Bihar</div>
+      </div>
+      <div class="meta-item">
+        <div class="label">Land</div>
+        <div class="val">Secured · 1 Bigha</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 2: PROBLEM -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s2">
+  <div class="grain"></div>
+  <div class="slide-num">02 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">The Problem</div>
+    <div class="h2">India's education system<br>produces <em>compliance,</em><br>not capability.</div>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="num">01</div>
+        <div class="h3" style="font-size:15px;margin-bottom:6px;">Rote Learning</div>
+        <p class="body">Over-reliance on memorisation with no real-world application</p>
+      </div>
+      <div class="problem-card">
+        <div class="num">02</div>
+        <div class="h3" style="font-size:15px;margin-bottom:6px;">Zero Exposure</div>
+        <p class="body">Students never interact with real systems, economies, or communities</p>
+      </div>
+      <div class="problem-card">
+        <div class="num">03</div>
+        <div class="h3" style="font-size:15px;margin-bottom:6px;">Rural Neglect</div>
+        <p class="body">Minimal focus on rural development and local economic integration</p>
+      </div>
+      <div class="problem-card">
+        <div class="num">04</div>
+        <div class="h3" style="font-size:15px;margin-bottom:6px;">Dropout Crisis</div>
+        <p class="body">High disengagement caused by irrelevant curriculum and zero motivation</p>
+      </div>
+    </div>
+
+    <div class="result-bar">
+      <div class="gold-line-v"></div>
+      <p class="body-lg" style="color:var(--gold-l);">The system produces graduates who cannot think, build, or contribute.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 3: SOLUTION -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s3">
+  <div class="grain"></div>
+  <div class="slide-num">03 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">The Solution</div>
+    <div class="h2">The <em>iNHET</em> System</div>
+
+    <div class="two-col">
+      <div>
+        <p class="body" style="margin-bottom:20px;">A structured alternative to conventional education, built on five principles:</p>
+        <ul class="solution-list">
+          <li>Applied learning over memorisation</li>
+          <li>Flexible, individual subject pathways</li>
+          <li>Life skills, entrepreneurship, and creativity integrated from day one</li>
+          <li>Community-linked education model</li>
+          <li>Students participate in local development</li>
+        </ul>
+      </div>
+
+      <div class="principle-box">
+        <div class="quote">"Education is not isolated."</div>
+        <p class="body" style="margin-bottom:16px;">It is embedded within:</p>
+        <div class="embed-tags">
+          <span class="embed-tag">Community</span>
+          <span class="embed-tag">Economy</span>
+          <span class="embed-tag">Culture</span>
+        </div>
+        <div class="gold-line-h" style="margin-top:24px;"></div>
+        <p class="body" style="margin-top:12px;font-style:italic;font-size:13px;">The school is not separate from life. It is part of it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 4: EXECUTION — BENO SCHOOL -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s4">
+  <div class="grain"></div>
+  <div class="slide-num">04 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Execution</div>
+    <div class="h2"><em>Beno School</em><br>Phase 1 Pilot</div>
+
+    <div class="exec-grid">
+      <div class="exec-card">
+        <div class="card-label">What Exists Now</div>
+        <ul class="solution-list" style="margin:0;">
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Land secured — 1 bigha, 20 katha</li>
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Architecture concept defined</li>
+          <li style="padding:10px 0;">System framework developed</li>
+        </ul>
+      </div>
+
+      <div class="exec-card">
+        <div class="card-label">Phase 1 Plan</div>
+        <ul class="solution-list" style="margin:0;">
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Capacity: 100 students</li>
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Hostel + day scholar system</li>
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Core academic + applied modules</li>
+          <li style="padding:10px 0;">Community interaction programs</li>
+        </ul>
+      </div>
+
+      <div class="exec-card">
+        <div class="card-label">Infrastructure</div>
+        <ul class="solution-list" style="margin:0;">
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Classroom block</li>
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Hostel — low-cost, shared systems</li>
+          <li style="padding:10px 0;border-bottom:1px solid rgba(168,121,65,0.1);">Central tower: library + seminars</li>
+          <li style="padding:10px 0;">Garden + greenhouse learning zone</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 5: WHY IT WORKS -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s5">
+  <div class="grain"></div>
+  <div class="slide-num">05 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">The Case</div>
+    <div class="h2">Why this model <em>works.</em></div>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="icon">⬡</div>
+        <div class="h3" style="font-size:18px;margin-bottom:10px;">Scalable</div>
+        <p class="body">Does not depend on large infrastructure. Modular and adaptable to multiple regions without requiring complete rebuilds.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">◈</div>
+        <div class="h3" style="font-size:18px;margin-bottom:10px;">Economically Viable</div>
+        <p class="body">Multi-layer revenue model. Low-cost operational structure. Local resource integration keeps costs sustainable.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">◉</div>
+        <div class="h3" style="font-size:18px;margin-bottom:10px;">Socially Embedded</div>
+        <p class="body">Students contribute to local environment. Community becomes part of education. Creates local employment throughout.</p>
+      </div>
+      <div class="why-card">
+        <div class="icon">◬</div>
+        <div class="h3" style="font-size:18px;margin-bottom:10px;">Educationally Effective</div>
+        <p class="body">Reduces dropout rates. Encourages engagement through real-world relevance. Supports individual specialisation paths.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 6: LEARNING MODEL -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s6">
+  <div class="grain"></div>
+  <div class="slide-num">06 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Curriculum</div>
+    <div class="h2">The <em>Learning Model</em></div>
+
+    <div class="domains-grid">
+      <div class="domain-col">
+        <div class="domain-col-title">Core Domains</div>
+        <div class="domain-item">Arithmetics</div>
+        <div class="domain-item">Lingosophy — Language Systems</div>
+        <div class="domain-item">Native Languages</div>
+        <div class="domain-item">Biosphere + Cosmology</div>
+        <div class="domain-item">Chroncivitas — History + Civilisation</div>
+      </div>
+
+      <div class="domain-col">
+        <div class="domain-col-title">Applied Domains</div>
+        <div class="domain-item">Entrepreneurship</div>
+        <div class="domain-item">Agriculture</div>
+        <div class="domain-item">Psychology</div>
+        <div class="domain-item">Self-Safety</div>
+        <div class="domain-item">Creative Arts</div>
+      </div>
+
+      <div class="domain-col">
+        <div class="domain-col-title">Learning Environment</div>
+        <div class="domain-item">Workshop-based learning</div>
+        <div class="domain-item">Debate-driven discussion culture</div>
+        <div class="domain-item">Field exposure across regions</div>
+        <div class="domain-item">Public speaking as a core skill</div>
+        <div class="domain-item">Real project output required</div>
+      </div>
+    </div>
+
+    <div class="gold-line-h" style="margin-top:32px;"></div>
+    <p class="body" style="margin-top:16px;font-style:italic;">Not subjects to pass. Systems to understand and use.</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 7: COMMUNITY IMPACT -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s7">
+  <div class="grain"></div>
+  <div class="slide-num">07 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Community and Culture</div>
+    <div class="h2">Beyond the<br><em>classroom.</em></div>
+
+    <div class="impact-grid">
+      <div class="impact-item">
+        <div class="impact-icon">🪔</div>
+        <div class="label" style="margin-bottom:10px;">Preservation</div>
+        <p>Preserves regional identity and cultural practices as active living knowledge</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">🌐</div>
+        <div class="label" style="margin-bottom:10px;">Ecosystem</div>
+        <p>Creates a shared learning ecosystem that extends far beyond formal classrooms</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">🏛</div>
+        <div class="label" style="margin-bottom:10px;">Cultural Hub</div>
+        <p>Acts as an intellectual and cultural centre for the broader Panchmahala region</p>
+      </div>
+      <div class="impact-item">
+        <div class="impact-icon">🤝</div>
+        <div class="label" style="margin-bottom:10px;">Generations</div>
+        <p>Encourages intergenerational interaction and knowledge transfer within the community</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 8: STUDENT OUTCOMES -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s8">
+  <div class="grain"></div>
+  <div class="slide-num">08 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Student Outcomes</div>
+    <div class="h2">What a Beno<br>graduate <em>can do.</em></div>
+
+    <div class="outcomes-list">
+      <div class="outcome-row">
+        <div class="outcome-num">01</div>
+        <div class="outcome-text">Think independently — question systems, form original views, reason across domains</div>
+      </div>
+      <div class="outcome-row">
+        <div class="outcome-num">02</div>
+        <div class="outcome-text">Build economic capability early — understand money, markets, and value creation before leaving school</div>
+      </div>
+      <div class="outcome-row">
+        <div class="outcome-num">03</div>
+        <div class="outcome-text">Engage with real-world systems — agriculture, logistics, civic life, and local enterprise</div>
+      </div>
+      <div class="outcome-row">
+        <div class="outcome-num">04</div>
+        <div class="outcome-text">Develop emotional and social intelligence through structured human interaction and debate</div>
+      </div>
+      <div class="outcome-row">
+        <div class="outcome-num">05</div>
+        <div class="outcome-text">Contribute to local and broader communities — not just consume from them</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 9: REVENUE MODEL -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s9">
+  <div class="grain"></div>
+  <div class="slide-num">09 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Revenue Model</div>
+    <div class="h2">Three layers<br>of <em>sustainability.</em></div>
+
+    <div class="rev-grid">
+      <div class="rev-col highlight">
+        <div class="rev-col-label">Core Revenue</div>
+        <div class="rev-item" style="padding:12px 0;">
+          <div class="label" style="margin-bottom:4px;">Tuition Fees</div>
+          <div style="font-size:20px;font-family:'Playfair Display',serif;color:var(--gold-l);">Rs. 500 — 1,000 / mo</div>
+        </div>
+        <div class="rev-item" style="padding:12px 0;border:none;">
+          <div class="label" style="margin-bottom:4px;">Hostel Fees</div>
+          <div style="font-size:20px;font-family:'Playfair Display',serif;color:var(--gold-l);">Rs. 3,000 — 5,000 / mo</div>
+        </div>
+      </div>
+
+      <div class="rev-col">
+        <div class="rev-col-label">Secondary Revenue</div>
+        <div class="rev-item">Skill and agriculture workshops</div>
+        <div class="rev-item">Community programs</div>
+        <div class="rev-item">Events and learning sessions</div>
+        <div class="rev-item">Arts and cultural programs</div>
+      </div>
+
+      <div class="rev-col">
+        <div class="rev-col-label">Long-Term Revenue</div>
+        <div class="rev-item">Brand-led expansion</div>
+        <div class="rev-item">External programs and fellowships</div>
+        <div class="rev-item">Institutional partnerships</div>
+        <div class="rev-item">NeoUni system licensing</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 10: FINANCIALS -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s10">
+  <div class="grain"></div>
+  <div class="slide-num">10 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Financial Snapshot — Phase 1</div>
+    <div class="h2">Near <em>break-even</em><br>from year one.</div>
+
+    <div class="fin-row">
+      <div class="fin-card accent">
+        <div class="label">Estimated Annual Revenue</div>
+        <div class="fin-amount">₹40L</div>
+        <p class="body">Range: Rs. 35 to 45 lakh per year at Phase 1 capacity</p>
+        <div class="fin-note">Based on 100 students, hostel + day scholar mix</div>
+      </div>
+      <div class="fin-card">
+        <div class="label">Estimated Annual Expenses</div>
+        <div class="fin-amount" style="color:var(--cream);opacity:0.6;">₹35L</div>
+        <p class="body">Range: Rs. 30 to 40 lakh per year including all operations</p>
+        <div class="fin-note">Low-cost design and local resource integration</div>
+      </div>
+    </div>
+
+    <div class="position-bar" style="margin-top:24px;">
+      <div class="label" style="margin-bottom:8px;">Position</div>
+      <p class="body-lg" style="color:var(--gold-l);">Near break-even in early phase. Profitability increases directly with scale. Each additional student improves margin.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 11: ROADMAP -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s11">
+  <div class="grain"></div>
+  <div class="slide-num">11 / 12</div>
+
+  <div class="content">
+    <div class="eyebrow">Implementation Roadmap</div>
+    <div class="h2">Three phases<br>to <em>national scale.</em></div>
+
+    <div class="roadmap">
+      <div class="roadmap-line"></div>
+
+      <div class="phase">
+        <div class="phase-dot"></div>
+        <div class="phase-content">
+          <div class="phase-time">Phase 1 — 0 to 12 Months</div>
+          <div class="h3" style="font-size:18px;margin-bottom:8px;">Pilot Execution</div>
+          <p class="body">100 students. Core infrastructure built. Curriculum launched. Community programs initiated.</p>
+          <div class="phase-items">
+            <span class="phase-tag">100 students</span>
+            <span class="phase-tag">Core infrastructure</span>
+            <span class="phase-tag">Hostel live</span>
+            <span class="phase-tag">Applied curriculum</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot" style="opacity:0.7;box-shadow:none;background:var(--gold-l);"></div>
+        <div class="phase-content">
+          <div class="phase-time">Phase 2 — 1 to 3 Years</div>
+          <div class="h3" style="font-size:18px;margin-bottom:8px;">Expansion</div>
+          <p class="body">Facilities expand. Student capacity increases. Community integration deepens.</p>
+          <div class="phase-items">
+            <span class="phase-tag">Expanded capacity</span>
+            <span class="phase-tag">Deeper community ties</span>
+            <span class="phase-tag">Stronger revenue</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot" style="opacity:0.4;box-shadow:none;background:var(--gold-ll);"></div>
+        <div class="phase-content">
+          <div class="phase-time">Phase 3 — 3 to 5 Years</div>
+          <div class="h3" style="font-size:18px;margin-bottom:8px;">Replication + NeoUni</div>
+          <p class="body">Model replicates across multiple locations. NeoUni system fully deployed.</p>
+          <div class="phase-items">
+            <span class="phase-tag">Multiple locations</span>
+            <span class="phase-tag">NeoUni live</span>
+            <span class="phase-tag">National model</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- SLIDE 12: THE ASK / CLOSE -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="slide" id="s12">
+  <div class="grain"></div>
+  <div class="bg-glow"></div>
+  <div class="slide-num">12 / 12</div>
+
+  <div class="content" style="position:relative;z-index:2;">
+    <div class="eyebrow">What We Are Seeking</div>
+    <div class="h2">Be part of<br><em>something real.</em></div>
+
+    <div class="ask-grid">
+      <div class="ask-card gold">
+        <div class="label" style="margin-bottom:16px;">Immediate Needs</div>
+        <div class="ask-item">Funding for Phase 1 infrastructure and construction</div>
+        <div class="ask-item">Strategic mentorship and institutional guidance</div>
+        <div class="ask-item">Institutional partnerships for credibility and reach</div>
+      </div>
+      <div class="ask-card">
+        <div class="label" style="margin-bottom:16px;">Funding Use</div>
+        <div class="ask-item">Construction of core campus structures</div>
+        <div class="ask-item">Operational setup and staffing</div>
+        <div class="ask-item">Learning infrastructure and resources</div>
+        <div class="ask-item">Community integration systems</div>
+      </div>
+    </div>
+
+    <div class="final-line">
+      <div class="eyebrow" style="margin-bottom:12px;">Final Positioning</div>
+      <div class="h3" style="color:var(--cream);font-size:clamp(14px,2vw,20px);font-weight:400;line-height:1.6;font-style:italic;">
+        "iNHET is not a school model. It is a replicable system<br>for education-led societal transformation.<br>Beno is the first step."
+      </div>
+      <div class="gold-line-h" style="margin-top:20px;margin-bottom:16px;max-width:200px;margin-left:auto;margin-right:auto;"></div>
+      <div class="label">Yashveer Vats Gaurav — Founder, iNHET</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Build nav dots
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('navDots');
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Slide ${i+1}`);
+    dot.onclick = () => slides[i].scrollIntoView({ behavior: 'smooth' });
+    nav.appendChild(dot);
+  });
+
+  // Update active dot on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(slides).indexOf(entry.target);
+        document.querySelectorAll('.nav-dot').forEach((d, i) => {
+          d.classList.toggle('active', i === idx);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    const active = [...document.querySelectorAll('.nav-dot')].findIndex(d => d.classList.contains('active'));
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      if (active < slides.length - 1) slides[active + 1].scrollIntoView({ behavior: 'smooth' });
+    }
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      if (active > 0) slides[active - 1].scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script>
+</body>
+</html>

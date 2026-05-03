@@ -446,9 +446,9 @@
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 32px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -504,6 +504,7 @@
   font-size: 0.95rem;
   color: var(--text-secondary);
   line-height: 1.6;
+  text-align: justify;
 }
 
 /* ── CONTACT PAGE ── */
