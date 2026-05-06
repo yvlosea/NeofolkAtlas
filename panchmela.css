@@ -699,45 +699,6 @@ a {
   color: var(--text-muted);
 }
 
-.concept-arrow {
-  font-size: 1.5rem;
-  color: var(--text-light);
-}
-
-/* ── CONTEXT SECTION ── */
-.context-section {
-  padding: 80px 48px;
-  background: var(--color-bg-alt);
-}
-
-.context-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 64px;
-  max-width: 1400px;
-  margin: 0 auto;
-  align-items: center;
-}
-
-.context-info {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.context-title {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 3vw, 2.75rem);
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.context-desc {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
-
 .context-list {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

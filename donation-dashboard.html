@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="supabase-url" content="https://suvrnlgsicsmpgkvlnox.supabase.co" />
+  <meta name="supabase-anon-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dnJubGdzaWNzbXBna3Zsbm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTEzOTMsImV4cCI6MjA5Mjc4NzM5M30.nKYsIDvFfJg7CystMrnijSeJF_fQmyYvhcTk-pdXH5E" />
+  <title>Donation Dashboard | Panchmahala - Indian Navyuvak Humanitarian Education Trust</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="panchmela.css" />
+  <link rel="stylesheet" href="donation-dashboard.css" />
+  <link rel="icon" type="image/png" href="iNHET logo.png" />
+</head>
+<body data-theme="light">
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="nav-brand">
+      <a href="index.html">
+        <img src="iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
+      </a>
+      <div class="brand-text">
+        <a href="index.html" class="brand-link">
+          <span class="brand-title">Panchmahala</span>
+          <span class="brand-subtitle">Indian Navyuvak Humanitarian Education Trust</span>
+        </a>
+      </div>
+    </div>
+    <div class="nav-links">
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">About <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="approach.html" class="dropdown-item">Our Approach</a>
+          <a href="roadmap.html" class="dropdown-item">Roadmap</a>
+          <a href="team.html" class="dropdown-item">Team</a>
+          <a href="transparency.html" class="dropdown-item">Transparency</a>
+          <a href="faq.html" class="dropdown-item">FAQ</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">The Campus <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="masterplan.html" class="dropdown-item">Masterplan</a>
+          <a href="journal.html" class="dropdown-item">Build Journal</a>
+          <a href="current-work.html" class="dropdown-item">Current Work</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">Education <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="education.html" class="dropdown-item">Learning Model</a>
+          <a href="women-education.html" class="dropdown-item">Women's Initiative</a>
+          <a href="culture.html" class="dropdown-item">Cultural Preservation</a>
+        </div>
+      </div>
+      <a href="partnerships.html" class="nav-link">Partner</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn donate-btn-nav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Donate
+      </a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section hero-minimal">
+    <div class="hero-content">
+      <span class="hero-label">Financial Transparency</span>
+      <h1 class="hero-title-large">Donation <span class="text-gradient">Dashboard</span></h1>
+      <p class="hero-subtext">
+        Complete transparency in how your contributions build educational infrastructure. See exactly where funds are needed, where they're going, and the impact they're creating in real-time.
+      </p>
+    </div>
+    <div class="hero-image-wrap">
+      <div class="dashboard-hero-visual">
+        <div class="transparency-meter">
+          <div class="meter-circle">
+            <span class="meter-value">100%</span>
+            <span class="meter-label">Transparent</span>
+          </div>
+        </div>
+        <div class="floating-coins">
+          <div class="coin">₹</div>
+          <div class="coin">₹</div>
+          <div class="coin">₹</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Overview Stats -->
+  <section class="overview-stats">
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-content">
+          <span class="stat-number" id="totalRaised">₹0</span>
+          <span class="stat-label">Total Raised</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <span class="stat-number" id="totalNeeded">₹0</span>
+          <span class="stat-label">Currently Needed</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <span class="stat-number" id="projectsCompleted">0</span>
+          <span class="stat-label">Projects Completed</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏗️</div>
+        <div class="stat-content">
+          <span class="stat-number" id="activeProjects">0</span>
+          <span class="stat-label">In Development</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Funding Categories -->
+  <section class="categories-section">
+    <div class="section-header">
+      <span class="section-tag">Funding Categories</span>
+      <h2 class="section-title">Support What Matters to You</h2>
+      <p class="section-subtitle">Choose specific areas to direct your support</p>
+    </div>
+    <div class="categories-grid">
+      <!-- Buildings & Infrastructure -->
+      <div class="category-card infrastructure">
+        <div class="category-header">
+          <div class="category-icon">🏛️</div>
+          <h3>Buildings & Infrastructure</h3>
+          <span class="category-progress" id="infrastructureProgress">0% funded</span>
+        </div>
+        <div class="category-progress-bar">
+          <div class="progress-fill" id="infrastructureBar" style="width: 0%"></div>
+        </div>
+        <div class="category-stats">
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">raised</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">needed</span>
+          </div>
+        </div>
+        <div class="category-projects">
+          <h4>Current Projects:</h4>
+          <div class="project-list" id="infrastructureProjects">
+            <!-- Projects will be loaded here -->
+          </div>
+        </div>
+        <button class="category-donate-btn" onclick="openDonationModal('infrastructure')">
+          Support Infrastructure
+        </button>
+      </div>
+
+      <!-- Staff & Operations -->
+      <div class="category-card operations">
+        <div class="category-header">
+          <div class="category-icon">👩‍🏫</div>
+          <h3>Staff & Operations</h3>
+          <span class="category-progress" id="operationsProgress">0% funded</span>
+        </div>
+        <div class="category-progress-bar">
+          <div class="progress-fill" id="operationsBar" style="width: 0%"></div>
+        </div>
+        <div class="category-stats">
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">raised</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">needed</span>
+          </div>
+        </div>
+        <div class="category-projects">
+          <h4>Current Needs:</h4>
+          <div class="project-list" id="operationsProjects">
+            <!-- Projects will be loaded here -->
+          </div>
+        </div>
+        <button class="category-donate-btn" onclick="openDonationModal('operations')">
+          Support Operations
+        </button>
+      </div>
+
+      <!-- Technology & Sustainability -->
+      <div class="category-card technology">
+        <div class="category-header">
+          <div class="category-icon">☀️</div>
+          <h3>Technology & Sustainability</h3>
+          <span class="category-progress" id="technologyProgress">0% funded</span>
+        </div>
+        <div class="category-progress-bar">
+          <div class="progress-fill" id="technologyBar" style="width: 0%"></div>
+        </div>
+        <div class="category-stats">
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">raised</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">needed</span>
+          </div>
+        </div>
+        <div class="category-projects">
+          <h4>Current Projects:</h4>
+          <div class="project-list" id="technologyProjects">
+            <!-- Projects will be loaded here -->
+          </div>
+        </div>
+        <button class="category-donate-btn" onclick="openDonationModal('technology')">
+          Support Technology
+        </button>
+      </div>
+
+      <!-- Student Support -->
+      <div class="category-card students">
+        <div class="category-header">
+          <div class="category-icon">🌱</div>
+          <h3>Student Support</h3>
+          <span class="category-progress" id="studentsProgress">0% funded</span>
+        </div>
+        <div class="category-progress-bar">
+          <div class="progress-fill" id="studentsBar" style="width: 0%"></div>
+        </div>
+        <div class="category-stats">
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">raised</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">needed</span>
+          </div>
+        </div>
+        <div class="category-projects">
+          <h4>Current Needs:</h4>
+          <div class="project-list" id="studentsProjects">
+            <!-- Projects will be loaded here -->
+          </div>
+        </div>
+        <button class="category-donate-btn" onclick="openDonationModal('students')">
+          Support Students
+        </button>
+      </div>
+
+      <!-- Experimental Development -->
+      <div class="category-card experimental">
+        <div class="category-header">
+          <div class="category-icon">🧪</div>
+          <h3>Experimental Development</h3>
+          <span class="category-progress" id="experimentalProgress">0% funded</span>
+        </div>
+        <div class="category-progress-bar">
+          <div class="progress-fill" id="experimentalBar" style="width: 0%"></div>
+        </div>
+        <div class="category-stats">
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">raised</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">₹0</span>
+            <span class="stat-desc">needed</span>
+          </div>
+        </div>
+        <div class="category-projects">
+          <h4>Current Experiments:</h4>
+          <div class="project-list" id="experimentalProjects">
+            <!-- Projects will be loaded here -->
+          </div>
+        </div>
+        <button class="category-donate-btn" onclick="openDonationModal('experimental')">
+          Support Innovation
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recent Transactions -->
+  <section class="transactions-section">
+    <div class="section-header">
+      <span class="section-tag">Live Updates</span>
+      <h2 class="section-title">Recent Transactions</h2>
+      <p class="section-subtitle">See every contribution and expenditure in real-time</p>
+    </div>
+    <div class="transactions-container">
+      <div class="transaction-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="donations">Donations</button>
+        <button class="filter-btn" data-filter="expenses">Expenses</button>
+        <button class="filter-btn" data-filter="milestones">Milestones</button>
+      </div>
+      <div class="transactions-list" id="transactionsList">
+        <!-- Transactions will be loaded here -->
+      </div>
+      <div class="load-more-container">
+        <button class="load-more-btn" id="loadMoreTransactions">Load More</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Stories -->
+  <section class="impact-section">
+    <div class="section-header">
+      <span class="section-tag">Your Impact</span>
+      <h2 class="section-title">Stories of Change</h2>
+      <p class="section-subtitle">See how your contributions transform lives</p>
+    </div>
+    <div class="impact-grid" id="impactStories">
+      <!-- Impact stories will be loaded here -->
+    </div>
+  </section>
+
+  <!-- Financial Reports -->
+  <section class="reports-section">
+    <div class="section-header">
+      <span class="section-tag">Documentation</span>
+      <h2 class="section-title">Financial Reports</h2>
+      <p class="section-subtitle">Download detailed financial documentation</p>
+    </div>
+    <div class="reports-grid">
+      <div class="report-card">
+        <div class="report-icon">📊</div>
+        <h3>Monthly Financial Summary</h3>
+        <p>Comprehensive breakdown of all income and expenses</p>
+        <button class="download-btn" onclick="downloadReport('monthly')">Download PDF</button>
+      </div>
+      <div class="report-card">
+        <div class="report-icon">📈</div>
+        <h3>Annual Impact Report</h3>
+        <p>Yearly overview of projects completed and lives impacted</p>
+        <button class="download-btn" onclick="downloadReport('annual')">Download PDF</button>
+      </div>
+      <div class="report-card">
+        <div class="report-icon">🧾</div>
+        <h3>Audit Reports</h3>
+        <p>Independent audit verification of all financial transactions</p>
+        <button class="download-btn" onclick="downloadReport('audit')">Download PDF</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2 class="cta-title">Be Part of Transparent Nation-Building</h2>
+      <p class="cta-desc">
+        Every contribution is tracked, every rupee accounted for. Join us in building educational infrastructure with complete transparency and accountability.
+      </p>
+      <div class="cta-buttons">
+        <button class="cta-primary large" onclick="openDonationModal('general')">Make a General Donation</button>
+        <a href="mailclub.html" class="cta-secondary large">Join Mailclub for Monthly Support</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Donation Modal -->
+  <div class="login-modal" id="donationModal" aria-hidden="true">
+    <div class="login-modal-backdrop" id="donationModalBackdrop"></div>
+    <div class="login-modal-content donation-modal-content">
+      <button class="modal-close" id="donationModalClose">&times;</button>
+      <div class="modal-header">
+        <span class="section-tag">Make Your Impact</span>
+        <h2 id="donationModalTitle">Support Our Mission</h2>
+        <p id="donationModalSubtitle">Your contribution builds educational infrastructure</p>
+      </div>
+
+      <div class="donation-success-state" id="donationSuccessState" hidden>
+        <div class="donation-success-mark">✓</div>
+        <h3>Thank You for Your Support!</h3>
+        <p id="donationSuccessMessage">Your contribution will make a real difference.</p>
+      </div>
+
+      <form class="login-form donation-form" id="donationForm">
+        <input type="hidden" id="donationCategory" name="category" />
+        <input type="hidden" id="donationProject" name="project" />
+        
+        <div class="donation-amount-grid">
+          <button type="button" class="amount-card" data-amount="500">₹500</button>
+          <button type="button" class="amount-card" data-amount="1000">₹1,000</button>
+          <button type="button" class="amount-card" data-amount="2500">₹2,500</button>
+          <button type="button" class="amount-card" data-amount="5000">₹5,000</button>
+          <button type="button" class="amount-card" data-amount="10000">₹10,000</button>
+          <button type="button" class="amount-card amount-card-custom" data-amount="custom">Custom</button>
+        </div>
+
+        <div class="form-group custom-amount-group" id="customAmountGroup" hidden>
+          <label for="customAmount">Custom Amount (₹)</label>
+          <input type="number" id="customAmount" min="1" step="1" placeholder="Enter amount" />
+        </div>
+
+        <div class="form-group">
+          <label for="donationName">Full Name</label>
+          <input type="text" id="donationName" name="full_name" placeholder="Your full name" required />
+        </div>
+        <div class="form-group">
+          <label for="donationEmail">Email Address</label>
+          <input type="email" id="donationEmail" name="email" placeholder="you@example.com" required />
+        </div>
+        <div class="form-group">
+          <label for="donationPhone">Phone Number (optional)</label>
+          <input type="tel" id="donationPhone" name="phone" placeholder="+91 98..." />
+        </div>
+        <div class="form-group">
+          <label for="donationMessage">Message (optional)</label>
+          <textarea id="donationMessage" name="message" rows="4" placeholder="Share why you're supporting this cause"></textarea>
+        </div>
+
+        <div class="payment-section">
+          <h4>Payment Method</h4>
+          <div class="payment-options">
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="upi" checked />
+              <span>UPI Transfer</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="bank" />
+              <span>Bank Transfer</span>
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="payment_method" value="card" />
+              <span>Credit/Debit Card</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="donation-summary" id="donationSummary">
+          <div class="summary-row">
+            <span>Category:</span>
+            <strong id="summaryCategory">General Support</strong>
+          </div>
+          <div class="summary-row">
+            <span>Amount:</span>
+            <strong id="summaryAmount">₹0</strong>
+          </div>
+        </div>
+
+        <label class="donation-checkbox">
+          <input type="checkbox" id="donationAnonymous" name="anonymous" />
+          <span>Make this donation anonymous</span>
+        </label>
+
+        <label class="donation-checkbox">
+          <input type="checkbox" id="donationPublic" name="display_publicly" checked />
+          <span>Display my name publicly as a supporter</span>
+        </label>
+
+        <button type="submit" class="submit-btn" id="donationSubmitBtn">Complete Donation</button>
+        <p class="form-status" id="donationFormStatus" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="iNHET logo.png" alt="iNHET" class="footer-logo" />
+        <p class="footer-tagline">Rooted in Earth. Open in Mind.</p>
+        <div class="footer-contact-info">
+          <span>Panchmahala, Mokama, Bihar</span>
+          <span>9667115543</span>
+          <span>inhetedu@zohomail.in</span>
+        </div>
+      </div>
+      <div class="footer-links-container">
+        <div class="footer-col">
+          <h4>About</h4>
+          <a href="approach.html">Our Approach</a>
+          <a href="roadmap.html">Roadmap</a>
+          <a href="team.html">Team</a>
+          <a href="transparency.html">Transparency</a>
+        </div>
+        <div class="footer-col">
+          <h4>The Campus</h4>
+          <a href="masterplan.html">Masterplan</a>
+          <a href="journal.html">Build Journal</a>
+          <a href="current-work.html">Current Work</a>
+        </div>
+        <div class="footer-col">
+          <h4>Education</h4>
+          <a href="education.html">Learning Model</a>
+          <a href="women-education.html">Women's Initiative</a>
+          <a href="culture.html">Cultural Preservation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="donation-dashboard.html" class="active">Donation Dashboard</a>
+          <a href="mailclub.html">Mailclub</a>
+          <a href="partnerships.html">Partnerships</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Indian Navyuvak Humanitarian Education Trust. All rights reserved.</p>
+      <p class="footer-note">Registered non-profit • 12A/80G eligibility in process</p>
+    </div>
+  </footer>
+
+  <script src="donation-dashboard.js"></script>
+  <script src="panchmela.js"></script>
+</body>
+</html>

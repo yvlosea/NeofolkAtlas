@@ -1,0 +1,740 @@
+/* ═══════════════════════════════════════════════════════════
+   NEOUNI — Educational Philosophy Styles
+   Extends PANCHMELA design system
+═══════════════════════════════════════════════════════════ */
+
+/* ── NEOUNI HERO VISUAL ── */
+.neouni-hero-visual {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary-pale), var(--color-surface));
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.learning-cycle {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.cycle-item {
+  width: 80px;
+  height: 80px;
+  background: var(--color-surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  border: 3px solid var(--border-color);
+  transition: var(--transition-normal);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.cycle-item.active {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.1);
+}
+
+.cycle-item:nth-child(2) { animation-delay: 0.5s; }
+.cycle-item:nth-child(3) { animation-delay: 1s; }
+.cycle-item:nth-child(4) { animation-delay: 1.5s; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+/* ── PHILOSOPHY SECTION ── */
+.philosophy-section {
+  padding: 6rem 2rem;
+  background: var(--color-bg);
+}
+
+.philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.philosophy-card {
+  background: var(--color-surface);
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-color);
+  position: relative;
+  transition: var(--transition-normal);
+}
+
+.philosophy-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+.philosophy-number {
+  position: absolute;
+  top: -1.5rem;
+  left: 2rem;
+  width: 3rem;
+  height: 3rem;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.philosophy-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin: 1rem 0 1.5rem;
+}
+
+.philosophy-card p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.philosophy-example {
+  background: var(--color-bg-alt);
+  padding: 1.5rem;
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--color-accent);
+}
+
+.example-title {
+  font-weight: 600;
+  color: var(--color-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.example-text {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* ── ECOSYSTEM SECTION ── */
+.ecosystem-section {
+  padding: 6rem 2rem;
+  background: var(--color-bg-alt);
+}
+
+.ecosystem-visual {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ecosystem-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.center-circle {
+  width: 120px;
+  height: 120px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: float 4s ease-in-out infinite;
+}
+
+.center-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.center-subtitle {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.ecosystem-nodes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ecosystem-node {
+  position: absolute;
+  width: 200px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  border: 2px solid var(--border-color);
+  transition: var(--transition-normal);
+}
+
+.ecosystem-node:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.ecosystem-node[data-position="top"] {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ecosystem-node[data-position="right"] {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.ecosystem-node[data-position="bottom"] {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.ecosystem-node[data-position="left"] {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.node-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  display: block;
+}
+
+.node-content h4 {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.node-content p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ── COMPARISON SECTION ── */
+.comparison-section {
+  padding: 6rem 2rem;
+  background: var(--color-bg);
+}
+
+.comparison-table {
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.comparison-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  background: var(--color-surface-elevated);
+}
+
+.header-cell {
+  padding: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  border-right: 1px solid var(--border-color);
+}
+
+.header-cell:last-child {
+  border-right: none;
+}
+
+.header-cell.traditional {
+  background: #f8f8f8;
+  color: var(--text-muted);
+}
+
+.header-cell.neouni {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition-normal);
+}
+
+.comparison-row:hover {
+  background: var(--color-bg-alt);
+}
+
+.comparison-row:last-child {
+  border-bottom: none;
+}
+
+.row-cell {
+  padding: 1.5rem;
+  border-right: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.row-cell:last-child {
+  border-right: none;
+}
+
+.row-cell.aspect {
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+}
+
+.row-cell.traditional {
+  background: #fafafa;
+}
+
+.row-cell.neouni {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+/* ── JOURNEY SECTION ── */
+.journey-section {
+  padding: 6rem 2rem;
+  background: var(--color-bg-alt);
+}
+
+.journey-timeline {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.journey-timeline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  width: 4px;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+
+.journey-phase {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  position: relative;
+}
+
+.phase-marker {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.phase-number {
+  width: 4rem;
+  height: 4rem;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.phase-line {
+  position: absolute;
+  top: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 2rem;
+  background: var(--color-primary);
+}
+
+.phase-content {
+  flex: 1;
+  background: var(--color-surface);
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+
+.phase-content::before {
+  content: '';
+  position: absolute;
+  left: -1rem;
+  top: 2rem;
+  width: 0;
+  height: 0;
+  border-top: 0.5rem solid transparent;
+  border-bottom: 0.5rem solid transparent;
+  border-right: 1rem solid var(--color-surface);
+}
+
+.phase-content h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+}
+
+.phase-content p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.phase-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.project-tag {
+  background: var(--color-primary-pale);
+  color: var(--color-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ── CAPABILITIES SECTION ── */
+.capabilities-section {
+  padding: 6rem 2rem;
+  background: var(--color-bg);
+}
+
+.capabilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.capability-card {
+  background: var(--color-surface);
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-color);
+  text-align: center;
+  transition: var(--transition-normal);
+}
+
+.capability-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+.capability-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.capability-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+}
+
+.capability-card ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.capability-card li {
+  padding: 0.5rem 0;
+  color: var(--text-secondary);
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.capability-card li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* ── SUCCESS SECTION ── */
+.success-section {
+  padding: 6rem 2rem;
+  background: var(--color-bg-alt);
+}
+
+.success-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.success-story {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: var(--transition-normal);
+}
+
+.success-story:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.story-image {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--color-primary-pale), var(--color-surface));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  color: var(--color-primary);
+}
+
+.story-content {
+  padding: 2rem;
+}
+
+.story-content h3 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+}
+
+.story-content p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.story-impact {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--color-bg-alt);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+}
+
+.impact-metric {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.impact-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ── RESPONSIVE DESIGN ── */
+@media (max-width: 768px) {
+  .neouni-hero-visual {
+    height: 300px;
+  }
+  
+  .learning-cycle {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .cycle-item {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  
+  .philosophy-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .philosophy-card {
+    padding: 2rem;
+  }
+  
+  .ecosystem-visual {
+    height: 500px;
+  }
+  
+  .center-circle {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .ecosystem-node {
+    width: 160px;
+    padding: 1rem;
+  }
+  
+  .comparison-table {
+    overflow-x: auto;
+  }
+  
+  .comparison-header,
+  .comparison-row {
+    min-width: 600px;
+  }
+  
+  .journey-phase {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .journey-timeline::before {
+    left: 1rem;
+  }
+  
+  .phase-marker {
+    align-self: flex-start;
+  }
+  
+  .phase-number {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.2rem;
+  }
+  
+  .phase-content::before {
+    display: none;
+  }
+  
+  .capabilities-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .capability-card {
+    padding: 2rem;
+  }
+  
+  .success-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .philosophy-section,
+  .ecosystem-section,
+  .comparison-section,
+  .journey-section,
+  .capabilities-section,
+  .success-section {
+    padding: 4rem 1rem;
+  }
+  
+  .philosophy-card {
+    padding: 1.5rem;
+  }
+  
+  .philosophy-number {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.2rem;
+    top: -1rem;
+    left: 1rem;
+  }
+  
+  .ecosystem-visual {
+    height: 400px;
+  }
+  
+  .ecosystem-node {
+    position: static;
+    width: 100%;
+    margin-bottom: 1rem;
+    transform: none !important;
+  }
+  
+  .ecosystem-nodes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .center-circle {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 2rem;
+  }
+  
+  .ecosystem-center {
+    position: static;
+    transform: none;
+    margin-bottom: 2rem;
+  }
+  
+  .phase-content {
+    padding: 1.5rem;
+  }
+  
+  .capability-card {
+    padding: 1.5rem;
+  }
+  
+  .capability-icon {
+    font-size: 2.5rem;
+  }
+  
+  .story-content {
+    padding: 1.5rem;
+  }
+  
+  .story-impact {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+}
