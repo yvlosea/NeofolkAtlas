@@ -129,6 +129,29 @@ body::before {
   50% { transform: translate(2%, -2%) scale(1.02); }
 }
 
+/* Global Scroll Reveal */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.reveal-on-scroll.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Pulse animation for important items */
+@keyframes pulse-soft {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(154, 117, 71, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(154, 117, 71, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(154, 117, 71, 0); }
+}
+
+.pulse-badge {
+  animation: pulse-soft 2s infinite;
+}
+
 img {
   max-width: 100%;
   display: block;

@@ -97,28 +97,65 @@ let liveCountersData = {
 function initializeLiveCounters() {
   if (liveCountersData.isInitialized) return;
   
+  // Load metrics from Trust Dashboard (localStorage) or use defaults
+  const trustMetrics = JSON.parse(localStorage.getItem('trustMetrics'));
+  
   // Initialize counter values
   LIVE_COUNTERS_CONFIG.counters.forEach(counter => {
+    let initialValue = Math.floor(counter.target * 0.7);
+    
+    // Override with real data if available
+    if (trustMetrics) {
+      const realMetric = trustMetrics.find(m => m.id === counter.id);
+      if (realMetric) initialValue = realMetric.value;
+    }
+
     liveCountersData.counters[counter.id] = {
       ...counter,
-      currentValue: Math.floor(counter.target * 0.7), // Start at 70% of target
+      currentValue: initialValue,
       displayValue: 0
     };
   });
   
-  // Create counter displays if they don't exist
+  // Create counter displays
   createCounterDisplays();
+  
+  // Render active report if exists
+  renderPublicReport();
   
   // Start animations
   animateCounters();
   
-  // Start real-time updates
-  startRealTimeUpdates();
+  // Start real-time updates (only if no real data is set, or for simulation)
+  if (!trustMetrics) {
+    startRealTimeUpdates();
+  }
   
   liveCountersData.isInitialized = true;
   liveCountersData.lastUpdate = new Date();
-  
-  console.log('Live counters initialized');
+}
+
+// Render the public report on the homepage
+function renderPublicReport() {
+  const report = JSON.parse(localStorage.getItem('trustActiveReport'));
+  const section = document.getElementById('publicReportSection');
+  if (report && section) {
+    document.getElementById('reportTitleDisplay').textContent = report.title;
+    document.getElementById('reportContentDisplay').textContent = report.content;
+    document.getElementById('reportDate').textContent = report.date;
+    const badge = document.getElementById('reportStatusBadge');
+    badge.textContent = report.status;
+    badge.className = 'pulse-badge';
+    
+    // Style badge based on status
+    badge.style.padding = '4px 8px';
+    badge.style.borderRadius = '4px';
+    badge.style.fontSize = '0.8rem';
+    badge.style.fontWeight = '700';
+    badge.style.textTransform = 'uppercase';
+    
+    section.style.display = 'block';
+  }
 }
 
 // Create counter displays in the DOM
@@ -159,14 +196,23 @@ function createCounterElement(counter) {
   counterDiv.id = `counter-${counter.id}`;
   
   counterDiv.innerHTML = `
+    <div class="counter-glass"></div>
     <div class="counter-icon">${counter.icon}</div>
     <div class="counter-content">
-      <div class="counter-value" id="value-${counter.id}">0</div>
       <div class="counter-label">${counter.label}</div>
-      <div class="counter-unit" id="unit-${counter.id}">${counter.unit}</div>
+      <div class="counter-value-row">
+        <div class="counter-value" id="value-${counter.id}">0</div>
+        <div class="counter-unit" id="unit-${counter.id}">${counter.unit}</div>
+      </div>
     </div>
     <div class="counter-indicator" id="indicator-${counter.id}">
       <div class="indicator-dot"></div>
+    </div>
+    <div class="counter-trend">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
     </div>
   `;
   
@@ -196,62 +242,96 @@ function addCounterStyles() {
     /* Individual Counter */
     .live-counter {
       background: var(--color-surface);
-      border-radius: var(--radius-md);
-      padding: 2rem 1.5rem;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
       gap: 1rem;
       position: relative;
       border: 1px solid var(--border-color);
-      transition: var(--transition-normal);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
       overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
     
+    .counter-glass {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(29, 90, 67, 0.03), transparent);
+      transform: rotate(45deg);
+      pointer-events: none;
+      transition: 0.6s;
+    }
+
     .live-counter:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      border-color: var(--color-primary);
+    }
+    
+    .live-counter:hover .counter-glass {
+      left: 100%;
     }
     
     .counter-icon {
       font-size: 2.5rem;
-      flex-shrink: 0;
-      animation: float 3s ease-in-out infinite;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
     }
     
     .counter-content {
-      flex: 1;
-      min-width: 0;
+      width: 100%;
     }
     
+    .counter-value-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
     .counter-value {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2.5rem;
+      font-weight: 800;
       color: var(--color-primary);
-      line-height: 1.2;
-      margin-bottom: 0.25rem;
+      line-height: 1;
+      font-family: var(--font-serif);
       font-variant-numeric: tabular-nums;
     }
     
     .counter-label {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      font-weight: 500;
-      margin-bottom: 0.25rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
     }
     
     .counter-unit {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      font-size: 1rem;
+      color: var(--color-accent);
+      font-weight: 700;
     }
     
+    .counter-trend {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      color: var(--color-primary);
+      opacity: 0.15;
+      transform: scale(1.5);
+    }
+
     .counter-indicator {
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 8px;
-      height: 8px;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 10px;
+      height: 10px;
     }
     
     .indicator-dot {

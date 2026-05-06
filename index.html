@@ -155,6 +155,18 @@
     </div>
   </section>
 
+  <!-- Public Report Section (Dynamic) -->
+  <section class="public-report-section" id="publicReportSection" style="display: none; padding: 20px 24px; background: var(--color-bg);">
+    <div style="max-width: 1200px; margin: 0 auto; background: var(--color-surface); border-left: 4px solid var(--color-accent); padding: 20px 24px; border-radius: 8px; box-shadow: var(--shadow-sm);">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span id="reportStatusBadge" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; background: rgba(154, 117, 71, 0.1); color: var(--color-accent);">Update</span>
+        <span id="reportDate" style="font-size: 0.85rem; color: var(--text-muted);"></span>
+      </div>
+      <h3 id="reportTitleDisplay" style="margin: 0 0 8px 0; font-family: var(--font-serif); font-size: 1.4rem; color: var(--text-primary);"></h3>
+      <p id="reportContentDisplay" style="margin: 0; color: var(--text-secondary); line-height: 1.6;"></p>
+    </div>
+  </section>
+
   <!-- Live Counters -->
   <section class="live-counters-container" id="liveCountersContainer">
     <!-- Counters will be dynamically inserted here -->
@@ -588,7 +600,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2026 Indian Navyuvak Humanitarian Education Trust. All rights reserved.</p>
+      <p>&copy; 2026 Indian Navyuvak Humanitarian Education Trust. All rights reserved. | <a href="trust-dashboard.html" style="color: var(--text-muted); text-decoration: underline;">Trust Login</a></p>
       <p class="footer-note">Registered non-profit • 12A/80G eligibility in process</p>
     </div>
   </footer>
