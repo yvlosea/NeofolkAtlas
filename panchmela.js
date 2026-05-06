@@ -384,7 +384,7 @@ function init() {
   initContactForm();
   initLightbox();
   initHiddenFounderSection();
-  initFoundingPledges();
+  initSupporterBadge();
   
   // Theme toggle
   document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
