@@ -75,7 +75,7 @@ Sidebar navigation (rendered dynamically by `app.js` on all pages):
 
 ## Academic Model
 
-- **Subjects**: 10 structured learning domains (Lingosophy, Arthmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, Bioepisteme)
+- **Subjects**: 10 structured learning domains (Lingosophy, Arithmetics, Cosmology, Biosphere, Chronicles, Civitas, Tokenomics, Artifex, Praxis, Bioepisteme)
 - **Guilds**: Collaborative research groups organized around shared interests
 - **Portfolio**: Documented learner work (essays, projects, reflections)
 - **Discovery**: Highlighted scholarly work selected through arbiter review

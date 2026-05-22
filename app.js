@@ -1268,7 +1268,7 @@ window.autoeduNavigate = function(view) {
   else if (view === 'result') renderAutoeduResult();
   else if (view === 'contribute') {
     // TODO: Implement contribute view
-    alert('Contribute feature coming soon!');
+    alert('Contributions are not open yet.');
   }
 };
 
@@ -2084,7 +2084,7 @@ const DOMAIN_STRUCTURE = {
     examples: ["IPA Pronunciation Basics", "Shakespeare Narrative Analysis", "Hindi–English Translation", "Bhojpuri vs Hindi Dialect Studies", "Persuasive Speechcraft", "Storytelling Traditions", "Script Evolution: Brahmi to Devanagari", "Public Speaking Practice"]
   },
   arithmetics: {
-    title: "Arthmetics",
+    title: "Arithmetics",
     definition: "Study of numbers, patterns, logic, and quantitative thinking.",
     includes: ["mathematics", "geometry", "algebra", "statistics", "logical reasoning", "pattern recognition", "measurement systems"],
     coreFunction: "Developing structured thinking through numerical relationships and logical systems.",
@@ -2105,7 +2105,7 @@ const DOMAIN_STRUCTURE = {
     examples: ["Plant Cell Structure", "Photosynthesis Mechanics", "Animal Kingdom Classification", "Ecosystem Balance", "Human Body Systems", "DNA Foundations", "Soil Microorganisms"]
   },
   bioepisteme: {
-    title: "Bioestipeme",
+    title: "Bioepisteme",
     definition: "Applied knowledge for sustaining life through natural resources and daily living skills.",
     includes: ["farming", "gardening", "animal care", "herbal knowledge", "cooking", "nutrition", "food preservation", "water management", "traditional ecological knowledge", "home skills", "craft skills", "sustainability skills"],
     coreFunction: "Learning how humans practically sustain life using biological resources.",
@@ -4174,7 +4174,7 @@ function getArbiterInterviewList(studentProfiles) {
     studentName: profile.name || `Student ${index + 1}`,
     domain: profile.domain || 'General',
     status: states[index % states.length],
-    slot: ['Today, 17:30', 'Tomorrow, 11:00', 'April 12, 15:00'][index % 3],
+    slot: 'Schedule TBD',
     notes: ['Portfolio review pending', 'Guild contribution check', 'Needs writing sample'][index % 3],
   }));
 }
@@ -6990,7 +6990,7 @@ window.createBatchFromModule = function(moduleId) {
 };
 
 window.applyForCurator = function() {
-    alert('Curator application feature coming soon. For now, use the developer console to create a curator card:\n\nwindow.createCuratorCard("Your Name", 25, ["Level 3 Lingosophy"])');
+    alert('Curator applications are not open yet.');
 };
 
 // CartoNodes Functions

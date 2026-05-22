@@ -215,10 +215,10 @@ function initForms() {
   document.querySelectorAll('.login-form').forEach(form => {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      // Show coming soon message
+      // Show unavailable state
       const btn = form.querySelector('.submit-btn');
       const originalText = btn.textContent;
-      btn.textContent = 'Coming Soon';
+      btn.textContent = 'Not Open Yet';
       btn.disabled = true;
       
       setTimeout(() => {
