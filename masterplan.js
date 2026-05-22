@@ -19,9 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Campus zones data
   const zones = {
     tower: {
-      title: 'Library Tower',
+      title: 'Beno Tower',
       phase: 'Phase 1',
-      description: 'The circular Library Tower is the centerpiece of the Panchmahala campus. Designed for climate-responsive learning, it provides study spaces across four levels with the iconic roof learning pavilion offering panoramic views.',
+      description: 'The hexagonal Beno Tower is the centerpiece of the Panchmahala campus. Designed for climate-responsive learning, it provides study spaces across four levels with the iconic roof learning pavilion offering panoramic views.',
       image: 'Images/Final tower design.png',
       stats: {
         location: 'Panchmahala',
