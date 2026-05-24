@@ -162,7 +162,7 @@ function injectDonationModal() {
           <p class="donation-modal-note">Green button, one form, no clutter. We only ask for the details needed to confirm your donation.</p>
         </div>
         <div class="donation-modal-form-wrap">
-          <form class="donation-form donation-form-modal" id="donationPopupForm" action="https://formsubmit.co/inhetedu@zohomail.in" method="POST">
+          <form class="donation-form donation-form-modal" id="donationPopupForm" action="https://formsubmit.co/inhetedu@zohomail.in" method="POST" target="_blank">
             <input type="hidden" name="_subject" value="New Donation Received" />
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_template" value="table" />
