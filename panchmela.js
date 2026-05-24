@@ -13,6 +13,286 @@ function formatINR(amount) {
   }).format(value);
 }
 
+const SITE_LOGO = 'inhet Logo.png';
+const DONATION_MODAL_ID = 'donationModal';
+
+function getHeartIconMarkup() {
+  return `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  `;
+}
+
+function buildFooterColumn(title, links) {
+  return `
+    <div class="footer-col">
+      <h4>${title}</h4>
+      ${links.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
+    </div>
+  `;
+}
+
+function normalizeSiteChrome() {
+  document.querySelectorAll('.nav-logo, .footer-logo, .modal-logo').forEach((img) => {
+    img.src = SITE_LOGO;
+  });
+
+  document.querySelectorAll('link[rel="icon"]').forEach((icon) => {
+    icon.setAttribute('href', SITE_LOGO);
+  });
+
+  const navLinks = document.querySelector('.nav-links');
+  if (navLinks) {
+    Array.from(navLinks.querySelectorAll('.nav-dropdown')).forEach((dropdown) => {
+      const trigger = dropdown.querySelector('.dropdown-trigger');
+      const menu = dropdown.querySelector('.dropdown-menu');
+      const label = trigger?.textContent.replace(/\s+/g, ' ').trim() || '';
+
+      if (label.startsWith('About') && menu) {
+        menu.innerHTML = `
+          <a href="team.html" class="dropdown-item">Team</a>
+          <a href="transparency.html" class="dropdown-item">Transparency</a>
+          <a href="faq.html" class="dropdown-item">FAQ</a>
+        `;
+      }
+
+      if (label.startsWith('The Campus')) {
+        dropdown.remove();
+      }
+
+      if (label.startsWith('Education')) {
+        const manifestoLink = document.createElement('a');
+        manifestoLink.href = 'manifesto.html';
+        manifestoLink.className = 'nav-link';
+        if (window.location.pathname.endsWith('/manifesto.html') || window.location.pathname.endsWith('manifesto.html')) {
+          manifestoLink.classList.add('active');
+        }
+        manifestoLink.textContent = 'Manifesto';
+        dropdown.replaceWith(manifestoLink);
+      }
+    });
+  }
+
+  Array.from(document.querySelectorAll('.mobile-menu-section')).forEach((section) => {
+    const titleNode = section.querySelector('h4');
+    const title = titleNode?.textContent.trim() || '';
+
+    if (title === 'About') {
+      section.innerHTML = `
+        <h4 class="mobile-section-title">About</h4>
+        <a href="team.html" class="mobile-link">Team</a>
+        <a href="transparency.html" class="mobile-link">Transparency</a>
+        <a href="faq.html" class="mobile-link">FAQ</a>
+      `;
+    }
+
+    if (title === 'The Campus') {
+      section.remove();
+    }
+
+    if (title === 'Education') {
+      section.innerHTML = `
+        <h4 class="mobile-section-title">Manifesto</h4>
+        <a href="manifesto.html" class="mobile-link">Read the Manifesto</a>
+      `;
+    }
+  });
+
+  const footerLinksContainer = document.querySelector('.footer-links-container');
+  if (footerLinksContainer) {
+    footerLinksContainer.innerHTML = [
+      buildFooterColumn('About', [
+        { href: 'team.html', label: 'Team' },
+        { href: 'transparency.html', label: 'Transparency' },
+        { href: 'faq.html', label: 'FAQ' }
+      ]),
+      buildFooterColumn('Read', [
+        { href: 'manifesto.html', label: 'Manifesto' }
+      ]),
+      buildFooterColumn('Connect', [
+        { href: 'partnerships.html', label: 'Partnerships' },
+        { href: 'contact.html', label: 'Contact' }
+      ])
+    ].join('');
+  } else {
+    Array.from(document.querySelectorAll('.footer-col')).forEach((column) => {
+      const heading = column.querySelector('h4')?.textContent.trim();
+      if (heading === 'About') {
+        column.innerHTML = `
+          <h4>About</h4>
+          <a href="team.html">Team</a>
+          <a href="transparency.html">Transparency</a>
+          <a href="faq.html">FAQ</a>
+        `;
+      }
+
+      if (heading === 'The Campus') {
+        column.remove();
+      }
+
+      if (heading === 'Education') {
+        column.innerHTML = `
+          <h4>Read</h4>
+          <a href="manifesto.html">Manifesto</a>
+        `;
+      }
+    });
+  }
+}
+
+function injectDonationModal() {
+  if (document.getElementById(DONATION_MODAL_ID)) return;
+
+  const modal = document.createElement('div');
+  modal.className = 'donation-modal';
+  modal.id = DONATION_MODAL_ID;
+  modal.setAttribute('aria-hidden', 'true');
+  modal.innerHTML = `
+    <div class="donation-modal-backdrop" data-donation-close></div>
+    <div class="donation-modal-panel" role="dialog" aria-modal="true" aria-labelledby="donationModalTitle">
+      <button type="button" class="donation-modal-close" data-donation-close aria-label="Close donation popup">&times;</button>
+      <div class="donation-modal-grid">
+        <div class="donation-modal-media">
+          <span class="section-tag">Support iNHET</span>
+          <h2 id="donationModalTitle">Donate to help build the first campus steps</h2>
+          <p>Scan the QR code to make your contribution, then share your details so we can confirm and acknowledge your support.</p>
+          <img src="Images/donate-qr.png" alt="iNHET donation QR code" class="donation-modal-qr" />
+          <p class="donation-modal-note">Green button, one form, no clutter. We only ask for the details needed to confirm your donation.</p>
+        </div>
+        <div class="donation-modal-form-wrap">
+          <form class="donation-form donation-form-modal" id="donationPopupForm" action="https://formsubmit.co/ajax/inhetedu@zohomail.in" method="POST">
+            <input type="hidden" name="_subject" value="New Donation Received" />
+            <input type="hidden" name="_captcha" value="false" />
+            <div class="form-group">
+              <label for="popupDonorName">Your Name</label>
+              <input type="text" id="popupDonorName" name="name" placeholder="Enter your full name" required />
+            </div>
+            <div class="form-group">
+              <label for="popupDonorEmail">Email Address</label>
+              <input type="email" id="popupDonorEmail" name="email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <label for="popupDonorPhone">Phone Number</label>
+              <input type="tel" id="popupDonorPhone" name="phone" placeholder="Optional but helpful" />
+            </div>
+            <div class="form-group">
+              <label for="popupDonationAmount">Donation Amount (INR)</label>
+              <input type="number" id="popupDonationAmount" name="amount" placeholder="Enter amount donated" min="1" required />
+            </div>
+            <div class="form-group">
+              <label for="popupDonationScreenshot">Payment Screenshot</label>
+              <input type="file" id="popupDonationScreenshot" name="screenshot" accept="image/*" required />
+            </div>
+            <div class="form-group">
+              <label for="popupDonationMessage">Message</label>
+              <textarea id="popupDonationMessage" name="message" rows="4" placeholder="Optional note for the team"></textarea>
+            </div>
+            <button type="submit" class="submit-btn donation-submit-btn">Send Donation Details</button>
+            <p class="form-status" id="donationPopupStatus" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+function initDonationModal() {
+  injectDonationModal();
+
+  const modal = document.getElementById(DONATION_MODAL_ID);
+  const form = document.getElementById('donationPopupForm');
+  const formStatus = document.getElementById('donationPopupStatus');
+  const submitBtn = form?.querySelector('.donation-submit-btn');
+
+  if (!modal || !form) return;
+
+  function openDonationModal() {
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDonationModal() {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.donate-btn, .donate-btn-nav').forEach((button) => {
+    if (!button.querySelector('svg')) {
+      button.insertAdjacentHTML('afterbegin', getHeartIconMarkup());
+    }
+
+    if (!button.textContent.includes('Donate')) {
+      button.append(document.createTextNode('Donate Now'));
+    }
+
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      openDonationModal();
+    });
+  });
+
+  modal.querySelectorAll('[data-donation-close]').forEach((node) => {
+    node.addEventListener('click', closeDonationModal);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.classList.contains('active')) {
+      closeDonationModal();
+    }
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(form);
+    const amount = parseInt(formData.get('amount'), 10);
+
+    if (!amount || amount <= 0) {
+      formStatus.textContent = 'Please enter a valid donation amount.';
+      formStatus.className = 'form-status error';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending...';
+    formStatus.textContent = '';
+    formStatus.className = 'form-status';
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Accept: 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Donation request failed');
+      }
+
+      updateDonationTotal(amount);
+      displayDonationTotal();
+      form.reset();
+      formStatus.textContent = `Thank you. Your donation details for ${formatINR(amount)} have been received.`;
+      formStatus.className = 'form-status success';
+      window.setTimeout(closeDonationModal, 1400);
+    } catch (error) {
+      console.error('Donation submission failed', error);
+      formStatus.textContent = 'We could not submit the form right now. Please try again or email inhetedu@zohomail.in.';
+      formStatus.className = 'form-status error';
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Donation Details';
+    }
+  });
+}
+
 // Login Modal
 function initLoginModal() {
   const loginBtn = document.getElementById('loginBtn');
@@ -591,6 +871,7 @@ function initDonationForm() {
 
 // Initialize everything
 function init() {
+  normalizeSiteChrome();
   initLoginModal();
   initMobileMenu();
   initScrollReveal();
@@ -601,6 +882,7 @@ function init() {
   initContactForm();
   initLightbox();
   initHiddenFounderSection();
+  initDonationModal();
   initDonationForm();
 }
 
