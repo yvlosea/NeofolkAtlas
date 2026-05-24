@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iNHET Manifesto | Panchmahala</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="panchmela.css" />
+  <link rel="stylesheet" href="panchmela-pages.css" />
+  <link rel="icon" type="image/png" href="iNHET logo.png" />
+  <style>
+    /* Custom styles for Manifesto Page */
+    .manifesto-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 48px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+      position: relative;
+    }
+
+    /* Sticky Side Navigation */
+    .manifesto-aside {
+      position: sticky;
+      top: 110px;
+      height: fit-content;
+      align-self: start;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 24px;
+      background: var(--color-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .aside-title {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--color-text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .aside-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      list-style: none;
+    }
+
+    .aside-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .aside-link:hover,
+    .aside-link.active {
+      background: var(--color-primary-pale);
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    .aside-link-icon {
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Content Area */
+    .manifesto-content {
+      display: flex;
+      flex-direction: column;
+      gap: 80px;
+    }
+
+    .manifesto-section {
+      scroll-margin-top: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .manifesto-section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+
+    .manifesto-section-title {
+      font-family: var(--font-serif);
+      font-size: 2.25rem;
+      font-weight: 500;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .section-lead-text {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    .manifesto-p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.75;
+      text-align: justify;
+    }
+
+    /* Cards & Grids */
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 12px;
+    }
+
+    .manifesto-card {
+      background: var(--color-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all var(--transition-normal);
+    }
+
+    .manifesto-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-light);
+    }
+
+    .card-num {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      background: rgba(var(--color-accent-rgb), 0.1);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .card-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .card-bullets li {
+      position: relative;
+      padding-left: 20px;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .card-bullets li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--color-primary-light);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    /* Split layout inside sections */
+    .section-split {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .section-split-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Styled Evaluation Table */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--color-surface);
+      margin-top: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .evaluation-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 1rem;
+    }
+
+    .evaluation-table th {
+      background: var(--color-primary-dark);
+      color: var(--color-on-primary);
+      padding: 18px 24px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    .evaluation-table td {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--color-text);
+    }
+
+    .evaluation-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .evaluation-table tr:nth-child(even) {
+      background: rgba(var(--color-surface-rgb), 0.5);
+    }
+
+    .weight-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--color-primary-pale);
+      color: var(--color-primary);
+      font-weight: 700;
+      border-radius: 99px;
+      font-size: 0.95rem;
+    }
+
+    /* Mobile Sticky Pill Navigation */
+    .mobile-toc-container {
+      display: none;
+      position: sticky;
+      top: 88px;
+      background: rgba(var(--color-bg-rgb), 0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 99;
+      padding: 10px 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      margin-top: -1px;
+    }
+
+    .mobile-toc-scroll {
+      display: inline-flex;
+      gap: 8px;
+      padding: 0 16px;
+    }
+
+    .mobile-toc-btn {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: var(--color-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 99px;
+      transition: all var(--transition-fast);
+    }
+
+    .mobile-toc-btn.active {
+      background: var(--color-primary);
+      color: var(--color-on-primary);
+      border-color: var(--color-primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .manifesto-layout {
+        grid-template-columns: 1fr;
+        padding-top: 40px;
+      }
+
+      .manifesto-aside {
+        display: none;
+      }
+
+      .mobile-toc-container {
+        display: block;
+      }
+
+      .section-split {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .manifesto-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .manifesto-section-title {
+        font-size: 1.85rem;
+      }
+      
+      .evaluation-table th, .evaluation-table td {
+        padding: 14px 16px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <!-- Navigation -->
+  <nav class="main-nav">
+    <div class="nav-brand">
+      <a href="index.html">
+        <img src="iNHET logo.png" alt="iNHET Logo" class="nav-logo" />
+      </a>
+      <div class="brand-text">
+        <a href="index.html" class="brand-link">
+          <span class="brand-title">Panchmahala</span>
+          <span class="brand-subtitle">Indian Navyuvak Humanitarian Education Trust</span>
+        </a>
+      </div>
+    </div>
+    <div class="nav-links">
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger active">About <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="manifesto.html" class="dropdown-item">iNHET Manifesto</a>
+          <a href="approach.html" class="dropdown-item">Our Approach</a>
+          <a href="roadmap.html" class="dropdown-item">Roadmap</a>
+          <a href="team.html" class="dropdown-item">Team</a>
+          <a href="transparency.html" class="dropdown-item">Transparency</a>
+          <a href="faq.html" class="dropdown-item">FAQ</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">The Campus <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="masterplan.html" class="dropdown-item">Masterplan</a>
+          <a href="journal.html" class="dropdown-item">Build Journal</a>
+          <a href="current-work.html" class="dropdown-item">Current Work</a>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <a href="#" class="nav-link dropdown-trigger">Education <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        <div class="dropdown-menu">
+          <a href="education.html" class="dropdown-item">Learning Model</a>
+          <a href="women-education.html" class="dropdown-item">Women's Initiative</a>
+          <a href="culture.html" class="dropdown-item">Cultural Preservation</a>
+        </div>
+      </div>
+      <a href="partnerships.html" class="nav-link">Partner</a>
+      <a href="contact.html" class="nav-link">Contact</a>
+      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="donate-btn donate-btn-nav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Donate
+      </a>
+    </div>
+    <div class="nav-actions">
+      <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-section">
+      <h4 class="mobile-section-title">About</h4>
+      <a href="manifesto.html" class="mobile-link active">iNHET Manifesto</a>
+      <a href="approach.html" class="mobile-link">Our Approach</a>
+      <a href="roadmap.html" class="mobile-link">Roadmap</a>
+      <a href="team.html" class="mobile-link">Team</a>
+      <a href="transparency.html" class="mobile-link">Transparency</a>
+      <a href="faq.html" class="mobile-link">FAQ</a>
+    </div>
+    <div class="mobile-menu-section">
+      <h4 class="mobile-section-title">The Campus</h4>
+      <a href="masterplan.html" class="mobile-link">Masterplan</a>
+      <a href="journal.html" class="mobile-link">Build Journal</a>
+      <a href="current-work.html" class="mobile-link">Current Work</a>
+    </div>
+    <div class="mobile-menu-section">
+      <h4 class="mobile-section-title">Education</h4>
+      <a href="education.html" class="mobile-link">Learning Model</a>
+      <a href="women-education.html" class="mobile-link">Women's Initiative</a>
+      <a href="culture.html" class="mobile-link">Cultural Preservation</a>
+    </div>
+    <div class="mobile-menu-section">
+      <h4 class="mobile-section-title">Connect</h4>
+      <a href="partnerships.html" class="mobile-link">Partner With Us</a>
+      <a href="contact.html" class="mobile-link">Contact</a>
+      <a href="mailto:inhetedu@zohomail.in?subject=Donation Inquiry" class="mobile-link donate-btn" style="margin-top:8px;display:inline-flex;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+        Donate Now
+      </a>
+    </div>
+    <div class="mobile-actions">
+      <button class="mobile-login-btn" id="mobileLoginBtn">Login</button>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="page-header-content">
+      <span class="section-tag">Core Manifesto</span>
+      <h1 class="page-title">iNHET</h1>
+      <p class="page-subtitle">
+        Integrated Networked Human-Educational Transformation
+      </p>
+    </div>
+  </section>
+
+  <!-- Mobile Sticky Horizontal Navigation -->
+  <div class="mobile-toc-container">
+    <div class="mobile-toc-scroll">
+      <button class="mobile-toc-btn active" onclick="scrollToSection('vision')">Vision</button>
+      <button class="mobile-toc-btn" onclick="scrollToSection('layers')">Developmental Layers</button>
+      <button class="mobile-toc-btn" onclick="scrollToSection('philosophy')">Philosophy & Evaluation</button>
+      <button class="mobile-toc-btn" onclick="scrollToSection('mentorship')">Mentorship & Culture</button>
+      <button class="mobile-toc-btn" onclick="scrollToSection('architecture')">Architecture & Ecology</button>
+      <button class="mobile-toc-btn" onclick="scrollToSection('support')">Participation</button>
+    </div>
+  </div>
+
+  <!-- Main Manifesto Layout -->
+  <div class="manifesto-layout">
+    
+    <!-- Sidebar TOC for Desktop -->
+    <aside class="manifesto-aside">
+      <h3 class="aside-title">Navigation</h3>
+      <ul class="aside-menu">
+        <li>
+          <a href="#vision" class="aside-link active">
+            <span class="aside-link-icon">👁️</span>
+            <span>Ecosystem Vision</span>
+          </a>
+        </li>
+        <li>
+          <a href="#layers" class="aside-link">
+            <span class="aside-link-icon">🪜</span>
+            <span>Developmental Layers</span>
+          </a>
+        </li>
+        <li>
+          <a href="#philosophy" class="aside-link">
+            <span class="aside-link-icon">💡</span>
+            <span>Philosophy & Evaluation</span>
+          </a>
+        </li>
+        <li>
+          <a href="#mentorship" class="aside-link">
+            <span class="aside-link-icon">🤝</span>
+            <span>Mentorship & Culture</span>
+          </a>
+        </li>
+        <li>
+          <a href="#architecture" class="aside-link">
+            <span class="aside-link-icon">🏡</span>
+            <span>Bihverna Architecture</span>
+          </a>
+        </li>
+        <li>
+          <a href="#support" class="aside-link">
+            <span class="aside-link-icon">✊</span>
+            <span>Public Participation</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Manifesto Content -->
+    <main class="manifesto-content">
+
+      <!-- SECTION 1: Vision & Problem -->
+      <section id="vision" class="manifesto-section">
+        <div class="manifesto-section-header">
+          <span class="section-tag">01 / Ecosystem Vision</span>
+          <h2 class="manifesto-section-title">Rebuilding Education as Public Human Infrastructure</h2>
+        </div>
+        
+        <p class="section-lead-text">
+          Education is not merely an examination system. It is a fundamental public infrastructure required for full human development.
+        </p>
+
+        <p class="manifesto-p">
+          The project begins in Bihar through the <strong>BENO UNO</strong> prototype system and aims to create an interconnected network integrating education, psychology, ecology, mobility, architecture, research, culture, and civic development into one living ecosystem.
+        </p>
+
+        <div class="manifesto-grid" style="grid-template-columns: 1.1fr 0.9fr; gap: 32px;">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--color-text);">The Problem We Solve</h3>
+            <p class="manifesto-p">
+              The industrial academic system operates on rote memorization, ranking, and intense examination pressure. It treats children as commodities to be graded, while completely neglecting emotional development, mentorship, ecological awareness, creativity, identity formation, and practical capability.
+            </p>
+          </div>
+          <div style="background: var(--color-surface); border-left: 4px solid var(--color-accent); padding: 24px; border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 12px;">
+            <h4 style="font-family: var(--font-serif); font-size: 1.2rem; color: var(--color-primary-dark); font-weight: bold;">Our Core Proposition</h4>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Psychological infrastructure is as important as academic infrastructure. Our objective is to support individuals who are:
+            </p>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; color: var(--color-text); font-weight: 500;">
+              <li>🧘 Grounded Psychologically</li>
+              <li>🧠 Curious Intellectually</li>
+              <li>🤝 Capable Socially</li>
+              <li>🌱 Aware Ecologically</li>
+              <li>🔧 Competent Operationally</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: Four Layers -->
+      <section id="layers" class="manifesto-section">
+        <div class="manifesto-section-header">
+          <span class="section-tag">02 / Developmental Layers</span>
+          <h2 class="manifesto-section-title">The Four Connected Stages of Lifelong Growth</h2>
+        </div>
+
+        <p class="manifesto-p">
+          To achieve systemic change, the educational ecosystem is distributed across four distinct, interconnected developmental levels matching the natural progression of life.
+        </p>
+
+        <div class="manifesto-grid">
+          <!-- Card 1 -->
+          <div class="manifesto-card">
+            <span class="card-num">01</span>
+            <h3 class="card-title">Local Learning Nodes</h3>
+            <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-accent); font-weight: 700; margin-top: -8px;">Nursery – Grade 5</p>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Small-scale, community-centered learning environments distributed locally across towns and villages.
+            </p>
+            <ul class="card-bullets">
+              <li>Focus on emotional grounding, curiosity, language development, movement, and social confidence.</li>
+              <li>Low student-teacher ratios, sensory-safe spaces, and child psychology support.</li>
+              <li>Hands-on learning through ecological gardens, arts, and physical play.</li>
+            </ul>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="manifesto-card">
+            <span class="card-num">02</span>
+            <h3 class="card-title">District Development Campuses</h3>
+            <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-accent); font-weight: 700; margin-top: -8px;">Grade 6 – Grade 10</p>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Large interdisciplinary campuses designed as public developmental ecosystems for adolescent exploration.
+            </p>
+            <ul class="card-bullets">
+              <li>Direct access to libraries, fabrication labs, sports complexes, research spaces, and performance halls.</li>
+              <li>Broadens interdisciplinary capability, civic interaction, and peer collaboration.</li>
+              <li>Mentorship-led research, physical development, and technical experimentation.</li>
+            </ul>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="manifesto-card">
+            <span class="card-num">03</span>
+            <h3 class="card-title">State Specialisation Institutes</h3>
+            <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-accent); font-weight: 700; margin-top: -8px;">Grade 11 Onward</p>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Advanced academic and practical specialization structured around individual interest, capability, and regional strengths.
+            </p>
+            <ul class="card-bullets">
+              <li>Specializations in ecology, sciences, philosophy, athletics, arts, technology, agriculture, music, or design.</li>
+              <li>Replaces rigid, isolated academic departments with interdisciplinary mastery.</li>
+              <li>Mentored by active field practitioners and senior researchers.</li>
+            </ul>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="manifesto-card">
+            <span class="card-num">04</span>
+            <h3 class="card-title">NeoUni Systems</h3>
+            <p style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-accent); font-weight: 700; margin-top: -8px;">Continuous Applied Development</p>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              An applied developmental network that integrates learning directly with civic systems, research, and industry.
+            </p>
+            <ul class="card-bullets">
+              <li>Integrates continuous applied research, ecology, infrastructure building, and public apprenticeships.</li>
+              <li>A student-first structure that explicitly prevents corporate domination of the curriculum and labor exploitation.</li>
+              <li>Continues throughout adulthood as a collaborative network for regional growth.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: Philosophy & Evaluation -->
+      <section id="philosophy" class="manifesto-section">
+        <div class="manifesto-section-header">
+          <span class="section-tag">03 / Philosophy & Evaluation</span>
+          <h2 class="manifesto-section-title">Praxis-Driven Learning and Competency Evaluation</h2>
+        </div>
+
+        <div class="section-split">
+          <div class="section-split-content">
+            <h3 style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--color-text);">Rejecting the Rote Exam Model</h3>
+            <p class="manifesto-p">
+              iNHET completely rejects the traditional, memory-heavy written examination model. We emphasize <strong>competency, praxis, interdisciplinary thinking, communication, and collaboration</strong> for long-term development.
+            </p>
+            <p class="manifesto-p">
+              Students acquire knowledge and demonstrate mastery by building actual projects, managing ecological systems, presenting work publicly, conducting fieldwork, and executing collaborative tasks.
+            </p>
+          </div>
+          <div class="table-container">
+            <table class="evaluation-table">
+              <thead>
+                <tr>
+                  <th>Evaluation Component</th>
+                  <th>Weightage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Written Theory</strong><br><span style="font-size: 0.8rem; color: var(--text-muted);">Core conceptual understanding</span></td>
+                  <td><span class="weight-badge">20%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Praxis Projects</strong><br><span style="font-size: 0.8rem; color: var(--text-muted);">Practical execution & build quality</span></td>
+                  <td><span class="weight-badge">40% – 50%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Presentation & Viva</strong><br><span style="font-size: 0.8rem; color: var(--text-muted);">Communication & articulation</span></td>
+                  <td><span class="weight-badge">20% – 30%</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Portfolio & Long-Term Growth</strong><br><span style="font-size: 0.8rem; color: var(--text-muted);">Self-improvement & accountability</span></td>
+                  <td><span class="weight-badge">10% – 20%</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="background: var(--color-surface); padding: 24px; border-radius: var(--radius-md); text-align: center; border: 1px dashed var(--border-strong);">
+          <p style="font-family: var(--font-serif); font-size: 1.25rem; color: var(--color-primary-dark); font-weight: 500;">
+            "We promote portfolio-driven education, rather than memory-driven examination culture."
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 4: Mentorship & Culture -->
+      <section id="mentorship" class="manifesto-section">
+        <div class="manifesto-section-header">
+          <span class="section-tag">04 / Mentorship & Culture</span>
+          <h2 class="manifesto-section-title">The Mentorship Doctrine and Humane Culture</h2>
+        </div>
+
+        <p class="manifesto-p">
+          Institutional psychology flows downward from adults. If the teachers, administrators, and staff are burnt out, defensive, or toxic, the children will absorb those traits. Therefore, iNHET treats the mental, emotional, and physical health of adults as the starting point of student development.
+        </p>
+
+        <div class="manifesto-grid">
+          <!-- Card: Teacher Doctrine -->
+          <div class="manifesto-card">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:8px;">💡 Teacher Doctrine</h3>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Teachers are not treat as mere academic lecturers. They are trained and supported to act as:
+            </p>
+            <ul class="card-bullets">
+              <li><strong>Mentors:</strong> Guiding individual growth, capabilities, and psychological balance.</li>
+              <li><strong>Developmental Guides:</strong> Designing custom praxis paths for student portfolios.</li>
+              <li><strong>Community Builders:</strong> Fostering civic accountability and local relationships.</li>
+            </ul>
+          </div>
+
+          <!-- Card: Amar Cara -->
+          <div class="manifesto-card">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:8px;">⚓ Amar Cara</h3>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Amar Cara are senior institutional mentors within the ecosystem responsible for:
+            </p>
+            <ul class="card-bullets">
+              <li>Providing long-term philosophical guidance and personal grounding for students.</li>
+              <li>Mentoring student leadership formation and ethical development.</li>
+              <li>Serving as stable, consistent developmental anchors over multiple years.</li>
+            </ul>
+          </div>
+
+          <!-- Card: Wayfarers -->
+          <div class="manifesto-card">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:8px;">🧭 Wayfarers</h3>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Wayfarers are traveling practitioners, specialists, and scholars who enter the ecosystem to run workshops:
+            </p>
+            <ul class="card-bullets">
+              <li>Includes active artists, architects, ecologists, technologists, and researchers.</li>
+              <li>Provides direct exposure to living practitioners working on real-world problems.</li>
+              <li>Breaks academic isolation by connecting classrooms with active professional fields.</li>
+            </ul>
+          </div>
+
+          <!-- Card: Institutional Culture -->
+          <div class="manifesto-card">
+            <h3 class="card-title" style="display:flex; align-items:center; gap:8px;">🛡️ Cultural Safety</h3>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              We treat health and culture as active infrastructure. The environment is designed around:
+            </p>
+            <ul class="card-bullets">
+              <li>Discipline, emotional safety, ecological awareness, movement, and healthy routines.</li>
+              <li>Explicit rejection of humiliation-based pedagogy and punitive control.</li>
+              <li>Rejection of burnout culture, academic ranking pressure, and industrial labor models.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: Architecture & Ecology -->
+      <section id="architecture" class="manifesto-section">
+        <div class="manifesto-section-header">
+          <span class="section-tag">05 / Architecture & Ecology</span>
+          <h2 class="manifesto-section-title">Bihverna Architectural Philosophy</h2>
+        </div>
+
+        <div class="section-split" style="grid-template-columns: 1fr 1fr; gap: 48px;">
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <p class="manifesto-p">
+              The spaces where children learn shape their minds. A cold, industrial concrete building teaches children to accept standardized, mechanical lives.
+            </p>
+            <p class="manifesto-p">
+              iNHET campuses follow the <strong>Bihverna</strong> architectural philosophy. This philosophy blends local vernacular building traditions of Bihar with modern, climate-responsive structural engineering.
+            </p>
+            <p class="manifesto-p">
+              By using breathable materials, passive cooling layouts, and open-air courtyards, the campuses feel connected to the regional ecology. This creates an environment that is both culturally rooted and psychologically grounding.
+            </p>
+          </div>
+          <div style="background: var(--color-surface); padding: 32px; border-radius: var(--radius-lg); border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.35rem; color: var(--color-primary-dark);">Bihverna Principles</h3>
+            <ul class="card-bullets">
+              <li><strong>Vernacular Roots:</strong> Drawing inspiration from traditional Bihari architecture, courtyards, and brickwork.</li>
+              <li><strong>Passive Cooling:</strong> Utilizing cross-ventilation, building placement, and shade systems to completely eliminate the need for mechanical air conditioning.</li>
+              <li><strong>Ecological Integration:</strong> Merging landscaping, native flora, and community gardens directly into the learning zones.</li>
+              <li><strong>Breathable Spaces:</strong> Open-air classrooms and gathering spaces that reduce stress and support emotional well-being.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: Support & Donations -->
+      <section id="support" class="manifesto-section">
+        <div class="manifesto-section-header">
+          <span class="section-tag">06 / Public Participation</span>
+          <h2 class="manifesto-section-title">Why Participation Matters</h2>
+        </div>
+
+        <p class="manifesto-p">
+          iNHET is currently in its early <strong>prototype-building stage</strong>. Our goal is to build and establish one working, self-contained educational ecosystem — <strong>Beno Uno</strong> — as a functional proof-of-concept before expanding.
+        </p>
+
+        <div class="manifesto-grid" style="grid-template-columns: 1fr 1fr; gap: 32px;">
+          <div class="manifesto-card" style="background: var(--color-primary-pale); border-color: rgba(var(--color-primary-rgb), 0.2);">
+            <h3 class="card-title" style="color: var(--color-primary-dark);">Supporting the Groundwork</h3>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              Building an alternative system requires slow, deliberate groundwork. Your financial contributions directly fund:
+            </p>
+            <ul class="card-bullets">
+              <li>Actionable curriculum research and documentation.</li>
+              <li>Developing local learning sessions and materials.</li>
+              <li>Maintaining physical prototype spaces and gardens.</li>
+              <li>Funding transport support for student field trips and community outreach.</li>
+            </ul>
+          </div>
+
+          <div class="manifesto-card" style="background: rgba(var(--color-accent-rgb), 0.05); border-color: rgba(var(--color-accent-rgb), 0.2);">
+            <h3 class="card-title" style="color: var(--color-accent);">How Even ₹100 Helps</h3>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">
+              We believe civilizational change is not built by massive top-down corporations, but by many small acts of public participation.
+            </p>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; font-weight: 500; margin-top: 8px;">
+              A contribution as small as ₹100 supports printed learning guides, seed stocks for student gardens, local workshop tools, or outreach sessions for nearby villages.
+            </p>
+          </div>
+        </div>
+
+        <div style="margin-top: 24px; padding: 40px; background: var(--color-surface); border-radius: var(--radius-lg); border: 1px solid var(--border-strong); display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center;">
+          <h3 style="font-family: var(--font-serif); font-size: 1.85rem; color: var(--color-text);">The Long-Term Vision</h3>
+          <p style="max-width: 800px; font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7;">
+            The long-term objective of iNHET is developmental transformation: healthier students, resilient local communities, ecological awareness, interdisciplinary capability, and civic trust across generations. What begins in Mokama, Bihar is designed to eventually serve as a replicable developmental model for the rest of India.
+          </p>
+          <a href="mailto:inhetedu@zohomail.in?subject=Participation Inquiry" class="donate-btn-nav" style="margin-top: 8px; padding: 14px 32px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Support the Trust
+          </a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <img src="iNHET logo.png" alt="iNHET" class="footer-logo" />
+        <p class="footer-tagline">Rooted in Earth. Open in Mind.</p>
+        <div class="footer-contact-info">
+          <span>Panchmahala, Mokama, Bihar</span>
+          <span>9667115543</span>
+          <span>inhetedu@zohomail.in</span>
+        </div>
+      </div>
+      <div class="footer-links-container">
+        <div class="footer-col">
+          <h4>About</h4>
+          <a href="manifesto.html">iNHET Manifesto</a>
+          <a href="approach.html">Our Approach</a>
+          <a href="roadmap.html">Roadmap</a>
+          <a href="team.html">Team</a>
+          <a href="transparency.html">Transparency</a>
+        </div>
+        <div class="footer-col">
+          <h4>The Campus</h4>
+          <a href="masterplan.html">Masterplan</a>
+          <a href="journal.html">Build Journal</a>
+          <a href="current-work.html">Current Work</a>
+        </div>
+        <div class="footer-col">
+          <h4>Education</h4>
+          <a href="education.html">Learning Model</a>
+          <a href="women-education.html">Women's Initiative</a>
+          <a href="culture.html">Cultural Preservation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Connect</h4>
+          <a href="partnerships.html">Partnerships</a>
+          <a href="faq.html">FAQ</a>
+          <a href="contact.html">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Indian Navyuvak Humanitarian Education Trust. All rights reserved.</p>
+      <p class="footer-note">Registered non-profit • 12A/80G eligibility in process</p>
+    </div>
+  </footer>
+
+  <script src="panchmela.js"></script>
+  <script>
+    // Manifesto Scroll spy and Active TOC links
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.manifesto-section');
+      const asideLinks = document.querySelectorAll('.aside-link');
+      const mobileBtns = document.querySelectorAll('.mobile-toc-btn');
+
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (pageYOffset >= (sectionTop - 150)) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        asideLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+          }
+        });
+
+        mobileBtns.forEach(btn => {
+          btn.classList.remove('active');
+          const onclickAttr = btn.getAttribute('onclick');
+          if (onclickAttr && onclickAttr.includes(current)) {
+            btn.classList.add('active');
+          }
+        });
+      });
+    });
+
+    function scrollToSection(id) {
+      const section = document.getElementById(id);
+      if (section) {
+        window.scrollTo({
+          top: section.offsetTop - 110,
+          behavior: 'smooth'
+        });
+      }
+    }
+  </script>
+</body>
+</html>

@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="supabase-url" content="https://suvrnlgsicsmpgkvlnox.supabase.co" />
-  <meta name="supabase-anon-key" content="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN1dnJubGdzaWNzbXBna3Zsbm94Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyMTEzOTMsImV4cCI6MjA5Mjc4NzM5M30.nKYsIDvFfJg7CystMrnijSeJF_fQmyYvhcTk-pdXH5E" />
   <title>Panchmahala | Indian Navyuvak Humanitarian Education Trust</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,6 +28,7 @@
       <div class="nav-dropdown">
         <a href="#" class="nav-link dropdown-trigger">About <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
         <div class="dropdown-menu">
+          <a href="manifesto.html" class="dropdown-item">iNHET Manifesto</a>
           <a href="approach.html" class="dropdown-item">Our Approach</a>
           <a href="roadmap.html" class="dropdown-item">Roadmap</a>
           <a href="team.html" class="dropdown-item">Team</a>
@@ -82,6 +81,7 @@
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-section">
       <h4 class="mobile-section-title">About</h4>
+      <a href="manifesto.html" class="mobile-link">iNHET Manifesto</a>
       <a href="approach.html" class="mobile-link">Our Approach</a>
       <a href="roadmap.html" class="mobile-link">Roadmap</a>
       <a href="team.html" class="mobile-link">Team</a>
@@ -116,25 +116,17 @@
     </div>
   </div>
 
-  <!-- Hero Section - Beno Uno First -->
+  <!-- Hero Section - Donation Poster -->
   <section class="hero-section hero-minimal">
-    <div class="hero-content">
-      <span class="hero-label">Project One — The Beginning</span>
-      <h1 class="hero-title-large">Beno Uno: India's First <span class="text-gradient">Sustainable Education Hub</span></h1>
+    <div class="hero-content" style="text-align: center;">
+      <span class="hero-label">Support Our Mission</span>
+      <h1 class="hero-title-large">Help Us Build <span class="text-gradient">India's Future</span></h1>
       <p class="hero-subtext">
-        We're building something unprecedented in rural Bihar. The Beno Uno is our pilot campus—a living ecosystem where students learn not just academics, but life itself. Financial literacy, agricultural wisdom, business acumen, and cultural roots all converge in Panchmahala, Mokama. This is where education meets sustenance, and where children become capable builders of their communities.
+        Your donation directly supports children's education in rural Bihar. Every contribution brings us closer to building a sustainable education hub where students learn academics, practical skills, and cultural preservation.
       </p>
-      <p class="hero-subtext" style="font-size: 0.95rem; color: var(--text-muted); margin-top: -12px;">
-        A student town will emerge later. For now, we begin here—with purpose, with land, and with a vision to transform rural education.
-      </p>
-      <div class="hero-cta-row">
-        <a href="education.html" class="cta-primary large" style="background: var(--color-primary);">Explore Campus</a>
-        <a href="partnerships.html" class="cta-secondary large">Partner With Us</a>
-      </div>
     </div>
-    <div class="hero-image-wrap" id="secretHopeTrigger" role="button" tabindex="0" aria-controls="hiddenFounderPopup" aria-expanded="false">
-      <img src="Images/Final tower design.png" alt="Beno Uno Tower Design" class="hero-image-main" style="max-height: 50vh; object-fit: contain;" />
-      <span class="hero-image-caption" style="text-decoration: underline;">Design Complete • Click to View</span>
+    <div class="hero-image-wrap">
+      <img src="donation-poster.png" alt="Indian Navyuvak Humanitarian Education Trust - Donate to Support Children's Education" class="hero-image-main" style="max-height: 60vh; object-fit: contain;" />
     </div>
   </section>
 
@@ -173,115 +165,58 @@
     </div>
   </section>
 
-  <!-- Founding Pledge Section - Main Landing -->
-  <section class="pledge-section" id="foundingPledgeSection">
-    <div class="pledge-shell">
-      <div class="pledge-header">
-        <span class="section-tag">Founding Chapter</span>
-        <h2 class="section-title">Become a Founding Supporter</h2>
-        <p class="pledge-subtext">
-          Before campuses are built and institutions reshape education in India, legal foundations must come first.
-        </p>
-        <p class="pledge-subtext">
-          Pledge your future contribution toward the legal establishment of iNHET and become part of its founding chapter.
-        </p>
+  <!-- Donation Section -->
+  <section class="donation-section" id="donationSection">
+    <div class="donation-container">
+      <div class="donation-poster">
+        <img src="donation-poster.png" alt="Indian Navyuvak Humanitarian Education Trust - Donate to Support Children's Education" class="donation-poster-image" />
+      </div>
+      
+      <div class="donation-counter">
+        <span class="donation-counter-label">Total Donations</span>
+        <strong class="donation-counter-amount" id="donationTotal">₹2,266 donated</strong>
       </div>
 
-      <div class="pledge-dashboard">
-        <div class="pledge-stat-card">
-          <span class="pledge-stat-label">Public Pledge Counter</span>
-          <strong class="pledge-stat-amount" id="pledgeTotal">₹0 Pledged</strong>
-          <span class="pledge-stat-supporters" id="pledgeSupporters">0 Founding Supporters</span>
+      <div class="donation-form-container">
+        <div class="donation-form-header">
+          <span class="section-tag">Support Our Mission</span>
+          <h2 class="section-title">Submit Your Donation</h2>
+          <p class="donation-form-subtext">
+            Scan the QR code above to donate, then fill out this form to confirm your contribution.
+          </p>
         </div>
 
-        <div class="pledge-progress-card">
-          <div class="pledge-progress-topline">
-            <span>Legal Registration Goal</span>
-            <strong id="pledgeGoalStatus">₹50,000 Goal</strong>
+        <form class="donation-form" id="donationForm" action="https://formsubmit.co/ajax/inhetedu@zohomail.in" method="POST">
+          <input type="hidden" name="_subject" value="New Donation Received" />
+          <input type="hidden" name="_captcha" value="false" />
+          
+          <div class="form-group">
+            <label for="donorName">Your Name</label>
+            <input type="text" id="donorName" name="name" placeholder="Enter your full name" required />
           </div>
-          <div class="pledge-progress-track" aria-hidden="true">
-            <div class="pledge-progress-fill" id="pledgeProgressFill"></div>
+          
+          <div class="form-group">
+            <label for="donorEmail">Email Address</label>
+            <input type="email" id="donorEmail" name="email" placeholder="you@example.com" required />
           </div>
-          <p class="pledge-progress-note" id="pledgeProgressNote">Pledges will begin populating this milestone once founding supporters register.</p>
-        </div>
-      </div>
-
-      <div class="pledge-actions">
-        <div class="pledge-amount-grid" id="pledgeAmountGrid">
-          <button type="button" class="pledge-amount-card" data-amount="500">₹500</button>
-          <button type="button" class="pledge-amount-card" data-amount="1000">₹1,000</button>
-          <button type="button" class="pledge-amount-card" data-amount="2500">₹2,500</button>
-          <button type="button" class="pledge-amount-card" data-amount="5000">₹5,000</button>
-          <button type="button" class="pledge-amount-card" data-amount="10000">₹10,000</button>
-          <button type="button" class="pledge-amount-card pledge-amount-card-custom" data-amount="custom">Custom Amount</button>
-        </div>
-      </div>
-
-      <div class="pledge-wall-card">
-        <div class="pledge-wall-header">
-          <h3>Founding Supporter Wall</h3>
-          <span class="pledge-wall-label">Public supporter record</span>
-        </div>
-        <div class="pledge-wall" id="pledgeWall" aria-live="polite">
-          <div class="pledge-empty-state" id="pledgeEmptyState">
-            No founding supporters have pledged publicly yet. This wall will remain empty until people register.
+          
+          <div class="form-group">
+            <label for="donationAmount">Donation Amount (₹)</label>
+            <input type="number" id="donationAmount" name="amount" placeholder="Enter amount donated" min="1" required />
           </div>
-        </div>
+          
+          <div class="form-group">
+            <label for="donationScreenshot">Screenshot of Donation</label>
+            <input type="file" id="donationScreenshot" name="screenshot" accept="image/*" required />
+            <p class="form-hint">Please upload a screenshot of your payment confirmation</p>
+          </div>
+          
+          <button type="submit" class="submit-btn donation-submit-btn">Submit Donation</button>
+          <p class="form-status" id="donationFormStatus" aria-live="polite"></p>
+        </form>
       </div>
-
-      <p class="pledge-disclaimer">
-        No funds are currently being collected. Pledges are non-binding expressions of future support until legal registration is complete.
-      </p>
     </div>
   </section>
-
-  <div class="login-modal pledge-modal" id="pledgeModal" aria-hidden="true">
-    <div class="login-modal-backdrop" id="pledgeModalBackdrop"></div>
-    <div class="login-modal-content pledge-modal-content">
-      <button class="modal-close" id="pledgeModalClose">&times;</button>
-      <div class="modal-header pledge-modal-header">
-        <span class="section-tag">Founding Supporter</span>
-        <h2>Make Your Pledge</h2>
-        <p id="pledgeModalSelectedAmount">Selected amount: ₹0</p>
-      </div>
-
-      <div class="pledge-success-state" id="pledgeSuccessState" hidden>
-        <div class="pledge-success-mark">✓</div>
-        <h3>You are now part of iNHET's founding chapter.</h3>
-        <p>We'll notify you once legal registration is complete.</p>
-      </div>
-
-      <form class="login-form pledge-form" id="pledgeForm">
-        <input type="hidden" id="pledgeAmountInput" name="pledge_amount" />
-        <div class="form-group" id="pledgeCustomAmountGroup" hidden>
-          <label for="pledgeCustomAmount">Custom Amount</label>
-          <input type="number" id="pledgeCustomAmount" min="1" step="1" placeholder="Enter pledge amount in INR" />
-        </div>
-        <div class="form-group">
-          <label for="pledgeName">Full Name</label>
-          <input type="text" id="pledgeName" name="full_name" placeholder="Your full name" required />
-        </div>
-        <div class="form-group">
-          <label for="pledgeEmail">Email Address</label>
-          <input type="email" id="pledgeEmail" name="email" placeholder="you@example.com" required />
-        </div>
-        <div class="form-group">
-          <label for="pledgePhone">Phone Number (optional)</label>
-          <input type="tel" id="pledgePhone" name="phone" placeholder="+91 98..." />
-        </div>
-        <div class="form-group">
-          <label for="pledgeMessage">Optional Message</label>
-          <textarea id="pledgeMessage" name="message" rows="4" placeholder="Why you want to stand with iNHET"></textarea>
-        </div>
-        <label class="pledge-checkbox">
-          <input type="checkbox" id="pledgePublicName" name="display_publicly" checked />
-          <span>Display my name publicly as a founding supporter</span>
-        </label>
-        <button type="submit" class="submit-btn" id="pledgeSubmitBtn">Make My Pledge</button>
-        <p class="form-status" id="pledgeFormStatus" aria-live="polite"></p>
-      </form>
-    </div>
-  </div>
 
   <!-- Why Panchmahala - Strategic Location -->
   <section class="strategy-section">
@@ -588,6 +523,7 @@
       <div class="footer-links-container">
         <div class="footer-col">
           <h4>About</h4>
+          <a href="manifesto.html">iNHET Manifesto</a>
           <a href="approach.html">Our Approach</a>
           <a href="roadmap.html">Roadmap</a>
           <a href="team.html">Team</a>

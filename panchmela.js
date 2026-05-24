@@ -4,14 +4,6 @@
 
 // Theme Management
 const THEME_KEY = 'panchmela-theme';
-const FOUNDING_PLEDGE_GOAL = 50000;
-const FOUNDING_PLEDGE_POLL_MS = 30000;
-
-function getSupabasePublicConfig() {
-  const url = document.querySelector('meta[name="supabase-url"]')?.content?.trim();
-  const anonKey = document.querySelector('meta[name="supabase-anon-key"]')?.content?.trim();
-  return url && anonKey ? { url, anonKey } : null;
-}
 
 function formatINR(amount) {
   const value = Number(amount) || 0;
@@ -20,31 +12,6 @@ function formatINR(amount) {
     currency: 'INR',
     maximumFractionDigits: 0
   }).format(value);
-}
-
-async function foundingPledgeFetch(path, options = {}) {
-  const config = getSupabasePublicConfig();
-  if (!config) {
-    throw new Error('Supabase config missing');
-  }
-
-  const response = await fetch(`${config.url}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      apikey: config.anonKey,
-      Authorization: `Bearer ${config.anonKey}`,
-      'Content-Type': 'application/json',
-      ...options.headers
-    }
-  });
-
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || 'Request failed');
-  }
-
-  if (response.status === 204) return null;
-  return response.json();
 }
 
 function initTheme() {
@@ -561,6 +528,89 @@ function initLightbox() {
   });
 }
 
+// Donation System
+const INITIAL_DONATION_AMOUNT = 2266;
+const DONATION_STORAGE_KEY = 'inhet-donation-total';
+
+function getDonationTotal() {
+  const stored = localStorage.getItem(DONATION_STORAGE_KEY);
+  return stored ? parseInt(stored, 10) : INITIAL_DONATION_AMOUNT;
+}
+
+function updateDonationTotal(amount) {
+  const currentTotal = getDonationTotal();
+  const newTotal = currentTotal + amount;
+  localStorage.setItem(DONATION_STORAGE_KEY, newTotal.toString());
+  return newTotal;
+}
+
+function displayDonationTotal() {
+  const total = getDonationTotal();
+  const counterElement = document.getElementById('donationTotal');
+  if (counterElement) {
+    counterElement.textContent = `₹${total.toLocaleString('en-IN')} donated`;
+  }
+}
+
+function initDonationForm() {
+  const form = document.getElementById('donationForm');
+  const formStatus = document.getElementById('donationFormStatus');
+  const submitBtn = form?.querySelector('.donation-submit-btn');
+
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const amount = parseInt(formData.get('amount'), 10);
+    
+    if (!amount || amount <= 0) {
+      formStatus.textContent = 'Please enter a valid donation amount.';
+      formStatus.className = 'form-status error';
+      return;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+    }
+
+    try {
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update the donation counter
+        const newTotal = updateDonationTotal(amount);
+        displayDonationTotal();
+        
+        formStatus.textContent = `Thank you! Your donation of ₹${amount.toLocaleString('en-IN')} has been submitted successfully.`;
+        formStatus.className = 'form-status success';
+        form.reset();
+      } else {
+        throw new Error(result.message || 'Submission failed');
+      }
+    } catch (error) {
+      console.error('Donation submission failed', error);
+      formStatus.textContent = 'There was an error submitting your donation. Please try again.';
+      formStatus.className = 'form-status error';
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Donation';
+      }
+    }
+  });
+
+  // Display initial total
+  displayDonationTotal();
+}
+
 // Initialize everything
 function init() {
   initTheme();
@@ -574,7 +624,7 @@ function init() {
   initContactForm();
   initLightbox();
   initHiddenFounderSection();
-  initFoundingPledges();
+  initDonationForm();
   
   // Theme toggle
   document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
