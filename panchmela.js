@@ -2,8 +2,7 @@
    PANCHMELA — Interactive Scripts
 ═══════════════════════════════════════════════════════════ */
 
-// Theme Management
-const THEME_KEY = 'panchmela-theme';
+// Theme Management - Removed
 
 function formatINR(amount) {
   const value = Number(amount) || 0;
@@ -12,27 +11,6 @@ function formatINR(amount) {
     currency: 'INR',
     maximumFractionDigits: 0
   }).format(value);
-}
-
-function initTheme() {
-  const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
-  document.body.setAttribute('data-theme', savedTheme);
-  updateThemeIcon(savedTheme);
-}
-
-function toggleTheme() {
-  const currentTheme = document.body.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  document.body.setAttribute('data-theme', newTheme);
-  localStorage.setItem(THEME_KEY, newTheme);
-  updateThemeIcon(newTheme);
-}
-
-function updateThemeIcon(theme) {
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) {
-    toggle.setAttribute('aria-pressed', theme === 'dark');
-  }
 }
 
 // Login Modal
@@ -613,7 +591,6 @@ function initDonationForm() {
 
 // Initialize everything
 function init() {
-  initTheme();
   initLoginModal();
   initMobileMenu();
   initScrollReveal();
@@ -625,9 +602,6 @@ function init() {
   initLightbox();
   initHiddenFounderSection();
   initDonationForm();
-  
-  // Theme toggle
-  document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
 }
 
 // Run on DOM ready

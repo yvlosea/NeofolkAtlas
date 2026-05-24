@@ -258,9 +258,9 @@
     "curatorAdvanced": "Curator pathway",
     "curatorAdvancedBody": "Curator access is applied for later, after learning evidence and seriousness are visible.",
     "neoScore": "Neo Score",
-    "neoScoreSeeker": "Intellectual activity score — based on modules, notes, guilds, and consistent learning.",
-    "neoScoreCurator": "Curator score — based on modules created, student completion, and teaching logs.",
-    "neoScoreArbiter": "Arbiter score — based on reviews completed, accuracy, and verification consistency.",
+    "neoScoreSeeker": "Intellectual activity score - based on modules, notes, guilds, and consistent learning.",
+    "neoScoreCurator": "Curator score - based on modules created, student completion, and teaching logs.",
+    "neoScoreArbiter": "Arbiter score - based on reviews completed, accuracy, and verification consistency.",
     "subjectDistribution": "Subject Distribution",
     "subjectChartNote": "Based on modules, notes, niche entries, and guild participation.",
     "enrolledModules": "Enrolled Modules",
@@ -471,7 +471,7 @@
   "guide": {
     "title": "Guide",
     "kicker": "Platform Guide",
-    "subtitle": "Everything you need to understand Neofolk Atlas — platform explanation, feature guides, role definitions, and the full glossary.",
+    "subtitle": "Everything you need to understand Neofolk Atlas - platform explanation, feature guides, role definitions, and the full glossary.",
     "searchPlaceholder": "Search the guide...",
     "platformSection": "Platform Overview",
     "rolesSection": "Roles",
@@ -522,7 +522,7 @@
   "discover": {
     "title": "Discover",
     "kicker": "Knowledge Feed",
-    "subtitle": "Educational content verified by arbiters — visual explainers, project demonstrations, and knowledge media.",
+    "subtitle": "Educational content verified by arbiters - visual explainers, project demonstrations, and knowledge media.",
     "filterLocal": "Local",
     "filterNational": "National",
     "types": {
@@ -641,7 +641,7 @@
     "neoScore": {
       "label": "Neo Score",
       "simple": "A measure of intellectual activity, not popularity.",
-      "expanded": "The Neo Score reflects genuine contribution — modules completed, notes written, guilds participated in, and consistent engagement. It differs by role: Seekers, Curators, and Arbiters each have their own calculation.",
+      "expanded": "The Neo Score reflects genuine contribution - modules completed, notes written, guilds participated in, and consistent engagement. It differs by role: Seekers, Curators, and Arbiters each have their own calculation.",
       "example": "A Seeker's Neo Score rises when they complete modules and write consistent notes."
     },
     "discovery": {
@@ -659,7 +659,7 @@
     "artifact": {
       "label": "Artifact",
       "simple": "A piece of documented intellectual work.",
-      "expanded": "Artifacts are the outputs of learning — essays, diagrams, notes, recorded sessions, and projects. They form the substance of a learner's academic record.",
+      "expanded": "Artifacts are the outputs of learning - essays, diagrams, notes, recorded sessions, and projects. They form the substance of a learner's academic record.",
       "example": "A research essay submitted to a Guild workspace is an Artifact."
     },
     "praxis": {

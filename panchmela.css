@@ -365,22 +365,6 @@ a {
   box-shadow: 0 6px 20px rgba(var(--color-primary-rgb), 0.4);
 }
 
-/* Theme Toggle - Sun/Moon */
-.theme-toggle .moon-icon {
-  display: none;
-}
-
-.theme-toggle .sun-icon {
-  display: block;
-}
-
-[data-theme="dark"] .theme-toggle .sun-icon {
-  display: none;
-}
-
-[data-theme="dark"] .theme-toggle .moon-icon {
-  display: block;
-}
 
 .login-btn {
   padding: 10px 24px;
@@ -2304,7 +2288,7 @@ li {
 /* Donate Button Styles */
 .donate-btn {
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: var(--color-primary);
   padding: 10px 20px;
   border-radius: 999px;
   font-weight: 600;
@@ -2314,15 +2298,15 @@ li {
   align-items: center;
   gap: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
+  border: 2px solid var(--color-primary);
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.22);
 }
 
 .donate-btn:hover {
-  background: var(--color-primary-dark);
+  background: var(--color-bg);
+  color: var(--color-primary);
   transform: translateY(-2px);
-  color: var(--color-on-primary);
   box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.3);
 }
 
