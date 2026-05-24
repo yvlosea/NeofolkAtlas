@@ -2286,9 +2286,12 @@ li {
 }
 
 /* Donate Button Styles */
-.donate-btn {
+.donate-btn,
+.donate-btn:visited,
+.donate-btn-nav,
+.donate-btn-nav:visited {
   background: linear-gradient(135deg, #1d5a43 0%, #2f775b 100%);
-  color: #f7f1e5;
+  color: #f7f1e5 !important;
   padding: 12px 20px;
   border-radius: 999px;
   font-weight: 600;
@@ -2303,9 +2306,10 @@ li {
   box-shadow: 0 10px 24px rgba(var(--color-primary-rgb), 0.18);
 }
 
-.donate-btn:hover {
+.donate-btn:hover,
+.donate-btn-nav:hover {
   background: linear-gradient(135deg, #184835 0%, #275f49 100%);
-  color: #f7f1e5;
+  color: #f7f1e5 !important;
   transform: translateY(-2px);
   box-shadow: 0 16px 30px rgba(var(--color-primary-rgb), 0.24);
 }

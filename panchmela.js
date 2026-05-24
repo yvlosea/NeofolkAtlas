@@ -13,7 +13,7 @@ function formatINR(amount) {
   }).format(value);
 }
 
-const SITE_LOGO = 'inhet Logo.png';
+const SITE_LOGO = 'inhet Logo.png?v=20260525';
 const DONATION_MODAL_ID = 'donationModal';
 
 function getHeartIconMarkup() {
@@ -222,6 +222,8 @@ function initDonationModal() {
   }
 
   document.querySelectorAll('.donate-btn, .donate-btn-nav').forEach((button) => {
+    button.setAttribute('data-open-donate', 'true');
+
     if (!button.querySelector('svg')) {
       button.insertAdjacentHTML('afterbegin', getHeartIconMarkup());
     }
@@ -229,11 +231,14 @@ function initDonationModal() {
     if (!button.textContent.includes('Donate')) {
       button.append(document.createTextNode('Donate Now'));
     }
+  });
 
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-      openDonationModal();
-    });
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest('[data-open-donate], .donate-btn, .donate-btn-nav');
+    if (!trigger) return;
+    event.preventDefault();
+    event.stopPropagation();
+    openDonationModal();
   });
 
   modal.querySelectorAll('[data-donation-close]').forEach((node) => {
