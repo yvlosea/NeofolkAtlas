@@ -162,7 +162,7 @@ function injectDonationModal() {
           <p class="donation-modal-note">Green button, one form, no clutter. We only ask for the details needed to confirm your donation.</p>
         </div>
         <div class="donation-modal-form-wrap">
-          <form class="donation-form donation-form-modal" id="donationPopupForm" action="https://formsubmit.co/ajax/inhetedu@zohomail.in" method="POST">
+          <form class="donation-form donation-form-modal" id="donationPopupForm" action="https://formsubmit.co/inhetedu@zohomail.in" method="POST">
             <input type="hidden" name="_subject" value="New Donation Received" />
             <input type="hidden" name="_captcha" value="false" />
             <input type="hidden" name="_template" value="table" />
@@ -253,52 +253,22 @@ function initDonationModal() {
     }
   });
 
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-
+  form.addEventListener('submit', (event) => {
     const formData = new FormData(form);
     const amount = parseInt(formData.get('amount'), 10);
 
     if (!amount || amount <= 0) {
+      event.preventDefault();
       formStatus.textContent = 'Please enter a valid donation amount.';
       formStatus.className = 'form-status error';
       return;
     }
 
+    // Let the form submit normally to FormSubmit.co
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-    formStatus.textContent = '';
+    submitBtn.textContent = 'Submitting...';
+    formStatus.textContent = 'Submitting your donation details...';
     formStatus.className = 'form-status';
-
-    try {
-      const response = await fetch(form.action, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Accept: 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Donation request failed');
-      }
-
-      updateDonationTotal(amount);
-      saveDonationWallEntry(formData.get('name'), amount);
-      displayDonationTotal();
-      renderDonationWall();
-      form.reset();
-      formStatus.textContent = `Thank you. Your donation details for ${formatINR(amount)} have been sent to inhetedu@zohomail.in.`;
-      formStatus.className = 'form-status success';
-      window.setTimeout(closeDonationModal, 1400);
-    } catch (error) {
-      console.error('Donation submission failed', error);
-      formStatus.textContent = 'We could not submit the form right now. Please try again or email inhetedu@zohomail.in.';
-      formStatus.className = 'form-status error';
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Send Donation Details';
-    }
   });
 }
 

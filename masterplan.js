@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     hostel: {
       title: 'Hostels',
       phase: 'Phase 1',
-      description: 'Residential accommodation designed for community living. Phase 1 provides basic dormitory-style housing for 20 students, with plans to expand to 200+ capacity in Phase 3.',
+      description: 'Accommodation designed for community living. Phase 1 provides basic dormitory-style housing for 20 students, with plans to expand to 200+ capacity in later phases.',
       image: 'Preview.png',
       stats: {
         capacity: 'Phase 1: 20 students',
