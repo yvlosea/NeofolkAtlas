@@ -187,11 +187,13 @@ a {
 }
 
 .nav-logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border-color);
+  width: 58px;
+  height: 58px;
+  border-radius: 0;
+  object-fit: contain;
+  border: 0;
+  padding: 2px;
+  background: transparent;
 }
 
 .brand-text {
@@ -1277,10 +1279,10 @@ a {
 }
 
 .footer-logo {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 86px;
+  height: 86px;
+  border-radius: 0;
+  object-fit: contain;
 }
 
 .footer-tagline {
@@ -1411,11 +1413,11 @@ a {
 }
 
 .modal-logo {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 82px;
+  height: 82px;
+  border-radius: 0;
   margin: 0 auto 20px;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .modal-header h2 {
@@ -2632,6 +2634,65 @@ button.donate-btn-nav {
   font-size: 3rem;
   color: var(--color-primary);
   display: block;
+}
+
+.donation-wall-card {
+  width: 100%;
+  max-width: 760px;
+  margin-top: 24px;
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+}
+
+.donation-wall-header {
+  margin-bottom: 18px;
+}
+
+.donation-wall-title {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--color-text);
+  margin: 10px 0 8px;
+}
+
+.donation-wall-copy {
+  color: var(--text-secondary);
+}
+
+.donation-wall {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.donation-wall-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--border-color);
+}
+
+.donation-wall-name {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.donation-wall-amount {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.donation-wall-empty {
+  color: var(--text-muted);
+  margin-top: 10px;
 }
 
 .donation-form-container {

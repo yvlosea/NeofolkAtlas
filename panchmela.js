@@ -15,6 +15,7 @@ function formatINR(amount) {
 
 const SITE_LOGO = 'inhet Logo.png?v=20260525';
 const DONATION_MODAL_ID = 'donationModal';
+const DONATION_WALL_KEY = 'inhet-donation-wall';
 
 function getHeartIconMarkup() {
   return `
@@ -164,6 +165,7 @@ function injectDonationModal() {
           <form class="donation-form donation-form-modal" id="donationPopupForm" action="https://formsubmit.co/ajax/inhetedu@zohomail.in" method="POST">
             <input type="hidden" name="_subject" value="New Donation Received" />
             <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
             <div class="form-group">
               <label for="popupDonorName">Your Name</label>
               <input type="text" id="popupDonorName" name="name" placeholder="Enter your full name" required />
@@ -282,9 +284,11 @@ function initDonationModal() {
       }
 
       updateDonationTotal(amount);
+      saveDonationWallEntry(formData.get('name'), amount);
       displayDonationTotal();
+      renderDonationWall();
       form.reset();
-      formStatus.textContent = `Thank you. Your donation details for ${formatINR(amount)} have been received.`;
+      formStatus.textContent = `Thank you. Your donation details for ${formatINR(amount)} have been sent to inhetedu@zohomail.in.`;
       formStatus.className = 'form-status success';
       window.setTimeout(closeDonationModal, 1400);
     } catch (error) {
@@ -815,10 +819,59 @@ function displayDonationTotal() {
   }
 }
 
+function getDonationWallEntries() {
+  const stored = localStorage.getItem(DONATION_WALL_KEY);
+  if (!stored) return [];
+  try {
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (_error) {
+    return [];
+  }
+}
+
+function saveDonationWallEntry(name, amount) {
+  const entries = getDonationWallEntries();
+  entries.unshift({
+    name: name || 'Anonymous',
+    amount: Number(amount) || 0
+  });
+  localStorage.setItem(DONATION_WALL_KEY, JSON.stringify(entries.slice(0, 18)));
+}
+
+function renderDonationWall() {
+  const wall = document.getElementById('donationWall');
+  const empty = document.getElementById('donationWallEmpty');
+  if (!wall) return;
+
+  const entries = getDonationWallEntries();
+  wall.innerHTML = '';
+
+  if (!entries.length) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+
+  if (empty) empty.style.display = 'none';
+
+  entries.forEach((entry) => {
+    const item = document.createElement('div');
+    item.className = 'donation-wall-item';
+    item.innerHTML = `
+      <span class="donation-wall-name">${entry.name} donated</span>
+      <span class="donation-wall-amount">${formatINR(entry.amount)}</span>
+    `;
+    wall.appendChild(item);
+  });
+}
+
 function initDonationForm() {
   const form = document.getElementById('donationForm');
   const formStatus = document.getElementById('donationFormStatus');
   const submitBtn = form?.querySelector('.donation-submit-btn');
+
+  displayDonationTotal();
+  renderDonationWall();
 
   if (!form) return;
 
@@ -870,8 +923,6 @@ function initDonationForm() {
     }
   });
 
-  // Display initial total
-  displayDonationTotal();
 }
 
 // Initialize everything
