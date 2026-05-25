@@ -13,7 +13,7 @@ function formatINR(amount) {
   }).format(value);
 }
 
-const SITE_LOGO = 'inhet Logo.png?v=20260525';
+const SITE_LOGO = 'inhet-logo.png?v=20260525';
 const DONATION_MODAL_ID = 'donationModal';
 const DONATION_WALL_KEY = 'inhet-donation-wall';
 

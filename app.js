@@ -4573,7 +4573,7 @@ function renderAppNav() {
   if (brandArea && !brandArea.querySelector('.nav-brand-logo')) {
     const logo = document.createElement('img');
     logo.className = 'nav-brand-logo';
-    logo.src = 'iNHET-logo.png';
+    logo.src = 'inhet-logo.png';
     logo.alt = 'iNHET logo';
     brandArea.insertBefore(logo, brandArea.firstChild);
   }
